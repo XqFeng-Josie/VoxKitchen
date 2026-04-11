@@ -1,6 +1,7 @@
 """VoxKitchen data schema: Recording, Supervision, Cut, CutSet, Provenance."""
 
 from voxkitchen.schema.cut import Cut
+from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.io import (
     SCHEMA_VERSION,
     HeaderRecord,
@@ -17,6 +18,7 @@ __all__ = [
     "SCHEMA_VERSION",
     "AudioSource",
     "Cut",
+    "CutSet",
     "HeaderRecord",
     "IncompatibleSchemaError",
     "Provenance",
