@@ -1,0 +1,96 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "voxkitchen"
+dynamic = ["version"]
+description = "A researcher-friendly, declarative speech data processing toolkit"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "VoxKitchen contributors" }]
+keywords = ["speech", "audio", "dataset", "pipeline", "asr"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+# Plan 1 only uses a subset of core deps (schema + CLI).
+# Later plans will add torch, torchaudio, silero-vad, etc. per spec section 9.2.
+dependencies = [
+    "pydantic>=2.5,<3",
+    "pyyaml>=6",
+    "typer>=0.12",
+    "rich>=13",
+    "soundfile>=0.12",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "pre-commit>=3.6",
+]
+
+[project.scripts]
+vkit = "voxkitchen.cli.main:app"
+
+[project.urls]
+Repository = "https://github.com/voxkitchen/voxkitchen"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/voxkitchen"]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/voxkitchen/_version.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "UP",
+    "RUF",
+]
+ignore = [
+    "E501",
+]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+files = ["src/voxkitchen", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["soundfile.*", "yaml.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra --strict-markers --strict-config"
+testpaths = ["tests"]
+pythonpath = ["src"]
