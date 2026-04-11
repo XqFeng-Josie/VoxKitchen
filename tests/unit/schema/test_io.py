@@ -102,7 +102,8 @@ def test_incompatible_schema_version_raises(tmp_path: Path) -> None:
         list(read_cuts(path))
 
 
-def test_read_cuts_on_empty_manifest_returns_empty_iterator(tmp_path: Path) -> None:
+def test_read_cuts_on_header_only_manifest_returns_empty_iterator(tmp_path: Path) -> None:
+    """A manifest with a valid header and zero cut lines is well-formed."""
     path = tmp_path / "cuts.jsonl.gz"
     header = HeaderRecord(
         schema_version=SCHEMA_VERSION,
@@ -112,3 +113,32 @@ def test_read_cuts_on_empty_manifest_returns_empty_iterator(tmp_path: Path) -> N
     )
     write_cuts(path, header, iter([]))
     assert list(read_cuts(path)) == []
+
+
+def test_read_cuts_on_zero_byte_gzip_raises(tmp_path: Path) -> None:
+    """A zero-byte gzip stream (e.g. from a crashed writer) is not a legal manifest."""
+    path = tmp_path / "crashed.jsonl.gz"
+    with gzip.open(path, "wb") as f:
+        f.write(b"")
+    with pytest.raises(IncompatibleSchemaError):
+        list(read_cuts(path))
+
+
+def test_read_header_rejects_incompatible_schema_version(tmp_path: Path) -> None:
+    """read_header must validate schema_version, matching read_cuts."""
+    path = tmp_path / "future.jsonl.gz"
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        f.write(
+            json.dumps(
+                {
+                    "__type__": "voxkitchen.header",
+                    "schema_version": "99.0",
+                    "created_at": "2026-04-11T10:30:00+00:00",
+                    "pipeline_run_id": "run-x",
+                    "stage_name": "00_ingest",
+                }
+            )
+            + "\n"
+        )
+    with pytest.raises(IncompatibleSchemaError):
+        read_header(path)

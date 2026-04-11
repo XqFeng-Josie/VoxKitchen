@@ -9,6 +9,25 @@ Format (one JSON object per line, gzip-compressed):
 
 The header record enables future schema migrations: readers that encounter
 an unknown version can be routed through a migration function.
+
+Versioning policy
+-----------------
+
+All schema models use ``model_config = ConfigDict(extra="forbid")``. This
+catches bugs during development but means that adding *any* new field to any
+model is a breaking change for manifests written by a newer version and read
+by an older version.
+
+**Required steps whenever a schema model changes:**
+
+1. Bump ``SCHEMA_VERSION`` in this file (e.g. ``"0.1"`` → ``"0.2"``).
+2. Add a migration entry to ``voxkitchen/schema/migrations/__init__.py`` that
+   upgrades a manifest written under the old version to the new one.
+3. Update ``read_cuts`` / ``read_header`` to route version-mismatched reads
+   through the migration function instead of raising.
+
+The ``schema/migrations/`` package is a stub in Plan 1; Plan 2 or later will
+populate it when the first migration is needed.
 """
 
 from __future__ import annotations
@@ -56,7 +75,11 @@ def write_cuts(path: Path, header: HeaderRecord, cuts: Iterable[Cut]) -> None:
 
 
 def read_header(path: Path) -> HeaderRecord:
-    """Return the header record of a manifest without reading the rest."""
+    """Return the header record of a manifest without reading the rest.
+
+    Raises ``IncompatibleSchemaError`` on empty file, missing header, or
+    schema version mismatch — matching ``read_cuts``'s validation.
+    """
     with gzip.open(path, "rt", encoding="utf-8") as f:
         first = f.readline()
     if not first:
@@ -66,6 +89,12 @@ def read_header(path: Path) -> HeaderRecord:
         raise IncompatibleSchemaError(
             f"expected header on first line of {path}, got {parsed.get('__type__')!r}"
         )
+    if parsed.get("schema_version") != SCHEMA_VERSION:
+        raise IncompatibleSchemaError(
+            f"schema version mismatch in {path}: "
+            f"file is {parsed.get('schema_version')!r}, "
+            f"reader supports {SCHEMA_VERSION!r}"
+        )
     payload = {k: v for k, v in parsed.items() if k != "__type__"}
     return HeaderRecord.model_validate(payload)
 
@@ -73,13 +102,16 @@ def read_header(path: Path) -> HeaderRecord:
 def read_cuts(path: Path) -> Iterator[Cut]:
     """Yield Cuts from a manifest, validating the header first.
 
-    Raises ``IncompatibleSchemaError`` if the file has no header or the
-    schema version does not match ``SCHEMA_VERSION``.
+    Raises ``IncompatibleSchemaError`` if the file is empty, has no header,
+    or the schema version does not match ``SCHEMA_VERSION``. A zero-byte
+    gzip stream (e.g. from a crashed writer) is treated as incompatible,
+    not as a valid empty manifest — callers must write at least the header
+    for a manifest to be legal.
     """
     with gzip.open(path, "rt", encoding="utf-8") as f:
         first = f.readline()
         if not first:
-            return
+            raise IncompatibleSchemaError(f"manifest is empty (no header): {path}")
         parsed = json.loads(first)
         if parsed.get("__type__") != "voxkitchen.header":
             raise IncompatibleSchemaError(
