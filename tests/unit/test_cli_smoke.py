@@ -20,3 +20,11 @@ def test_six_top_level_commands_are_registered() -> None:
     expected_commands = {"init", "ingest", "validate", "run", "inspect", "viz"}
     for cmd in expected_commands:
         assert cmd in result.output, f"command '{cmd}' missing from --help output"
+
+
+def test_placeholder_commands_exit_with_code_1() -> None:
+    runner = CliRunner()
+    # init is representative; all six commands use the same _not_implemented path.
+    result = runner.invoke(app, ["init", "/tmp/any-path"])
+    assert result.exit_code == 1
+    assert "not yet implemented" in result.output

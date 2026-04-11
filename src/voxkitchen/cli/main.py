@@ -7,6 +7,8 @@ real behavior.
 
 from __future__ import annotations
 
+from typing import NoReturn
+
 import typer
 from rich import print as rprint
 
@@ -18,7 +20,7 @@ app = typer.Typer(
 )
 
 
-def _not_implemented(command: str) -> None:
+def _not_implemented(command: str) -> NoReturn:
     rprint(f"[yellow]vkit {command}[/yellow]: not yet implemented in this build.")
     raise typer.Exit(code=1)
 
@@ -51,6 +53,9 @@ def inspect(
     subcommand: str = typer.Argument(..., help="cuts | recordings | run | trace | errors"),
     path: str = typer.Argument(..., help="Target path."),
 ) -> None:
+    # TODO: Replace with a Typer sub-app (app.add_typer) when cli/inspect.py lands.
+    # The real signatures differ structurally — e.g. `inspect trace <cut_id> --in <path>`
+    # cannot be represented by the current flat (subcommand, path) placeholder.
     _not_implemented(f"inspect {subcommand} {path}")
 
 
