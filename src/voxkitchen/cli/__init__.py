@@ -1,0 +1,1 @@
+"""voxkitchen command-line interface."""
