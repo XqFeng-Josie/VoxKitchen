@@ -28,9 +28,7 @@ def _make_cut(cid: str) -> Cut:
         recording_id="rec-1",
         start=0.0,
         duration=3.5,
-        supervisions=[
-            Supervision(id=f"{cid}-sup", recording_id="rec-1", start=0.0, duration=3.5)
-        ],
+        supervisions=[Supervision(id=f"{cid}-sup", recording_id="rec-1", start=0.0, duration=3.5)],
         provenance=Provenance(
             source_cut_id=None,
             generated_by="test@0.0",
