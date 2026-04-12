@@ -9,9 +9,11 @@ from voxkitchen.operators.basic import ffmpeg_convert as _basic_ffmpeg  # noqa: 
 from voxkitchen.operators.basic import loudness_normalize as _basic_loudness  # noqa: F401
 from voxkitchen.operators.basic import resample as _basic_resample  # noqa: F401
 from voxkitchen.operators.noop import identity as _noop_identity  # noqa: F401
+from voxkitchen.operators.pack import pack_huggingface as _pack_huggingface  # noqa: F401
 from voxkitchen.operators.pack import pack_kaldi as _pack_kaldi  # noqa: F401
 from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
 from voxkitchen.operators.pack import pack_parquet as _pack_parquet  # noqa: F401
+from voxkitchen.operators.pack import pack_webdataset as _pack_webdataset  # noqa: F401
 from voxkitchen.operators.quality import audio_fingerprint_dedup as _qual_dedup  # noqa: F401
 from voxkitchen.operators.quality import duration_filter as _qual_duration  # noqa: F401
 from voxkitchen.operators.quality import quality_score_filter as _qual_filter  # noqa: F401
