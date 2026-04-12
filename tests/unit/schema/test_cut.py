@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.provenance import Provenance
+from voxkitchen.schema.recording import AudioSource, Recording
 from voxkitchen.schema.supervision import Supervision
 
 
@@ -119,4 +120,64 @@ def test_cut_round_trips_through_json() -> None:
     )
     blob = original.model_dump_json()
     restored = Cut.model_validate_json(blob)
+    assert restored == original
+
+
+def test_cut_with_embedded_recording() -> None:
+    rec = Recording(
+        id="rec-1",
+        sources=[AudioSource(type="file", channels=[0], source="/data/test.wav")],
+        sampling_rate=16000,
+        num_samples=16000,
+        duration=1.0,
+        num_channels=1,
+    )
+    cut = Cut(
+        id="cut-1",
+        recording_id="rec-1",
+        start=0.0,
+        duration=1.0,
+        recording=rec,
+        supervisions=[],
+        provenance=_make_provenance(),
+    )
+    assert cut.recording is not None
+    assert cut.recording.sampling_rate == 16000
+    assert cut.recording.sources[0].source == "/data/test.wav"
+
+
+def test_cut_recording_defaults_to_none() -> None:
+    cut = Cut(
+        id="cut-1",
+        recording_id="rec-1",
+        start=0.0,
+        duration=1.0,
+        supervisions=[],
+        provenance=_make_provenance(),
+    )
+    assert cut.recording is None
+
+
+def test_cut_with_recording_round_trips_through_json() -> None:
+    rec = Recording(
+        id="rec-1",
+        sources=[AudioSource(type="file", channels=[0], source="/data/test.wav")],
+        sampling_rate=16000,
+        num_samples=16000,
+        duration=1.0,
+        num_channels=1,
+    )
+    original = Cut(
+        id="cut-1",
+        recording_id="rec-1",
+        start=0.0,
+        duration=1.0,
+        recording=rec,
+        supervisions=[],
+        provenance=_make_provenance(),
+    )
+    blob = original.model_dump_json()
+    restored = Cut.model_validate_json(blob)
+    assert restored.recording is not None
+    assert restored.recording.id == "rec-1"
     assert restored == original

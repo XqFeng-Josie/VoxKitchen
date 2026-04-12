@@ -7,6 +7,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict
 
 from voxkitchen.schema.provenance import Provenance
+from voxkitchen.schema.recording import Recording
 from voxkitchen.schema.supervision import Supervision
 
 
@@ -26,6 +27,7 @@ class Cut(BaseModel):
     start: float
     duration: float
     channel: int | list[int] | None = None
+    recording: Recording | None = None
 
     supervisions: list[Supervision]
     metrics: dict[str, float] = {}
