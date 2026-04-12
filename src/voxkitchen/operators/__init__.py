@@ -1,6 +1,7 @@
 """VoxKitchen operators: transformations from CutSet to CutSet."""
 
 from voxkitchen.operators.annotate import faster_whisper_asr as _annotate_fwasr  # noqa: F401
+from voxkitchen.operators.annotate import whisperx_asr as _annotate_whisperx  # noqa: F401
 from voxkitchen.operators.base import Operator, OperatorConfig
 
 # Register all built-in operators by importing them. Every built-in module
