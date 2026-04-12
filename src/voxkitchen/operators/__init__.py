@@ -19,6 +19,8 @@ from voxkitchen.operators.registry import (
     register_operator,
 )
 from voxkitchen.operators.segment import fixed_segment as _seg_fixed  # noqa: F401
+from voxkitchen.operators.segment import silence_split as _seg_silence  # noqa: F401
+from voxkitchen.operators.segment import webrtc_vad as _seg_webrtc  # noqa: F401
 
 __all__ = [
     "MissingExtrasError",
