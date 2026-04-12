@@ -9,6 +9,7 @@ from voxkitchen.operators.basic import ffmpeg_convert as _basic_ffmpeg  # noqa: 
 from voxkitchen.operators.basic import loudness_normalize as _basic_loudness  # noqa: F401
 from voxkitchen.operators.basic import resample as _basic_resample  # noqa: F401
 from voxkitchen.operators.noop import identity as _noop_identity  # noqa: F401
+from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
 from voxkitchen.operators.registry import (
     MissingExtrasError,
     UnknownOperatorError,
