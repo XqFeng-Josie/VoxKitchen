@@ -4,11 +4,11 @@
 
 **Goal:** Implement the final 5 operators: `silero_vad` (GPU-accelerated VAD), `faster_whisper_asr` (ASR transcription), `whisperx_asr` (word-aligned ASR), `pyannote_diarize` (speaker diarization), and `speechbrain_langid` + `speechbrain_gender` (audio classification). After this plan, all 22 v0.1 operators are complete.
 
-**CRITICAL CONSTRAINT: No GPU on this machine.** Every operator must:
-1. Detect CUDA availability in `setup()` and fall back to CPU transparently
-2. All tests must pass without CUDA — no `skipif(not cuda)` markers
-3. Use the smallest model variants for tests (e.g., whisper "tiny")
-4. Model-downloading tests marked `@pytest.mark.slow` so they can be skipped
+**Development constraint: current dev machine has no GPU; production servers will have GPU.** Design for GPU as the primary target. For testing:
+1. `device="gpu"` is correct — operators detect CUDA in `setup()` and fall back to CPU where the library supports it (silero, faster-whisper, speechbrain all work on CPU)
+2. Tests that CAN run on CPU: mark `@pytest.mark.slow` (model downloads take time) — these prove the operator logic works
+3. Tests that genuinely require GPU: mark `@pytest.mark.gpu` and skip honestly — no mocking to fake a pass
+4. `pyannote_diarize` needs HuggingFace auth token — mark `@pytest.mark.gpu` (can only be properly tested on a configured server)
 
 **Architecture:** Each operator follows the same pattern: `setup()` loads a model (detecting CPU/GPU), `process()` runs inference per Cut and adds Supervisions or metrics. Unlike Plan 3/4 operators, these are **annotation operators** — they don't produce new audio files (`produces_audio=False`). They read audio bytes, run a model, and add text/speaker/language/gender annotations to existing Cuts via new Supervisions or updated metrics.
 
@@ -51,19 +51,22 @@ The Cut itself is not recreated with new provenance — annotations are appended
 
 ## Test Strategy
 
-| Operator | Model size | Download time | Test approach |
+| Operator | Model size | CPU works? | Test approach |
 |---|---|---|---|
-| `silero_vad` | ~2 MB | seconds | Real model, always run |
-| `faster_whisper_asr` | ~75 MB (tiny) | ~30s | Real model, `@pytest.mark.slow` |
-| `whisperx_asr` | ~75 MB + alignment | ~60s | Real model, `@pytest.mark.slow` |
-| `pyannote_diarize` | ~100 MB + HF auth | N/A | **Mocked** (HF auth token required) |
-| `speechbrain_langid` | ~30 MB | ~15s | Real model, `@pytest.mark.slow` |
-| `speechbrain_gender` | ~30 MB | ~15s | Real model, `@pytest.mark.slow` |
+| `silero_vad` | ~2 MB | Yes | Real model on CPU, `@pytest.mark.slow` |
+| `faster_whisper_asr` | ~75 MB (tiny) | Yes (int8) | Real model on CPU, `@pytest.mark.slow` |
+| `whisperx_asr` | ~75 MB + alignment | Yes (fallback) | Real model on CPU, `@pytest.mark.slow` |
+| `pyannote_diarize` | ~100 MB + HF auth | Needs auth token | `@pytest.mark.gpu` — **skip on dev machine**, test on server |
+| `speechbrain_langid` | ~30 MB | Yes | Real model on CPU, `@pytest.mark.slow` |
+| `speechbrain_gender` | ~30 MB | Yes | Real model on CPU, `@pytest.mark.slow` |
 
-Register the `slow` marker in `pyproject.toml`:
+Register markers in `pyproject.toml`:
 ```toml
 [tool.pytest.ini_options]
-markers = ["slow: marks tests that download ML models (deselect with '-m \"not slow\"')"]
+markers = [
+    "slow: marks tests that download ML models (deselect with '-m \"not slow\"')",
+    "gpu: marks tests that require GPU or special server config (deselect with '-m \"not gpu\"')",
+]
 ```
 
 ---
@@ -148,8 +151,8 @@ Add `faster_whisper.*`, `pyannote.*`, `speechbrain.*`, `whisperx.*` to the ignor
           pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev,segment,quality,pack,asr,classify]"
 
-      - name: Pytest (skip slow model downloads in CI)
-        run: pytest -v -m "not slow" --cov=voxkitchen --cov-report=term-missing
+      - name: Pytest (skip slow model downloads and GPU tests in CI)
+        run: pytest -v -m "not slow and not gpu" --cov=voxkitchen --cov-report=term-missing
 ```
 
 Note: CI skips `@pytest.mark.slow` tests to avoid downloading large models. Developers run `pytest` locally (without `-m`) to include model tests.
@@ -458,7 +461,7 @@ for turn, _, speaker in diarization.itertracks(yield_label=True):
 
 **Class attrs:** `name="pyannote_diarize"`, `device="gpu"`, `produces_audio=False`, `reads_audio_bytes=True`, `required_extras=["diarize"]`
 
-### Tests (3) — MOCKED
+### Tests (3) — registration + attrs always run; functional test skipped without auth
 
 ```python
 def test_pyannote_diarize_is_registered() -> None: ...
@@ -467,27 +470,13 @@ def test_pyannote_diarize_class_attrs() -> None:
     assert PyannoteDiarizeOperator.device == "gpu"
     assert PyannoteDiarizeOperator.produces_audio is False
 
-def test_pyannote_diarize_adds_speaker_supervisions(mono_wav_16k, tmp_path, monkeypatch) -> None:
-    """Mock the pyannote pipeline to return fake diarization results."""
-    # Create a mock that returns a fake Annotation object
-    # The mock should have itertracks() returning [(turn, _, "SPEAKER_00")]
+@pytest.mark.gpu
+def test_pyannote_diarize_adds_speaker_supervisions(mono_wav_16k, tmp_path) -> None:
+    """Requires HF_TOKEN env var + pyannote model access. Run on configured server only."""
     ...
 ```
 
-For the mock, create a lightweight fake:
-```python
-from unittest.mock import MagicMock
-from types import SimpleNamespace
-
-def _make_mock_pipeline():
-    mock = MagicMock()
-    # Fake turn: 0.0 - 1.0 seconds, speaker "SPEAKER_00"
-    turn = SimpleNamespace(start=0.0, end=1.0)
-    mock.return_value.itertracks.return_value = [(turn, None, "SPEAKER_00")]
-    return mock
-```
-
-Monkeypatch `pyannote.audio.Pipeline.from_pretrained` to return the mock.
+The functional test is marked `@pytest.mark.gpu` and honestly skipped on the dev machine. It will be tested on a GPU server with `HF_TOKEN` configured before release.
 
 ### Commit: `feat(operators): add pyannote_diarize for speaker diarization`
 
@@ -642,8 +631,9 @@ This test is `@pytest.mark.slow` (downloads both silero and whisper-tiny models)
 
 ## Task 8: Full verification, lint, type, tag
 
-- [ ] `pytest -m "not slow" -v` — all non-slow tests pass (registration + class attrs + mocked tests)
-- [ ] `pytest -v` (optional, slow) — model-download tests pass on CPU
+- [ ] `pytest -m "not slow and not gpu" -v` — all fast tests pass (registration + class attrs)
+- [ ] `pytest -m "not gpu" -v` (optional, slow) — model-download tests pass on CPU
+- [ ] `pytest -v` (on GPU server only) — full suite including pyannote
 - [ ] `ruff check src tests` + `ruff format --check src tests`
 - [ ] `mypy src/voxkitchen tests`
 - [ ] `pre-commit run --all-files`
@@ -661,9 +651,11 @@ This test is `@pytest.mark.slow` (downloads both silero and whisper-tiny models)
 - [ ] `pyannote_diarize` adds Supervisions with `speaker` labels (mocked in tests)
 - [ ] `speechbrain_langid` adds language classification
 - [ ] `speechbrain_gender` adds gender classification
-- [ ] `@pytest.mark.slow` on all model-downloading tests
-- [ ] CI runs with `-m "not slow"` (no model downloads in CI)
-- [ ] All existing 189 non-slow tests still pass
+- [ ] `@pytest.mark.slow` on CPU-capable model-download tests
+- [ ] `@pytest.mark.gpu` on tests requiring GPU or HF auth (pyannote)
+- [ ] CI runs with `-m "not slow and not gpu"` (no model downloads, no GPU)
+- [ ] `pytest -m "not gpu"` passes locally (including slow CPU model tests)
+- [ ] All existing 189 non-model tests still pass
 - [ ] `git tag plan-05-gpu-operators` at HEAD
 
 ### Operator tally after Plan 5: 22/22 complete
