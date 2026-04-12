@@ -7,12 +7,16 @@ from voxkitchen.pipeline.checkpoint import (
     write_success_marker,
 )
 from voxkitchen.pipeline.context import RunContext
+from voxkitchen.pipeline.executor import CpuPoolExecutor, Executor, GpuPoolExecutor
 from voxkitchen.pipeline.gc import GcPlan, compute_gc_plan, empty_trash, run_gc
 from voxkitchen.pipeline.loader import PipelineLoadError, load_pipeline_spec
 from voxkitchen.pipeline.spec import IngestSpec, PipelineSpec, StageSpec
 
 __all__ = [
+    "CpuPoolExecutor",
+    "Executor",
     "GcPlan",
+    "GpuPoolExecutor",
     "IngestSpec",
     "PipelineLoadError",
     "PipelineSpec",
