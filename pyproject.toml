@@ -43,6 +43,9 @@ audio = ["torch>=2.1", "torchaudio>=2.1"]
 segment = ["webrtcvad>=2.0", "librosa>=0.10"]
 quality = ["simhash>=2.1"]
 pack = ["datasets>=2.16", "webdataset>=0.2", "pyarrow>=14"]
+asr = ["faster-whisper>=1.0"]
+diarize = ["pyannote.audio>=3.1"]
+classify = ["speechbrain>=1.0"]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
@@ -60,6 +63,8 @@ Repository = "https://github.com/voxkitchen/voxkitchen"
 
 [tool.hatch.version]
 source = "vcs"
+fallback-version = "0.0.0.dev0"
+raw-options = { fallback_version = "0.0.0.dev0", tag_regex = "^(?:v)?(?P<version>[0-9]+(?:\\.[0-9]+)+)$" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/voxkitchen"]
@@ -96,7 +101,7 @@ strict = true  # enables warn_return_any, warn_unused_configs, disallow_untyped_
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
@@ -110,3 +115,7 @@ minversion = "7.4"
 addopts = "-ra --strict-markers --strict-config"
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "slow: marks tests that download ML models (deselect with '-m \"not slow\"')",
+    "gpu: marks tests that require GPU or special server config (deselect with '-m \"not gpu\"')",
+]
