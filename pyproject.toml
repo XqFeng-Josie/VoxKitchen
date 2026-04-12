@@ -24,8 +24,8 @@ classifiers = [
     "Topic :: Multimedia :: Sound/Audio",
 ]
 
-# Plan 1 only uses a subset of core deps (schema + CLI).
-# Later plans will add torch, torchaudio, silero-vad, etc. per spec section 9.2.
+# Core deps: schema + CLI + audio processing utilities.
+# Heavy deps (torch) are in the [audio] extras group.
 dependencies = [
     "pydantic>=2.5,<3",
     "pyyaml>=6",
@@ -33,6 +33,9 @@ dependencies = [
     "rich>=13",
     "soundfile>=0.12",
     "tqdm>=4.66",
+    "numpy>=1.24",
+    "ffmpeg-python>=0.2",
+    "pyloudnorm>=0.1",
 ]
 
 [project.optional-dependencies]
@@ -43,6 +46,7 @@ dev = [
     "mypy>=1.8",
     "pre-commit>=3.6",
 ]
+audio = ["torch>=2.1", "torchaudio>=2.1"]
 
 [project.scripts]
 vkit = "voxkitchen.cli.main:app"
@@ -88,7 +92,7 @@ strict = true  # enables warn_return_any, warn_unused_configs, disallow_untyped_
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
