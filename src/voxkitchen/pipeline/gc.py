@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
-from voxkitchen.operators.registry import get_operator
+from voxkitchen.operators.registry import UnknownOperatorError, get_operator
 from voxkitchen.pipeline.checkpoint import stage_dir_name
 from voxkitchen.pipeline.spec import PipelineSpec
 
@@ -43,7 +43,11 @@ def compute_gc_plan(spec: PipelineSpec) -> GcPlan:
     num_stages = len(spec.stages)
 
     for i, stage in enumerate(spec.stages):
-        op_cls = get_operator(stage.op)
+        try:
+            op_cls = get_operator(stage.op)
+        except UnknownOperatorError:
+            # Unknown operators are treated as non-audio-producing for GC planning.
+            continue
         if not op_cls.produces_audio:
             continue
         if i == num_stages - 1:
@@ -56,7 +60,10 @@ def compute_gc_plan(spec: PipelineSpec) -> GcPlan:
         # stages consume *its* derived files, not ours.
         consumer_idx: int | None = None
         for j in range(i + 1, num_stages):
-            downstream_op = get_operator(spec.stages[j].op)
+            try:
+                downstream_op = get_operator(spec.stages[j].op)
+            except UnknownOperatorError:
+                continue
             if downstream_op.reads_audio_bytes:
                 consumer_idx = j
             if downstream_op.produces_audio:

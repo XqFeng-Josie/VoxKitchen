@@ -41,6 +41,7 @@ class PipelineSpec(BaseModel):
     name: str
     description: str = ""
     work_dir: str
+    run_id: str | None = None  # set by loader after ${run_id} expansion
     num_gpus: int = 1
     num_cpu_workers: int | None = None
     gc_mode: Literal["aggressive", "keep"] = "aggressive"

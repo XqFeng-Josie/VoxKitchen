@@ -55,6 +55,8 @@ def load_pipeline_spec(path: Path, run_id: str | None = None) -> PipelineSpec:
     pipeline_name = raw.get("name", "")
 
     interpolated = _interpolate(raw, name=str(pipeline_name), run_id=effective_run_id)
+    # Inject the effective run_id so the runner can retrieve it without re-parsing paths.
+    interpolated["run_id"] = effective_run_id
 
     try:
         return PipelineSpec.model_validate(interpolated)
@@ -85,8 +87,7 @@ def _interpolate_string(s: str, *, name: str, run_id: str) -> str:
             value = os.environ.get(env_var)
             if value is None:
                 raise PipelineLoadError(
-                    f"environment variable {env_var!r} referenced by ${{env:{env_var}}} "
-                    f"is not set"
+                    f"environment variable {env_var!r} referenced by ${{env:{env_var}}} is not set"
                 )
             return value
         raise PipelineLoadError(f"unknown placeholder: ${{{key}}}")
