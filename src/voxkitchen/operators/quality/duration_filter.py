@@ -9,7 +9,7 @@ from voxkitchen.schema.cutset import CutSet
 
 class DurationFilterConfig(OperatorConfig):
     min_duration: float = 0.0
-    max_duration: float = float("inf")
+    max_duration: float | None = None  # None means no upper bound
 
 
 @register_operator
@@ -29,4 +29,6 @@ class DurationFilterOperator(Operator):
         assert isinstance(self.config, DurationFilterConfig)
         lo = self.config.min_duration
         hi = self.config.max_duration
+        if hi is None:
+            return CutSet(c for c in cuts if lo <= c.duration)
         return CutSet(c for c in cuts if lo <= c.duration <= hi)
