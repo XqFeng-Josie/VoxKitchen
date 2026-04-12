@@ -40,7 +40,7 @@ def test_identity_operator_is_cpu_and_noop() -> None:
 
 def test_identity_process_returns_equivalent_cutset() -> None:
     cs = CutSet([_cut("c0"), _cut("c1"), _cut("c2")])
-    op = IdentityOperator(IdentityConfig(), ctx=object())
+    op = IdentityOperator(IdentityConfig(), ctx=object())  # type: ignore[arg-type]
     result = op.process(cs)
     assert [c.id for c in result] == ["c0", "c1", "c2"]
 

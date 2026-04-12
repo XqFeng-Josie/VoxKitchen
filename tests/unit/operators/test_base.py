@@ -39,14 +39,14 @@ def test_operator_config_applies_defaults() -> None:
 def test_operator_instantiates_with_config_and_ctx() -> None:
     cfg = DemoConfig(threshold=0.9)
     # ctx is not used at construction time; pass a sentinel
-    op = DemoOperator(cfg, ctx=object())
+    op = DemoOperator(cfg, ctx=object())  # type: ignore[arg-type]
     assert cast(DemoConfig, op.config).threshold == 0.9
     assert op.ctx is not None
 
 
 def test_operator_setup_and_teardown_are_noops_by_default() -> None:
     cfg = DemoConfig()
-    op = DemoOperator(cfg, ctx=object())
+    op = DemoOperator(cfg, ctx=object())  # type: ignore[arg-type]
     # should not raise
     op.setup()
     op.teardown()
@@ -65,4 +65,4 @@ def test_abstract_process_enforced_by_abc() -> None:
         config_cls = DemoConfig
 
     with pytest.raises(TypeError):
-        IncompleteOperator(DemoConfig(), ctx=object())  # type: ignore[abstract]
+        IncompleteOperator(DemoConfig(), ctx=object())  # type: ignore[abstract, arg-type]
