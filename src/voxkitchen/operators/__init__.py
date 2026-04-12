@@ -10,6 +10,7 @@ from voxkitchen.operators.basic import loudness_normalize as _basic_loudness  # 
 from voxkitchen.operators.basic import resample as _basic_resample  # noqa: F401
 from voxkitchen.operators.noop import identity as _noop_identity  # noqa: F401
 from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
+from voxkitchen.operators.quality import duration_filter as _qual_duration  # noqa: F401
 from voxkitchen.operators.registry import (
     MissingExtrasError,
     UnknownOperatorError,
@@ -17,6 +18,7 @@ from voxkitchen.operators.registry import (
     list_operators,
     register_operator,
 )
+from voxkitchen.operators.segment import fixed_segment as _seg_fixed  # noqa: F401
 
 __all__ = [
     "MissingExtrasError",
