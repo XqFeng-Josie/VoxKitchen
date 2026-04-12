@@ -39,14 +39,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+audio = ["torch>=2.1", "torchaudio>=2.1"]
+segment = ["webrtcvad>=2.0", "librosa>=0.10"]
+quality = ["simhash>=2.1"]
+pack = ["datasets>=2.16", "webdataset>=0.2", "pyarrow>=14"]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
     "ruff>=0.4",
     "mypy>=1.8",
     "pre-commit>=3.6",
+    "scipy>=1.11",
 ]
-audio = ["torch>=2.1", "torchaudio>=2.1"]
 
 [project.scripts]
 vkit = "voxkitchen.cli.main:app"
@@ -92,7 +96,7 @@ strict = true  # enables warn_return_any, warn_unused_configs, disallow_untyped_
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
