@@ -2,6 +2,11 @@
 
 from voxkitchen.operators.annotate import faster_whisper_asr as _annotate_fwasr  # noqa: F401
 from voxkitchen.operators.annotate import whisperx_asr as _annotate_whisperx  # noqa: F401
+
+try:
+    from voxkitchen.operators.annotate import pyannote_diarize as _annotate_diar  # noqa: F401
+except ImportError:
+    pass  # pyannote.audio not installed — operator not available
 from voxkitchen.operators.base import Operator, OperatorConfig
 
 # Register all built-in operators by importing them. Every built-in module
