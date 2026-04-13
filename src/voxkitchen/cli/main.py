@@ -45,9 +45,24 @@ def init(path: Path = typer.Argument(..., help="Target directory.")) -> None:
 @app.command(help="Build an initial CutSet from a data source.")
 def ingest(
     source: str = typer.Option(..., "--source", help="dir | manifest | recipe"),
-    out: str = typer.Option(..., "--out", help="Output cuts.jsonl.gz path"),
+    out: Path = typer.Option(..., "--out", help="Output cuts.jsonl.gz path"),
+    root: str | None = typer.Option(None, "--root", help="Root directory (for dir/recipe)"),
+    path: str | None = typer.Option(None, "--path", help="Manifest path (for source=manifest)"),
+    recipe: str | None = typer.Option(None, "--recipe", help="Recipe name"),
+    recursive: bool = typer.Option(True, "--recursive/--no-recursive"),
+    subsets: str | None = typer.Option(None, "--subsets", help="Comma-separated subset names"),
 ) -> None:
-    _not_implemented(f"ingest --source {source} --out {out}")
+    from voxkitchen.cli.ingest_cmd import ingest_command
+
+    ingest_command(
+        source=source,
+        out=out,
+        root=root,
+        path=path,
+        recipe=recipe,
+        recursive=recursive,
+        subsets=subsets,
+    )
 
 
 @app.command(help="Parse and validate a pipeline YAML (no execution).")

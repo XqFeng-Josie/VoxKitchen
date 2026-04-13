@@ -22,9 +22,11 @@ def test_six_top_level_commands_are_registered() -> None:
         assert cmd in result.output, f"command '{cmd}' missing from --help output"
 
 
-def test_placeholder_commands_exit_with_code_1() -> None:
+def test_init_and_ingest_are_real_commands() -> None:
     runner = CliRunner()
-    # init is representative; all six commands use the same _not_implemented path.
-    result = runner.invoke(app, ["init", "/tmp/any-path"])
-    assert result.exit_code == 1
-    assert "not yet implemented" in result.output
+    # `init --help` should exit 0 (real command, not a placeholder)
+    result = runner.invoke(app, ["init", "--help"])
+    assert result.exit_code == 0
+    # `ingest --help` should exit 0 (real command, not a placeholder)
+    result = runner.invoke(app, ["ingest", "--help"])
+    assert result.exit_code == 0
