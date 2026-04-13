@@ -171,7 +171,10 @@ def run_pipeline(
 
 def _run_ingest(spec: PipelineSpec, ctx: RunContext) -> CutSet:
     source_cls = get_ingest_source(spec.ingest.source)
-    config = source_cls.config_cls.model_validate(spec.ingest.args)
+    args = dict(spec.ingest.args)
+    if spec.ingest.recipe is not None:
+        args.setdefault("recipe", spec.ingest.recipe)
+    config = source_cls.config_cls.model_validate(args)
     source = source_cls(config, ctx)
     return source.run()
 
