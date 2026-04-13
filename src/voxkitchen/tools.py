@@ -266,6 +266,63 @@ def detect_speech(
 
 
 # ---------------------------------------------------------------------------
+# Gender Classification
+# ---------------------------------------------------------------------------
+
+
+def classify_gender(
+    audio_path: str | Path,
+    *,
+    method: str = "f0",
+    f0_threshold: float = 165.0,
+) -> dict[str, str | float | None]:
+    """Classify the speaker's gender from an audio file.
+
+    Args:
+        method: Detection method. Options:
+
+            - ``"f0"`` — Pitch-based (librosa pyin). Fastest, no model, ~80-85%.
+            - ``"speechbrain"`` — SpeechBrain classifier. Needs model download, ~95%.
+            - ``"inaspeechsegmenter"`` — INA's segmenter. Needs tensorflow, ~90-95%.
+
+        f0_threshold: Hz boundary for the F0 method (default 165).
+
+    Returns:
+        Dict with ``"gender"`` ("m"/"f"/"o"), ``"method"``, and method-specific details.
+
+    Example::
+
+        result = classify_gender("speaker.wav")
+        print(result["gender"])  # "m" or "f"
+        print(result["median_f0"])  # 120.5 (if method="f0")
+
+        result = classify_gender("speaker.wav", method="inaspeechsegmenter")
+    """
+    from voxkitchen.operators.annotate.gender_classify import (
+        GenderClassifyConfig,
+        GenderClassifyOperator,
+    )
+
+    path = Path(audio_path)
+    cut = _make_cut(path)
+    ctx = _make_ctx()
+    config = GenderClassifyConfig(method=method, f0_threshold=f0_threshold)
+    op = GenderClassifyOperator(config, ctx)
+    op.setup()
+    try:
+        result = op.process(CutSet([cut]))
+    finally:
+        op.teardown()
+
+    out_cut = next(iter(result))
+    # Find the gender supervision
+    for s in out_cut.supervisions:
+        if s.gender:
+            return {"gender": s.gender, **s.custom}
+    return {"gender": "o", "method": method}
+
+
+# ---------------------------------------------------------------------------
 # Quality Estimation
 # ---------------------------------------------------------------------------
 

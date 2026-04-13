@@ -12,8 +12,9 @@ try:
     from voxkitchen.operators.annotate import pyannote_diarize as _annotate_diar  # noqa: F401
 except ImportError:
     pass  # pyannote.audio not installed
+from voxkitchen.operators.annotate import gender_classify as _annotate_gender_classify  # noqa: F401
+
 try:
-    from voxkitchen.operators.annotate import speechbrain_gender as _annotate_gender  # noqa: F401
     from voxkitchen.operators.annotate import speechbrain_langid as _annotate_langid  # noqa: F401
 except ImportError:
     pass  # speechbrain not installed

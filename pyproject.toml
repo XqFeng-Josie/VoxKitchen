@@ -48,6 +48,7 @@ funasr = ["funasr>=1.0"]
 wenet = ["wenet>=2.0"]
 diarize = ["pyannote.audio>=3.1"]
 classify = ["speechbrain>=1.0"]
+gender = ["inaSpeechSegmenter>=0.2"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 dev = [
@@ -105,7 +106,7 @@ strict = true  # enables warn_return_any, warn_unused_configs, disallow_untyped_
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
