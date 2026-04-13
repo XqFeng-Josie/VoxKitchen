@@ -7,6 +7,10 @@ try:
     from voxkitchen.operators.annotate import pyannote_diarize as _annotate_diar  # noqa: F401
 except ImportError:
     pass  # pyannote.audio not installed — operator not available
+try:
+    from voxkitchen.operators.annotate import speechbrain_langid as _annotate_langid  # noqa: F401
+except ImportError:
+    pass  # speechbrain not installed — operator not available
 from voxkitchen.operators.base import Operator, OperatorConfig
 
 # Register all built-in operators by importing them. Every built-in module
