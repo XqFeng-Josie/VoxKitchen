@@ -82,8 +82,17 @@ def run(
 
 
 @app.command(help="Launch local Gradio panel to explore a CutSet.")
-def viz(path: str = typer.Argument(..., help="CutSet or work_dir path.")) -> None:
-    _not_implemented(f"viz {path}")
+def viz(
+    path: Path = typer.Argument(..., help="CutSet manifest path."),
+    port: int = typer.Option(7860, "--port", help="Port for local server."),
+) -> None:
+    try:
+        from voxkitchen.viz.panel.app import launch
+
+        launch(str(path), port=port)
+    except ImportError:
+        rprint("[red]error:[/red] Gradio not installed. Run: pip install voxkitchen\\[viz-panel]")
+        raise typer.Exit(code=1) from None
 
 
 if __name__ == "__main__":
