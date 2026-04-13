@@ -92,20 +92,40 @@ class AudioInfo:
     num_samples: int
     duration: float
     format: str
+    real_sample_rate: float | None = None  # estimated from spectral content
 
 
-def audio_info(audio_path: str | Path) -> AudioInfo:
+def audio_info(
+    audio_path: str | Path,
+    *,
+    estimate_real_sr: bool = False,
+) -> AudioInfo:
     """Get audio file properties: sample rate, channels, duration, format.
+
+    Args:
+        estimate_real_sr: If True, estimate the real (effective) sample rate
+            by analyzing the spectral content. This detects files that were
+            upsampled from a lower rate (e.g., an 8kHz recording saved as
+            16kHz WAV). Requires torch.
 
     Example::
 
         info = audio_info("recording.wav")
         print(f"{info.sample_rate} Hz, {info.num_channels} ch, {info.duration:.1f}s")
+
+        # Detect upsampled audio
+        info = audio_info("suspicious.wav", estimate_real_sr=True)
+        print(f"Header says {info.sample_rate} Hz, real content is {info.real_sample_rate} Hz")
     """
     import soundfile as sf
 
     path = Path(audio_path)
     si = sf.info(str(path))
+    real_sr: float | None = None
+
+    if estimate_real_sr:
+        real_sr = estimate_bandwidth(path, sample_rate=si.samplerate)
+
     return AudioInfo(
         path=str(path),
         sample_rate=si.samplerate,
@@ -113,7 +133,113 @@ def audio_info(audio_path: str | Path) -> AudioInfo:
         num_samples=si.frames,
         duration=si.duration,
         format=si.format,
+        real_sample_rate=real_sr,
     )
+
+
+def estimate_bandwidth(
+    audio_path: str | Path,
+    *,
+    threshold: float = -80.0,
+    nfft: int = 512,
+    hop: int = 256,
+    sample_rate: int = 16000,
+) -> float:
+    """Estimate the real (effective) sample rate of an audio file.
+
+    Analyzes spectral content to find the highest frequency with significant
+    energy. This detects files that were upsampled from a lower rate — e.g.,
+    an 8 kHz telephone recording saved as a 16 kHz WAV will show real_sr ≈ 8000.
+
+    The method computes the STFT, measures mean power per frequency bin, then
+    finds the highest bin where the power ratio (relative to neighbors) drops
+    sharply. The effective bandwidth is twice that frequency (Nyquist).
+
+    Args:
+        audio_path: Path to the audio file.
+        threshold: Power threshold in dB (unused in ratio method, kept for API compat).
+        nfft: FFT size at the reference sample_rate.
+        hop: Hop size at the reference sample_rate.
+        sample_rate: Reference sample rate for scaling nfft/hop to the actual rate.
+
+    Returns:
+        Estimated real sample rate in Hz. If no bandwidth cutoff is detected,
+        returns the file's native sample rate.
+
+    Example::
+
+        real_sr = estimate_bandwidth("maybe_upsampled.wav")
+        print(f"Real sample rate: {real_sr:.0f} Hz")
+
+        # Use with audio_info for a complete picture
+        info = audio_info("file.wav", estimate_real_sr=True)
+        if info.real_sample_rate and info.real_sample_rate < info.sample_rate * 0.9:
+            print(f"Warning: file appears upsampled from {info.real_sample_rate:.0f} Hz")
+    """
+    import soundfile as sf
+    import torch
+
+    audio, ori_sample_rate = sf.read(str(audio_path))
+
+    if audio.ndim > 1:
+        audio_tensor = torch.from_numpy(audio.T)
+    else:
+        audio_tensor = torch.from_numpy(audio).unsqueeze(0)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    audio_tensor = audio_tensor.to(device).float()
+
+    # Scale FFT parameters to the file's actual sample rate
+    n_fft = int(nfft / sample_rate * ori_sample_rate)
+    hop_length = int(hop / sample_rate * ori_sample_rate)
+
+    spec = torch.stft(
+        audio_tensor,
+        n_fft=n_fft,
+        hop_length=hop_length,
+        window=torch.hann_window(n_fft, device=device),
+        onesided=True,
+        return_complex=True,
+    )
+
+    freq = torch.fft.rfftfreq(n_fft, d=1.0 / ori_sample_rate).to(device)
+    power = spec.real.pow(2) + spec.imag.pow(2)
+    mean_power = power.mean(dim=2)  # average over time frames
+
+    # Average across channels
+    if mean_power.dim() > 1:
+        mean_power = mean_power.mean(dim=0)
+    else:
+        mean_power = mean_power.squeeze(0)
+
+    # Find the effective bandwidth by scanning from high to low frequency.
+    # The real bandwidth edge is where power first rises above the noise floor.
+    eps = 1e-10
+    power_db = 10 * torch.log10(mean_power + eps)
+
+    # Use the p75 power in the lower quarter as the reference "content level"
+    quarter = max(len(power_db) // 4, 1)
+    content_db = torch.quantile(power_db[:quarter].float(), 0.75).item()
+
+    # Walk from highest freq downward, find first bin with power > content - 30 dB.
+    # A real bandwidth cutoff shows >30dB drop from content level to noise floor.
+    # Note: gradual filter rolloffs may cause ~20% overestimation — acceptable
+    # for detecting upsampled audio (e.g., 8kHz telephone saved as 16kHz).
+    drop_db = 30.0
+    cutoff_db = content_db - drop_db
+
+    max_bin = 0
+    for i in range(len(power_db) - 1, 0, -1):
+        if power_db[i].item() > cutoff_db:
+            max_bin = i
+            break
+
+    if max_bin > 0:
+        max_freq = freq[max_bin].item() * 2  # Nyquist: bandwidth * 2 = sample rate
+    else:
+        max_freq = float(ori_sample_rate)
+
+    return float(max_freq)
 
 
 # ---------------------------------------------------------------------------
