@@ -1,14 +1,8 @@
-"""Top-level Typer application exposing the `vkit` CLI.
-
-Plan 1 ships a placeholder skeleton: each subcommand prints a
-"not yet implemented" message. Later plans replace these stubs with
-real behavior.
-"""
+"""Top-level Typer application exposing the `vkit` CLI."""
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import NoReturn
 
 import typer
 from rich import print as rprint
@@ -23,11 +17,6 @@ app = typer.Typer(
 )
 
 app.add_typer(inspect_app, name="inspect")
-
-
-def _not_implemented(command: str) -> NoReturn:
-    rprint(f"[yellow]vkit {command}[/yellow]: not yet implemented in this build.")
-    raise typer.Exit(code=1)
 
 
 @app.command(help="Scaffold a new pipeline project directory.")

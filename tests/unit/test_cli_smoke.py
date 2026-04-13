@@ -30,3 +30,10 @@ def test_init_and_ingest_are_real_commands() -> None:
     # `ingest --help` should exit 0 (real command, not a placeholder)
     result = runner.invoke(app, ["ingest", "--help"])
     assert result.exit_code == 0
+
+
+def test_all_commands_in_help() -> None:
+    runner = CliRunner()
+    result = runner.invoke(app, ["--help"])
+    for cmd in ["init", "ingest", "validate", "run", "inspect", "viz"]:
+        assert cmd in result.output
