@@ -13,12 +13,16 @@ from typing import NoReturn
 import typer
 from rich import print as rprint
 
+from voxkitchen.cli.inspect import inspect_app
+
 app = typer.Typer(
     name="vkit",
     help="VoxKitchen — declarative speech data processing toolkit.",
     no_args_is_help=True,
     add_completion=False,
 )
+
+app.add_typer(inspect_app, name="inspect")
 
 
 def _not_implemented(command: str) -> NoReturn:
@@ -75,17 +79,6 @@ def run(
         dry_run=dry_run,
         keep_intermediates=keep_intermediates,
     )
-
-
-@app.command(help="Inspect cuts, recordings, run progress, trace, or errors.")
-def inspect(
-    subcommand: str = typer.Argument(..., help="cuts | recordings | run | trace | errors"),
-    path: str = typer.Argument(..., help="Target path."),
-) -> None:
-    # TODO: Replace with a Typer sub-app (app.add_typer) when cli/inspect.py lands.
-    # The real signatures differ structurally — e.g. `inspect trace <cut_id> --in <path>`
-    # cannot be represented by the current flat (subcommand, path) placeholder.
-    _not_implemented(f"inspect {subcommand} {path}")
 
 
 @app.command(help="Launch local Gradio panel to explore a CutSet.")
