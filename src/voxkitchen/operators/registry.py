@@ -67,6 +67,9 @@ def get_operator(name: str) -> type[Operator]:
 
     Raises ``UnknownOperatorError`` with fuzzy-match suggestions if not found.
     """
+    from voxkitchen.plugins.discovery import load_plugins
+
+    load_plugins()
     if name in _REGISTRY:
         return _REGISTRY[name]
     suggestions = difflib.get_close_matches(name, list(_REGISTRY.keys()), n=3, cutoff=0.6)
