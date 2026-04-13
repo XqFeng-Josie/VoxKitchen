@@ -153,6 +153,21 @@ def test_runner_stops_at_stage(tmp_path: Path) -> None:
     assert not (work_dir / "02_s2").exists()
 
 
+def test_runner_generates_report_on_success(tmp_path: Path) -> None:
+    input_manifest = tmp_path / "in.jsonl.gz"
+    _write_input_manifest(input_manifest)
+    work_dir = tmp_path / "work"
+    pipeline_yaml = tmp_path / "pipeline.yaml"
+    _write_pipeline_yaml(pipeline_yaml, work_dir, input_manifest, num_stages=2)
+
+    spec = load_pipeline_spec(pipeline_yaml, run_id="run-fixed")
+    run_pipeline(spec)
+
+    assert (work_dir / "report.html").exists()
+    html = (work_dir / "report.html").read_text()
+    assert "VoxKitchen" in html
+
+
 def test_runner_raises_stage_failed_when_operator_missing(tmp_path: Path) -> None:
     input_manifest = tmp_path / "in.jsonl.gz"
     _write_input_manifest(input_manifest)

@@ -164,6 +164,17 @@ def run_pipeline(
             logger.info("stop_at=%s reached, exiting", stop_at)
             return
 
+    # Generate report (non-critical — catch and log errors)
+    try:
+        from voxkitchen.viz.report.generator import generate_report
+
+        generate_report(work_dir, pipeline_name=spec.name, run_id=run_id)
+        logger.info("report generated: %s/report.html", work_dir)
+    except ImportError:
+        logger.debug("viz extras not installed; skipping report generation")
+    except Exception:
+        logger.warning("report generation failed", exc_info=True)
+
     # Success — empty trash (unless keep mode)
     if gc_mode == "aggressive":
         empty_trash(work_dir)
