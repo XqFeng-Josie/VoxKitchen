@@ -33,3 +33,4 @@ src/voxkitchen/_version.py
 work_dir/
 *.jsonl.gz
 !tests/fixtures/**/*.jsonl.gz
+.claude/
