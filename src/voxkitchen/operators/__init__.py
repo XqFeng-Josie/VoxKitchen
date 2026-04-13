@@ -8,9 +8,10 @@ try:
 except ImportError:
     pass  # pyannote.audio not installed — operator not available
 try:
+    from voxkitchen.operators.annotate import speechbrain_gender as _annotate_gender  # noqa: F401
     from voxkitchen.operators.annotate import speechbrain_langid as _annotate_langid  # noqa: F401
 except ImportError:
-    pass  # speechbrain not installed — operator not available
+    pass  # speechbrain not installed — operators not available
 from voxkitchen.operators.base import Operator, OperatorConfig
 
 # Register all built-in operators by importing them. Every built-in module
