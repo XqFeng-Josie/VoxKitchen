@@ -31,8 +31,15 @@ def _not_implemented(command: str) -> NoReturn:
 
 
 @app.command(help="Scaffold a new pipeline project directory.")
-def init(path: str = typer.Argument(..., help="Target directory.")) -> None:
-    _not_implemented(f"init {path}")
+def init(path: Path = typer.Argument(..., help="Target directory.")) -> None:
+    from voxkitchen.cli.init_cmd import init_project
+
+    try:
+        init_project(path)
+    except FileExistsError as exc:
+        rprint(f"[red]error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    rprint(f"[green]created[/green] pipeline project at {path}")
 
 
 @app.command(help="Build an initial CutSet from a data source.")
