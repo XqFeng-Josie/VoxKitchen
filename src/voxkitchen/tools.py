@@ -85,36 +85,108 @@ def _make_ctx() -> RunContext:
 def transcribe(
     audio_path: str | Path,
     *,
+    engine: str = "faster-whisper",
     model: str = "tiny",
     language: str | None = None,
     beam_size: int = 5,
     compute_type: str = "int8",
 ) -> list[SpeechSegment]:
-    """Transcribe an audio file using faster-whisper.
+    """Transcribe an audio file.
 
-    Returns a list of SpeechSegments with text, start, end, and language.
+    Args:
+        engine: ASR engine to use. Options:
+
+            - ``"faster-whisper"`` — OpenAI Whisper via CTranslate2 (default)
+            - ``"sensevoice"`` — Alibaba SenseVoice (multi-language, via FunASR)
+            - ``"paraformer"`` — Alibaba Paraformer (fast, Chinese-optimized, via FunASR)
+            - ``"wenet"`` — WeNet (production-grade Chinese/English)
+
+        model: Model name or path. Defaults depend on engine:
+
+            - faster-whisper: "tiny", "base", "small", "medium", "large-v3"
+            - sensevoice: "iic/SenseVoiceSmall"
+            - paraformer: "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
+            - wenet: "chinese", "english"
+
+        language: Language hint (None = auto-detect where supported).
+        beam_size: Beam size (faster-whisper only).
+        compute_type: "int8" (CPU) or "float16" (GPU). faster-whisper only.
+
+    Returns:
+        List of SpeechSegments with text, start, end, and language.
 
     Example::
 
+        # Whisper (English/multilingual)
         segments = transcribe("interview.wav", model="base", language="en")
-        for seg in segments:
-            print(f"[{seg.start:.1f}-{seg.end:.1f}] {seg.text}")
-    """
-    from voxkitchen.operators.annotate.faster_whisper_asr import (
-        FasterWhisperAsrConfig,
-        FasterWhisperAsrOperator,
-    )
 
+        # SenseVoice (Chinese/multilingual, fast)
+        segments = transcribe("meeting.wav", engine="sensevoice")
+
+        # Paraformer (Chinese, very fast, with punctuation)
+        segments = transcribe("lecture.wav", engine="paraformer")
+
+        # WeNet (Chinese, production-grade)
+        segments = transcribe("call.wav", engine="wenet", model="chinese")
+    """
     path = Path(audio_path)
     cut = _make_cut(path)
     ctx = _make_ctx()
-    config = FasterWhisperAsrConfig(
-        model=model,
-        language=language,
-        beam_size=beam_size,
-        compute_type=compute_type,
-    )
-    op = FasterWhisperAsrOperator(config, ctx)
+
+    if engine == "faster-whisper":
+        from voxkitchen.operators.annotate.faster_whisper_asr import (
+            FasterWhisperAsrConfig,
+            FasterWhisperAsrOperator,
+        )
+
+        config = FasterWhisperAsrConfig(
+            model=model,
+            language=language,
+            beam_size=beam_size,
+            compute_type=compute_type,
+        )
+        op = FasterWhisperAsrOperator(config, ctx)
+
+    elif engine == "sensevoice":
+        from voxkitchen.operators.annotate.sensevoice_asr import (
+            SenseVoiceAsrConfig,
+            SenseVoiceAsrOperator,
+        )
+
+        sv_model = model if model != "tiny" else "iic/SenseVoiceSmall"
+        config = SenseVoiceAsrConfig(model=sv_model, language=language or "auto")  # type: ignore[assignment]
+        op = SenseVoiceAsrOperator(config, ctx)  # type: ignore[assignment]
+
+    elif engine == "paraformer":
+        from voxkitchen.operators.annotate.paraformer_asr import (
+            ParaformerAsrConfig,
+            ParaformerAsrOperator,
+        )
+
+        pf_model = (
+            model
+            if model != "tiny"
+            else "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
+        )
+        config = ParaformerAsrConfig(model=pf_model, language=language or "zh")  # type: ignore[assignment]
+        op = ParaformerAsrOperator(config, ctx)  # type: ignore[assignment]
+
+    elif engine == "wenet":
+        from voxkitchen.operators.annotate.wenet_asr import (
+            WenetAsrConfig,
+            WenetAsrOperator,
+        )
+
+        wn_model = model if model != "tiny" else "chinese"
+        config = WenetAsrConfig(model=wn_model, language=language or "zh")  # type: ignore[assignment]
+        op = WenetAsrOperator(config, ctx)  # type: ignore[assignment]
+
+    else:
+        raise ValueError(
+            f"unknown ASR engine: {engine!r}. "
+            f"Options: 'faster-whisper', 'sensevoice', 'paraformer', 'wenet'"
+        )
+
     op.setup()
     try:
         result = op.process(CutSet([cut]))

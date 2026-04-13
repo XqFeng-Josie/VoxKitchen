@@ -4,14 +4,23 @@ from voxkitchen.operators.annotate import faster_whisper_asr as _annotate_fwasr 
 from voxkitchen.operators.annotate import whisperx_asr as _annotate_whisperx  # noqa: F401
 
 try:
+    from voxkitchen.operators.annotate import paraformer_asr as _annotate_paraformer  # noqa: F401
+    from voxkitchen.operators.annotate import sensevoice_asr as _annotate_sensevoice  # noqa: F401
+except ImportError:
+    pass  # funasr not installed
+try:
     from voxkitchen.operators.annotate import pyannote_diarize as _annotate_diar  # noqa: F401
 except ImportError:
-    pass  # pyannote.audio not installed — operator not available
+    pass  # pyannote.audio not installed
 try:
     from voxkitchen.operators.annotate import speechbrain_gender as _annotate_gender  # noqa: F401
     from voxkitchen.operators.annotate import speechbrain_langid as _annotate_langid  # noqa: F401
 except ImportError:
-    pass  # speechbrain not installed — operators not available
+    pass  # speechbrain not installed
+try:
+    from voxkitchen.operators.annotate import wenet_asr as _annotate_wenet  # noqa: F401
+except ImportError:
+    pass  # wenet not installed
 from voxkitchen.operators.base import Operator, OperatorConfig
 
 # Register all built-in operators by importing them. Every built-in module
