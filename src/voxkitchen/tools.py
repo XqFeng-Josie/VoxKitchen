@@ -78,6 +78,45 @@ def _make_ctx() -> RunContext:
 
 
 # ---------------------------------------------------------------------------
+# Audio Info
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class AudioInfo:
+    """Audio file properties."""
+
+    path: str
+    sample_rate: int
+    num_channels: int
+    num_samples: int
+    duration: float
+    format: str
+
+
+def audio_info(audio_path: str | Path) -> AudioInfo:
+    """Get audio file properties: sample rate, channels, duration, format.
+
+    Example::
+
+        info = audio_info("recording.wav")
+        print(f"{info.sample_rate} Hz, {info.num_channels} ch, {info.duration:.1f}s")
+    """
+    import soundfile as sf
+
+    path = Path(audio_path)
+    si = sf.info(str(path))
+    return AudioInfo(
+        path=str(path),
+        sample_rate=si.samplerate,
+        num_channels=si.channels,
+        num_samples=si.frames,
+        duration=si.duration,
+        format=si.format,
+    )
+
+
+# ---------------------------------------------------------------------------
 # ASR
 # ---------------------------------------------------------------------------
 
