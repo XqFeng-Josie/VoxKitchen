@@ -23,4 +23,11 @@ def get_recipe(name: str) -> Recipe:
     return _RECIPES[name]
 
 
+def _load_builtin_recipes() -> None:
+    """Import built-in recipe modules to trigger their register_recipe() calls."""
+    from voxkitchen.ingest.recipes import aishell, commonvoice, librispeech  # noqa: F401
+
+
+_load_builtin_recipes()
+
 __all__ = ["Recipe", "get_recipe", "register_recipe"]
