@@ -1,0 +1,23 @@
+version: "0.1"
+name: dir-resample-pack
+description: "Resample local audio to 16kHz mono and pack as Kaldi format"
+work_dir: ./work/${name}-${run_id}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+    recursive: true
+
+stages:
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+  - name: normalize
+    op: loudness_normalize
+    args:
+      target_lufs: -23.0
+  - name: pack
+    op: pack_kaldi

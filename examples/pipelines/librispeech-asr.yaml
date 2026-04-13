@@ -1,0 +1,40 @@
+version: "0.1"
+name: librispeech-asr
+description: "Segment LibriSpeech, run ASR, pack to HuggingFace format"
+work_dir: ./work/${name}-${run_id}
+num_gpus: 4
+num_cpu_workers: 16
+
+ingest:
+  source: recipe
+  recipe: librispeech
+  args:
+    root: /data/librispeech
+    subsets: [train-clean-100, dev-clean]
+
+stages:
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+  - name: vad
+    op: silero_vad
+    args:
+      threshold: 0.5
+  - name: asr
+    op: faster_whisper_asr
+    args:
+      model: large-v3
+      language: en
+      compute_type: float16
+  - name: snr
+    op: snr_estimate
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions:
+        - "metrics.snr > 10"
+        - "duration > 0.5"
+  - name: pack
+    op: pack_huggingface

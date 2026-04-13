@@ -1,0 +1,12 @@
+version: "0.1"
+name: minimal
+work_dir: ./work/${name}-${run_id}
+
+ingest:
+  source: manifest
+  args:
+    path: ./input.jsonl.gz
+
+stages:
+  - name: pass
+    op: identity
