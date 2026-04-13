@@ -14,9 +14,9 @@ def test_run_id_is_nonempty_string() -> None:
 
 
 def test_run_id_has_prefix_and_sortable_timestamp() -> None:
-    """Format: run-YYYYMMDDTHHMMSS-<4-hex-chars>"""
+    """Format: run-YYYYMMDDTHHMMSS-<8-hex-chars>"""
     rid = generate_run_id()
-    assert re.fullmatch(r"run-\d{8}T\d{6}-[0-9a-f]{4}", rid) is not None
+    assert re.fullmatch(r"run-\d{8}T\d{6}-[0-9a-f]{8}", rid) is not None
 
 
 def test_run_ids_are_unique_across_calls() -> None:

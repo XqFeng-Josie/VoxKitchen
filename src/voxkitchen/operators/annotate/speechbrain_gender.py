@@ -71,7 +71,7 @@ class SpeechBrainGenderOperator(Operator):
 
         out = []
         for cut in cuts:
-            audio, sr = load_audio_for_cut(cut)
+            audio, _sr = load_audio_for_cut(cut)
             if audio.ndim == 2:
                 audio = audio[:, 0]
             tensor = torch.from_numpy(audio)
