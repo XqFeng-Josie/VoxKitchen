@@ -64,4 +64,4 @@ class UtmosScoreOperator(Operator):
         result = self._utmos.run(audio, sr=_UTMOS_SR)
         score = result["mos"] if isinstance(result, dict) else float(result)
 
-        return cut.model_copy(update={"metrics": {**cut.metrics, "utmos": round(score, 3)}})
+        return cut.model_copy(update={"metrics": {**cut.metrics, "utmos": float(round(score, 3))}})

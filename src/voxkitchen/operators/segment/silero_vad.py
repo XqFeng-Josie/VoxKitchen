@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import ClassVar
 
 import numpy as np
@@ -29,7 +30,9 @@ class SileroVadOperator(Operator):
     """Detect speech regions using Silero VAD and emit one child Cut per region.
 
     Loads the Silero VAD model via torch.hub (cached after first download).
-    Detects CUDA in setup() and falls back to CPU transparently.
+    Works on both GPU and CPU. Requires network on first run to download
+    the model (~2 MB). Use ``webrtc_vad`` or ``silence_split`` if torch
+    is not available.
     """
 
     name = "silero_vad"
@@ -40,13 +43,50 @@ class SileroVadOperator(Operator):
     required_extras: ClassVar[list[str]] = ["segment"]
 
     def setup(self) -> None:
+        import sys
+
         import torch
 
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self._model, self._utils = torch.hub.load(  # type: ignore[no-untyped-call]
-            "snakers4/silero-vad", "silero_vad", trust_repo=True
-        )
+
+        # Load silero-vad: prefer local cache (avoids network hangs),
+        # inject the repo into sys.path and import directly.
+        local_repo = self._find_cached_repo("snakers4_silero-vad_master")
+        if local_repo:
+            repo_src = local_repo / "src"
+            for p in [str(local_repo), str(repo_src)]:
+                if p not in sys.path:
+                    sys.path.insert(0, p)
+            from hubconf import silero_vad  # type: ignore[import-not-found]
+
+            self._model, self._utils = silero_vad(onnx=False)
+        else:
+            self._model, self._utils = torch.hub.load(  # type: ignore[no-untyped-call]
+                "snakers4/silero-vad", "silero_vad", trust_repo=True
+            )
         self._model.to(self._device)
+
+    @staticmethod
+    def _find_cached_repo(repo_dir: str) -> Path | None:
+        """Search common torch hub cache locations for a cached repo."""
+        import os
+
+        import torch
+
+        hub_dir = Path(torch.hub.get_dir())
+        candidates = [
+            hub_dir / repo_dir,
+            hub_dir.parent / repo_dir,
+            Path.home() / ".cache" / "torch" / "hub" / repo_dir,
+        ]
+        torch_home = os.environ.get("TORCH_HOME")
+        if torch_home:
+            candidates.append(Path(torch_home) / "hub" / repo_dir)
+
+        for p in candidates:
+            if p.exists() and (p / "hubconf.py").exists():
+                return p
+        return None
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, SileroVadConfig)
@@ -66,16 +106,21 @@ class SileroVadOperator(Operator):
             audio = audio[:, 0]
 
         # Resample to 16kHz if needed (Silero requires 16kHz)
+        audio_tensor = torch.from_numpy(audio)
         if sr != _SILERO_SR:
-            from math import gcd
+            try:
+                import torchaudio
 
-            from scipy.signal import resample_poly
+                audio_tensor = torchaudio.functional.resample(
+                    audio_tensor.unsqueeze(0), sr, _SILERO_SR
+                ).squeeze(0)
+            except ImportError:
+                from scipy.signal import resample as scipy_resample
 
-            g = gcd(sr, _SILERO_SR)
-            audio = resample_poly(audio, _SILERO_SR // g, sr // g).astype(np.float32)
+                new_len = int(len(audio) * _SILERO_SR / sr)
+                audio_tensor = torch.from_numpy(scipy_resample(audio, new_len).astype(np.float32))
 
-        # Convert to torch tensor and move to device
-        audio_tensor = torch.from_numpy(audio).to(self._device)
+        audio_tensor = audio_tensor.to(self._device)
 
         # get_speech_timestamps is index 0 in the utils tuple
         get_speech_timestamps = self._utils[0]

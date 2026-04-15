@@ -63,12 +63,19 @@ class WebrtcVadOperator(Operator):
 
         # Resample to a webrtcvad-supported rate if needed
         if sr not in _WEBRTCVAD_RATES:
-            from math import gcd
+            try:
+                import torch
+                import torchaudio
 
-            from scipy.signal import resample_poly
+                t = torchaudio.functional.resample(
+                    torch.from_numpy(audio).unsqueeze(0), sr, _TARGET_SR
+                ).squeeze(0)
+                audio = t.numpy()
+            except ImportError:
+                from scipy.signal import resample as scipy_resample
 
-            g = gcd(sr, _TARGET_SR)
-            audio = resample_poly(audio, _TARGET_SR // g, sr // g).astype(np.float32)
+                new_len = int(len(audio) * _TARGET_SR / sr)
+                audio = scipy_resample(audio, new_len).astype(np.float32)
             sr = _TARGET_SR
 
         # Convert float32 → int16 PCM

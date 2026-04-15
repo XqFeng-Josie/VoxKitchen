@@ -59,6 +59,9 @@ class DnsmosScoreOperator(Operator):
         if audio.ndim == 2:
             audio = audio[:, 0]
 
+        # Clamp to [-1, 1] — wav files decoded as int16 may exceed this range
+        audio = np.clip(audio, -1.0, 1.0).astype(np.float32)
+
         # DNSMOS expects 16kHz
         if sr != _DNSMOS_SR:
             from scipy.signal import resample as scipy_resample
@@ -72,10 +75,10 @@ class DnsmosScoreOperator(Operator):
             update={
                 "metrics": {
                     **cut.metrics,
-                    "dnsmos_ovrl": round(result["ovrl_mos"], 3),
-                    "dnsmos_sig": round(result["sig_mos"], 3),
-                    "dnsmos_bak": round(result["bak_mos"], 3),
-                    "dnsmos_p808": round(result["p808_mos"], 3),
+                    "dnsmos_ovrl": float(round(result["ovrl_mos"], 3)),
+                    "dnsmos_sig": float(round(result["sig_mos"], 3)),
+                    "dnsmos_bak": float(round(result["bak_mos"], 3)),
+                    "dnsmos_p808": float(round(result["p808_mos"], 3)),
                 }
             }
         )

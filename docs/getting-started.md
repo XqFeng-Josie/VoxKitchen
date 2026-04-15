@@ -3,13 +3,17 @@
 ## Installation
 
 ```bash
-pip install voxkitchen
-```
+# Create virtual environment
+conda create -n voxkitchen python=3.11 -y
+conda activate voxkitchen
 
-For GPU-accelerated operators (ASR, VAD):
-```bash
-pip install voxkitchen[asr]       # adds faster-whisper
-pip install voxkitchen[segment]   # adds webrtcvad, librosa
+# Clone and install
+git clone https://github.com/voxkitchen/voxkitchen.git
+cd voxkitchen
+pip install -e .
+
+# Install extras for GPU server (ASR, quality analysis, etc.)
+pip install -e ".[asr,whisper,pitch,dnsmos,segment]"
 ```
 
 ## Your first pipeline

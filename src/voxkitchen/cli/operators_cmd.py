@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 import typer
@@ -55,9 +56,17 @@ def show(name: str = typer.Argument(..., help="Operator name.")) -> None:
         console.print(f"  install: pip install voxkitchen[{extras}]")
     console.print()
 
-    # Docstring
+    # Docstring — highlight warnings
     if op_cls.__doc__:
-        console.print(op_cls.__doc__.strip())
+        doc = op_cls.__doc__.strip()
+        # Extract .. warning:: blocks and render in yellow
+        warning_match = re.search(r"\.\. warning::\s*\n\s+(.+?)(?:\n\n|\Z)", doc, re.DOTALL)
+        if warning_match:
+            doc = doc[: warning_match.start()].rstrip()
+            console.print(doc)
+            console.print(f"\n  [yellow]Warning: {warning_match.group(1).strip()}[/yellow]")
+        else:
+            console.print(doc)
         console.print()
 
     # Config fields

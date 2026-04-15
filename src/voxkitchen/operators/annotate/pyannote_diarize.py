@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
@@ -12,11 +13,26 @@ from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
 
 
+def _read_env(key: str, path: str = ".env") -> str | None:
+    """Read a single key from a .env file. Returns None if not found."""
+    env_file = Path(path)
+    if not env_file.exists():
+        return None
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        if k.strip() == key:
+            return v.strip().strip("\"'")
+    return None
+
+
 class PyannoteDiarizeConfig(OperatorConfig):
     model: str = "pyannote/speaker-diarization-3.1"
     min_speakers: int | None = None
     max_speakers: int | None = None
-    hf_token: str | None = None  # or reads from HF_TOKEN env var
+    hf_token: str | None = None  # reads from .env or HF_TOKEN env var
 
 
 @register_operator
@@ -40,8 +56,22 @@ class PyannoteDiarizeOperator(Operator):
 
         assert isinstance(self.config, PyannoteDiarizeConfig)
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        token = self.config.hf_token or os.environ.get("HF_TOKEN")
-        self._pipeline = Pipeline.from_pretrained(self.config.model, use_auth_token=token)
+
+        # Resolve HF token: config arg > env var > .env file
+        token = self.config.hf_token or os.environ.get("HF_TOKEN") or _read_env("HF_TOKEN")
+        if token:
+            os.environ["HF_TOKEN"] = token
+
+        # PyTorch 2.6+ defaults weights_only=True which breaks pyannote 3.x.
+        # Temporarily allow unsafe loading for pyannote model weights.
+        _original_load = torch.load
+        torch.load = lambda *a, **kw: _original_load(  # type: ignore[assignment]
+            *a, **{**kw, "weights_only": False}
+        )
+        try:
+            self._pipeline = Pipeline.from_pretrained(self.config.model)
+        finally:
+            torch.load = _original_load  # type: ignore[method-assign]
         self._pipeline.to(self._device)
 
     def process(self, cuts: CutSet) -> CutSet:

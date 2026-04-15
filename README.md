@@ -4,16 +4,88 @@ Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`,
 
 > **Status:** Pre-alpha. API is unstable.
 
+## Requirements
+
+- Python 3.10+
+- ffmpeg (for audio format conversion)
+- GPU is **optional** — most operators run on CPU. GPU accelerates ASR, VAD, and diarization.
+
+<details>
+<summary>GPU setup (only if you have NVIDIA GPU)</summary>
+
+Install PyTorch matching your CUDA driver version:
+
+```bash
+nvidia-smi | head -3                # check CUDA version
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124  # example for CUDA 12.4
+```
+
+> Do NOT use bare `pip install torch` — it may install a CUDA build incompatible with your driver.
+
+</details>
+
 ## Install
 
 ```bash
-pip install voxkitchen
+# Create virtual environment
+conda create -n voxkitchen python=3.11 -y
+conda activate voxkitchen
 
-# For GPU operators (ASR, VAD):
-pip install voxkitchen[asr]       # faster-whisper
-pip install voxkitchen[segment]   # webrtcvad, librosa
-pip install voxkitchen[viz-panel] # Gradio interactive panel
+# Install core (ffmpeg_convert, resample, snr_estimate, etc.)
+pip install -e .
+
+# Install extras as needed:
+#
+#   ASR engines
+pip install -e ".[asr]"           # faster-whisper (CTranslate2, GPU recommended)
+pip install -e ".[whisper]"       # OpenAI whisper (pure PyTorch, macOS-safe)
+pip install -e ".[funasr]"        # Paraformer, SenseVoice (FunASR)
+pip install -e ".[wenet]"         # WeNet ASR
+#
+#   Audio analysis
+pip install -e ".[audio]"         # torch + torchaudio
+pip install -e ".[segment]"       # webrtcvad, librosa, torchaudio (VAD, silence split)
+pip install -e ".[pitch]"         # PyWorld pitch analysis
+pip install -e ".[dnsmos]"        # DNSMOS P.835/P.808 + UTMOS quality scores
+pip install -e ".[quality]"       # simhash (audio deduplication)
+#
+#   Speaker & language
+pip install -e ".[diarize]"       # pyannote speaker diarization (needs HF_TOKEN, see below)
+pip install -e ".[classify]"      # SpeechBrain language ID
+pip install -e ".[gender]"        # inaSpeechSegmenter gender detection
+#
+#   Output & visualization
+pip install -e ".[pack]"          # HuggingFace datasets, WebDataset, Parquet
+pip install -e ".[viz]"           # HTML report (Jinja2 + Plotly)
+pip install -e ".[viz-panel]"     # Gradio interactive panel
+
+# Or pick what you need
+pip install -e ".[asr,whisper,pitch,dnsmos,segment,diarize]"
+
+# Or install everything at once
+pip install -e ".[all]"
 ```
+
+### Configuration
+
+Some operators require API tokens. Copy `.env.example` to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Required by | How to get |
+|----------|-------------|------------|
+| `HF_TOKEN` | `pyannote_diarize` | [HuggingFace](https://huggingface.co/settings/tokens) — also accept the [pyannote model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) |
+
+### Troubleshooting
+
+| Symptom | Solution |
+|---------|----------|
+| `torch.cuda.is_available()` returns False | PyTorch CUDA mismatch — install matching version: `pip install torch --index-url .../cuXXX` |
+| `faster_whisper_asr` deadlocks on macOS | Use `whisper_openai_asr` instead (pure PyTorch, no CTranslate2) |
+| `pyannote_diarize` returns 403 | Accept the [model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) on HuggingFace |
+| `silero_vad` hangs on first run | Network issue — pre-download: `python -c "import torch; torch.hub.load('snakers4/silero-vad', 'silero_vad')"` |
 
 ## 30-second quickstart
 

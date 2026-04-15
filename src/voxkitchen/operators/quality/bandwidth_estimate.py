@@ -78,8 +78,8 @@ class BandwidthEstimateOperator(Operator):
         cutoff = (torch.log(ratios + 1e-12) > 12).to(torch.int).argmax()
 
         if cutoff > 0:
-            bw_khz = round(freq[cutoff].item() * 2 / 1000, 2)
+            bw_khz = float(round(freq[cutoff].item() * 2 / 1000, 2))
         else:
-            bw_khz = round(sr / 1000, 2)
+            bw_khz = float(round(sr / 1000, 2))
 
         return cut.model_copy(update={"metrics": {**cut.metrics, "bandwidth_khz": bw_khz}})

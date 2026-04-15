@@ -57,9 +57,20 @@ class StageFailedError(RuntimeError):
         super().__init__(f"stage {stage_name!r} failed: {cause}")
 
 
+def _gpu_available() -> bool:
+    try:
+        import torch
+
+        return torch.cuda.is_available()
+    except ImportError:
+        return False
+
+
 def _make_executor(device: str, ctx: RunContext) -> Executor:
-    if device == "gpu":
-        return GpuPoolExecutor(num_gpus=max(1, ctx.num_gpus))
+    if device == "gpu" and ctx.num_gpus > 0 and _gpu_available():
+        return GpuPoolExecutor(num_gpus=ctx.num_gpus)
+    if device == "gpu" and not _gpu_available():
+        logger.info("GPU not available, falling back to CPU executor")
     return CpuPoolExecutor(num_workers=max(1, ctx.num_cpu_workers))
 
 

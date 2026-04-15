@@ -33,28 +33,32 @@ dependencies = [
     "rich>=13",
     "soundfile>=0.12",
     "tqdm>=4.66",
-    "numpy>=1.24",
+    "numpy>=1.24,<2.0",
     "ffmpeg-python>=0.2",
     "pyloudnorm>=0.1",
 ]
 
 [project.optional-dependencies]
 audio = ["torch>=2.1", "torchaudio>=2.1"]
-segment = ["webrtcvad>=2.0", "librosa>=0.10"]
+segment = ["webrtcvad>=2.0", "librosa>=0.10", "torchaudio>=2.1"]
 quality = ["simhash>=2.1"]
 pack = ["datasets>=2.16", "webdataset>=0.2", "pyarrow>=14"]
 asr = ["faster-whisper>=1.0"]
 whisper = ["openai-whisper>=20231117"]
 pitch = ["pyworld>=0.3"]
-dnsmos = ["speechmos>=0.2"]
+dnsmos = ["speechmos>=0.0.1"]
 funasr = ["funasr>=1.0"]
 wenet = ["wenet>=2.0"]
-diarize = ["pyannote.audio>=3.1"]
+diarize = ["pyannote.audio>=3.1,<4.0", "huggingface_hub<0.25"]  # pyannote 4.0 requires torch>=2.8
 classify = ["speechbrain>=1.0"]
 gender = ["inaSpeechSegmenter>=0.2"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
+all = [
+    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,viz,viz-panel]",
+]
 dev = [
+    "voxkitchen[all]",
     "pytest>=7.4",
     "pytest-cov>=4.1",
     "ruff>=0.4",

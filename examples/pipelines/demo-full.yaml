@@ -1,6 +1,6 @@
-# Full demo pipeline: opus → wav → VAD → extract → quality → ASR → langid → gender → filter → pack
+# Full demo pipeline: opus → wav → VAD → extract → diarize → quality → ASR → langid → gender → filter → pack
 # Usage: vkit run examples/pipelines/demo-full.yaml
-# Requires: pip install voxkitchen[asr,whisper,pitch,dnsmos]
+# Requires: pip install voxkitchen[asr,whisper,pitch,dnsmos,diarize]
 
 version: "0.1"
 name: demo-full
@@ -34,41 +34,47 @@ stages:
     args:
       target_format: wav
 
-  # 4-7. Quality metrics (all write to cut.metrics, auto-exported by pack_jsonl)
+  # 4. Speaker diarization — assign speaker labels to each segment
+  - name: diarize
+    op: pyannote_diarize
+    args:
+      model: pyannote/speaker-diarization-3.1
+
+  # 5-8. Quality metrics (all write to cut.metrics, auto-exported by pack_jsonl)
   - name: snr
     op: snr_estimate
 
   - name: pitch
-    op: pitch_stats               # PyWorld F0: pitch_mean, pitch_std
+    op: pitch_stats
 
   - name: clipping
-    op: clipping_detect           # clipping_ratio (0 = clean)
+    op: clipping_detect
 
   - name: dnsmos
-    op: dnsmos_score              # dnsmos_ovrl/sig/bak/p808 (1-5 scale)
+    op: dnsmos_score
 
-  # 8. ASR transcription (use whisper_openai_asr on macOS, faster_whisper_asr on Linux GPU)
+  # 9. ASR transcription (use whisper_openai_asr on macOS, faster_whisper_asr on Linux GPU)
   - name: asr
     op: whisper_openai_asr
     args:
       model: tiny
       fp16: false                 # set true on GPU
 
-  # 9. Language detection
+  # 10. Language detection
   - name: langid
     op: whisper_langid
     args:
       model: tiny
-      backend: openai             # "openai" for macOS, "auto" for GPU
+      backend: openai
 
-  # 10. Gender classification
+  # 11. Gender classification
   - name: gender
     op: gender_classify
     args:
       method: f0
       f0_threshold: 165.0
 
-  # 11. Filter out bad segments
+  # 12. Filter out bad segments
   - name: filter
     op: quality_score_filter
     args:
@@ -78,6 +84,6 @@ stages:
         - "metrics.snr > 5"
         - "metrics.clipping_ratio < 0.01"
 
-  # 12. Write flat JSONL manifest (all metrics auto-exported)
+  # 13. Write flat JSONL manifest (all metrics auto-exported)
   - name: pack
     op: pack_jsonl

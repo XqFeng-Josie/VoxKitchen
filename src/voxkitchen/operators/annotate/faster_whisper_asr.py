@@ -23,8 +23,12 @@ class FasterWhisperAsrConfig(OperatorConfig):
 class FasterWhisperAsrOperator(Operator):
     """Transcribe audio using faster-whisper and add Supervisions with text + language.
 
-    Detects CUDA in setup() and falls back to CPU transparently. On CPU the
+    Uses CTranslate2 for inference. Has GPU and CPU, but on CPU the
     compute_type is coerced to "int8" because float16 is not supported.
+
+    .. warning::
+       CTranslate2 may deadlock on macOS ARM64. Use ``whisper_openai_asr``
+       on macOS instead.
     """
 
     name = "faster_whisper_asr"
