@@ -71,7 +71,7 @@ def _flatten_cut(cut: Cut) -> dict[str, object]:
     origin_start = custom.get("origin_start", round(cut.start, 3))
     origin_end = custom.get("origin_end", round(cut.start + cut.duration, 3))
 
-    return {
+    row: dict[str, object] = {
         "id": _make_id(cut),
         "origin_id": _derive_origin_id(cut),
         "start": origin_start,
@@ -79,11 +79,14 @@ def _flatten_cut(cut: Cut) -> dict[str, object]:
         "duration": round(cut.duration, 3),
         "sample_rate": sample_rate,
         "text": text,
-        "snr": round(cut.metrics["snr"], 2) if "snr" in cut.metrics else None,
         "gender": gender,
         "speaker": speaker,
         "language": language,
     }
+    # Auto-export all metrics (snr, dnsmos_ovrl, pitch_mean, etc.)
+    for k, v in cut.metrics.items():
+        row[k] = round(v, 3) if isinstance(v, float) else v
+    return row
 
 
 @register_operator
