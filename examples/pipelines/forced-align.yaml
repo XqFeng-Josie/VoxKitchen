@@ -1,0 +1,36 @@
+# Forced alignment: ASR first, then align words to audio.
+# Usage: vkit run examples/pipelines/forced-align.yaml
+# Requires: pip install voxkitchen[asr,align]
+
+version: "0.1"
+name: forced-align
+description: "Word-level forced alignment via CTC"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  # ASR first — forced alignment needs text to align against.
+  - name: asr
+    op: faster_whisper_asr
+    args:
+      model: base
+      language: en
+
+  # Align ASR text to audio at word level.
+  # Results stored in cut.custom["word_alignments"] as:
+  #   [{"text": "hello", "start": 0.1, "end": 0.4}, ...]
+  - name: align
+    op: forced_align
+    args:
+      language: eng           # ISO 639-3 code
+
+  - name: pack
+    op: pack_jsonl

@@ -1,0 +1,27 @@
+# Denoise speech audio using DeepFilterNet.
+# Usage: vkit run examples/pipelines/speech-enhance.yaml
+# Requires: pip install voxkitchen[enhance]
+
+version: "0.1"
+name: speech-enhance
+description: "Remove background noise with DeepFilterNet"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+
+stages:
+  # DeepFilterNet operates at 48kHz internally; the operator
+  # handles resampling to/from 48kHz automatically.
+  - name: enhance
+    op: speech_enhance
+    args:
+      aggressiveness: 0.5    # 0.0 (light) to 1.0 (aggressive)
+
+  - name: snr
+    op: snr_estimate
+
+  - name: pack
+    op: pack_jsonl

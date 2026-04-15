@@ -1,0 +1,34 @@
+# Extract speaker embeddings from speech segments.
+# Usage: vkit run examples/pipelines/speaker-embed.yaml
+# Requires: pip install voxkitchen[audio,speaker]
+
+version: "0.1"
+name: speaker-embed
+description: "Extract speaker embeddings using WeSpeaker"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  - name: vad
+    op: silero_vad
+    args: { threshold: 0.5 }
+
+  # Extract 512-d speaker embedding per segment.
+  # Stored in cut.custom["speaker_embedding"] as list[float].
+  # method: "wespeaker" (default) or "speechbrain"
+  - name: embed
+    op: speaker_embed
+    args:
+      method: wespeaker
+      wespeaker_model: english
+
+  - name: pack
+    op: pack_jsonl

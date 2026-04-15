@@ -1,0 +1,29 @@
+# Add room reverb to speech using RIR files.
+# Usage: vkit run examples/pipelines/reverb-augment.yaml
+# Put clean audio in ./data/clean/, RIR wav files in ./data/rir/
+
+version: "0.1"
+name: reverb-augment
+description: "Convolve speech with Room Impulse Responses"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data/clean
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  # Convolve with a random RIR from the directory.
+  # Output is peak-normalized to prevent clipping.
+  - name: reverb
+    op: reverb_augment
+    args:
+      rir_dir: ./data/rir
+      normalize: true
+
+  - name: pack
+    op: pack_jsonl

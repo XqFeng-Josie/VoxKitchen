@@ -93,6 +93,18 @@ except ImportError:
     pass  # speechbrain not installed
 
 from voxkitchen.operators.annotate import gender_classify as _annotate_gender  # noqa: F401
+try:
+    from voxkitchen.operators.annotate import speaker_embed as _annotate_spkemb  # noqa: F401
+except ImportError:
+    pass  # wespeaker / speechbrain not installed
+try:
+    from voxkitchen.operators.annotate import speech_enhance as _annotate_enhance  # noqa: F401
+except ImportError:
+    pass  # deepfilternet not installed
+try:
+    from voxkitchen.operators.annotate import forced_align as _annotate_align  # noqa: F401
+except ImportError:
+    pass  # ctc-forced-aligner not installed
 
 # --- augment (optional: torch/torchaudio for speed_perturb) ---
 try:
@@ -100,6 +112,10 @@ try:
 except ImportError:
     pass  # torch not installed
 from voxkitchen.operators.augment import noise_augment as _aug_noise  # noqa: F401
+try:
+    from voxkitchen.operators.augment import reverb_augment as _aug_reverb  # noqa: F401
+except ImportError:
+    pass  # scipy not installed
 from voxkitchen.operators.augment import volume_perturb as _aug_volume  # noqa: F401
 
 # --- pack (optional: datasets, webdataset, pyarrow) ---

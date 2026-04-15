@@ -52,10 +52,13 @@ wenet = ["wenet>=2.0"]
 diarize = ["pyannote.audio>=3.1,<4.0", "huggingface_hub<0.25"]  # pyannote 4.0 requires torch>=2.8
 classify = ["speechbrain>=1.0"]
 gender = ["inaSpeechSegmenter>=0.2"]
+speaker = ["wespeaker>=1.0"]
+enhance = ["deepfilternet>=0.5"]
+align = ["ctc-forced-aligner>=0.1"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 all = [
-    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,viz,viz-panel]",
+    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,speaker,enhance,viz,viz-panel]",
 ]
 dev = [
     "voxkitchen[all]",
