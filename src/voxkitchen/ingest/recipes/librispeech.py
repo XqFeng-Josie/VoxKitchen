@@ -20,12 +20,24 @@ if TYPE_CHECKING:
 
 class LibriSpeechRecipe(Recipe):
     name = "librispeech"
+    download_urls = {
+        "dev-clean": ["https://www.openslr.org/resources/12/dev-clean.tar.gz"],
+        "dev-other": ["https://www.openslr.org/resources/12/dev-other.tar.gz"],
+        "test-clean": ["https://www.openslr.org/resources/12/test-clean.tar.gz"],
+        "test-other": ["https://www.openslr.org/resources/12/test-other.tar.gz"],
+        "train-clean-100": ["https://www.openslr.org/resources/12/train-clean-100.tar.gz"],
+        "train-clean-360": ["https://www.openslr.org/resources/12/train-clean-360.tar.gz"],
+        "train-other-500": ["https://www.openslr.org/resources/12/train-other-500.tar.gz"],
+    }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
-        target_subsets = subsets or self._discover_subsets(root)
+        # openslr tarballs extract to root/LibriSpeech/<subset>/...
+        ls_dir = root / "LibriSpeech"
+        effective_root = ls_dir if ls_dir.is_dir() else root
+        target_subsets = subsets or self._discover_subsets(effective_root)
         cuts: list[Cut] = []
         for subset_name in target_subsets:
-            subset_dir = root / subset_name
+            subset_dir = effective_root / subset_name
             if not subset_dir.is_dir():
                 raise FileNotFoundError(f"subset not found: {subset_dir}")
             for trans_file in sorted(subset_dir.rglob("*.trans.txt")):

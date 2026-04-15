@@ -22,6 +22,39 @@ _DEFAULT_SUBSETS = ["train", "dev", "test"]
 
 class AishellRecipe(Recipe):
     name = "aishell"
+    download_urls = {
+        "data_aishell": [
+            "https://www.openslr.org/resources/33/data_aishell.tgz",
+        ],
+        "resource_aishell": [
+            "https://www.openslr.org/resources/33/resource_aishell.tgz",
+        ],
+    }
+
+    def download(self, root: Path, subsets: list[str] | None) -> None:
+        """Download AISHELL-1 and handle nested tgz extraction.
+
+        data_aishell.tgz contains data_aishell/wav/wav.tgz which needs
+        a second extraction step.
+        """
+        import tarfile
+
+        from voxkitchen.utils.download import download_file, extract_tar
+
+        # Always download both parts
+        for subset, urls in self.download_urls.items():
+            for url in urls:
+                filename = url.rsplit("/", 1)[-1]
+                archive_path = root / filename
+                download_file(url, archive_path, desc=f"aishell/{subset}")
+                extract_tar(archive_path, root)
+
+        # Handle nested wav.tgz inside data_aishell/wav/
+        nested_tgz = root / "data_aishell" / "wav" / "wav.tgz"
+        if nested_tgz.exists():
+            wav_dir = root / "data_aishell" / "wav"
+            with tarfile.open(nested_tgz, "r:gz") as tar:
+                tar.extractall(path=wav_dir, filter="data")
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         transcripts = self._parse_transcript(root)

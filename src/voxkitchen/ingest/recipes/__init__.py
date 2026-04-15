@@ -27,6 +27,11 @@ def _load_builtin_recipes() -> None:
     """Import built-in recipe modules to trigger their register_recipe() calls."""
     from voxkitchen.ingest.recipes import aishell, commonvoice, librispeech  # noqa: F401
 
+    try:
+        from voxkitchen.ingest.recipes import fleurs  # noqa: F401
+    except ImportError:
+        pass  # datasets library not installed
+
 
 _load_builtin_recipes()
 

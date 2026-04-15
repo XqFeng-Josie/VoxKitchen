@@ -94,6 +94,21 @@ def run(
     )
 
 
+@app.command(help="Download a dataset.")
+def download(
+    recipe: str = typer.Argument(..., help="Recipe name (e.g., librispeech, aishell, fleurs)"),
+    root: Path = typer.Option(..., "--root", help="Directory to download into"),
+    subsets: str | None = typer.Option(None, "--subsets", help="Comma-separated subset names"),
+) -> None:
+    from voxkitchen.cli.download_cmd import download_command
+
+    try:
+        download_command(recipe_name=recipe, root=root, subsets=subsets)
+    except Exception as exc:
+        rprint(f"[red]error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+
 @app.command(help="Launch local Gradio panel to explore a CutSet.")
 def viz(
     path: Path = typer.Argument(..., help="CutSet manifest path."),

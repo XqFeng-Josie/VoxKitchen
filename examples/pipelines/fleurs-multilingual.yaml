@@ -1,0 +1,45 @@
+# FLEURS multilingual dataset pipeline.
+#
+# Download first:
+#   vkit download fleurs --root /data/fleurs --subsets en_us,zh_cn
+#
+# Then run:
+#   vkit run examples/pipelines/fleurs-multilingual.yaml
+#
+# Requires: pip install voxkitchen[asr,pack]
+
+version: "0.1"
+name: fleurs-multilingual
+description: "Process FLEURS multilingual speech dataset"
+work_dir: ./work/${name}
+
+ingest:
+  source: recipe
+  recipe: fleurs
+  args:
+    root: /data/fleurs
+    subsets: [en_us]          # add more: zh_cn, fr_fr, de_de, ...
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  - name: snr
+    op: snr_estimate
+
+  - name: langid
+    op: whisper_langid
+    args:
+      model: tiny
+      backend: openai
+
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration > 1"
+        - "duration < 30"
+
+  - name: pack
+    op: pack_jsonl
