@@ -94,6 +94,14 @@ except ImportError:
 
 from voxkitchen.operators.annotate import gender_classify as _annotate_gender  # noqa: F401
 
+# --- augment (optional: torch/torchaudio for speed_perturb) ---
+try:
+    from voxkitchen.operators.augment import speed_perturb as _aug_speed  # noqa: F401
+except ImportError:
+    pass  # torch not installed
+from voxkitchen.operators.augment import noise_augment as _aug_noise  # noqa: F401
+from voxkitchen.operators.augment import volume_perturb as _aug_volume  # noqa: F401
+
 # --- pack (optional: datasets, webdataset, pyarrow) ---
 from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
 

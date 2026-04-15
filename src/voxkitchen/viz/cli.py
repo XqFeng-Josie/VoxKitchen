@@ -64,7 +64,20 @@ def render_run_summary(work_dir: Path) -> None:
         else:
             count = "?"
         status = "[green]OK[/green]" if success else "[red]INCOMPLETE[/red]"
-        console.print(f"  {sd.name}: {status} ({count} cuts)")
+
+        # Read timing stats if available
+        stats_path = sd / "_stats.json"
+        timing = ""
+        if stats_path.exists():
+            try:
+                stats = json.loads(stats_path.read_text())
+                wall = stats.get("wall_time_seconds", 0)
+                throughput = stats.get("throughput_cuts_per_sec", 0)
+                timing = f"  {wall:.1f}s, {throughput:.0f} cuts/s"
+            except Exception:
+                pass
+
+        console.print(f"  {sd.name}: {status} ({count} cuts){timing}")
 
 
 def render_trace(cut_id: str, work_dir: Path) -> None:

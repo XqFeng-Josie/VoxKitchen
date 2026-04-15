@@ -19,7 +19,9 @@ All state is on disk under ``work_dir`` so any crash leaves a resumable tree.
 
 from __future__ import annotations
 
+import json
 import logging
+import time
 from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
@@ -72,6 +74,28 @@ def _make_executor(device: str, ctx: RunContext) -> Executor:
     if device == "gpu" and not _gpu_available():
         logger.info("GPU not available, falling back to CPU executor")
     return CpuPoolExecutor(num_workers=max(1, ctx.num_cpu_workers))
+
+
+def _write_stage_stats(
+    *,
+    stage_dir: Path,
+    stage_name: str,
+    operator: str,
+    wall_time: float,
+    cuts_in: int,
+    cuts_out: int,
+) -> None:
+    """Write per-stage execution statistics to _stats.json."""
+    throughput = cuts_out / wall_time if wall_time > 0 else 0.0
+    stats = {
+        "stage_name": stage_name,
+        "operator": operator,
+        "wall_time_seconds": round(wall_time, 2),
+        "cuts_in": cuts_in,
+        "cuts_out": cuts_out,
+        "throughput_cuts_per_sec": round(throughput, 2),
+    }
+    (stage_dir / "_stats.json").write_text(json.dumps(stats, indent=2), encoding="utf-8")
 
 
 def _write_run_snapshot(work_dir: Path, spec: PipelineSpec, run_id: str) -> None:
@@ -173,6 +197,7 @@ def run_pipeline(
             n_input,
         )
 
+        t_start = time.monotonic()
         try:
             op_cls = get_operator(stage.op)
             op_cfg = op_cls.config_cls.model_validate(stage.args)
@@ -180,13 +205,24 @@ def run_pipeline(
             current_cuts = executor.run(op_cls, op_cfg, current_cuts, stage_ctx)
         except Exception as exc:
             raise StageFailedError(stage.name, exc) from exc
+        wall_time = time.monotonic() - t_start
 
         logger.info(
-            "stage [%d/%d] %s  done → %d cuts out",
+            "stage [%d/%d] %s  done → %d cuts out (%.1fs)",
             idx + 1,
             len(spec.stages),
             stage.name,
             len(current_cuts),
+            wall_time,
+        )
+
+        _write_stage_stats(
+            stage_dir=stage_dir,
+            stage_name=stage.name,
+            operator=stage.op,
+            wall_time=wall_time,
+            cuts_in=n_input,
+            cuts_out=len(current_cuts),
         )
 
         # Persist output + marker

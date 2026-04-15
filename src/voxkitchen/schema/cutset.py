@@ -1,11 +1,13 @@
-"""CutSet: a lazy, functional wrapper over a sequence of Cuts.
+"""CutSet: an eager or lazy wrapper over a sequence of Cuts.
 
 CutSet is deliberately not a Pydantic model. It is a thin layer above an
 iterable of Cuts backed by either an in-memory list or a JSONL.gz file on
-disk. Plan 1 implements the in-memory path; lazy streaming I/O (opening a
-file and yielding Cuts without reading the whole thing into memory) is
-also supported through ``from_jsonl_gz`` since ``read_cuts`` already returns
-an iterator.
+disk.
+
+Lazy mode (``CutSet.from_jsonl_gz(path, lazy=True)``) defers reading until
+iteration, and auto-materializes when ``len()`` or ``split()`` is called.
+Iterating a lazy CutSet streams from disk without building a list in memory;
+iterating twice re-reads the file (trading I/O for memory savings).
 
 The key operations needed by the pipeline engine are:
 - ``split(n)``: shard into N CutSets for GPU/CPU pool workers
@@ -24,27 +26,49 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from pathlib import Path
 
 from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.io import HeaderRecord, read_cuts, write_cuts
+from voxkitchen.schema.io import HeaderRecord, read_cuts, read_header, write_cuts
 
 
 class CutSet:
     """A sequence of Cuts with functional operations and disk I/O helpers."""
 
     def __init__(self, cuts: Iterable[Cut]) -> None:
-        # Materialize to a list. Lazy-streaming variants can be added later
-        # if memory becomes a concern; for Plan 1 we keep the semantics simple
-        # and predictable.
-        self._cuts: list[Cut] = list(cuts)
+        self._cuts: list[Cut] | None = list(cuts)
+        self._source_path: Path | None = None
+
+    # -- lazy support ---------------------------------------------------------
+
+    @property
+    def is_lazy(self) -> bool:
+        """True when this CutSet has not been materialized into memory."""
+        return self._cuts is None
+
+    def _materialize(self) -> None:
+        """Load all cuts into memory. No-op if already materialized."""
+        if self._cuts is None:
+            assert self._source_path is not None
+            self._cuts = list(read_cuts(self._source_path))
+
+    # -- core protocol --------------------------------------------------------
 
     def __len__(self) -> int:
+        self._materialize()
+        assert self._cuts is not None
         return len(self._cuts)
 
     def __iter__(self) -> Iterator[Cut]:
-        return iter(self._cuts)
+        if self._cuts is not None:
+            return iter(self._cuts)
+        assert self._source_path is not None
+        return read_cuts(self._source_path)
 
     def with_progress(self, desc: str = "cuts") -> CutSet:
         """Return a view whose ``__iter__`` wraps cuts with a tqdm bar."""
+        self._materialize()
+        assert self._cuts is not None
         return _ProgressCutSet(self._cuts, desc)
+
+    # -- functional operations ------------------------------------------------
 
     def split(self, n: int) -> list[CutSet]:
         """Split into ``n`` roughly-equal CutSets.
@@ -53,16 +77,18 @@ class CutSet:
         """
         if n <= 0:
             raise ValueError(f"split n must be positive, got {n}")
+        self._materialize()
+        assert self._cuts is not None
         shards: list[list[Cut]] = [[] for _ in range(n)]
         for i, cut in enumerate(self._cuts):
             shards[i % n].append(cut)
         return [CutSet(s) for s in shards]
 
     def filter(self, predicate: Callable[[Cut], bool]) -> CutSet:
-        return CutSet(c for c in self._cuts if predicate(c))
+        return CutSet(c for c in self if predicate(c))
 
     def map(self, fn: Callable[[Cut], Cut]) -> CutSet:
-        return CutSet(fn(c) for c in self._cuts)
+        return CutSet(fn(c) for c in self)
 
     @classmethod
     def merge(cls, cutsets: Iterable[CutSet]) -> CutSet:
@@ -73,10 +99,24 @@ class CutSet:
         return cls(out)
 
     def to_jsonl_gz(self, path: Path, header: HeaderRecord) -> None:
-        write_cuts(path, header, iter(self._cuts))
+        write_cuts(path, header, iter(self))
 
     @classmethod
-    def from_jsonl_gz(cls, path: Path) -> CutSet:
+    def from_jsonl_gz(cls, path: Path, *, lazy: bool = False) -> CutSet:
+        """Load a CutSet from a manifest file.
+
+        Args:
+            lazy: If True, defer reading cuts until iteration. The header
+                is validated eagerly (schema version check), but individual
+                cut records are streamed on demand. This saves memory for
+                large manifests when you only need a single iteration pass.
+        """
+        if lazy:
+            read_header(path)  # validate header eagerly
+            cs = cls.__new__(cls)
+            cs._cuts = None
+            cs._source_path = path
+            return cs
         return cls(read_cuts(path))
 
     @classmethod
