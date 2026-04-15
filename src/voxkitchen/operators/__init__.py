@@ -69,6 +69,7 @@ except ImportError:
 try:
     from voxkitchen.operators.annotate import paraformer_asr as _annotate_paraformer  # noqa: F401
     from voxkitchen.operators.annotate import sensevoice_asr as _annotate_sensevoice  # noqa: F401
+    from voxkitchen.operators.annotate import emotion_recognize as _annotate_emotion  # noqa: F401
 except ImportError:
     pass  # funasr not installed
 try:

@@ -1,0 +1,36 @@
+# Emotion recognition: detect speech emotions using emotion2vec.
+# Usage: vkit run examples/pipelines/emotion-recognize.yaml
+# Requires: pip install voxkitchen[audio,funasr]
+
+version: "0.1"
+name: emotion-recognize
+description: "Detect speech emotions (angry, happy, sad, neutral, ...)"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  - name: vad
+    op: silero_vad
+    args: { threshold: 0.5 }
+
+  # Recognize emotion per segment.
+  # 9 classes: angry, disgusted, fearful, happy, neutral, other, sad, surprised, unknown
+  # Results stored in:
+  #   cut.custom["emotion"]        — predicted label (e.g. "happy")
+  #   cut.custom["emotion_scores"] — per-class confidence scores
+  - name: emotion
+    op: emotion_recognize
+    args:
+      model: iic/emotion2vec_plus_large    # or emotion2vec_plus_base (smaller)
+      granularity: utterance               # one label per segment
+
+  - name: pack
+    op: pack_jsonl
