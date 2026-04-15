@@ -1,0 +1,50 @@
+# Noise augmentation pipeline: add background noise at random SNR
+#
+# Mix clean speech with noise files (e.g., MUSAN, DNS noise sets) at a
+# random signal-to-noise ratio. Useful for training robust ASR/TTS models.
+#
+# Usage:
+#   vkit run examples/pipelines/noise-augment.yaml
+#
+# Prerequisites:
+#   pip install voxkitchen
+#   Put clean audio in ./data/clean/
+#   Put noise files in ./data/noise/  (any .wav/.flac/.mp3)
+
+version: "0.1"
+name: noise-augment
+description: "Add background noise to speech at random SNR"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data/clean
+    recursive: true
+
+stages:
+  # 1. Resample to 16kHz mono
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  # 2. Add noise: picks a random file from noise_dir, mixes at random SNR.
+  #    Noise is trimmed or looped to match signal length.
+  #    snr_range: [min_snr_dB, max_snr_dB]
+  #      - High SNR (e.g., 20 dB) = barely audible noise
+  #      - Low SNR (e.g., 5 dB) = heavy noise
+  - name: add_noise
+    op: noise_augment
+    args:
+      noise_dir: ./data/noise
+      snr_range: [5.0, 20.0]
+
+  # 3. Measure quality of noisy audio
+  - name: snr
+    op: snr_estimate
+
+  # 4. Pack with metrics
+  - name: pack
+    op: pack_jsonl
