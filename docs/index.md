@@ -10,7 +10,7 @@ Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`,
 ## Quick reference
 
 ```bash
-vkit operators                      # list all 27 operators
+vkit operators                      # list all operators
 vkit operators show <name>          # config fields + YAML example
 vkit run pipeline.yaml --dry-run    # validate without executing
 ```

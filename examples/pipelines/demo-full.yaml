@@ -1,6 +1,6 @@
-# Full demo pipeline: opus → wav → VAD → ASR → SNR → gender → filter → pack
+# Full demo pipeline: opus → wav → VAD → extract → quality → ASR → langid → gender → filter → pack
 # Usage: vkit run examples/pipelines/demo-full.yaml
-# Input: examples/demo_data/ (opus files, ~100 min total)
+# Requires: pip install voxkitchen[asr,whisper,pitch,dnsmos]
 
 version: "0.1"
 name: demo-full
@@ -14,56 +14,70 @@ ingest:
     recursive: true
 
 stages:
-  # 1. Convert opus → wav (subsequent operators read wav faster)
+  # 1. Convert opus → wav
   - name: to_wav
     op: ffmpeg_convert
     args:
-      target_format: wav       # output format: wav, flac, mp3, etc.
+      target_format: wav
 
   # 2. Speech activity detection — split long files into speech segments
   - name: vad
-    op: silero_vad             # GPU-capable, auto-falls back to CPU
+    op: silero_vad
     args:
-      threshold: 0.5           # speech probability cutoff (0-1)
-      min_speech_duration_ms: 500    # ignore speech shorter than this
-      min_silence_duration_ms: 300   # merge pauses shorter than this
+      threshold: 0.5
+      min_speech_duration_ms: 500
+      min_silence_duration_ms: 300
 
-  # 3. Materialize each VAD segment as a separate wav file (keeps original sr).
-  #    Without this, subsequent operators seek into the original large file
-  #    for every cut — extremely slow on long recordings.
+  # 3. Materialize each VAD segment as a separate wav file (keeps original sr)
   - name: extract
     op: ffmpeg_convert
     args:
       target_format: wav
 
-  # 4. Estimate signal-to-noise ratio per segment
+  # 4-7. Quality metrics (all write to cut.metrics, auto-exported by pack_jsonl)
   - name: snr
     op: snr_estimate
 
-  # 5. ASR transcription
-  - name: asr
-    op: faster_whisper_asr
-    args:
-      model: tiny              # tiny for speed; use large-v3 for quality
-      compute_type: int8       # int8 for CPU, float16 for GPU
-      cpu_threads: 1           # set to 1 on macOS to avoid CTranslate2 deadlocks
+  - name: pitch
+    op: pitch_stats               # PyWorld F0: pitch_mean, pitch_std
 
-  # 6. Gender classification (pitch-based, no model download needed)
+  - name: clipping
+    op: clipping_detect           # clipping_ratio (0 = clean)
+
+  - name: dnsmos
+    op: dnsmos_score              # dnsmos_ovrl/sig/bak/p808 (1-5 scale)
+
+  # 8. ASR transcription (use whisper_openai_asr on macOS, faster_whisper_asr on Linux GPU)
+  - name: asr
+    op: whisper_openai_asr
+    args:
+      model: tiny
+      fp16: false                 # set true on GPU
+
+  # 9. Language detection
+  - name: langid
+    op: whisper_langid
+    args:
+      model: tiny
+      backend: openai             # "openai" for macOS, "auto" for GPU
+
+  # 10. Gender classification
   - name: gender
     op: gender_classify
     args:
-      method: f0               # f0 = fast pitch-based (~85% accuracy)
-      f0_threshold: 165.0      # Hz boundary: below = male, above = female
+      method: f0
+      f0_threshold: 165.0
 
-  # 7. Filter out bad segments
+  # 11. Filter out bad segments
   - name: filter
     op: quality_score_filter
     args:
       conditions:
-        - "duration > 1"           # drop < 1 second
-        - "duration < 30"          # drop > 30 seconds
-        - "metrics.snr > 5"        # drop very noisy
+        - "duration > 1"
+        - "duration < 30"
+        - "metrics.snr > 5"
+        - "metrics.clipping_ratio < 0.01"
 
-  # 8. Write flat JSONL manifest
+  # 12. Write flat JSONL manifest (all metrics auto-exported)
   - name: pack
-    op: pack_jsonl       # flat JSONL: id, origin_id, audio_path, duration, snr, gender, text, ...
+    op: pack_jsonl

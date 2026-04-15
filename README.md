@@ -63,15 +63,15 @@ stages:
 
 ## Operators
 
-27 built-in operators across 5 categories:
+34 built-in operators across 5 categories:
 
 | Category | Operators |
 |----------|-----------|
 | **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize` |
 | **Segmentation** | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
-| **Annotation** | `faster_whisper_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `pyannote_diarize`, `speechbrain_langid`, `gender_classify` |
-| **Quality** | `snr_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter` |
-| **Pack** | `pack_manifest`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
+| **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify` |
+| **Quality** | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter` |
+| **Pack** | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
 ```bash
 # List all operators

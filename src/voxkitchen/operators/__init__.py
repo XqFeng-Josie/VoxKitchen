@@ -30,7 +30,8 @@ try:
 except ImportError:
     pass  # torch not installed
 
-# --- quality (optional: simhash, librosa, torch) ---
+# --- quality (core + optional) ---
+from voxkitchen.operators.quality import clipping_detect as _qual_clip  # noqa: F401
 from voxkitchen.operators.quality import duration_filter as _qual_duration  # noqa: F401
 from voxkitchen.operators.quality import quality_score_filter as _qual_filter  # noqa: F401
 from voxkitchen.operators.quality import snr_estimate as _qual_snr  # noqa: F401
@@ -39,6 +40,18 @@ try:
     from voxkitchen.operators.quality import bandwidth_estimate as _qual_bw  # noqa: F401
 except ImportError:
     pass  # torch not installed
+try:
+    from voxkitchen.operators.quality import pitch_stats as _qual_pitch  # noqa: F401
+except ImportError:
+    pass  # pyworld not installed
+try:
+    from voxkitchen.operators.quality import dnsmos_score as _qual_dnsmos  # noqa: F401
+except ImportError:
+    pass  # speechmos not installed
+try:
+    from voxkitchen.operators.quality import utmos_score as _qual_utmos  # noqa: F401
+except ImportError:
+    pass  # speechmos not installed
 try:
     from voxkitchen.operators.quality import audio_fingerprint_dedup as _qual_dedup  # noqa: F401
 except ImportError:
@@ -58,6 +71,14 @@ try:
     from voxkitchen.operators.annotate import sensevoice_asr as _annotate_sensevoice  # noqa: F401
 except ImportError:
     pass  # funasr not installed
+try:
+    from voxkitchen.operators.annotate import whisper_openai_asr as _annotate_owasr  # noqa: F401
+except ImportError:
+    pass  # openai-whisper not installed
+try:
+    from voxkitchen.operators.annotate import whisper_langid as _annotate_langid_w  # noqa: F401
+except ImportError:
+    pass  # openai-whisper / faster-whisper not installed
 try:
     from voxkitchen.operators.annotate import wenet_asr as _annotate_wenet  # noqa: F401
 except ImportError:

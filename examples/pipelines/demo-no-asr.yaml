@@ -1,5 +1,6 @@
 # Demo pipeline without ASR — runs on macOS without CTranslate2 issues.
 # Usage: PYTHONPATH=src python -m voxkitchen run examples/pipelines/demo-no-asr.yaml
+# Requires: pip install voxkitchen[pitch]  (optional: [dnsmos] for MOS scores)
 
 version: "0.1"
 name: demo-no-asr
@@ -25,23 +26,30 @@ stages:
       min_speech_duration_ms: 500
       min_silence_duration_ms: 300
 
-  # Materialize each VAD segment as a separate wav file (keeps original sr).
-  # Without this, subsequent operators seek into the original large file
-  # for every cut — extremely slow on long recordings.
+  # Materialize each VAD segment as a separate wav file (keeps original sr)
   - name: extract
     op: ffmpeg_convert
     args:
       target_format: wav
 
+  # Quality metrics
   - name: snr
     op: snr_estimate
 
+  - name: pitch
+    op: pitch_stats
+
+  - name: clipping
+    op: clipping_detect
+
+  # Annotation
   - name: gender
     op: gender_classify
     args:
       method: f0
       f0_threshold: 165.0
 
+  # Filter
   - name: filter
     op: quality_score_filter
     args:
@@ -49,6 +57,8 @@ stages:
         - "duration > 1"
         - "duration < 30"
         - "metrics.snr > 5"
+        - "metrics.clipping_ratio < 0.01"
 
+  # Output
   - name: pack
-    op: pack_jsonl       # flat JSONL: id, origin_id, audio_path, duration, snr, gender, text, ...
+    op: pack_jsonl

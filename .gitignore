@@ -38,3 +38,4 @@ work_dir/
 
 # Original demo source (large files — demo_data/ has the curated copy)
 demo/
+get_audio_pitch_by_pyworld.py
