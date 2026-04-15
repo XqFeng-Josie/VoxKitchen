@@ -30,11 +30,15 @@ try:
 except ImportError:
     pass  # torch not installed
 
-# --- quality (optional: simhash, librosa) ---
+# --- quality (optional: simhash, librosa, torch) ---
 from voxkitchen.operators.quality import duration_filter as _qual_duration  # noqa: F401
 from voxkitchen.operators.quality import quality_score_filter as _qual_filter  # noqa: F401
 from voxkitchen.operators.quality import snr_estimate as _qual_snr  # noqa: F401
 
+try:
+    from voxkitchen.operators.quality import bandwidth_estimate as _qual_bw  # noqa: F401
+except ImportError:
+    pass  # torch not installed
 try:
     from voxkitchen.operators.quality import audio_fingerprint_dedup as _qual_dedup  # noqa: F401
 except ImportError:
