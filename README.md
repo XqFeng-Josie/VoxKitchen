@@ -53,6 +53,11 @@ pip install -e ".[quality]"       # simhash (audio deduplication)
 pip install -e ".[diarize]"       # pyannote speaker diarization (needs HF_TOKEN, see below)
 pip install -e ".[classify]"      # SpeechBrain language ID
 pip install -e ".[gender]"        # inaSpeechSegmenter gender detection
+pip install -e ".[speaker]"       # WeSpeaker speaker embeddings
+#
+#   Enhancement & alignment
+pip install -e ".[enhance]"       # DeepFilterNet speech denoising
+pip install -e ".[align]"         # CTC forced alignment
 #
 #   Output & visualization
 pip install -e ".[pack]"          # HuggingFace datasets, WebDataset, Parquet
@@ -135,13 +140,14 @@ stages:
 
 ## Operators
 
-34 built-in operators across 5 categories:
+41 built-in operators across 7 categories:
 
 | Category | Operators |
 |----------|-----------|
 | **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize` |
 | **Segmentation** | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
-| **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify` |
+| **Augmentation** | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
+| **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align` |
 | **Quality** | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter` |
 | **Pack** | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
@@ -175,7 +181,10 @@ vkit viz <path>               Gradio interactive explorer
 For quick tasks without writing a YAML pipeline:
 
 ```python
-from voxkitchen.tools import transcribe, detect_speech, estimate_snr, audio_info
+from voxkitchen.tools import (
+    audio_info, transcribe, detect_speech, estimate_snr,
+    extract_speaker_embedding, enhance_speech, align_words,
+)
 
 audio_info("speech.wav")
 # AudioInfo(sample_rate=16000, duration=3.2, num_channels=1, format='WAV')
@@ -184,10 +193,21 @@ transcribe("speech.wav", model="tiny")
 # [Segment(start=0.0, end=3.2, text="Hello world")]
 
 detect_speech("speech.wav", method="silero")
-# [(0.5, 2.8)]
+# [SpeechSegment(start=0.5, end=2.8)]
 
 estimate_snr("speech.wav")
 # 18.3
+
+# Speaker embedding (requires: pip install voxkitchen[speaker])
+emb = extract_speaker_embedding("speaker.wav")
+# [0.12, -0.34, 0.56, ...]  (512-d vector)
+
+# Speech enhancement (requires: pip install voxkitchen[enhance])
+enhance_speech("noisy.wav", "clean.wav", aggressiveness=0.5)
+
+# Forced alignment (requires: pip install voxkitchen[align])
+align_words("speech.wav", "hello world")
+# [{"text": "hello", "start": 0.12, "end": 0.58}, ...]
 ```
 
 ## Key features

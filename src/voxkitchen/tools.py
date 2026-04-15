@@ -523,3 +523,170 @@ def normalize_loudness(
         out_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(derived, out_path)
     return out_path
+
+
+# ---------------------------------------------------------------------------
+# Speaker Embedding
+# ---------------------------------------------------------------------------
+
+
+def extract_speaker_embedding(
+    audio_path: str | Path,
+    *,
+    method: str = "wespeaker",
+    model: str = "english",
+) -> list[float]:
+    """Extract a speaker embedding vector from an audio file.
+
+    Args:
+        method: "wespeaker" (default) or "speechbrain".
+        model: Model name. Defaults depend on method:
+
+            - wespeaker: "english", "chinese", etc.
+            - speechbrain: "speechbrain/spkrec-ecapa-voxceleb"
+
+    Returns:
+        Speaker embedding as a list of floats (e.g. 512-d for WeSpeaker).
+
+    Example::
+
+        emb = extract_speaker_embedding("speaker.wav")
+        print(f"Embedding dim: {len(emb)}")  # 512
+
+        # SpeechBrain backend
+        emb = extract_speaker_embedding("speaker.wav", method="speechbrain",
+                                         model="speechbrain/spkrec-ecapa-voxceleb")
+    """
+    from voxkitchen.operators.annotate.speaker_embed import (
+        SpeakerEmbedConfig,
+        SpeakerEmbedOperator,
+    )
+
+    path = Path(audio_path)
+    cut = _make_cut(path)
+    ctx = _make_ctx()
+    config = SpeakerEmbedConfig(
+        method=method,
+        wespeaker_model=model if method == "wespeaker" else "english",
+        speechbrain_model=model
+        if method == "speechbrain"
+        else "speechbrain/spkrec-ecapa-voxceleb",
+    )
+    op = SpeakerEmbedOperator(config, ctx)
+    op.setup()
+    try:
+        result = op.process(CutSet([cut]))
+    finally:
+        op.teardown()
+
+    out_cut = next(iter(result))
+    return out_cut.custom.get("speaker_embedding", [])
+
+
+# ---------------------------------------------------------------------------
+# Speech Enhancement
+# ---------------------------------------------------------------------------
+
+
+def enhance_speech(
+    audio_path: str | Path,
+    output_path: str | Path,
+    *,
+    aggressiveness: float = 0.5,
+) -> Path:
+    """Remove background noise from an audio file using DeepFilterNet.
+
+    Args:
+        aggressiveness: 0.0 (light) to 1.0 (aggressive denoising).
+
+    Example::
+
+        enhance_speech("noisy.wav", "clean.wav", aggressiveness=0.5)
+    """
+    from voxkitchen.operators.annotate.speech_enhance import (
+        SpeechEnhanceConfig,
+        SpeechEnhanceOperator,
+    )
+
+    in_path = Path(audio_path)
+    out_path = Path(output_path)
+    cut = _make_cut(in_path)
+    ctx = _make_ctx()
+    config = SpeechEnhanceConfig(aggressiveness=aggressiveness)
+    op = SpeechEnhanceOperator(config, ctx)
+    op.setup()
+    try:
+        result = op.process(CutSet([cut]))
+    finally:
+        op.teardown()
+
+    out_cut = next(iter(result))
+    if out_cut.recording:
+        derived = Path(out_cut.recording.sources[0].source)
+        import shutil
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(derived, out_path)
+    return out_path
+
+
+# ---------------------------------------------------------------------------
+# Forced Alignment
+# ---------------------------------------------------------------------------
+
+
+def align_words(
+    audio_path: str | Path,
+    text: str,
+    *,
+    language: str = "eng",
+) -> list[dict[str, object]]:
+    """Align text to audio at word level using CTC forced alignment.
+
+    Args:
+        text: The text to align (e.g. from a prior ASR transcription).
+        language: ISO 639-3 language code (default "eng" for English).
+
+    Returns:
+        List of word alignments, each a dict with "text", "start", "end".
+
+    Example::
+
+        words = align_words("speech.wav", "hello world")
+        for w in words:
+            print(f"{w['text']}: {w['start']:.2f}s - {w['end']:.2f}s")
+    """
+    from voxkitchen.operators.annotate.forced_align import (
+        ForcedAlignConfig,
+        ForcedAlignOperator,
+    )
+
+    path = Path(audio_path)
+    cut = _make_cut(path)
+    # Add text as a supervision so the operator can find it
+    from voxkitchen.schema.supervision import Supervision
+
+    cut = cut.model_copy(
+        update={
+            "supervisions": [
+                Supervision(
+                    id=f"sup-{cut.id}",
+                    recording_id=cut.recording_id,
+                    start=0.0,
+                    duration=cut.duration,
+                    text=text,
+                )
+            ]
+        }
+    )
+    ctx = _make_ctx()
+    config = ForcedAlignConfig(language=language)
+    op = ForcedAlignOperator(config, ctx)
+    op.setup()
+    try:
+        result = op.process(CutSet([cut]))
+    finally:
+        op.teardown()
+
+    out_cut = next(iter(result))
+    return out_cut.custom.get("word_alignments", [])
