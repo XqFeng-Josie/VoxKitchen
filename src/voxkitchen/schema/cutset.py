@@ -42,6 +42,10 @@ class CutSet:
     def __iter__(self) -> Iterator[Cut]:
         return iter(self._cuts)
 
+    def with_progress(self, desc: str = "cuts") -> CutSet:
+        """Return a view whose ``__iter__`` wraps cuts with a tqdm bar."""
+        return _ProgressCutSet(self._cuts, desc)
+
     def split(self, n: int) -> list[CutSet]:
         """Split into ``n`` roughly-equal CutSets.
 
@@ -82,3 +86,16 @@ class CutSet:
         for p in paths:
             out.extend(read_cuts(p))
         return cls(out)
+
+
+class _ProgressCutSet(CutSet):
+    """CutSet whose __iter__ shows a tqdm progress bar."""
+
+    def __init__(self, cuts: list[Cut], desc: str) -> None:
+        super().__init__(cuts)
+        self._desc = desc
+
+    def __iter__(self) -> Iterator[Cut]:
+        from tqdm import tqdm  # type: ignore[import-untyped]
+
+        return iter(tqdm(self._cuts, desc=self._desc, unit="cut"))

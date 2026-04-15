@@ -5,13 +5,16 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
 import soundfile as sf
 
-from voxkitchen.operators.registry import get_operator
-from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.cutset import CutSet
-from voxkitchen.schema.provenance import Provenance
-from voxkitchen.schema.recording import AudioSource, Recording
+pytest.importorskip("simhash")
+
+from voxkitchen.operators.registry import get_operator  # noqa: E402
+from voxkitchen.schema.cut import Cut  # noqa: E402
+from voxkitchen.schema.cutset import CutSet  # noqa: E402
+from voxkitchen.schema.provenance import Provenance  # noqa: E402
+from voxkitchen.schema.recording import AudioSource, Recording  # noqa: E402
 
 
 def _make_cut(path: Path, cut_id: str | None = None) -> Cut:
@@ -60,6 +63,7 @@ def test_dedup_removes_identical_cuts(mono_wav_16k: Path) -> None:
     cut2 = _make_cut(mono_wav_16k, cut_id="cut-b")
     config = AudioFingerprintDedupConfig()
     op = AudioFingerprintDedupOperator(config, ctx=object())  # type: ignore[arg-type]
+    op.setup()
     result = list(op.process(CutSet([cut1, cut2])))
 
     assert len(result) == 1
@@ -76,6 +80,7 @@ def test_dedup_keeps_different_cuts(mono_wav_16k: Path, stereo_wav_44k: Path) ->
     cut2 = _make_cut(stereo_wav_44k, cut_id="cut-stereo")
     config = AudioFingerprintDedupConfig()
     op = AudioFingerprintDedupOperator(config, ctx=object())  # type: ignore[arg-type]
+    op.setup()
     result = list(op.process(CutSet([cut1, cut2])))
 
     assert len(result) == 2

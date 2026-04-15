@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-import pyloudnorm
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -30,6 +29,11 @@ class LoudnessNormalizeOperator(Operator):
     produces_audio = True
     reads_audio_bytes = True
 
+    def setup(self) -> None:
+        import pyloudnorm
+
+        self._pyloudnorm = pyloudnorm
+
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, LoudnessNormalizeConfig)
         derived_dir = self.ctx.stage_dir / "derived"
@@ -40,9 +44,9 @@ class LoudnessNormalizeOperator(Operator):
         for cut in cuts:
             audio, sr = load_audio_for_cut(cut)
 
-            meter = pyloudnorm.Meter(sr)
+            meter = self._pyloudnorm.Meter(sr)
             loudness = meter.integrated_loudness(audio)
-            normalized: _Audio = pyloudnorm.normalize.loudness(audio, loudness, target_lufs)
+            normalized: _Audio = self._pyloudnorm.normalize.loudness(audio, loudness, target_lufs)
             normalized = np.clip(normalized, -1.0, 1.0).astype(np.float32)
 
             out_path = derived_dir / f"{cut.id}.wav"

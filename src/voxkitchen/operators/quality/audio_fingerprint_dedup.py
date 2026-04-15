@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
-import librosa
 import numpy as np
-from simhash import Simhash
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -35,10 +33,17 @@ class AudioFingerprintDedupOperator(Operator):
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["segment", "quality"]
 
+    def setup(self) -> None:
+        import librosa  # — validates dependency is installed
+        from simhash import Simhash
+
+        self._librosa = librosa
+        self._Simhash = Simhash
+
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, AudioFingerprintDedupConfig)
         threshold = self.config.similarity_threshold
-        seen: list[Simhash] = []
+        seen: list[Any] = []
         kept: list[Cut] = []
 
         for cut in cuts:
@@ -50,7 +55,7 @@ class AudioFingerprintDedupOperator(Operator):
 
         return CutSet(kept)
 
-    def _fingerprint(self, cut: Cut) -> Simhash:
+    def _fingerprint(self, cut: Cut) -> Any:
         audio, sr = load_audio_for_cut(cut)
 
         # Ensure mono float32
@@ -58,8 +63,8 @@ class AudioFingerprintDedupOperator(Operator):
             audio = audio[:, 0]
         audio = audio.astype(np.float32)
 
-        mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13)
+        mfcc = self._librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13)
         mfcc_mean: np.ndarray[tuple[int], np.dtype[np.float32]] = mfcc.mean(axis=1)
 
         features = [f"{i}:{v:.2f}" for i, v in enumerate(mfcc_mean)]
-        return Simhash(features)
+        return self._Simhash(features)

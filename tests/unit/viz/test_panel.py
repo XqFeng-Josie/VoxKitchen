@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-gr = pytest.importorskip("gradio")
+gr = pytest.importorskip("gradio", minversion="4.0")
 
 from voxkitchen.schema.cut import Cut  # noqa: E402
 from voxkitchen.schema.cutset import CutSet  # noqa: E402

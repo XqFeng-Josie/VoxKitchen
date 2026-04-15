@@ -13,12 +13,18 @@ on ``Operator.device``.
 
 from __future__ import annotations
 
+import json as _json
+import logging
 import multiprocessing as mp
+import traceback
+from pathlib import Path
 from typing import Any, Protocol
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cutset import CutSet
+
+logger = logging.getLogger(__name__)
 
 
 class Executor(Protocol):
@@ -33,26 +39,66 @@ class Executor(Protocol):
     ) -> CutSet: ...
 
 
+def _append_errors(errors_path: Path, errors: list[dict[str, str]]) -> None:
+    """Write error records to _errors.jsonl (one JSON object per line).
+
+    Uses write mode (not append) so that re-running a stage replaces stale
+    errors from a previous attempt rather than accumulating them.
+    """
+    if not errors:
+        return
+    with errors_path.open("w", encoding="utf-8") as f:
+        for err in errors:
+            f.write(_json.dumps(err, ensure_ascii=False) + "\n")
+
+
 def _cpu_worker(
     op_cls: type[Operator],
     config_json: str,
     ctx: RunContext,
     cuts_list: list[Any],
-) -> list[Any]:
+    show_progress: bool = False,
+) -> tuple[list[Any], list[dict[str, str]]]:
     """Instantiate op, call setup/process/teardown, return processed cuts.
 
     Config is passed as JSON (not the Pydantic instance) because some
     Pydantic models pickle awkwardly across spawn boundaries; JSON is safe.
     The operator reconstructs its config from JSON inside the worker.
     Cuts are passed as a list of Cut instances (Pydantic v2 pickles cleanly).
+
+    Returns (good_cuts, error_records) so that individual cut failures
+    don't crash the entire shard.
     """
     config = op_cls.config_cls.model_validate_json(config_json)
     op = op_cls(config, ctx)
     op.setup()
     try:
         input_cuts = CutSet(cuts_list)
+        if show_progress:
+            input_cuts = input_cuts.with_progress(desc=ctx.stage_name)
         output_cuts = op.process(input_cuts)
-        return list(output_cuts)
+        return list(output_cuts), []
+    except Exception:
+        # Per-cut fallback: retry one-by-one so only bad cuts are skipped
+        good: list[Any] = []
+        errors: list[dict[str, str]] = []
+        for cut in cuts_list:
+            try:
+                result = op.process(CutSet([cut]))
+                good.extend(list(result))
+            except Exception:
+                tb_lines = traceback.format_exc().strip().split("\n")
+                short = tb_lines[-1]
+                errors.append(
+                    {
+                        "cut_id": cut.id,
+                        "stage": ctx.stage_name,
+                        "error": short,
+                        "traceback": "\n".join(tb_lines[-4:]),
+                    }
+                )
+                logger.warning("cut %s failed: %s", cut.id, short)
+        return good, errors
     finally:
         op.teardown()
 
@@ -80,9 +126,15 @@ class CpuPoolExecutor:
         config_json = config.model_dump_json()
 
         if effective_workers == 1:
-            # Skip the pool entirely — simpler + faster for single worker
-            result = _cpu_worker(op_cls, config_json, ctx, list(shards[0]))
-            return CutSet(result)
+            good, errors = _cpu_worker(
+                op_cls,
+                config_json,
+                ctx,
+                list(shards[0]),
+                show_progress=True,
+            )
+            _append_errors(ctx.stage_dir / "_errors.jsonl", errors)
+            return CutSet(good)
 
         tasks = [(op_cls, config_json, ctx, list(shard)) for shard in shards]
 
@@ -91,8 +143,11 @@ class CpuPoolExecutor:
             results = pool.starmap(_cpu_worker, tasks)
 
         merged: list[Any] = []
-        for shard_result in results:
-            merged.extend(shard_result)
+        all_errors: list[dict[str, str]] = []
+        for good, errors in results:
+            merged.extend(good)
+            all_errors.extend(errors)
+        _append_errors(ctx.stage_dir / "_errors.jsonl", all_errors)
         return CutSet(merged)
 
 
@@ -102,7 +157,7 @@ def _gpu_worker(
     config_json: str,
     ctx: RunContext,
     cuts_list: list[Any],
-) -> list[Any]:
+) -> tuple[list[Any], list[dict[str, str]]]:
     """GPU worker entry point.
 
     Sets ``CUDA_VISIBLE_DEVICES`` to its assigned id BEFORE torch has any
@@ -112,7 +167,6 @@ def _gpu_worker(
     import os as _os
 
     _os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-    # Rewrite ctx.device to reflect worker-local view
     from dataclasses import replace as _replace
 
     worker_ctx = _replace(ctx, device="cuda:0")
@@ -123,7 +177,27 @@ def _gpu_worker(
     try:
         input_cuts = CutSet(cuts_list)
         output_cuts = op.process(input_cuts)
-        return list(output_cuts)
+        return list(output_cuts), []
+    except Exception:
+        good: list[Any] = []
+        errors: list[dict[str, str]] = []
+        for cut in cuts_list:
+            try:
+                result = op.process(CutSet([cut]))
+                good.extend(list(result))
+            except Exception:
+                tb_lines = traceback.format_exc().strip().split("\n")
+                short = tb_lines[-1]
+                errors.append(
+                    {
+                        "cut_id": cut.id,
+                        "stage": worker_ctx.stage_name,
+                        "error": short,
+                        "traceback": "\n".join(tb_lines[-4:]),
+                    }
+                )
+                logger.warning("cut %s failed on GPU %d: %s", cut.id, gpu_id, short)
+        return good, errors
     finally:
         op.teardown()
 
@@ -164,6 +238,9 @@ class GpuPoolExecutor:
             results = pool.starmap(_gpu_worker, tasks)
 
         merged: list[Any] = []
-        for shard_result in results:
-            merged.extend(shard_result)
+        all_errors: list[dict[str, str]] = []
+        for good, errors in results:
+            merged.extend(good)
+            all_errors.extend(errors)
+        _append_errors(ctx.stage_dir / "_errors.jsonl", all_errors)
         return CutSet(merged)

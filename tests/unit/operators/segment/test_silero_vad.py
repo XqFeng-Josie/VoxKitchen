@@ -9,6 +9,12 @@ import numpy as np
 import pytest
 import soundfile as sf
 
+try:
+    import torch  # noqa: F401
+    import torchaudio  # noqa: F401 — silero_vad needs torchaudio at runtime
+except (ImportError, OSError):
+    pytest.skip("torch/torchaudio not available", allow_module_level=True)
+
 from voxkitchen.operators.registry import get_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet

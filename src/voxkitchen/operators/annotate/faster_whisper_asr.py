@@ -16,6 +16,7 @@ class FasterWhisperAsrConfig(OperatorConfig):
     language: str | None = None  # None = auto-detect
     beam_size: int = 5
     compute_type: str = "int8"  # int8 for CPU, float16 for GPU
+    cpu_threads: int = 4  # CTranslate2 thread count (set to 1 if you hit deadlocks on macOS)
 
 
 @register_operator
@@ -46,6 +47,7 @@ class FasterWhisperAsrOperator(Operator):
             self.config.model,
             device=device,
             compute_type=compute_type,
+            cpu_threads=self.config.cpu_threads,
         )
 
     def process(self, cuts: CutSet) -> CutSet:

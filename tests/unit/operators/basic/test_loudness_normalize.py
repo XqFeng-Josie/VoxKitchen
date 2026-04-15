@@ -6,19 +6,21 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-import pyloudnorm
+import pytest
 import soundfile as sf
 
-from voxkitchen.operators.basic.loudness_normalize import (
+pyloudnorm = pytest.importorskip("pyloudnorm")
+
+from voxkitchen.operators.basic.loudness_normalize import (  # noqa: E402
     LoudnessNormalizeConfig,
     LoudnessNormalizeOperator,
 )
-from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
-from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.cutset import CutSet
-from voxkitchen.schema.provenance import Provenance
-from voxkitchen.utils.audio import recording_from_file
+from voxkitchen.operators.registry import get_operator  # noqa: E402
+from voxkitchen.pipeline.context import RunContext  # noqa: E402
+from voxkitchen.schema.cut import Cut  # noqa: E402
+from voxkitchen.schema.cutset import CutSet  # noqa: E402
+from voxkitchen.schema.provenance import Provenance  # noqa: E402
+from voxkitchen.utils.audio import recording_from_file  # noqa: E402
 
 
 def _ctx(tmp_path: Path) -> RunContext:

@@ -6,9 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from voxkitchen.pipeline.loader import load_pipeline_spec
-from voxkitchen.pipeline.runner import run_pipeline
-from voxkitchen.schema.io import read_cuts
+pytest.importorskip("faster_whisper")
+
+from voxkitchen.pipeline.loader import load_pipeline_spec  # noqa: E402
+from voxkitchen.pipeline.runner import run_pipeline  # noqa: E402
+from voxkitchen.schema.io import read_cuts  # noqa: E402
 
 
 @pytest.mark.slow

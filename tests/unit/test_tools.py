@@ -4,7 +4,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from voxkitchen.tools import estimate_snr, normalize_loudness, resample_audio
+
+
+def _torchaudio_available() -> bool:
+    try:
+        import torchaudio  # noqa: F401
+
+        return True
+    except (ImportError, OSError):
+        return False
 
 
 def test_estimate_snr_returns_positive_float(mono_wav_16k: Path) -> None:
@@ -13,6 +24,7 @@ def test_estimate_snr_returns_positive_float(mono_wav_16k: Path) -> None:
     assert snr > 0
 
 
+@pytest.mark.skipif(not _torchaudio_available(), reason="torchaudio not available")
 def test_resample_audio_creates_output(mono_wav_16k: Path, tmp_path: Path) -> None:
     out = tmp_path / "resampled.wav"
     result = resample_audio(mono_wav_16k, out, target_sr=8000)

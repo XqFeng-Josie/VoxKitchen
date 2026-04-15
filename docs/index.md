@@ -1,27 +1,22 @@
 # VoxKitchen
 
-A researcher-friendly, declarative speech data processing toolkit with a unified data protocol.
+Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
 
-## Features
+## Documentation
 
-- **Declarative YAML pipelines** — write a recipe, run with `vkit run`
-- **22 built-in operators** — segmentation, ASR, diarization, quality filtering, packaging
-- **Resumable execution** — checkpoint every stage, resume after crashes
-- **Disk-aware GC** — aggressive cleanup of intermediate derived audio
-- **Inspectable results** — Rich CLI, self-contained HTML report, Gradio panel
-- **Extensible** — plugin system for third-party operators and recipes
+- [Getting Started](getting-started.md) — install, first pipeline, inspect results
+- [Data Protocol](concepts/data-protocol.md) — Recording, Supervision, Cut, CutSet, Provenance
 
-## Quick start
+## Quick reference
 
 ```bash
-pip install voxkitchen
-vkit init my-project
-cd my-project
-# Edit pipeline.yaml to point at your audio data
-vkit run pipeline.yaml
-vkit inspect run work/
+vkit operators                      # list all 27 operators
+vkit operators show <name>          # config fields + YAML example
+vkit run pipeline.yaml --dry-run    # validate without executing
 ```
 
-## License
+## Links
 
-Apache 2.0. See [LICENSE](https://github.com/voxkitchen/voxkitchen/blob/main/LICENSE).
+- [Example pipelines](https://github.com/voxkitchen/voxkitchen/tree/main/examples/pipelines)
+- [GitHub](https://github.com/voxkitchen/voxkitchen)
+- [License](https://github.com/voxkitchen/voxkitchen/blob/main/LICENSE) (Apache 2.0)

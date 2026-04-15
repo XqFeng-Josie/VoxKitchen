@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-import librosa
 import numpy as np
 
 from voxkitchen.operators.base import Operator, OperatorConfig
@@ -35,6 +34,11 @@ class SilenceSplitOperator(Operator):
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["segment"]
 
+    def setup(self) -> None:
+        import librosa
+
+        self._librosa = librosa
+
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, SilenceSplitConfig)
         out: list[Cut] = []
@@ -56,7 +60,7 @@ class SilenceSplitOperator(Operator):
         if np.max(np.abs(audio)) < 1e-9:
             return []
 
-        intervals = librosa.effects.split(y=audio, top_db=self.config.top_db)
+        intervals = self._librosa.effects.split(y=audio, top_db=self.config.top_db)
 
         generated_by = f"silence_split@top_db{self.config.top_db}"
         stage_name = getattr(getattr(self, "ctx", None), "stage_name", "unknown")

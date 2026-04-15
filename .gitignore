@@ -30,7 +30,11 @@ ENV/
 src/voxkitchen/_version.py
 
 # Project-specific
+work/
 work_dir/
 *.jsonl.gz
 !tests/fixtures/**/*.jsonl.gz
 .claude/
+
+# Original demo source (large files — demo_data/ has the curated copy)
+demo/

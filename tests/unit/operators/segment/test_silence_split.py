@@ -9,11 +9,13 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from voxkitchen.operators.registry import get_operator
-from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.cutset import CutSet
-from voxkitchen.schema.provenance import Provenance
-from voxkitchen.schema.recording import AudioSource, Recording
+pytest.importorskip("librosa")
+
+from voxkitchen.operators.registry import get_operator  # noqa: E402
+from voxkitchen.schema.cut import Cut  # noqa: E402
+from voxkitchen.schema.cutset import CutSet  # noqa: E402
+from voxkitchen.schema.provenance import Provenance  # noqa: E402
+from voxkitchen.schema.recording import AudioSource, Recording  # noqa: E402
 
 
 def _make_cut(path: Path) -> Cut:
@@ -57,6 +59,7 @@ def test_silence_split_on_continuous_tone(mono_wav_16k: Path) -> None:
     cut = _make_cut(mono_wav_16k)
     config = SilenceSplitConfig(top_db=30, min_duration=0.1)
     op = SilenceSplitOperator(config, ctx=object())  # type: ignore[arg-type]
+    op.setup()
     result = list(op.process(CutSet([cut])))
 
     # Continuous tone is one non-silent region
@@ -76,6 +79,7 @@ def test_silence_split_on_silence(tmp_path: Path) -> None:
     cut = _make_cut(silent_path)
     config = SilenceSplitConfig(top_db=30, min_duration=0.1)
     op = SilenceSplitOperator(config, ctx=object())  # type: ignore[arg-type]
+    op.setup()
     result = list(op.process(CutSet([cut])))
 
     assert len(result) == 0

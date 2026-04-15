@@ -29,7 +29,7 @@ A **CutSet** is a collection of Cuts, serialized as `cuts.jsonl.gz` (gzipped JSO
 
 ## Provenance
 
-Every Cut carries a `Provenance` record linking it to its parent Cut and the operator that produced it. This forms a DAG that can be traversed via `vkit inspect trace`.
+Every Cut carries a `Provenance` record linking it to its parent Cut and the operator that produced it. This forms a DAG that can be traversed via `vkit inspect trace <cut_id> --in <work_dir>`.
 
 ## Serialization
 

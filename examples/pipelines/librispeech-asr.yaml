@@ -1,40 +1,50 @@
+# Full ASR pipeline: LibriSpeech → resample → VAD → ASR → quality filter → HuggingFace.
+# Usage: vkit run examples/pipelines/librispeech-asr.yaml
+# Requires: pip install voxkitchen[asr,segment]
+# Requires: GPU recommended (falls back to CPU but slow)
+
 version: "0.1"
 name: librispeech-asr
 description: "Segment LibriSpeech, run ASR, pack to HuggingFace format"
-work_dir: ./work/${name}-${run_id}
-num_gpus: 4
-num_cpu_workers: 16
+work_dir: ./work/${name}
+num_gpus: 4            # number of GPUs for parallel ASR/VAD
+num_cpu_workers: 16    # CPU workers for non-GPU stages
 
 ingest:
-  source: recipe
-  recipe: librispeech
+  source: recipe       # use a built-in dataset recipe
+  recipe: librispeech  # also available: commonvoice, aishell
   args:
-    root: /data/librispeech
-    subsets: [train-clean-100, dev-clean]
+    root: /data/librispeech                  # path to extracted LibriSpeech
+    subsets: [train-clean-100, dev-clean]     # which splits to process
 
 stages:
   - name: resample
     op: resample
     args:
-      target_sr: 16000
-      target_channels: 1
+      target_sr: 16000       # Whisper expects 16kHz
+      target_channels: 1     # mono
+
   - name: vad
-    op: silero_vad
+    op: silero_vad           # GPU-capable speech activity detection
     args:
-      threshold: 0.5
+      threshold: 0.5         # speech probability threshold (0-1)
+
   - name: asr
-    op: faster_whisper_asr
+    op: faster_whisper_asr   # CTranslate2-based Whisper
     args:
-      model: large-v3
-      language: en
-      compute_type: float16
+      model: large-v3        # tiny/base/small/medium/large-v3
+      language: en           # null = auto-detect
+      compute_type: float16  # float16 for GPU, int8 for CPU
+
   - name: snr
-    op: snr_estimate
+    op: snr_estimate         # compute signal-to-noise ratio per cut
+
   - name: filter
     op: quality_score_filter
     args:
       conditions:
-        - "metrics.snr > 10"
-        - "duration > 0.5"
+        - "metrics.snr > 10"   # drop noisy cuts
+        - "duration > 0.5"     # drop very short cuts
+
   - name: pack
-    op: pack_huggingface
+    op: pack_huggingface     # output: HuggingFace Dataset with audio column

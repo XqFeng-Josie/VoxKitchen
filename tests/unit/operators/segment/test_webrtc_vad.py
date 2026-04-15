@@ -5,13 +5,16 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
 import soundfile as sf
 
-from voxkitchen.operators.registry import get_operator
-from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.cutset import CutSet
-from voxkitchen.schema.provenance import Provenance
-from voxkitchen.schema.recording import AudioSource, Recording
+pytest.importorskip("webrtcvad")
+
+from voxkitchen.operators.registry import get_operator  # noqa: E402
+from voxkitchen.schema.cut import Cut  # noqa: E402
+from voxkitchen.schema.cutset import CutSet  # noqa: E402
+from voxkitchen.schema.provenance import Provenance  # noqa: E402
+from voxkitchen.schema.recording import AudioSource, Recording  # noqa: E402
 
 
 def _make_cut(path: Path) -> Cut:
@@ -57,6 +60,7 @@ def test_webrtc_vad_detects_speech(mono_wav_16k: Path) -> None:
         aggressiveness=2, frame_duration_ms=30, min_speech_duration_ms=100, padding_ms=30
     )
     op = WebrtcVadOperator(config, ctx=object())  # type: ignore[arg-type]
+    op.setup()
     result = list(op.process(CutSet([cut])))
 
     assert len(result) >= 1
@@ -71,6 +75,7 @@ def test_webrtc_vad_produces_child_cuts_with_provenance(mono_wav_16k: Path) -> N
         aggressiveness=2, frame_duration_ms=30, min_speech_duration_ms=100, padding_ms=30
     )
     op = WebrtcVadOperator(config, ctx=object())  # type: ignore[arg-type]
+    op.setup()
     result = list(op.process(CutSet([cut])))
 
     assert len(result) >= 1

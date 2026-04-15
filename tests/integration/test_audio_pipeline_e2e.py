@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import soundfile as sf
+
+try:
+    import torchaudio  # noqa: F401
+except (ImportError, OSError):
+    pytest.skip("torchaudio not available", allow_module_level=True)
 
 from voxkitchen.pipeline.loader import load_pipeline_spec
 from voxkitchen.pipeline.runner import run_pipeline

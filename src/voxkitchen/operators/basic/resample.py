@@ -52,6 +52,10 @@ class ResampleOperator(Operator):
                 out_path, recording_id=f"{cut.recording_id}_rs{target_sr}"
             )
 
+            custom = dict(cut.custom) if cut.custom else {}
+            if cut.start > 0 or "origin_start" not in custom:
+                custom.setdefault("origin_start", round(cut.start, 3))
+                custom.setdefault("origin_end", round(cut.start + cut.duration, 3))
             out_cuts.append(
                 Cut(
                     id=f"{cut.id}__rs{target_sr}",
@@ -68,7 +72,7 @@ class ResampleOperator(Operator):
                         created_at=now_utc(),
                         pipeline_run_id=self.ctx.pipeline_run_id,
                     ),
-                    custom=cut.custom,
+                    custom=custom,
                 )
             )
         return CutSet(out_cuts)

@@ -1,12 +1,16 @@
+# Minimal pipeline: load a manifest, pass through unchanged.
+# Good for testing your installation.
+# Usage: vkit validate examples/pipelines/minimal.yaml
+
 version: "0.1"
 name: minimal
-work_dir: ./work/${name}-${run_id}
+work_dir: ./work/${name}
 
 ingest:
-  source: manifest
+  source: manifest             # load a pre-built CutSet manifest
   args:
-    path: ./input.jsonl.gz
+    path: ./input.jsonl.gz     # path to cuts.jsonl.gz
 
 stages:
   - name: pass
-    op: identity
+    op: identity               # no-op: passes cuts through unchanged

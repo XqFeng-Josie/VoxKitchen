@@ -31,6 +31,17 @@ def run_summary(
 
 
 @inspect_app.command()
+def trace(
+    cut_id: str = typer.Argument(..., help="Cut ID to trace"),
+    work_dir: Path = typer.Option(..., "--in", help="Pipeline work directory"),
+) -> None:
+    """Trace the provenance chain for a cut across pipeline stages."""
+    from voxkitchen.viz.cli import render_trace
+
+    render_trace(cut_id, work_dir)
+
+
+@inspect_app.command()
 def errors(
     work_dir: Path = typer.Argument(..., help="Pipeline work directory"),
 ) -> None:

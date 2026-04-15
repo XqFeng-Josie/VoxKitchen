@@ -5,7 +5,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
 import soundfile as sf
+
+try:
+    import torchaudio  # noqa: F401
+except (ImportError, OSError):
+    pytest.skip("torchaudio not available", allow_module_level=True)
 
 from voxkitchen.operators.basic.resample import ResampleConfig, ResampleOperator
 from voxkitchen.operators.registry import get_operator

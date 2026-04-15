@@ -1,0 +1,69 @@
+# Full demo pipeline: opus → wav → VAD → ASR → SNR → gender → filter → pack
+# Usage: vkit run examples/pipelines/demo-full.yaml
+# Input: examples/demo_data/ (opus files, ~100 min total)
+
+version: "0.1"
+name: demo-full
+work_dir: ./work/${name}
+num_cpu_workers: 1
+
+ingest:
+  source: dir
+  args:
+    root: ./examples/demo_data
+    recursive: true
+
+stages:
+  # 1. Convert opus → wav (subsequent operators read wav faster)
+  - name: to_wav
+    op: ffmpeg_convert
+    args:
+      target_format: wav       # output format: wav, flac, mp3, etc.
+
+  # 2. Speech activity detection — split long files into speech segments
+  - name: vad
+    op: silero_vad             # GPU-capable, auto-falls back to CPU
+    args:
+      threshold: 0.5           # speech probability cutoff (0-1)
+      min_speech_duration_ms: 500    # ignore speech shorter than this
+      min_silence_duration_ms: 300   # merge pauses shorter than this
+
+  # 3. Materialize each VAD segment as a separate wav file (keeps original sr).
+  #    Without this, subsequent operators seek into the original large file
+  #    for every cut — extremely slow on long recordings.
+  - name: extract
+    op: ffmpeg_convert
+    args:
+      target_format: wav
+
+  # 4. Estimate signal-to-noise ratio per segment
+  - name: snr
+    op: snr_estimate
+
+  # 5. ASR transcription
+  - name: asr
+    op: faster_whisper_asr
+    args:
+      model: tiny              # tiny for speed; use large-v3 for quality
+      compute_type: int8       # int8 for CPU, float16 for GPU
+      cpu_threads: 1           # set to 1 on macOS to avoid CTranslate2 deadlocks
+
+  # 6. Gender classification (pitch-based, no model download needed)
+  - name: gender
+    op: gender_classify
+    args:
+      method: f0               # f0 = fast pitch-based (~85% accuracy)
+      f0_threshold: 165.0      # Hz boundary: below = male, above = female
+
+  # 7. Filter out bad segments
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration > 1"           # drop < 1 second
+        - "duration < 30"          # drop > 30 seconds
+        - "metrics.snr > 5"        # drop very noisy
+
+  # 8. Write flat JSONL manifest
+  - name: pack
+    op: pack_jsonl       # flat JSONL: id, origin_id, audio_path, duration, snr, gender, text, ...

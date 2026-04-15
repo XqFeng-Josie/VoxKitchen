@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import ClassVar
 
 import numpy as np
-import webrtcvad
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -42,6 +41,11 @@ class WebrtcVadOperator(Operator):
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["segment"]
 
+    def setup(self) -> None:
+        import webrtcvad
+
+        self._webrtcvad = webrtcvad
+
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, WebrtcVadConfig)
         out: list[Cut] = []
@@ -75,7 +79,7 @@ class WebrtcVadOperator(Operator):
         frame_samples = sr * frame_ms // 1000
         frame_bytes = frame_samples * 2  # 2 bytes per int16 sample
 
-        vad = webrtcvad.Vad(self.config.aggressiveness)
+        vad = self._webrtcvad.Vad(self.config.aggressiveness)
 
         # Collect per-frame speech labels
         speech_flags: list[bool] = []

@@ -34,12 +34,23 @@ def recording_from_file(path: Path, recording_id: str | None = None) -> Recordin
 def load_audio_for_cut(cut: Cut) -> tuple[np.ndarray[tuple[int, ...], np.dtype[np.float32]], int]:
     """Load audio samples for a Cut from its embedded Recording.
 
+    Respects ``cut.start`` and ``cut.duration`` — only reads the relevant
+    slice from disk (important for long source files with many short cuts).
+
     Returns (audio_float32, sample_rate).
     """
     if cut.recording is None:
         raise ValueError(f"cut {cut.id!r} has no embedded recording")
     source_path = cut.recording.sources[0].source
-    audio, sr = sf.read(source_path, dtype="float32")
+    sr = cut.recording.sampling_rate
+    start_frame = int(cut.start * sr)
+    num_frames = int(cut.duration * sr)
+    audio, sr = sf.read(
+        source_path,
+        dtype="float32",
+        start=start_frame,
+        frames=num_frames,
+    )
     return audio, int(sr)
 
 

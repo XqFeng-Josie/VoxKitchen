@@ -1,23 +1,29 @@
+# Scan a local directory, resample to 16kHz mono, normalize loudness, pack as Kaldi.
+# Usage: vkit run examples/pipelines/dir-resample-pack.yaml
+# Prerequisite: put .wav/.flac/.mp3 files in ./data/
+
 version: "0.1"
 name: dir-resample-pack
 description: "Resample local audio to 16kHz mono and pack as Kaldi format"
-work_dir: ./work/${name}-${run_id}
+work_dir: ./work/${name}
 
 ingest:
-  source: dir
+  source: dir           # scan a local directory for audio files
   args:
-    root: ./data
-    recursive: true
+    root: ./data        # path to your audio files
+    recursive: true     # include subdirectories
 
 stages:
   - name: resample
     op: resample
     args:
-      target_sr: 16000
-      target_channels: 1
+      target_sr: 16000       # target sample rate in Hz
+      target_channels: 1     # downmix to mono
+
   - name: normalize
     op: loudness_normalize
     args:
-      target_lufs: -23.0
+      target_lufs: -23.0     # EBU R 128 broadcast standard
+
   - name: pack
-    op: pack_kaldi
+    op: pack_kaldi            # output: wav.scp, text, utt2spk, spk2utt

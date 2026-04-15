@@ -8,8 +8,8 @@ pip install voxkitchen
 
 For GPU-accelerated operators (ASR, VAD):
 ```bash
-pip install voxkitchen torch torchaudio
-pip install voxkitchen[asr]  # adds faster-whisper
+pip install voxkitchen[asr]       # adds faster-whisper
+pip install voxkitchen[segment]   # adds webrtcvad, librosa
 ```
 
 ## Your first pipeline
@@ -21,43 +21,100 @@ vkit init my-project
 cd my-project
 ```
 
-This creates `pipeline.yaml` and `README.md`.
+This creates a `pipeline.yaml` and a `data/` directory.
 
-### 2. Prepare your data
+### 2. Add your audio
 
-Place your audio files in a `data/` directory, or edit `pipeline.yaml` to point at an existing directory.
+Put some `.wav`, `.flac`, or `.mp3` files into the `data/` directory.
 
-### 3. Run the pipeline
+### 3. Edit pipeline.yaml
+
+Replace the contents with:
+
+```yaml
+version: "0.1"
+name: my-first-pipeline
+work_dir: ./work/${run_id}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+    recursive: true
+
+stages:
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  - name: pack
+    op: pack_manifest
+```
+
+This pipeline scans `data/`, resamples everything to 16kHz mono, and writes a manifest.
+
+### 4. Validate (optional)
+
+```bash
+vkit run pipeline.yaml --dry-run
+```
+
+### 5. Run
 
 ```bash
 vkit run pipeline.yaml
 ```
 
-### 4. Inspect results
+### 6. Inspect results
 
 ```bash
-# Terminal summary
+# Stage summary
 vkit inspect run work/
 
-# View detailed statistics
+# Cut statistics
 vkit inspect cuts work/01_pack/cuts.jsonl.gz
 
-# Open HTML report
+# Open the auto-generated HTML report
 open work/report.html
 ```
 
-## Standalone ingest
-
-You can also ingest audio without running a full pipeline:
+## Discover operators
 
 ```bash
+# List all 27 operators
+vkit operators
+
+# Show config fields for any operator
+vkit operators show silero_vad
+vkit operators show faster_whisper_asr
+```
+
+## Standalone tools
+
+For quick one-off tasks without writing a YAML pipeline:
+
+```bash
+# Ingest audio without a pipeline
 vkit ingest --source dir --root /path/to/audio --out my-cuts.jsonl.gz
+
+# Interactive exploration (requires pip install voxkitchen[viz-panel])
+vkit viz my-cuts.jsonl.gz
 ```
 
-## Validation
+Or use the Python API directly:
 
-Check a pipeline YAML for errors before running:
+```python
+from voxkitchen.tools import transcribe, estimate_snr, audio_info
 
-```bash
-vkit validate pipeline.yaml
+audio_info("speech.wav")
+transcribe("speech.wav", model="tiny")
+estimate_snr("speech.wav")
 ```
+
+## Next steps
+
+- Browse [example pipelines](../examples/pipelines/) for real-world workflows
+- Read [Data Protocol](concepts/data-protocol.md) to understand Recording / Supervision / Cut
+- Run `vkit operators show <name>` for any operator's config reference

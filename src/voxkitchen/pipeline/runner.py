@@ -76,11 +76,14 @@ def run_pipeline(
     spec: PipelineSpec,
     *,
     stop_at: str | None = None,
+    resume_from: str | None = None,
     keep_intermediates: bool = False,
 ) -> None:
     """Execute a pipeline end-to-end with resume support.
 
     ``stop_at`` — if set, stop after this stage name successfully completes.
+    ``resume_from`` — if set, resume from this stage name (must have a prior
+        stage completed, or start from ingest if resuming from stage 0).
     ``keep_intermediates`` — override ``spec.gc_mode`` to ``"keep"``.
     """
     work_dir = Path(spec.work_dir)
@@ -107,19 +110,35 @@ def run_pipeline(
     gc_plan = compute_gc_plan(spec)
 
     # Detect resume point
-    last_complete = find_last_completed_stage(work_dir, stage_names)
-    start_idx = 0 if last_complete is None else last_complete + 1
+    if resume_from is not None:
+        if resume_from not in stage_names:
+            raise StageFailedError(
+                resume_from, ValueError(f"unknown stage {resume_from!r}, available: {stage_names}")
+            )
+        start_idx = stage_names.index(resume_from)
+        logger.info("--resume-from %s → starting at stage index %d", resume_from, start_idx)
+    else:
+        last_complete = find_last_completed_stage(work_dir, stage_names)
+        start_idx = 0 if last_complete is None else last_complete + 1
 
     if start_idx == 0:
         # Fresh run — perform ingest
         current_cuts = _run_ingest(spec, base_ctx)
     else:
-        # Resume — load the last completed stage's manifest.
-        # last_complete is not None here because start_idx > 0 implies last_complete >= 0.
-        assert last_complete is not None
-        resume_dir = work_dir / stage_dir_name(last_complete, stage_names[last_complete])
-        logger.info("resuming from stage %s", resume_dir.name)
-        current_cuts = CutSet.from_jsonl_gz(resume_dir / "cuts.jsonl.gz")
+        # Resume — load the manifest from the stage just before start_idx.
+        prev_idx = start_idx - 1
+        prev_dir = work_dir / stage_dir_name(prev_idx, stage_names[prev_idx])
+        prev_manifest = prev_dir / "cuts.jsonl.gz"
+        if not prev_manifest.exists():
+            raise StageFailedError(
+                stage_names[start_idx],
+                FileNotFoundError(
+                    f"cannot resume: prior stage {stage_names[prev_idx]!r} "
+                    f"has no manifest at {prev_manifest}"
+                ),
+            )
+        logger.info("resuming from stage %s", prev_dir.name)
+        current_cuts = CutSet.from_jsonl_gz(prev_manifest)
 
     # Execute remaining stages
     for idx in range(start_idx, len(spec.stages)):
@@ -133,6 +152,16 @@ def run_pipeline(
             current_cuts = CutSet.from_jsonl_gz(stage_dir / "cuts.jsonl.gz")
             continue
 
+        n_input = len(current_cuts)
+        logger.info(
+            "stage [%d/%d] %s  (%s, %d cuts in)",
+            idx + 1,
+            len(spec.stages),
+            stage.name,
+            stage.op,
+            n_input,
+        )
+
         try:
             op_cls = get_operator(stage.op)
             op_cfg = op_cls.config_cls.model_validate(stage.args)
@@ -140,6 +169,14 @@ def run_pipeline(
             current_cuts = executor.run(op_cls, op_cfg, current_cuts, stage_ctx)
         except Exception as exc:
             raise StageFailedError(stage.name, exc) from exc
+
+        logger.info(
+            "stage [%d/%d] %s  done → %d cuts out",
+            idx + 1,
+            len(spec.stages),
+            stage.name,
+            len(current_cuts),
+        )
 
         # Persist output + marker
         header = HeaderRecord(

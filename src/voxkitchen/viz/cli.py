@@ -8,6 +8,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 
+from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.viz.stats import compute_cutset_stats
 
@@ -64,6 +65,57 @@ def render_run_summary(work_dir: Path) -> None:
             count = "?"
         status = "[green]OK[/green]" if success else "[red]INCOMPLETE[/red]"
         console.print(f"  {sd.name}: {status} ({count} cuts)")
+
+
+def render_trace(cut_id: str, work_dir: Path) -> None:
+    """Walk the provenance chain for *cut_id* across all stage manifests."""
+    if not work_dir.exists():
+        console.print(f"[red]work_dir does not exist: {work_dir}[/red]")
+        return
+
+    # Build lookup: cut_id → Cut across all stages (latest stage wins)
+    stage_dirs = sorted(d for d in work_dir.iterdir() if d.is_dir() and d.name[:2].isdigit())
+    all_cuts: dict[str, tuple[str, Cut]] = {}
+    for sd in stage_dirs:
+        manifest = sd / "cuts.jsonl.gz"
+        if manifest.exists():
+            try:
+                for c in CutSet.from_jsonl_gz(manifest):
+                    all_cuts[c.id] = (sd.name, c)
+            except Exception:
+                continue
+
+    if cut_id not in all_cuts:
+        console.print(f"[red]cut {cut_id!r} not found in any stage[/red]")
+        return
+
+    # Walk the chain
+    console.print(f"\n[bold]Provenance trace for {cut_id}[/bold]\n")
+    current_id: str | None = cut_id
+    depth = 0
+    while current_id and current_id in all_cuts:
+        stage_name, cut = all_cuts[current_id]
+        indent = "  " * depth
+        if depth > 0:
+            console.print(f"{indent}↑")
+        console.print(f"{indent}[bold]{cut.id}[/bold]  (stage: {stage_name})")
+        console.print(f"{indent}  duration: {cut.duration:.3f}s  start: {cut.start:.3f}s")
+        if cut.provenance:
+            p = cut.provenance
+            console.print(f"{indent}  generated_by: {p.generated_by}")
+            console.print(f"{indent}  created_at:   {p.created_at}")
+            current_id = p.source_cut_id
+        else:
+            current_id = None
+        depth += 1
+        if depth > 50:
+            console.print(f"{indent}  [yellow]... (chain truncated at 50)[/yellow]")
+            break
+
+    if current_id and current_id not in all_cuts:
+        indent = "  " * depth
+        console.print(f"{indent}↑")
+        console.print(f"{indent}[dim]{current_id}[/dim]  (source — not in pipeline stages)")
 
 
 def render_errors(work_dir: Path) -> None:

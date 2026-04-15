@@ -8,6 +8,7 @@ import typer
 from rich import print as rprint
 
 from voxkitchen.cli.inspect import inspect_app
+from voxkitchen.cli.operators_cmd import operators_app
 
 app = typer.Typer(
     name="vkit",
@@ -17,6 +18,7 @@ app = typer.Typer(
 )
 
 app.add_typer(inspect_app, name="inspect")
+app.add_typer(operators_app, name="operators")
 
 
 @app.command(help="Scaffold a new pipeline project directory.")
@@ -70,7 +72,7 @@ def run(
     num_workers: int | None = typer.Option(None, "--num-workers", help="Override num_cpu_workers."),
     work_dir: str | None = typer.Option(None, "--work-dir", help="Override work_dir."),
     resume_from: str | None = typer.Option(
-        None, "--resume-from", help="Stage to resume from (not yet implemented)."
+        None, "--resume-from", help="Stage name to resume from."
     ),
     stop_at: str | None = typer.Option(None, "--stop-at", help="Stop after this stage."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Validate only, do not execute."),
