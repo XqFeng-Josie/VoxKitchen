@@ -105,7 +105,8 @@ extend-immutable-calls = ["typer.Argument", "typer.Option"]
 
 [tool.mypy]
 python_version = "3.10"
-strict = true  # enables warn_return_any, warn_unused_configs, disallow_untyped_defs, and more
+strict = true
+warn_unused_ignores = false  # optional deps may or may not be installed
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
