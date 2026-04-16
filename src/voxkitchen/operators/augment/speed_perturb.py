@@ -84,7 +84,8 @@ class SpeedPerturbOperator(Operator):
     @staticmethod
     def _speed(audio: _Audio, sr: int, factor: float) -> _Audio:
         if factor == 1.0:
-            return audio.copy()
+            copied: _Audio = audio.copy()
+            return copied
         try:
             import torch
             import torchaudio
@@ -97,13 +98,13 @@ class SpeedPerturbOperator(Operator):
             resampler = torchaudio.transforms.Resample(orig_freq=src_sr, new_freq=sr)
             result = resampler(tensor)
             if result.shape[0] == 1:
-                out: _Audio = result.squeeze(0).numpy().astype(np.float32)
+                resampled: _Audio = result.squeeze(0).numpy().astype(np.float32)
             else:
-                out = result.T.numpy().astype(np.float32)
-            return out
+                resampled = result.T.numpy().astype(np.float32)
+            return resampled
         except ImportError:
             from scipy.signal import resample as scipy_resample
 
             new_len = int(len(audio) / factor)
-            out = np.asarray(scipy_resample(audio, new_len), dtype=np.float32)
-            return out
+            fallback: _Audio = np.asarray(scipy_resample(audio, new_len), dtype=np.float32)
+            return fallback
