@@ -42,9 +42,7 @@ class MelExtractOperator(Operator):
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, MelExtractConfig)
         mel_dir = (
-            Path(self.config.output_dir)
-            if self.config.output_dir
-            else self.ctx.stage_dir / "mel"
+            Path(self.config.output_dir) if self.config.output_dir else self.ctx.stage_dir / "mel"
         )
         mel_dir.mkdir(parents=True, exist_ok=True)
 
@@ -69,9 +67,7 @@ class MelExtractOperator(Operator):
             metrics = dict(cut.metrics)
             metrics["mel_frames"] = mel.shape[1]
 
-            out_cuts.append(
-                cut.model_copy(update={"custom": custom, "metrics": metrics})
-            )
+            out_cuts.append(cut.model_copy(update={"custom": custom, "metrics": metrics}))
         return CutSet(out_cuts)
 
     def _compute_mel(self, audio: np.ndarray, sr: int) -> Any:  # type: ignore[type-arg]
