@@ -1,0 +1,1874 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>TTS Tools Implementation Plan - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tts-tools-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TTS Tools Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-speaker_similarity-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: speaker_similarity operator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-cer_wer-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: cer_wer operator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-codec_tokenize-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: codec_tokenize operator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-toolspy-examples-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: tools.py + examples + README
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tts-tools-implementation-plan">TTS Tools Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Add 3 TTS-oriented operators: speaker_similarity (cosine similarity scoring), codec_tokenize (EnCodec/DAC neural audio codec), cer_wer (text accuracy metrics).</p>
+<p><strong>Architecture:</strong> All three follow the existing operator pattern. speaker_similarity and cer_wer are pure-Python quality operators (no new deps). codec_tokenize supports EnCodec and DAC backends behind a new <code>codec</code> extras group.</p>
+<p><strong>Tech Stack:</strong> numpy (speaker_similarity, cer_wer), encodec/descript-audio-codec (codec_tokenize).</p>
+<p><strong>Spec reference:</strong> <code>docs/superpowers/specs/2026-04-15-tts-tools-design.md</code></p>
+<hr />
+<h2 id="file-structure">File Structure</h2>
+<div class="highlight"><pre><span></span><code>Created:
+  src/voxkitchen/operators/quality/speaker_similarity.py
+  src/voxkitchen/operators/quality/cer_wer.py
+  src/voxkitchen/operators/annotate/codec_tokenize.py
+  tests/unit/operators/quality/test_speaker_similarity.py
+  tests/unit/operators/quality/test_cer_wer.py
+  tests/unit/operators/annotate/test_codec_tokenize.py
+  examples/pipelines/tts-speaker-filter.yaml
+  examples/pipelines/codec-tokenize.yaml
+
+Modified:
+  src/voxkitchen/operators/__init__.py
+  src/voxkitchen/tools.py
+  pyproject.toml
+  README.md
+</code></pre></div>
+<p><strong>Responsibility per file:</strong></p>
+<ul>
+<li><code>speaker_similarity.py</code> — load reference .npy embedding, compute cosine sim per cut, write to metrics</li>
+<li><code>cer_wer.py</code> — compute character/word error rate between two text fields, write to metrics</li>
+<li><code>codec_tokenize.py</code> — encode audio to discrete tokens via EnCodec or DAC, write to custom</li>
+<li><code>tools.py</code> — add <code>compute_speaker_similarity()</code> and <code>tokenize_audio()</code> convenience functions</li>
+</ul>
+<hr />
+<h2 id="task-1-speaker_similarity-operator">Task 1: speaker_similarity operator</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/quality/speaker_similarity.py</code>
+- Create: <code>tests/unit/operators/quality/test_speaker_similarity.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write tests</strong></li>
+</ul>
+<p>Create <code>tests/unit/operators/quality/test_speaker_similarity.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Unit tests for speaker_similarity operator.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.quality.speaker_similarity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SpeakerSimilarityConfig</span><span class="p">,</span>
+    <span class="n">SpeakerSimilarityOperator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.pipeline.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cut</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.provenance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provenance</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunContext</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">RunContext</span><span class="p">(</span>
+        <span class="n">work_dir</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
+        <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="n">stage_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span>
+        <span class="n">num_gpus</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_cpu_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">gc_mode</span><span class="o">=</span><span class="s2">&quot;aggressive&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cut_with_embedding</span><span class="p">(</span><span class="n">cid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">embedding</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cut</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Cut</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="s2">&quot;rec-1&quot;</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">supervisions</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">custom</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;speaker_embedding&quot;</span><span class="p">:</span> <span class="n">embedding</span><span class="p">},</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+            <span class="n">source_cut_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">generated_by</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;00_ingest&quot;</span><span class="p">,</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+            <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cut_no_embedding</span><span class="p">(</span><span class="n">cid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cut</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Cut</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="s2">&quot;rec-1&quot;</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">supervisions</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+            <span class="n">source_cut_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">generated_by</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;00_ingest&quot;</span><span class="p">,</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+            <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speaker_similarity_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">get_operator</span><span class="p">(</span><span class="s2">&quot;speaker_similarity&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SpeakerSimilarityOperator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speaker_similarity_identical_embedding</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;ref.npy&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut_with_embedding</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span> <span class="n">ref</span><span class="p">)])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">SpeakerSimilarityConfig</span><span class="p">(</span><span class="n">reference_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;ref.npy&quot;</span><span class="p">))</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">SpeakerSimilarityOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;speaker_similarity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pytest</span><span class="o">.</span><span class="n">approx</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speaker_similarity_orthogonal_embedding</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;ref.npy&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut_with_embedding</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">SpeakerSimilarityConfig</span><span class="p">(</span><span class="n">reference_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;ref.npy&quot;</span><span class="p">))</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">SpeakerSimilarityOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;speaker_similarity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pytest</span><span class="o">.</span><span class="n">approx</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">abs</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speaker_similarity_no_embedding_returns_zero</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;ref.npy&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut_no_embedding</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">)])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">SpeakerSimilarityConfig</span><span class="p">(</span><span class="n">reference_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;ref.npy&quot;</span><span class="p">))</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">SpeakerSimilarityOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;speaker_similarity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run tests to verify they fail</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/quality/test_speaker_similarity.py<span class="w"> </span>-v
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 3: Implement speaker_similarity</strong></li>
+</ul>
+<p>Create <code>src/voxkitchen/operators/quality/speaker_similarity.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Speaker similarity operator: cosine similarity against a reference embedding.</span>
+
+<span class="sd">Compares each cut&#39;s speaker embedding (from a prior ``speaker_embed`` stage)</span>
+<span class="sd">against a reference embedding loaded from a .npy file. Writes the cosine</span>
+<span class="sd">similarity score to ``metrics[&quot;speaker_similarity&quot;]`` (0-1).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">OperatorConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cut</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SpeakerSimilarityConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">reference_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">embedding_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;speaker_embedding&quot;</span>
+
+
+<span class="nd">@register_operator</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpeakerSimilarityOperator</span><span class="p">(</span><span class="n">Operator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Score speaker similarity against a reference embedding (cosine).&quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;speaker_similarity&quot;</span>
+    <span class="n">config_cls</span> <span class="o">=</span> <span class="n">SpeakerSimilarityConfig</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">produces_audio</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reads_audio_bytes</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">_ref</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">SpeakerSimilarityConfig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">reference_path</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">norm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span> <span class="o">/</span> <span class="n">norm</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">SpeakerSimilarityConfig</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">embedding_key</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cut</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">emb_raw</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">custom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">emb_raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;cut </span><span class="si">%s</span><span class="s2"> has no </span><span class="si">%s</span><span class="s2">, setting similarity=0&quot;</span><span class="p">,</span> <span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">sim</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">emb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">emb_raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">norm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">emb</span> <span class="o">=</span> <span class="n">emb</span> <span class="o">/</span> <span class="n">norm</span>
+                <span class="n">sim</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">emb</span><span class="p">))</span>
+                <span class="n">sim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sim</span><span class="p">))</span>
+
+            <span class="n">metrics</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;speaker_similarity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">}))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Register in operators/<strong>init</strong>.py</strong></li>
+</ul>
+<p>Add after existing quality operators:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.quality</span><span class="w"> </span><span class="kn">import</span> <span class="n">speaker_similarity</span> <span class="k">as</span> <span class="n">_qual_spksim</span>  <span class="c1"># noqa: F401</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Run tests, verify pass</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/quality/test_speaker_similarity.py<span class="w"> </span>-v
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat(operators): add speaker_similarity operator&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="task-2-cer_wer-operator">Task 2: cer_wer operator</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/quality/cer_wer.py</code>
+- Create: <code>tests/unit/operators/quality/test_cer_wer.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write tests</strong></li>
+</ul>
+<p>Create <code>tests/unit/operators/quality/test_cer_wer.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Unit tests for cer_wer operator.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.quality.cer_wer</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CerWerConfig</span><span class="p">,</span>
+    <span class="n">CerWerOperator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.pipeline.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cut</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.provenance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provenance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.supervision</span><span class="w"> </span><span class="kn">import</span> <span class="n">Supervision</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunContext</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">RunContext</span><span class="p">(</span>
+        <span class="n">work_dir</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
+        <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="n">stage_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;cer&quot;</span><span class="p">,</span>
+        <span class="n">num_gpus</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_cpu_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">gc_mode</span><span class="o">=</span><span class="s2">&quot;aggressive&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cut</span><span class="p">(</span><span class="n">cid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hyp_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ref_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cut</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Cut</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="s2">&quot;rec-1&quot;</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">supervisions</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">Supervision</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sup-</span><span class="si">{</span><span class="n">cid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">recording_id</span><span class="o">=</span><span class="s2">&quot;rec-1&quot;</span><span class="p">,</span>
+                <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">hyp_text</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">custom</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;reference_text&quot;</span><span class="p">:</span> <span class="n">ref_text</span><span class="p">},</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+            <span class="n">source_cut_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">generated_by</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;00_ingest&quot;</span><span class="p">,</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+            <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cer_wer_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">get_operator</span><span class="p">(</span><span class="s2">&quot;cer_wer&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">CerWerOperator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cer_wer_identical_text</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">)])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CerWerConfig</span><span class="p">()</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">CerWerOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cer&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wer&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cer_wer_completely_wrong</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span> <span class="s2">&quot;xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;abc&quot;</span><span class="p">)])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CerWerConfig</span><span class="p">()</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">CerWerOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cer&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pytest</span><span class="o">.</span><span class="n">approx</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wer&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pytest</span><span class="o">.</span><span class="n">approx</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cer_wer_partial_match</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span> <span class="s2">&quot;hello wrld&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">)])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CerWerConfig</span><span class="p">()</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">CerWerOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cer&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+    <span class="k">assert</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wer&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">1.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cer_wer_no_reference_skips</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">cut</span> <span class="o">=</span> <span class="n">Cut</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="s2">&quot;rec-1&quot;</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">supervisions</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">Supervision</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;sup-c0&quot;</span><span class="p">,</span>
+                <span class="n">recording_id</span><span class="o">=</span><span class="s2">&quot;rec-1&quot;</span><span class="p">,</span>
+                <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+            <span class="n">source_cut_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">generated_by</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;00_ingest&quot;</span><span class="p">,</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+            <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">cut</span><span class="p">])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CerWerConfig</span><span class="p">()</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">CerWerOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="s2">&quot;cer&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">metrics</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run tests to verify they fail</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/quality/test_cer_wer.py<span class="w"> </span>-v
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 3: Implement cer_wer</strong></li>
+</ul>
+<p>Create <code>src/voxkitchen/operators/quality/cer_wer.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;CER/WER operator: compute character and word error rates.</span>
+
+<span class="sd">Compares ASR hypothesis text (from supervisions) against a reference</span>
+<span class="sd">text (from cut.custom). Writes ``metrics[&quot;cer&quot;]`` and ``metrics[&quot;wer&quot;]``.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">OperatorConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cut</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CerWerConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">hypothesis_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span>
+    <span class="n">reference_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;reference_text&quot;</span>
+
+
+<span class="nd">@register_operator</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CerWerOperator</span><span class="p">(</span><span class="n">Operator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute CER and WER between ASR output and reference text.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;cer_wer&quot;</span>
+    <span class="n">config_cls</span> <span class="o">=</span> <span class="n">CerWerConfig</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">produces_audio</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reads_audio_bytes</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">CerWerConfig</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cut</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">custom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">reference_field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cut</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">hyp</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">sup</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sup</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                    <span class="n">hyp</span> <span class="o">=</span> <span class="n">sup</span><span class="o">.</span><span class="n">text</span>
+                    <span class="k">break</span>
+
+            <span class="n">cer</span> <span class="o">=</span> <span class="n">_edit_distance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">hyp</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ref</span><span class="p">)))</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ref</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">wer</span> <span class="o">=</span> <span class="n">_edit_distance</span><span class="p">(</span><span class="n">hyp</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()),</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">metrics</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;cer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">cer</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;wer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">wer</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">}))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_edit_distance</span><span class="p">(</span><span class="n">hyp</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">ref</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Levenshtein edit distance between two sequences.&quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyp</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">dp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">hyp</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ref</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="n">dp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">min</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">dp</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">dp</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Register in operators/<strong>init</strong>.py</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.quality</span><span class="w"> </span><span class="kn">import</span> <span class="n">cer_wer</span> <span class="k">as</span> <span class="n">_qual_cer_wer</span>  <span class="c1"># noqa: F401</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Run tests, verify pass</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/quality/test_cer_wer.py<span class="w"> </span>-v
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat(operators): add cer_wer operator&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="task-3-codec_tokenize-operator">Task 3: codec_tokenize operator</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/annotate/codec_tokenize.py</code>
+- Create: <code>tests/unit/operators/annotate/test_codec_tokenize.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code>
+- Modify: <code>pyproject.toml</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write tests</strong></li>
+</ul>
+<p>Create <code>tests/unit/operators/annotate/test_codec_tokenize.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Unit tests for codec_tokenize operator.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">encodec</span>  <span class="c1"># noqa: F401</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;encodec not available&quot;</span><span class="p">,</span> <span class="n">allow_module_level</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.annotate.codec_tokenize</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CodecTokenizeConfig</span><span class="p">,</span>
+    <span class="n">CodecTokenizeOperator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.pipeline.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cut</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.provenance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provenance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.utils.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">recording_from_file</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunContext</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">RunContext</span><span class="p">(</span>
+        <span class="n">work_dir</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">,</span>
+        <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="n">stage_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;codec&quot;</span><span class="p">,</span>
+        <span class="n">num_gpus</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_cpu_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">gc_mode</span><span class="o">=</span><span class="s2">&quot;aggressive&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cut_from_path</span><span class="p">(</span><span class="n">audio_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cut</span><span class="p">:</span>
+    <span class="n">rec</span> <span class="o">=</span> <span class="n">recording_from_file</span><span class="p">(</span><span class="n">audio_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Cut</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cut-</span><span class="si">{</span><span class="n">rec</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="n">rec</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">rec</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">recording</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
+        <span class="n">supervisions</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+            <span class="n">source_cut_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">generated_by</span><span class="o">=</span><span class="s2">&quot;fixture&quot;</span><span class="p">,</span>
+            <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;00_ingest&quot;</span><span class="p">,</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+            <span class="n">pipeline_run_id</span><span class="o">=</span><span class="s2">&quot;run-test&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_codec_tokenize_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">get_operator</span><span class="p">(</span><span class="s2">&quot;codec_tokenize&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">CodecTokenizeOperator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_codec_tokenize_does_not_produce_audio</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">CodecTokenizeOperator</span><span class="o">.</span><span class="n">produces_audio</span> <span class="ow">is</span> <span class="kc">False</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_codec_tokenize_encodec_produces_tokens</span><span class="p">(</span>
+    <span class="n">mono_wav_16k</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_ctx</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CutSet</span><span class="p">([</span><span class="n">_cut_from_path</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">)])</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CodecTokenizeConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;encodec&quot;</span><span class="p">)</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">CodecTokenizeOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">custom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codec_tokens&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># at least 1 codebook</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_backend&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;encodec&quot;</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run tests to verify they fail</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/annotate/test_codec_tokenize.py::test_codec_tokenize_is_registered<span class="w"> </span>-v
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 3: Implement codec_tokenize</strong></li>
+</ul>
+<p>Create <code>src/voxkitchen/operators/annotate/codec_tokenize.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Neural audio codec tokenization operator.</span>
+
+<span class="sd">Encode audio into discrete token sequences using EnCodec or DAC.</span>
+<span class="sd">Tokens are stored in ``cut.custom[&quot;codec_tokens&quot;]`` as a list of</span>
+<span class="sd">lists (one per codebook layer).</span>
+
+<span class="sd">Used for codec-LM TTS training (VALL-E, CosyVoice, Fish-Speech, etc.).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">OperatorConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cut</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.utils.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_audio_for_cut</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CodecTokenizeConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;encodec&quot;</span>  <span class="c1"># &quot;encodec&quot; or &quot;dac&quot;</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">6.0</span>  <span class="c1"># target bandwidth in kbps (encodec only)</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;encodec_24khz&quot;</span>  <span class="c1"># model variant</span>
+
+
+<span class="nd">@register_operator</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CodecTokenizeOperator</span><span class="p">(</span><span class="n">Operator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode audio into discrete codec tokens (EnCodec / DAC).&quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;codec_tokenize&quot;</span>
+    <span class="n">config_cls</span> <span class="o">=</span> <span class="n">CodecTokenizeConfig</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;gpu&quot;</span>
+    <span class="n">produces_audio</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reads_audio_bytes</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">required_extras</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;codec&quot;</span><span class="p">]</span>
+
+    <span class="n">_model</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">_codec_sr</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">CodecTokenizeConfig</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;encodec&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_encodec</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;dac&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dac</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;unknown codec backend: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span><span class="si">!r}</span><span class="s2">, use &#39;encodec&#39; or &#39;dac&#39;&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_encodec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">encodec</span><span class="w"> </span><span class="kn">import</span> <span class="n">EncodecModel</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">CodecTokenizeConfig</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;encodec_48khz&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">EncodecModel</span><span class="o">.</span><span class="n">encodec_model_48khz</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span> <span class="o">=</span> <span class="mi">48000</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">EncodecModel</span><span class="o">.</span><span class="n">encodec_model_24khz</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span> <span class="o">=</span> <span class="mi">24000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">set_target_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_dac</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">dac</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">dac</span><span class="o">.</span><span class="n">DAC</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dac</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;44khz&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span> <span class="o">=</span> <span class="mi">44100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">CodecTokenizeConfig</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;encodec&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_encodec</span><span class="p">(</span><span class="n">cuts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_dac</span><span class="p">(</span><span class="n">cuts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_encodec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+        <span class="n">out_cuts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cut</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">load_audio_for_cut</span><span class="p">(</span><span class="n">cut</span><span class="p">)</span>
+            <span class="n">audio_resampled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_if_needed</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">wav</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">audio_resampled</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">wav</span><span class="p">)</span>
+                <span class="c1"># encoded is a list of EncodedFrame, each has .codes [B, K, T]</span>
+                <span class="n">codes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">frame</span><span class="o">.</span><span class="n">codes</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">encoded</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">tokens</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">codes</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="n">custom</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">custom</span><span class="p">)</span> <span class="k">if</span> <span class="n">cut</span><span class="o">.</span><span class="n">custom</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokens</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_backend&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;encodec&quot;</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_sr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_n_codebooks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+            <span class="n">out_cuts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;custom&quot;</span><span class="p">:</span> <span class="n">custom</span><span class="p">}))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out_cuts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_dac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+        <span class="n">out_cuts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cut</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">load_audio_for_cut</span><span class="p">(</span><span class="n">cut</span><span class="p">)</span>
+            <span class="n">audio_resampled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_if_needed</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">wav</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">audio_resampled</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">wav</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span><span class="p">)</span>
+                <span class="n">z</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">latents</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">tokens</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">codes</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="n">custom</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">custom</span><span class="p">)</span> <span class="k">if</span> <span class="n">cut</span><span class="o">.</span><span class="n">custom</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokens</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_backend&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dac&quot;</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_sr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_sr</span>
+            <span class="n">custom</span><span class="p">[</span><span class="s2">&quot;codec_n_codebooks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+            <span class="n">out_cuts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;custom&quot;</span><span class="p">:</span> <span class="n">custom</span><span class="p">}))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out_cuts</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resample_if_needed</span><span class="p">(</span><span class="n">audio</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">orig_sr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">target_sr</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">orig_sr</span> <span class="o">==</span> <span class="n">target_sr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">audio</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">torchaudio</span>
+
+            <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">resampler</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">orig_freq</span><span class="o">=</span><span class="n">orig_sr</span><span class="p">,</span> <span class="n">new_freq</span><span class="o">=</span><span class="n">target_sr</span><span class="p">)</span>
+            <span class="n">resampled</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>  <span class="c1"># type: ignore[assignment]</span>
+            <span class="k">return</span> <span class="n">resampled</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span> <span class="k">as</span> <span class="n">scipy_resample</span>
+
+            <span class="n">new_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span> <span class="o">*</span> <span class="n">target_sr</span> <span class="o">/</span> <span class="n">orig_sr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">scipy_resample</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">new_len</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Update pyproject.toml — add codec extras</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">codec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;encodec&gt;=0.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;descript-audio-codec&gt;=1.0&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>Add <code>codec</code> to the <code>all</code> extras group.</p>
+<ul>
+<li>[ ] <strong>Step 5: Register in operators/<strong>init</strong>.py</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.annotate</span><span class="w"> </span><span class="kn">import</span> <span class="n">codec_tokenize</span> <span class="k">as</span> <span class="n">_annotate_codec</span>  <span class="c1"># noqa: F401</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>  <span class="c1"># encodec / dac not installed</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 6: Run tests, verify pass</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/annotate/test_codec_tokenize.py::test_codec_tokenize_is_registered<span class="w"> </span>-v
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat(operators): add codec_tokenize operator (EnCodec + DAC)&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="task-4-toolspy-examples-readme">Task 4: tools.py + examples + README</h2>
+<p><strong>Files:</strong>
+- Modify: <code>src/voxkitchen/tools.py</code>
+- Modify: <code>README.md</code>
+- Create: <code>examples/pipelines/tts-speaker-filter.yaml</code>
+- Create: <code>examples/pipelines/codec-tokenize.yaml</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Add tools.py convenience functions</strong></li>
+</ul>
+<p>Add to end of <code>src/voxkitchen/tools.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Speaker Similarity</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_speaker_similarity</span><span class="p">(</span>
+    <span class="n">audio_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">reference_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wespeaker&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute speaker similarity between an audio file and a reference.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reference_path: Path to a .npy file with the reference speaker embedding.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Cosine similarity (0-1). Higher = more similar.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        sim = compute_speaker_similarity(&quot;test.wav&quot;, &quot;reference.npy&quot;)</span>
+<span class="sd">        print(f&quot;Similarity: {sim:.3f}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">extract_speaker_embedding</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">audio_path</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">reference_path</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">emb_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">emb</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="n">ref_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+    <span class="n">emb_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">emb_arr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ref_norm</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">emb_norm</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ref</span> <span class="o">/</span> <span class="n">ref_norm</span><span class="p">,</span> <span class="n">emb_arr</span> <span class="o">/</span> <span class="n">emb_norm</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sim</span><span class="p">))</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Codec Tokenization</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">tokenize_audio</span><span class="p">(</span>
+    <span class="n">audio_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;encodec&quot;</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">6.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode audio into discrete codec tokens.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        backend: &quot;encodec&quot; or &quot;dac&quot;.</span>
+<span class="sd">        bandwidth: Target bandwidth in kbps (encodec only).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of token sequences, one per codebook layer.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        tokens = tokenize_audio(&quot;speech.wav&quot;, backend=&quot;encodec&quot;)</span>
+<span class="sd">        print(f&quot;Codebooks: {len(tokens)}, tokens/codebook: {len(tokens[0])}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.annotate.codec_tokenize</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">CodecTokenizeConfig</span><span class="p">,</span>
+        <span class="n">CodecTokenizeOperator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">audio_path</span><span class="p">)</span>
+    <span class="n">cut</span> <span class="o">=</span> <span class="n">_make_cut</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">_make_ctx</span><span class="p">()</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CodecTokenizeConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">CodecTokenizeOperator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">CutSet</span><span class="p">([</span><span class="n">cut</span><span class="p">]))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+
+    <span class="n">out_cut</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="n">tokens</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">out_cut</span><span class="o">.</span><span class="n">custom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codec_tokens&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">return</span> <span class="n">tokens</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Create example pipelines</strong></li>
+</ul>
+<p><code>examples/pipelines/tts-speaker-filter.yaml</code>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Filter audio by speaker similarity to a reference.</span>
+<span class="c1"># Usage:</span>
+<span class="c1">#   1. Extract a reference embedding: python -c &quot;</span>
+<span class="c1">#      from voxkitchen.tools import extract_speaker_embedding</span>
+<span class="c1">#      import numpy as np</span>
+<span class="c1">#      emb = extract_speaker_embedding(&#39;reference_speaker.wav&#39;)</span>
+<span class="c1">#      np.save(&#39;reference.npy&#39;, emb)&quot;</span>
+<span class="c1">#   2. vkit run examples/pipelines/tts-speaker-filter.yaml</span>
+<span class="c1">#</span>
+<span class="c1"># Requires: pip install voxkitchen[audio,speaker]</span>
+
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts-speaker-filter</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dir</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">embed</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_embed</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> method</span><span class="p">:</span><span class="w"> </span><span class="nv">wespeaker</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">similarity</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_similarity</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">reference_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./reference.npy</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;metrics.speaker_similarity</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">0.6&quot;</span><span class="p p-Indicator">]</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
+</code></pre></div></p>
+<p><code>examples/pipelines/codec-tokenize.yaml</code>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Encode audio into neural codec tokens for codec-LM TTS.</span>
+<span class="c1"># Usage: vkit run examples/pipelines/codec-tokenize.yaml</span>
+<span class="c1"># Requires: pip install voxkitchen[audio,codec]</span>
+
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codec-tokenize</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Encode</span><span class="nv"> </span><span class="s">audio</span><span class="nv"> </span><span class="s">into</span><span class="nv"> </span><span class="s">EnCodec/DAC</span><span class="nv"> </span><span class="s">discrete</span><span class="nv"> </span><span class="s">tokens&quot;</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dir</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">24000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tokenize</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codec_tokenize</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodec</span>
+<span class="w">      </span><span class="nt">bandwidth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6.0</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
+</code></pre></div></p>
+<ul>
+<li>[ ] <strong>Step 3: Update README operator count and table</strong></li>
+</ul>
+<p>Update <code>43</code> → <code>46</code>, add <code>speaker_similarity</code>, <code>cer_wer</code>, <code>codec_tokenize</code> to table.</p>
+<ul>
+<li>[ ] <strong>Step 4: Regenerate operator docs</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>scripts/gen_operator_docs.py<span class="w"> </span>-o<span class="w"> </span>docs/reference/operators.md
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: tools API, examples, docs for TTS operators&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="verification">Verification</h2>
+<ol>
+<li>
+<p><strong>Full test suite:</strong>
+   <div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>-v<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;not slow and not gpu&quot;</span><span class="w"> </span>--tb<span class="o">=</span>short
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Lint + format:</strong>
+   <div class="highlight"><pre><span></span><code>ruff<span class="w"> </span>check<span class="w"> </span>src<span class="w"> </span>tests<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>--check<span class="w"> </span>src<span class="w"> </span>tests
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Type check:</strong>
+   <div class="highlight"><pre><span></span><code>mypy<span class="w"> </span>src/voxkitchen
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Operator registration:</strong>
+   <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>operators<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;speaker_similarity|cer_wer|codec_tokenize&quot;</span>
+</code></pre></div></p>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -847,6 +847,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#codec_tokenize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        codec_tokenize
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#emotion_recognize" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -884,6 +895,17 @@
     <span class="md-ellipsis">
       
         gender_classify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mel_extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mel_extract
       
     </span>
   </a>
@@ -1051,6 +1073,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#cer_wer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cer_wer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#clipping_detect" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1110,6 +1143,17 @@
     <span class="md-ellipsis">
       
         snr_estimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#speaker_similarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        speaker_similarity
       
     </span>
   </a>
@@ -1604,6 +1648,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#codec_tokenize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        codec_tokenize
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#emotion_recognize" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1641,6 +1696,17 @@
     <span class="md-ellipsis">
       
         gender_classify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mel_extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mel_extract
       
     </span>
   </a>
@@ -1808,6 +1874,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#cer_wer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cer_wer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#clipping_detect" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1867,6 +1944,17 @@
     <span class="md-ellipsis">
       
         snr_estimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#speaker_similarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        speaker_similarity
       
     </span>
   </a>
@@ -2021,7 +2109,7 @@
 
 
 <h1 id="operator-reference">Operator Reference</h1>
-<p>VoxKitchen ships with <strong>43 built-in operators</strong> across 7 categories.</p>
+<p>VoxKitchen ships with <strong>47 built-in operators</strong> across 7 categories.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Run <code>vkit operators</code> to see this list in your terminal, or <code>vkit operators show &lt;name&gt;</code> for details.</p>
@@ -2031,8 +2119,8 @@
 <li><a href="#basic">Audio Processing</a> (4 operators)</li>
 <li><a href="#segment">Segmentation</a> (4 operators)</li>
 <li><a href="#augment">Data Augmentation</a> (4 operators)</li>
-<li><a href="#annotate">Annotation</a> (15 operators)</li>
-<li><a href="#quality">Quality &amp; Filtering</a> (9 operators)</li>
+<li><a href="#annotate">Annotation</a> (17 operators)</li>
+<li><a href="#quality">Quality &amp; Filtering</a> (11 operators)</li>
 <li><a href="#pack">Output / Packing</a> (6 operators)</li>
 <li><a href="#noop">Utility</a> (1 operators)</li>
 </ul>
@@ -2516,6 +2604,51 @@ creates child Cuts for each speech region.  No new audio is written.</p>
 </code></pre></div>
 <hr />
 <h2 id="annotate">Annotation</h2>
+<h3 id="codec_tokenize"><code>codec_tokenize</code></h3>
+<p><strong>Encode audio into discrete codec tokens (EnCodec / DAC).</strong></p>
+<ul>
+<li><strong>Device:</strong> gpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[codec]</code></li>
+<li><strong>Produces audio:</strong> No</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend</code></td>
+<td>str</td>
+<td><code>encodec</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>bandwidth</code></td>
+<td>float</td>
+<td><code>6.0</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>str</td>
+<td><code>encodec_24khz</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_codec_tokenize</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codec_tokenize</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodec</span>
+<span class="w">    </span><span class="nt">bandwidth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6.0</span>
+<span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodec_24khz</span>
+</code></pre></div>
+<hr />
 <h3 id="emotion_recognize"><code>emotion_recognize</code></h3>
 <p><strong>Recognize speech emotions using emotion2vec (9 classes: angry, happy, sad, ...).</strong></p>
 <ul>
@@ -2720,6 +2853,79 @@ inaSpeechSegmenter</code> (uses TensorFlow).</p>
 <span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f0</span>
 <span class="w">    </span><span class="nt">f0_threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">165.0</span>
 <span class="w">    </span><span class="nt">speechbrain_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speechbrain/spkrec-ecapa-voxceleb</span>
+</code></pre></div>
+<hr />
+<h3 id="mel_extract"><code>mel_extract</code></h3>
+<p><strong>Extract mel spectrogram and save as .npy file per cut.</strong></p>
+<ul>
+<li><strong>Device:</strong> cpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[core]</code></li>
+<li><strong>Produces audio:</strong> No</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n_fft</code></td>
+<td>int</td>
+<td><code>1024</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>hop_length</code></td>
+<td>int</td>
+<td><code>256</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>n_mels</code></td>
+<td>int</td>
+<td><code>80</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>fmin</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>fmax</code></td>
+<td>float</td>
+<td>None</td>
+<td><code>8000.0</code></td>
+</tr>
+<tr>
+<td><code>ref_db</code></td>
+<td>float</td>
+<td><code>20.0</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>output_dir</code></td>
+<td>str</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_mel_extract</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mel_extract</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">n_fft</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1024</span>
+<span class="w">    </span><span class="nt">hop_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
+<span class="w">    </span><span class="nt">n_mels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">fmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">fmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000.0</span>
+<span class="w">    </span><span class="nt">ref_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20.0</span>
+<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
 </code></pre></div>
 <hr />
 <h3 id="paraformer_asr"><code>paraformer_asr</code></h3>
@@ -3308,6 +3514,44 @@ frequency where energy drops sharply (ratio method). Writes:
 <span class="w">    </span><span class="nt">hop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
 </code></pre></div>
 <hr />
+<h3 id="cer_wer"><code>cer_wer</code></h3>
+<p><strong>Compute CER and WER between ASR output and reference text.</strong></p>
+<ul>
+<li><strong>Device:</strong> cpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[core]</code></li>
+<li><strong>Produces audio:</strong> No</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hypothesis_field</code></td>
+<td>str</td>
+<td><code>text</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>reference_field</code></td>
+<td>str</td>
+<td><code>reference_text</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_cer_wer</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cer_wer</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hypothesis_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+<span class="w">    </span><span class="nt">reference_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference_text</span>
+</code></pre></div>
+<hr />
 <h3 id="clipping_detect"><code>clipping_detect</code></h3>
 <p><strong>Detect audio clipping and store the ratio of clipped samples.</strong></p>
 <p>Clipping occurs when recording levels are too high, causing the
@@ -3516,6 +3760,44 @@ No audio is written; only the metrics dict is updated.</p>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_snr_estimate</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr_estimate</span>
+</code></pre></div>
+<hr />
+<h3 id="speaker_similarity"><code>speaker_similarity</code></h3>
+<p><strong>Score speaker similarity against a reference embedding (cosine).</strong></p>
+<ul>
+<li><strong>Device:</strong> cpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[core]</code></li>
+<li><strong>Produces audio:</strong> No</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reference_path</code></td>
+<td>str</td>
+<td>required</td>
+<td></td>
+</tr>
+<tr>
+<td><code>embedding_key</code></td>
+<td>str</td>
+<td><code>speaker_embedding</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_speaker_similarity</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_similarity</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">reference_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;str&gt;</span>
+<span class="w">    </span><span class="nt">embedding_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_embedding</span>
 </code></pre></div>
 <hr />
 <h3 id="utmos_score"><code>utmos_score</code></h3>
