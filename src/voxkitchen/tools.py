@@ -578,7 +578,8 @@ def extract_speaker_embedding(
         op.teardown()
 
     out_cut = next(iter(result))
-    return out_cut.custom.get("speaker_embedding", [])
+    emb: list[float] = out_cut.custom.get("speaker_embedding", [])
+    return emb
 
 
 # ---------------------------------------------------------------------------
@@ -693,4 +694,5 @@ def align_words(
         op.teardown()
 
     out_cut = next(iter(result))
-    return out_cut.custom.get("word_alignments", [])
+    alignments: list[dict[str, object]] = out_cut.custom.get("word_alignments", [])
+    return alignments

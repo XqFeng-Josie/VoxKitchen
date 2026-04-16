@@ -53,11 +53,13 @@ class SpeakerEmbedOperator(Operator):
     def _setup_wespeaker(self) -> None:
         import wespeaker
 
+        assert isinstance(self.config, SpeakerEmbedConfig)
         self._model = wespeaker.load_model(self.config.wespeaker_model)
 
     def _setup_speechbrain(self) -> None:
         from speechbrain.inference.speaker import EncoderClassifier
 
+        assert isinstance(self.config, SpeakerEmbedConfig)
         device = self.ctx.device if hasattr(self.ctx, "device") else "cpu"
         self._model = EncoderClassifier.from_hparams(
             source=self.config.speechbrain_model,
@@ -87,6 +89,7 @@ class SpeakerEmbedOperator(Operator):
 
             custom = dict(cut.custom) if cut.custom else {}
             custom["speaker_embedding"] = emb_list
+            assert isinstance(self.config, SpeakerEmbedConfig)
             custom["speaker_embedding_model"] = f"wespeaker/{self.config.wespeaker_model}"
             custom["speaker_embedding_dim"] = len(emb_list)
 
@@ -105,6 +108,7 @@ class SpeakerEmbedOperator(Operator):
 
             custom = dict(cut.custom) if cut.custom else {}
             custom["speaker_embedding"] = emb_list
+            assert isinstance(self.config, SpeakerEmbedConfig)
             custom["speaker_embedding_model"] = f"speechbrain/{self.config.speechbrain_model}"
             custom["speaker_embedding_dim"] = len(emb_list)
 

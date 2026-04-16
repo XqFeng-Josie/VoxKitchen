@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import soundfile as sf
@@ -145,4 +146,5 @@ class NoiseAugmentOperator(Operator):
         target_noise_power = sig_power / (10.0 ** (snr_db / 10.0))
         scale = np.sqrt(target_noise_power / noise_power)
         mixed = signal + noise * scale
-        return np.clip(mixed, -1.0, 1.0).astype(np.float32)
+        result: np.ndarray[Any, np.dtype[np.float32]] = np.clip(mixed, -1.0, 1.0).astype(np.float32)
+        return result

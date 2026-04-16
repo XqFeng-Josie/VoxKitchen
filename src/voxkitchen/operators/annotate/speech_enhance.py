@@ -110,9 +110,9 @@ class SpeechEnhanceOperator(Operator):
 
     @staticmethod
     def _resample(
-        audio: np.ndarray,
+        audio: np.ndarray,  # type: ignore[type-arg]
         orig_sr: int,
-        target_sr: int,  # type: ignore[type-arg]
+        target_sr: int,
     ) -> np.ndarray:  # type: ignore[type-arg]
         try:
             import torch
@@ -120,13 +120,14 @@ class SpeechEnhanceOperator(Operator):
 
             tensor = torch.from_numpy(audio).unsqueeze(0)
             resampler = torchaudio.transforms.Resample(orig_freq=orig_sr, new_freq=target_sr)
-            result = resampler(tensor).squeeze(0).numpy()
-            return result.astype(np.float32)
+            out: np.ndarray[Any, Any] = resampler(tensor).squeeze(0).numpy().astype(np.float32)
+            return out
         except ImportError:
             from scipy.signal import resample as scipy_resample
 
             new_len = int(len(audio) * target_sr / orig_sr)
-            return scipy_resample(audio, new_len).astype(np.float32)
+            out = np.asarray(scipy_resample(audio, new_len), dtype=np.float32)
+            return out
 
     def teardown(self) -> None:
         self._model = None

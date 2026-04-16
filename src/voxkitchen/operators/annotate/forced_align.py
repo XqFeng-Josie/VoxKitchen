@@ -83,6 +83,7 @@ class ForcedAlignOperator(Operator):
         return None
 
     def _align(self, cut: Cut, text: str) -> list[dict[str, Any]]:
+        assert isinstance(self.config, ForcedAlignConfig)
         audio, sr = load_audio_for_cut(cut)
 
         results = self._aligner.align(
