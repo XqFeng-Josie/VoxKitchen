@@ -48,7 +48,7 @@ whisper = ["openai-whisper>=20231117"]
 pitch = ["pyworld>=0.3"]
 dnsmos = ["speechmos>=0.0.1"]
 funasr = ["funasr>=1.0"]
-wenet = ["wenet>=2.0"]
+wenet = ["wenet @ git+https://github.com/wenet-e2e/wenet.git"]
 diarize = ["pyannote.audio>=3.1,<4.0", "huggingface_hub<0.25"]  # pyannote 4.0 requires torch>=2.8
 classify = ["speechbrain>=1.0"]
 gender = ["inaSpeechSegmenter>=0.2"]
