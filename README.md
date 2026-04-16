@@ -1,6 +1,6 @@
 # VoxKitchen
 
-[![CI](https://github.com/voxkitchen/voxkitchen/actions/workflows/ci.yml/badge.svg)](https://github.com/voxkitchen/voxkitchen/actions/workflows/ci.yml)
+[![CI](https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml/badge.svg)](https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 
