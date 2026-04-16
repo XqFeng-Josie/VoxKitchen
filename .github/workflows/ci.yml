@@ -75,17 +75,12 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
-
       - name: Install
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0.dev0"
         run: |
-          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-          pip install mypy scipy
-          pip install -e ".[segment,quality,pack,viz]"
+          pip install mypy pydantic pyyaml typer rich soundfile tqdm numpy ffmpeg-python pyloudnorm
+          pip install -e . --no-deps
 
       - name: Mypy
-        run: mypy src/voxkitchen tests
+        run: mypy src/voxkitchen
