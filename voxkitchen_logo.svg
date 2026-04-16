@@ -1,0 +1,52 @@
+<svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>VoxKitchen logo</title>
+  <desc>VoxKitchen speech data processing toolkit logo: five audio equalizer bars rising from a bowl arc, with wordmark below</desc>
+
+  <style>
+    .bar { fill: #1D9E75; }
+    .bar-mid { fill: #0F6E56; }
+    .bar-accent { fill: #EF9F27; }
+    .bowl-rim { fill: none; stroke: #1D9E75; stroke-width: 3.5; stroke-linecap: round; }
+    .bowl-arc { fill: none; stroke: #1D9E75; stroke-width: 3.5; stroke-linecap: round; }
+    .handle { fill: none; stroke: #1D9E75; stroke-width: 3.5; stroke-linecap: round; }
+    .wm-vox { font-family: Georgia, 'Times New Roman', serif; font-size: 52px; font-weight: 700; font-style: italic; fill: #0F6E56; letter-spacing: -1px; }
+    .wm-kitchen { font-family: Georgia, 'Times New Roman', serif; font-size: 52px; font-weight: 400; fill: #888780; letter-spacing: 1px; }
+    .tagline { font-family: Georgia, 'Times New Roman', serif; font-size: 13.5px; fill: #B4B2A9; letter-spacing: 3.5px; }
+    @media (prefers-color-scheme: dark) {
+      .bar { fill: #5DCAA5; }
+      .bar-mid { fill: #9FE1CB; }
+      .bar-accent { fill: #FAC775; }
+      .bowl-rim { stroke: #5DCAA5; }
+      .bowl-arc { stroke: #5DCAA5; }
+      .handle { stroke: #5DCAA5; }
+      .wm-vox { fill: #9FE1CB; }
+      .wm-kitchen { fill: #888780; }
+      .tagline { fill: #5F5E5A; }
+    }
+  </style>
+
+  <!-- ── Equalizer bars ── -->
+  <rect class="bar"        x="286" y="106" width="13" height="52"  rx="6.5"/>
+  <rect class="bar-mid"    x="310" y="78"  width="13" height="80"  rx="6.5"/>
+  <rect class="bar-accent" x="334" y="50"  width="13" height="108" rx="6.5"/>
+  <rect class="bar-mid"    x="358" y="82"  width="13" height="76"  rx="6.5"/>
+  <rect class="bar"        x="382" y="110" width="13" height="48"  rx="6.5"/>
+
+  <!-- ── Bowl rim ── -->
+  <line class="bowl-rim" x1="272" y1="158" x2="408" y2="158"/>
+
+  <!-- ── Bowl arc ── -->
+  <path class="bowl-arc" d="M 272,158 C 272,204 304,224 340,224 C 376,224 408,204 408,158"/>
+
+  <!-- ── Side handles ── -->
+  <path class="handle" d="M 272,160 C 258,160 252,170 258,176 C 264,182 272,178 272,170"/>
+  <path class="handle" d="M 408,160 C 422,160 428,170 422,176 C 416,182 408,178 408,170"/>
+
+  <!-- ── Wordmark (baseline at y=290, cap-tops ~y=248, bowl bottom at y=224 → 24px clear gap) ── -->
+  <text x="340" y="290" text-anchor="middle">
+    <tspan class="wm-vox">Vox</tspan><tspan class="wm-kitchen">Kitchen</tspan>
+  </text>
+
+  <!-- ── Tagline ── -->
+  <text class="tagline" x="340" y="313" text-anchor="middle">EVERY RECIPE FOR VOICE DATA</text>
+</svg>
