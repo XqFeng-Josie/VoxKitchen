@@ -22,15 +22,38 @@ app.add_typer(operators_app, name="operators")
 
 
 @app.command(help="Scaffold a new pipeline project directory.")
-def init(path: Path = typer.Argument(..., help="Target directory.")) -> None:
+def init(
+    path: Path = typer.Argument(None, help="Target directory."),
+    template: str | None = typer.Option(
+        None, "--template", "-t", help="Pipeline template (tts, asr, cleaning, speaker)."
+    ),
+    list_templates: bool = typer.Option(
+        False, "--list-templates", help="List available templates and exit."
+    ),
+) -> None:
+    if list_templates:
+        from voxkitchen.cli.init_cmd import list_templates as _list
+
+        _list()
+        return
+
+    if path is None:
+        rprint("[red]error:[/red] please provide a target directory.")
+        rprint("[dim]Usage: vkit init <path> [--template tts|asr|cleaning|speaker][/dim]")
+        raise typer.Exit(code=1)
+
     from voxkitchen.cli.init_cmd import init_project
 
     try:
-        init_project(path)
-    except FileExistsError as exc:
+        init_project(path, template=template)
+    except (FileExistsError, KeyError) as exc:
         rprint(f"[red]error:[/red] {exc}")
         raise typer.Exit(code=1) from exc
-    rprint(f"[green]created[/green] pipeline project at {path}")
+
+    msg = f"[green]created[/green] pipeline project at {path}"
+    if template:
+        msg += f" (template: {template})"
+    rprint(msg)
 
 
 @app.command(help="Build an initial CutSet from a data source.")

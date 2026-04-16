@@ -163,6 +163,8 @@ vkit operators show silero_vad
 
 ```
 vkit init <path>              Scaffold a new project
+vkit init <path> -t tts       Use a template (tts, asr, cleaning, speaker)
+vkit init --list-templates    Show available templates
 vkit run <yaml>               Execute a pipeline
 vkit run <yaml> --dry-run     Validate without executing
 vkit validate <yaml>          Check YAML syntax

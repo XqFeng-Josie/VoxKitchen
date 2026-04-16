@@ -1,0 +1,72 @@
+# ASR Training Data Pipeline
+# Prepare augmented ASR training data from raw audio.
+#
+# Flow: resample (16kHz) → VAD → speed perturbation (3x data) →
+#       volume perturbation → ASR labeling → quality filter → pack
+#
+# Usage:
+#   1. Put your raw audio files in ./data/
+#   2. vkit run pipeline.yaml
+#   3. Results in work/ directory
+#
+# Requires: pip install voxkitchen[audio,asr]
+
+version: "0.1"
+name: asr-training-data
+description: "Raw audio → augmented ASR training dataset"
+work_dir: ./work/${name}-${run_id}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+    recursive: true
+
+stages:
+  # 1. Resample to 16kHz mono (ASR standard)
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  # 2. Split on speech segments
+  - name: vad
+    op: silero_vad
+    args:
+      threshold: 0.5
+      min_speech_duration_ms: 500
+
+  # 3. Speed perturbation: 3x data (0.9x, 1.0x, 1.1x)
+  - name: speed_aug
+    op: speed_perturb
+    args:
+      factors: [0.9, 1.0, 1.1]
+
+  # 4. Random volume perturbation
+  - name: volume_aug
+    op: volume_perturb
+    args:
+      min_gain_db: -3.0
+      max_gain_db: 3.0
+
+  # 5. ASR transcription
+  - name: asr
+    op: faster_whisper_asr
+    args:
+      model: large-v3
+      compute_type: float16
+
+  # 6. Quality filter
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration > 1"
+        - "duration < 30"
+
+  # 7. Pack as HuggingFace dataset
+  - name: pack
+    op: pack_huggingface
+    args:
+      output_dir: ./output/hf_dataset

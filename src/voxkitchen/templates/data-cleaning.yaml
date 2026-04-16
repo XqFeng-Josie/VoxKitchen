@@ -1,0 +1,61 @@
+# Data Cleaning Pipeline
+# Clean up raw audio: measure quality, remove duplicates, filter bad files.
+#
+# Flow: resample → SNR + clipping + bandwidth metrics → dedup → filter → pack
+#
+# Usage:
+#   1. Put your raw audio files in ./data/
+#   2. vkit run pipeline.yaml
+#   3. Results in work/ directory
+#
+# Requires: pip install voxkitchen[audio,segment,quality]
+
+version: "0.1"
+name: data-cleaning
+description: "Measure quality metrics, remove duplicates, filter bad audio"
+work_dir: ./work/${name}-${run_id}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+    recursive: true
+
+stages:
+  # 1. Normalize format
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  # 2. Quality metrics
+  - name: snr
+    op: snr_estimate
+
+  - name: clipping
+    op: clipping_detect
+
+  - name: bandwidth
+    op: bandwidth_estimate
+
+  # 3. Remove near-duplicate audio (MFCC + simhash)
+  - name: dedup
+    op: audio_fingerprint_dedup
+    args:
+      similarity_threshold: 3
+
+  # 4. Filter: keep only clean, non-clipped, wideband audio
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration > 0.5"
+        - "duration < 60"
+        - "metrics.snr > 10"
+        - "metrics.clipping_ratio < 0.01"
+        - "metrics.bandwidth_khz > 4"
+
+  # 5. Pack results with all metrics
+  - name: pack
+    op: pack_jsonl

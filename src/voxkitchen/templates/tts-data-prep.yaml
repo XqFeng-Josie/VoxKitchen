@@ -1,0 +1,75 @@
+# TTS Data Preparation Pipeline
+# Prepare high-quality TTS training data from raw audio.
+#
+# Flow: format convert → resample (22.05kHz) → denoise → VAD → quality
+#       filter → ASR → word-level alignment → pack
+#
+# Usage:
+#   1. Put your raw audio files in ./data/
+#   2. vkit run pipeline.yaml
+#   3. Results in work/ directory
+#
+# Requires: pip install voxkitchen[audio,enhance,align]
+
+version: "0.1"
+name: tts-data-prep
+description: "Raw audio → TTS-ready dataset with word-level alignment"
+work_dir: ./work/${name}-${run_id}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+    recursive: true
+
+stages:
+  # 1. Convert to wav (handles opus, flac, mp3, etc.)
+  - name: to_wav
+    op: ffmpeg_convert
+    args:
+      target_format: wav
+
+  # 2. Resample to 22.05kHz mono (standard for TTS)
+  - name: resample
+    op: resample
+    args:
+      target_sr: 22050
+      target_channels: 1
+
+  # 3. Light denoising (preserve natural speech quality for TTS)
+  - name: denoise
+    op: speech_enhance
+    args:
+      aggressiveness: 0.3
+
+  # 4. Split on speech segments (longer segments for TTS)
+  - name: vad
+    op: silero_vad
+    args:
+      threshold: 0.5
+      min_speech_duration_ms: 1000
+      min_silence_duration_ms: 500
+
+  # 5. Quality metrics
+  - name: snr
+    op: snr_estimate
+
+  # 6. Filter: keep only high-quality segments (2-15 seconds)
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration > 2"
+        - "duration < 15"
+        - "metrics.snr > 15"
+
+  # 7. Transcribe + word-level alignment
+  - name: asr
+    op: qwen3_asr
+    args:
+      model: Qwen/Qwen3-ASR-0.6B
+      return_timestamps: true
+
+  # 8. Pack results
+  - name: pack
+    op: pack_jsonl

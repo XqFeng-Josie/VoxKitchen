@@ -1,0 +1,69 @@
+# Speaker Analysis Pipeline
+# Analyze speakers in audio data: segment → diarize → embed → classify.
+#
+# Flow: resample → VAD → speaker diarization → speaker embedding →
+#       gender classification → language detection → pack
+#
+# Usage:
+#   1. Put your audio files in ./data/
+#   2. Set HF_TOKEN in .env (required for pyannote diarization)
+#   3. vkit run pipeline.yaml
+#   4. Results in work/ directory
+#
+# Requires: pip install voxkitchen[audio,diarize,speaker,classify]
+
+version: "0.1"
+name: speaker-analysis
+description: "Analyze speaker distribution: diarize, embed, classify gender and language"
+work_dir: ./work/${name}-${run_id}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+    recursive: true
+
+stages:
+  # 1. Resample to 16kHz mono
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  # 2. Speech activity detection
+  - name: vad
+    op: silero_vad
+    args:
+      threshold: 0.5
+
+  # 3. Speaker diarization (requires HF_TOKEN for pyannote)
+  - name: diarize
+    op: pyannote_diarize
+    args:
+      model: pyannote/speaker-diarization-3.1
+
+  # 4. Speaker embedding (512-d vector per segment)
+  - name: embed
+    op: speaker_embed
+    args:
+      method: wespeaker
+      wespeaker_model: english
+
+  # 5. Gender classification
+  - name: gender
+    op: gender_classify
+    args:
+      method: f0
+      f0_threshold: 165.0
+
+  # 6. Language detection
+  - name: langid
+    op: whisper_langid
+    args:
+      model: tiny
+      backend: openai
+
+  # 7. Pack with all metadata
+  - name: pack
+    op: pack_jsonl
