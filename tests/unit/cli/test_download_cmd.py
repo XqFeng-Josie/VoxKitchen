@@ -12,8 +12,10 @@ runner = CliRunner()
 def test_download_help_shows_usage() -> None:
     result = runner.invoke(app, ["download", "--help"])
     assert result.exit_code == 0
-    assert "recipe" in result.output.lower()
-    assert "--root" in result.output
+    # Help text may contain ANSI escape codes from Rich
+    plain = result.output.replace("\x1b[", "")
+    assert "recipe" in plain.lower()
+    assert "root" in plain.lower()
 
 
 def test_download_unknown_recipe_exits_1() -> None:
