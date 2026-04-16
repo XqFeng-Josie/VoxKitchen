@@ -1287,6 +1287,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#synthesize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthesize
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Synthesize">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tts_chattts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_chattts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tts_cosyvoice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_cosyvoice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tts_fish_speech" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_fish_speech
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tts_kokoro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_kokoro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2088,6 +2149,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#synthesize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthesize
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Synthesize">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tts_chattts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_chattts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tts_cosyvoice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_cosyvoice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tts_fish_speech" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_fish_speech
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tts_kokoro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tts_kokoro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2109,7 +2231,7 @@
 
 
 <h1 id="operator-reference">Operator Reference</h1>
-<p>VoxKitchen ships with <strong>47 built-in operators</strong> across 7 categories.</p>
+<p>VoxKitchen ships with <strong>51 built-in operators</strong> across 8 categories.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Run <code>vkit operators</code> to see this list in your terminal, or <code>vkit operators show &lt;name&gt;</code> for details.</p>
@@ -2123,6 +2245,7 @@
 <li><a href="#quality">Quality &amp; Filtering</a> (11 operators)</li>
 <li><a href="#pack">Output / Packing</a> (6 operators)</li>
 <li><a href="#noop">Utility</a> (1 operators)</li>
+<li><a href="#synthesize">Synthesize</a> (4 operators)</li>
 </ul>
 <h2 id="basic">Audio Processing</h2>
 <h3 id="channel_merge"><code>channel_merge</code></h3>
@@ -4002,6 +4125,236 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_identity</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">identity</span>
+</code></pre></div>
+<hr />
+<h2 id="synthesize">Synthesize</h2>
+<h3 id="tts_chattts"><code>tts_chattts</code></h3>
+<p><strong>Synthesize conversational speech using ChatTTS.</strong></p>
+<ul>
+<li><strong>Device:</strong> gpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[tts-chattts]</code></li>
+<li><strong>Produces audio:</strong> Yes</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seed</code></td>
+<td>int</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>temperature</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>top_p</code></td>
+<td>float</td>
+<td><code>0.7</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>top_k</code></td>
+<td>int</td>
+<td><code>20</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_tts_chattts</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_chattts</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
+<span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
+<span class="w">    </span><span class="nt">top_k</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+</code></pre></div>
+<hr />
+<h3 id="tts_cosyvoice"><code>tts_cosyvoice</code></h3>
+<p><strong>Synthesize speech using CosyVoice2 with optional voice cloning.</strong></p>
+<ul>
+<li><strong>Device:</strong> gpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[tts-cosyvoice]</code></li>
+<li><strong>Produces audio:</strong> Yes</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_id</code></td>
+<td>str</td>
+<td><code>FunAudioLLM/CosyVoice2-0.5B</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>str</td>
+<td><code>sft</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>spk_id</code></td>
+<td>str</td>
+<td><code>default</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>reference_audio</code></td>
+<td>str</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>reference_text</code></td>
+<td>str</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_tts_cosyvoice</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_cosyvoice</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FunAudioLLM/CosyVoice2-0.5B</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sft</span>
+<span class="w">    </span><span class="nt">spk_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+</code></pre></div>
+<hr />
+<h3 id="tts_fish_speech"><code>tts_fish_speech</code></h3>
+<p><strong>Synthesize speech using Fish-Speech codec language model.</strong></p>
+<ul>
+<li><strong>Device:</strong> gpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[tts-fish-speech]</code></li>
+<li><strong>Produces audio:</strong> Yes</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_id</code></td>
+<td>str</td>
+<td><code>fishaudio/fish-speech-1.5</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>reference_audio</code></td>
+<td>str</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>reference_text</code></td>
+<td>str</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>max_new_tokens</code></td>
+<td>int</td>
+<td><code>1024</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>top_p</code></td>
+<td>float</td>
+<td><code>0.7</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>temperature</code></td>
+<td>float</td>
+<td><code>0.7</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>repetition_penalty</code></td>
+<td>float</td>
+<td><code>1.2</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_tts_fish_speech</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_fish_speech</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fishaudio/fish-speech-1.5</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1024</span>
+<span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
+<span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
+<span class="w">    </span><span class="nt">repetition_penalty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.2</span>
+</code></pre></div>
+<hr />
+<h3 id="tts_kokoro"><code>tts_kokoro</code></h3>
+<p><strong>Synthesize speech from text using Kokoro TTS.</strong></p>
+<ul>
+<li><strong>Device:</strong> cpu</li>
+<li><strong>Install:</strong> <code>pip install voxkitchen[tts-kokoro]</code></li>
+<li><strong>Produces audio:</strong> Yes</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>voice</code></td>
+<td>str</td>
+<td><code>af_heart</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>lang_code</code></td>
+<td>str</td>
+<td><code>a</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_tts_kokoro</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_kokoro</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">voice</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">af_heart</span>
+<span class="w">    </span><span class="nt">lang_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a</span>
+<span class="w">    </span><span class="nt">speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 </code></pre></div>
 <hr />
 

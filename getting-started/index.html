@@ -1107,7 +1107,7 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml
 </code></pre></div>
 <p>Available datasets: <code>librispeech</code>, <code>aishell</code>, <code>fleurs</code>. See <a href="../reference/recipes/">Recipes &amp; Download</a>.</p>
 <h2 id="discover-operators">Discover operators</h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># List all 43 operators (grouped by category)</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># List all 51 operators (grouped by category)</span>
 vkit<span class="w"> </span>operators
 
 <span class="c1"># Show config fields + YAML example for any operator</span>
@@ -1120,6 +1120,7 @@ vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">audio_info</span><span class="p">,</span> <span class="n">transcribe</span><span class="p">,</span> <span class="n">detect_speech</span><span class="p">,</span> <span class="n">estimate_snr</span><span class="p">,</span>
     <span class="n">extract_speaker_embedding</span><span class="p">,</span> <span class="n">enhance_speech</span><span class="p">,</span> <span class="n">align_words</span><span class="p">,</span>
+    <span class="n">synthesize</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">audio_info</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">)</span>
@@ -1136,13 +1137,20 @@ vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"
 
 <span class="c1"># Forced alignment (requires: pip install voxkitchen[align])</span>
 <span class="n">align_words</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;English&quot;</span><span class="p">)</span>
+
+<span class="c1"># TTS synthesis (requires: pip install voxkitchen[tts-kokoro])</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span> <span class="s2">&quot;output.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">)</span>
+
+<span class="c1"># Voice cloning (requires: pip install voxkitchen[tts-cosyvoice])</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;你好&quot;</span><span class="p">,</span> <span class="s2">&quot;clone.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;cosyvoice&quot;</span><span class="p">,</span>
+           <span class="n">reference_audio</span><span class="o">=</span><span class="s2">&quot;ref.wav&quot;</span><span class="p">,</span> <span class="n">reference_text</span><span class="o">=</span><span class="s2">&quot;参考文本&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="next-steps">Next steps</h2>
 <ul>
 <li><a href="../tutorials/tts-data-prep/">TTS Tutorial</a> — end-to-end TTS data preparation</li>
 <li><a href="../tutorials/asr-training-data/">ASR Tutorial</a> — augmented ASR training data</li>
 <li><a href="../tutorials/data-cleaning/">Data Cleaning Tutorial</a> — quality metrics and filtering</li>
-<li><a href="../reference/operators/">Operators Reference</a> — all 43 operators with config details</li>
+<li><a href="../reference/operators/">Operators Reference</a> — all 51 operators with config details</li>
 <li><a href="../concepts/data-protocol/">Data Protocol</a> — understand Recording / Supervision / Cut</li>
 </ul>
 
