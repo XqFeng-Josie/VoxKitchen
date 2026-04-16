@@ -1,0 +1,1804 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>VoxKitchen Plan 4: Segment + Quality + Pack Operators - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#voxkitchen-plan-4-segment-quality-pack-operators" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VoxKitchen Plan 4: Segment + Quality + Pack Operators
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure-produced-by-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure Produced by This Plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-notes-for-operator-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Notes for Operator Categories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Notes for Operator Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#segmentation-operators-1-to-many-produces_audiofalse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segmentation operators (1-to-many, produces_audio=False)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-operators-1-to-1-or-n-to-fewer-produces_audiofalse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality operators (1-to-1 or N-to-fewer, produces_audio=False)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pack-operators-produces_audiotrue-for-formats-with-audio-false-for-metadata-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pack operators (produces_audio=True for formats with audio, False for metadata-only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-add-segmentqualitypack-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Add segment/quality/pack dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-fixed_segment-duration_filter-pure-compute-no-deps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: fixed_segment + duration_filter (pure compute, no deps)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 2: fixed_segment + duration_filter (pure compute, no deps)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_segment-the-segmentation-exemplar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fixed_segment — the segmentation exemplar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration_filter-the-filter-exemplar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        duration_filter — the filter exemplar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdd-for-both-test-fail-implement-pass-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDD for both: test → fail → implement → pass → commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-webrtc_vad-silence_split-segmentation-with-audio-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: webrtc_vad + silence_split (segmentation with audio analysis)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 3: webrtc_vad + silence_split (segmentation with audio analysis)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#webrtc_vad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        webrtc_vad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#silence_split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        silence_split
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-webrtc_vad-and-silence_split-segmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add webrtc_vad and silence_split segmentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-snr_estimate-audio_fingerprint_dedup-audio-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: snr_estimate + audio_fingerprint_dedup (audio analysis)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 4: snr_estimate + audio_fingerprint_dedup (audio analysis)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#snr_estimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        snr_estimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audio_fingerprint_dedup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        audio_fingerprint_dedup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-snr_estimate-and-audio_fingerprint_dedup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add snr_estimate and audio_fingerprint_dedup
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-5-quality_score_filter-condition-based-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: quality_score_filter (condition-based filtering)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 5: quality_score_filter (condition-based filtering)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-quality_score_filter-with-condition-parser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add quality_score_filter with condition parser
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-6-pack_kaldi-pack_parquet-metadata-output-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: pack_kaldi + pack_parquet (metadata output formats)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 6: pack_kaldi + pack_parquet (metadata output formats)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pack_kaldi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pack_kaldi
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pack_parquet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pack_parquet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-pack_kaldi-and-pack_parquet-output-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add pack_kaldi and pack_parquet output formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-7-pack_huggingface-pack_webdataset-archive-output-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: pack_huggingface + pack_webdataset (archive output formats)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 7: pack_huggingface + pack_webdataset (archive output formats)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pack_huggingface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pack_huggingface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pack_webdataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pack_webdataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-pack_huggingface-and-pack_webdataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add pack_huggingface and pack_webdataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-8-integration-test-quality-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 8: Integration test — quality pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 8: Integration test — quality pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-testintegration-add-segment-filter-pack-quality-pipeline-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: test(integration): add segment → filter → pack quality pipeline test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-9-full-verification-lint-type-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 9: Full verification, lint, type, tag
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-4-completion-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan 4 Completion Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-plans-5-8-will-build-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Plans 5-8 Will Build On
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="voxkitchen-plan-4-segment-quality-pack-operators">VoxKitchen Plan 4: Segment + Quality + Pack Operators</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Implement 11 non-GPU operators across three categories — segmentation (3), quality analysis/filtering (4), and output packing (4). After this plan, users can build complete non-GPU data processing pipelines: scan → segment → analyze quality → filter → pack to HuggingFace/Kaldi/Parquet/WebDataset format.</p>
+<p><strong>Architecture:</strong> All 11 operators follow the patterns established in Plans 2-3. Segmentation operators are the first "1-to-many" transform (one input Cut → N output Cuts) but the runner needs no changes — it just sees CutSet in, CutSet out. Quality operators add metrics to <code>cut.metrics</code> dict or filter cuts. Pack operators write final output in a target format. No new framework code — only new operator files + their registration.</p>
+<p><strong>Tech Stack:</strong> webrtcvad (VAD), librosa (silence detection, MFCC features), simhash (audio fingerprinting), datasets (HuggingFace format), webdataset (tar archives), pyarrow (Parquet). All new deps go as extras to keep default install fast.</p>
+<p><strong>Spec reference:</strong> Design spec section 4.6 (operator catalog table).</p>
+<p><strong>Key principle:</strong> Every operator is a single file under <code>operators/&lt;category&gt;/</code>, &lt; 100 lines of <code>process()</code> logic, registered via <code>@register_operator</code>. No shared base classes between operators beyond the existing <code>Operator</code> ABC. No batch optimization — one Cut at a time.</p>
+<hr />
+<h2 id="file-structure-produced-by-this-plan">File Structure Produced by This Plan</h2>
+<div class="highlight"><pre><span></span><code>src/voxkitchen/operators/
+├── segment/
+│   ├── __init__.py
+│   ├── fixed_segment.py         # split cuts at fixed time intervals
+│   ├── webrtc_vad.py            # speech detection via webrtcvad
+│   └── silence_split.py         # split on silence via librosa
+├── quality/
+│   ├── __init__.py
+│   ├── snr_estimate.py          # estimate SNR → cut.metrics[&quot;snr&quot;]
+│   ├── duration_filter.py       # filter by min/max duration
+│   ├── audio_fingerprint_dedup.py  # remove near-duplicate audio
+│   └── quality_score_filter.py  # filter by expression on metrics
+├── pack/
+│   ├── __init__.py              # MODIFIED (pack_manifest already here)
+│   ├── pack_manifest.py         # (already exists from Plan 3)
+│   ├── pack_huggingface.py      # export as HuggingFace datasets
+│   ├── pack_webdataset.py       # export as tar shards
+│   ├── pack_parquet.py          # export as Parquet + JSONL manifest
+│   └── pack_kaldi.py            # export as Kaldi text files
+
+tests/unit/operators/
+├── segment/
+│   ├── __init__.py
+│   ├── test_fixed_segment.py
+│   ├── test_webrtc_vad.py
+│   └── test_silence_split.py
+├── quality/
+│   ├── __init__.py
+│   ├── test_snr_estimate.py
+│   ├── test_duration_filter.py
+│   ├── test_audio_fingerprint_dedup.py
+│   └── test_quality_score_filter.py
+├── pack/
+│   ├── test_pack_huggingface.py
+│   ├── test_pack_webdataset.py
+│   ├── test_pack_parquet.py
+│   └── test_pack_kaldi.py
+</code></pre></div>
+<hr />
+<h2 id="design-notes-for-operator-categories">Design Notes for Operator Categories</h2>
+<h3 id="segmentation-operators-1-to-many-produces_audiofalse">Segmentation operators (1-to-many, <code>produces_audio=False</code>)</h3>
+<p>These are the first "fan-out" operators: one input Cut → N output Cuts. Each child Cut:
+- Shares the parent's <code>recording</code> and <code>recording_id</code> (same audio file)
+- Has different <code>start</code> and <code>duration</code> (the detected segment interval)
+- Has <code>provenance.source_cut_id = parent.id</code>
+- Has empty <code>supervisions</code> (downstream operators like ASR will fill them)</p>
+<p>No new audio files are written — child cuts just reference sub-intervals of the parent's audio. <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code> (they need to read audio to find segment boundaries).</p>
+<h3 id="quality-operators-1-to-1-or-n-to-fewer-produces_audiofalse">Quality operators (1-to-1 or N-to-fewer, <code>produces_audio=False</code>)</h3>
+<p>Two sub-patterns:
+- <strong>Estimators</strong> (<code>snr_estimate</code>): 1-to-1. Read audio, compute a metric, store in <code>cut.metrics</code>. Return same number of cuts.
+- <strong>Filters</strong> (<code>duration_filter</code>, <code>quality_score_filter</code>, <code>audio_fingerprint_dedup</code>): N-to-fewer. Remove cuts that fail a condition. Return fewer cuts.</p>
+<p>All have <code>produces_audio=False</code>. Estimators have <code>reads_audio_bytes=True</code>; filters may or may not read audio (<code>duration_filter</code> doesn't, <code>dedup</code> does).</p>
+<h3 id="pack-operators-produces_audiotrue-for-formats-with-audio-false-for-metadata-only">Pack operators (<code>produces_audio=True</code> for formats with audio, <code>False</code> for metadata-only)</h3>
+<p>Pack operators write the final output in a specific format. They don't modify the CutSet — they write output to <code>config.output_dir</code> (or <code>stage_dir/output/</code>) as a side effect, then return the CutSet unchanged. The <code>produces_audio</code> flag depends on whether audio bytes are copied into the output format:
+- <code>pack_huggingface</code>: True (copies audio into Arrow files)
+- <code>pack_webdataset</code>: True (copies audio into tar shards)
+- <code>pack_parquet</code>: False (only metadata; audio stays at original paths)
+- <code>pack_kaldi</code>: False (text files + wav.scp pointing at paths)</p>
+<hr />
+<h2 id="task-1-add-segmentqualitypack-dependencies">Task 1: Add segment/quality/pack dependencies</h2>
+<p><strong>Files:</strong>
+- Modify: <code>pyproject.toml</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Add new extras groups</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">[project.optional-dependencies]</span>
+<span class="n">audio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;torch&gt;=2.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;torchaudio&gt;=2.1&quot;</span><span class="p">]</span>
+<span class="n">segment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;webrtcvad&gt;=2.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;librosa&gt;=0.10&quot;</span><span class="p">]</span>
+<span class="n">quality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;simhash&gt;=2.1&quot;</span><span class="p">]</span>
+<span class="n">pack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;datasets&gt;=2.16&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;webdataset&gt;=0.2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;pyarrow&gt;=14&quot;</span><span class="p">]</span>
+<span class="n">dev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;pytest&gt;=7.4&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;pytest-cov&gt;=4.1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ruff&gt;=0.4&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;mypy&gt;=1.8&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;pre-commit&gt;=3.6&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;scipy&gt;=1.11&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+<p><strong>Note:</strong> <code>librosa</code> and <code>webrtcvad</code> go in <code>segment</code> extras. <code>simhash</code> goes in <code>quality</code>. Pack libraries go in <code>pack</code>. <code>scipy</code> added to dev for resample fallback tests. Core deps stay unchanged.</p>
+<ul>
+<li>[ ] <strong>Step 2: Update mypy overrides</strong></li>
+</ul>
+<p>Add <code>librosa.*</code>, <code>webrtcvad.*</code>, <code>simhash.*</code>, <code>datasets.*</code>, <code>webdataset.*</code> to the ignore_missing_imports override.</p>
+<ul>
+<li>[ ] <strong>Step 3: Update CI to install new extras</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install package</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">python -m pip install --upgrade pip</span>
+<span class="w">          </span><span class="no">pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu</span>
+<span class="w">          </span><span class="no">pip install -e &quot;.[dev,segment,quality,pack]&quot;</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Install locally + verify tests</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,segment,quality,pack]&quot;</span>
+pytest<span class="w"> </span>-q
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>pyproject.toml<span class="w"> </span>.github/workflows/ci.yml
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: add segment/quality/pack dependency extras&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="task-2-fixed_segment-duration_filter-pure-compute-no-deps">Task 2: <code>fixed_segment</code> + <code>duration_filter</code> (pure compute, no deps)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/segment/__init__.py</code>
+- Create: <code>src/voxkitchen/operators/segment/fixed_segment.py</code>
+- Create: <code>src/voxkitchen/operators/quality/__init__.py</code>
+- Create: <code>src/voxkitchen/operators/quality/duration_filter.py</code>
+- Create: <code>tests/unit/operators/segment/__init__.py</code>
+- Create: <code>tests/unit/operators/segment/test_fixed_segment.py</code>
+- Create: <code>tests/unit/operators/quality/__init__.py</code>
+- Create: <code>tests/unit/operators/quality/test_duration_filter.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<h3 id="fixed_segment-the-segmentation-exemplar"><code>fixed_segment</code> — the segmentation exemplar</h3>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FixedSegmentConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">segment_duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>   <span class="c1"># seconds</span>
+    <span class="n">min_remaining</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>       <span class="c1"># drop final chunk if shorter than this</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cut</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">cut</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span>
+            <span class="n">seg_dur</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">segment_duration</span><span class="p">,</span> <span class="n">cut</span><span class="o">.</span><span class="n">duration</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">seg_dur</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">min_remaining</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="n">Cut</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">__seg</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">recording_id</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">recording_id</span><span class="p">,</span>
+                <span class="n">start</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="n">seg_dur</span><span class="p">,</span>
+                <span class="n">recording</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">recording</span><span class="p">,</span>
+                <span class="n">supervisions</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">source_cut_id</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">generated_by</span><span class="o">=</span><span class="s2">&quot;fixed_segment@...&quot;</span><span class="p">),</span>
+                <span class="n">custom</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">custom</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">segment_duration</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="fixed_segment"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=False</code></p>
+<p><strong>Tests (4):</strong>
+1. <code>test_fixed_segment_is_registered</code>
+2. <code>test_fixed_segment_splits_long_cut</code> — 10s cut with 3s segments → 3 full + 1 short (if &gt;= min_remaining)
+3. <code>test_fixed_segment_drops_short_remainder</code> — 10s with 3s segments, min_remaining=2.0 → drops the 1s remainder
+4. <code>test_fixed_segment_preserves_recording_reference</code> — child cuts share parent's recording</p>
+<h3 id="duration_filter-the-filter-exemplar"><code>duration_filter</code> — the filter exemplar</h3>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DurationFilterConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">min_duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">max_duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span>
+        <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cuts</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">min_duration</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_duration</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="duration_filter"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=False</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_duration_filter_is_registered</code>
+2. <code>test_duration_filter_keeps_cuts_in_range</code> — mix of durations → only matching kept
+3. <code>test_duration_filter_defaults_keep_all</code> — no config args → all cuts pass</p>
+<h3 id="tdd-for-both-test-fail-implement-pass-commit">TDD for both: test → fail → implement → pass → commit</h3>
+<p><strong>Commit:</strong> <code>feat(operators): add fixed_segment and duration_filter</code></p>
+<hr />
+<h2 id="task-3-webrtc_vad-silence_split-segmentation-with-audio-analysis">Task 3: <code>webrtc_vad</code> + <code>silence_split</code> (segmentation with audio analysis)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/segment/webrtc_vad.py</code>
+- Create: <code>src/voxkitchen/operators/segment/silence_split.py</code>
+- Create: <code>tests/unit/operators/segment/test_webrtc_vad.py</code>
+- Create: <code>tests/unit/operators/segment/test_silence_split.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<h3 id="webrtc_vad"><code>webrtc_vad</code></h3>
+<p>Uses the <code>webrtcvad</code> library to detect speech/non-speech in 10ms frames.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">WebrtcVadConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">aggressiveness</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>          <span class="c1"># 0-3, higher = more aggressive filtering</span>
+    <span class="n">frame_duration_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>      <span class="c1"># 10, 20, or 30 ms</span>
+    <span class="n">min_speech_duration_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span>
+    <span class="n">padding_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+</code></pre></div></p>
+<p><strong>Logic sketch:</strong>
+1. <code>load_audio_for_cut(cut)</code> → audio, sr
+2. If sr not in (8000, 16000, 32000, 48000): resample to 16000 (webrtcvad requirement)
+3. Convert to int16 PCM bytes
+4. Run webrtcvad frame-by-frame, collect speech regions
+5. Merge adjacent speech frames, apply min_speech_duration and padding
+6. Create child cuts for each speech region</p>
+<p><strong>Class attributes:</strong> <code>name="webrtc_vad"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["segment"]</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_webrtc_vad_is_registered</code>
+2. <code>test_webrtc_vad_detects_speech_in_sine_wave(mono_wav_16k)</code> — a pure tone should be detected as "speech" (webrtcvad treats tonal signals as speech-like)
+3. <code>test_webrtc_vad_skips_silence</code> — generate a file that is half silence, half tone → should produce fewer/shorter segments</p>
+<h3 id="silence_split"><code>silence_split</code></h3>
+<p>Uses <code>librosa.effects.split()</code> to find non-silent intervals.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SilenceSplitConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">top_db</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>                 <span class="c1"># dB threshold below peak to consider silence</span>
+    <span class="n">min_duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>        <span class="c1"># minimum segment duration in seconds</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+1. <code>load_audio_for_cut(cut)</code> → audio, sr
+2. <code>intervals = librosa.effects.split(audio, top_db=config.top_db)</code>
+3. Convert frame intervals to seconds
+4. Filter by min_duration
+5. Create child cuts</p>
+<p><strong>Class attributes:</strong> <code>name="silence_split"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["segment"]</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_silence_split_is_registered</code>
+2. <code>test_silence_split_finds_non_silent_regions(mono_wav_16k)</code> — sine wave is all non-silent → 1 segment ≈ full duration
+3. <code>test_silence_split_handles_silent_file</code> — generate silence → 0 segments</p>
+<h3 id="commit-featoperators-add-webrtc_vad-and-silence_split-segmentation">Commit: <code>feat(operators): add webrtc_vad and silence_split segmentation</code></h3>
+<hr />
+<h2 id="task-4-snr_estimate-audio_fingerprint_dedup-audio-analysis">Task 4: <code>snr_estimate</code> + <code>audio_fingerprint_dedup</code> (audio analysis)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/quality/snr_estimate.py</code>
+- Create: <code>src/voxkitchen/operators/quality/audio_fingerprint_dedup.py</code>
+- Create: <code>tests/unit/operators/quality/test_snr_estimate.py</code>
+- Create: <code>tests/unit/operators/quality/test_audio_fingerprint_dedup.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<h3 id="snr_estimate"><code>snr_estimate</code></h3>
+<p>Estimates signal-to-noise ratio and stores it in <code>cut.metrics["snr"]</code>.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SnrEstimateConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="k">pass</span>  <span class="c1"># no tunable parameters for v0.1</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+1. <code>load_audio_for_cut(cut)</code> → audio, sr
+2. Estimate SNR using a simple energy-based method: <code>signal_power / noise_power</code> in dB. For v0.1 use a basic approach — e.g., WADA-SNR or a simple peak/RMS ratio. Keep it simple.
+3. <code>cut.model_copy(update={"metrics": {**cut.metrics, "snr": snr_value}})</code></p>
+<p><strong>Class attributes:</strong> <code>name="snr_estimate"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_snr_estimate_is_registered</code>
+2. <code>test_snr_estimate_adds_metric(mono_wav_16k)</code> — run on a clean sine → <code>metrics["snr"]</code> exists and is positive
+3. <code>test_snr_estimate_preserves_other_metrics</code> — cut with existing metrics → snr added without losing others</p>
+<h3 id="audio_fingerprint_dedup"><code>audio_fingerprint_dedup</code></h3>
+<p>Removes near-duplicate audio using MFCC-based fingerprinting + simhash.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AudioFingerprintDedupConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">similarity_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>    <span class="c1"># max hamming distance to consider duplicate</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+1. For each cut: <code>load_audio_for_cut(cut)</code> → audio, sr
+2. Compute MFCC features via librosa: <code>mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13)</code>
+3. Flatten to a feature vector, binarize, compute simhash
+4. Compare each new simhash against seen hashes (hamming distance)
+5. If distance &lt;= threshold: skip (duplicate). Else: keep + add to seen set.</p>
+<p><strong>Class attributes:</strong> <code>name="audio_fingerprint_dedup"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["quality"]</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_dedup_is_registered</code>
+2. <code>test_dedup_removes_identical_cuts</code> — CutSet with 2 cuts pointing to same audio → 1 kept
+3. <code>test_dedup_keeps_different_cuts</code> — CutSet with 2 different audio files → both kept</p>
+<h3 id="commit-featoperators-add-snr_estimate-and-audio_fingerprint_dedup">Commit: <code>feat(operators): add snr_estimate and audio_fingerprint_dedup</code></h3>
+<hr />
+<h2 id="task-5-quality_score_filter-condition-based-filtering">Task 5: <code>quality_score_filter</code> (condition-based filtering)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/quality/quality_score_filter.py</code>
+- Create: <code>tests/unit/operators/quality/test_quality_score_filter.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<h3 id="config">Config</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QualityScoreFilterConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">conditions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>  <span class="c1"># e.g., [&quot;metrics.snr &gt; 10&quot;, &quot;duration &gt; 0.5&quot;]</span>
+</code></pre></div>
+<h3 id="logic">Logic</h3>
+<p>A simple condition parser that supports expressions of the form <code>&lt;field_path&gt; &lt;op&gt; &lt;value&gt;</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op_mod</span>
+
+<span class="n">_OPS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="n">op_mod</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">:</span> <span class="n">op_mod</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span> <span class="n">op_mod</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">:</span> <span class="n">op_mod</span><span class="o">.</span><span class="n">le</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">:</span> <span class="n">op_mod</span><span class="o">.</span><span class="n">eq</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">:</span> <span class="n">op_mod</span><span class="o">.</span><span class="n">ne</span><span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_eval_condition</span><span class="p">(</span><span class="n">condition</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cut</span><span class="p">:</span> <span class="n">Cut</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse &#39;metrics.snr &gt; 10&#39; and evaluate against a Cut.&quot;&quot;&quot;</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">condition</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;condition must be &#39;field op value&#39;, got: </span><span class="si">{</span><span class="n">condition</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">field_path</span><span class="p">,</span> <span class="n">op_str</span><span class="p">,</span> <span class="n">raw_value</span> <span class="o">=</span> <span class="n">parts</span>
+    <span class="k">if</span> <span class="n">op_str</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_OPS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported operator: </span><span class="si">{</span><span class="n">op_str</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">raw_value</span><span class="p">)</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">_resolve_field</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span> <span class="n">field_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_OPS</span><span class="p">[</span><span class="n">op_str</span><span class="p">](</span><span class="n">actual</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_field</span><span class="p">(</span><span class="n">cut</span><span class="p">:</span> <span class="n">Cut</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve &#39;metrics.snr&#39; or &#39;duration&#39; against a Cut.&quot;&quot;&quot;</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">cut</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">part</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span>
+</code></pre></div>
+<p><strong>process():</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span>
+        <span class="n">cut</span> <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">_eval_condition</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">cut</span><span class="p">)</span> <span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">conditions</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="quality_score_filter"</code>, <code>device="cpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=False</code></p>
+<p><strong>Tests (4):</strong>
+1. <code>test_quality_score_filter_is_registered</code>
+2. <code>test_filter_by_snr</code> — cuts with metrics.snr of 5, 15, 25 + condition "metrics.snr &gt; 10" → 2 kept
+3. <code>test_filter_by_duration</code> — condition "duration &gt; 2.0" → only long cuts kept
+4. <code>test_filter_multiple_conditions</code> — two conditions AND'd together</p>
+<h3 id="commit-featoperators-add-quality_score_filter-with-condition-parser">Commit: <code>feat(operators): add quality_score_filter with condition parser</code></h3>
+<hr />
+<h2 id="task-6-pack_kaldi-pack_parquet-metadata-output-formats">Task 6: <code>pack_kaldi</code> + <code>pack_parquet</code> (metadata output formats)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/pack/pack_kaldi.py</code>
+- Create: <code>src/voxkitchen/operators/pack/pack_parquet.py</code>
+- Create: <code>tests/unit/operators/pack/test_pack_kaldi.py</code>
+- Create: <code>tests/unit/operators/pack/test_pack_parquet.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<h3 id="pack_kaldi"><code>pack_kaldi</code></h3>
+<p>Writes Kaldi-style text files: <code>wav.scp</code>, <code>text</code>, <code>utt2spk</code>, <code>segments</code>.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PackKaldiConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># defaults to stage_dir / &quot;kaldi_output&quot;</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">stage_dir</span> <span class="o">/</span> <span class="s2">&quot;kaldi_output&quot;</span><span class="p">))</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out</span> <span class="o">/</span> <span class="s2">&quot;wav.scp&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">wav_scp</span><span class="p">,</span> \
+         <span class="nb">open</span><span class="p">(</span><span class="n">out</span> <span class="o">/</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_f</span><span class="p">,</span> \
+         <span class="nb">open</span><span class="p">(</span><span class="n">out</span> <span class="o">/</span> <span class="s2">&quot;utt2spk&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">u2s</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">audio_path</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="k">if</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span> <span class="k">else</span> <span class="s2">&quot;MISSING&quot;</span>
+            <span class="n">wav_scp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">audio_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">transcript</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">text_f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">transcript</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">speaker</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">speaker</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">speaker</span><span class="p">),</span> <span class="s2">&quot;unknown&quot;</span><span class="p">)</span>
+            <span class="n">u2s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">speaker</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cuts</span><span class="p">))</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="pack_kaldi"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=False</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_pack_kaldi_is_registered</code>
+2. <code>test_pack_kaldi_writes_files</code> — verify wav.scp, text, utt2spk exist
+3. <code>test_pack_kaldi_content</code> — verify cut ids and paths in wav.scp</p>
+<h3 id="pack_parquet"><code>pack_parquet</code></h3>
+<p>Writes metadata to a Parquet file (no audio bytes, just references).</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PackParquetConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyarrow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyarrow.parquet</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pq</span>
+
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;recording_id&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording_id</span><span class="p">,</span>
+            <span class="s2">&quot;audio_path&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="k">if</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">&quot;speaker&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">speaker</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">speaker</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">language</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">language</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;metrics_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="p">})</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span><span class="o">.</span><span class="n">from_pylist</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">stage_dir</span> <span class="o">/</span> <span class="s2">&quot;parquet_output&quot;</span><span class="p">))</span>
+    <span class="n">out_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;metadata.parquet&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cuts</span><span class="p">))</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="pack_parquet"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=False</code>, <code>required_extras=["pack"]</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_pack_parquet_is_registered</code>
+2. <code>test_pack_parquet_writes_file</code> — verify metadata.parquet exists
+3. <code>test_pack_parquet_has_correct_columns</code> — read back with pyarrow, check columns</p>
+<h3 id="commit-featoperators-add-pack_kaldi-and-pack_parquet-output-formats">Commit: <code>feat(operators): add pack_kaldi and pack_parquet output formats</code></h3>
+<hr />
+<h2 id="task-7-pack_huggingface-pack_webdataset-archive-output-formats">Task 7: <code>pack_huggingface</code> + <code>pack_webdataset</code> (archive output formats)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/pack/pack_huggingface.py</code>
+- Create: <code>src/voxkitchen/operators/pack/pack_webdataset.py</code>
+- Create: <code>tests/unit/operators/pack/test_pack_huggingface.py</code>
+- Create: <code>tests/unit/operators/pack/test_pack_webdataset.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<h3 id="pack_huggingface"><code>pack_huggingface</code></h3>
+<p>Creates a HuggingFace <code>datasets.Dataset</code> with audio + metadata.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PackHuggingFaceConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">split_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># optional: use cut.custom[split_field] as split name</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Audio</span><span class="p">,</span> <span class="n">Dataset</span>
+
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+        <span class="n">audio_path</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="k">if</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;audio&quot;</span><span class="p">:</span> <span class="n">audio_path</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">&quot;speaker&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">speaker</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">speaker</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">cast_column</span><span class="p">(</span><span class="s2">&quot;audio&quot;</span><span class="p">,</span> <span class="n">Audio</span><span class="p">())</span>
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">stage_dir</span> <span class="o">/</span> <span class="s2">&quot;hf_output&quot;</span><span class="p">))</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">save_to_disk</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_dir</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cuts</span><span class="p">))</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="pack_huggingface"</code>, <code>produces_audio=True</code> (copies audio into Arrow), <code>reads_audio_bytes=True</code>, <code>required_extras=["pack"]</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_pack_hf_is_registered</code>
+2. <code>test_pack_hf_creates_dataset(mono_wav_16k)</code> — verify output dir has <code>dataset_info.json</code> or Arrow files
+3. <code>test_pack_hf_preserves_cut_count(mono_wav_16k)</code> — returned CutSet has same length</p>
+<h3 id="pack_webdataset"><code>pack_webdataset</code></h3>
+<p>Creates tar shards with audio + JSON metadata per sample.</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PackWebDatasetConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">shard_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span>           <span class="c1"># max samples per shard</span>
+</code></pre></div></p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">webdataset</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wds</span>
+
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">stage_dir</span> <span class="o">/</span> <span class="s2">&quot;wds_output&quot;</span><span class="p">))</span>
+    <span class="n">out_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;shard-</span><span class="si">%05d</span><span class="s2">.tar&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">wds</span><span class="o">.</span><span class="n">ShardWriter</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">maxcount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">shard_size</span><span class="p">)</span> <span class="k">as</span> <span class="n">sink</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">audio_path</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="k">if</span> <span class="n">cut</span><span class="o">.</span><span class="n">recording</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;__key__&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">audio_path</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">audio_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;audio.wav&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;metadata.json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">cut</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+            <span class="n">sink</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cuts</span><span class="p">))</span>
+</code></pre></div></p>
+<p><strong>Class attributes:</strong> <code>name="pack_webdataset"</code>, <code>produces_audio=True</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["pack"]</code></p>
+<p><strong>Tests (3):</strong>
+1. <code>test_pack_wds_is_registered</code>
+2. <code>test_pack_wds_creates_tar(mono_wav_16k)</code> — verify at least one <code>.tar</code> file exists in output
+3. <code>test_pack_wds_preserves_cut_count</code></p>
+<h3 id="commit-featoperators-add-pack_huggingface-and-pack_webdataset">Commit: <code>feat(operators): add pack_huggingface and pack_webdataset</code></h3>
+<hr />
+<h2 id="task-8-integration-test-quality-pipeline">Task 8: Integration test — quality pipeline</h2>
+<p><strong>Files:</strong>
+- Create: <code>tests/integration/test_quality_pipeline_e2e.py</code></p>
+<p>A pipeline that exercises segment → quality → filter → pack:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_segment_filter_pack_pipeline</span><span class="p">(</span><span class="n">audio_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;dir_scan → fixed_segment → duration_filter → pack_kaldi&quot;&quot;&quot;</span>
+    <span class="n">work_dir</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;work&quot;</span>
+    <span class="n">yaml_path</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;pipeline.yaml&quot;</span>
+    <span class="n">yaml_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">version: &quot;0.1&quot;</span>
+<span class="s2">name: quality-e2e</span>
+<span class="s2">work_dir: </span><span class="si">{</span><span class="n">work_dir</span><span class="si">}</span>
+<span class="s2">num_cpu_workers: 1</span>
+<span class="s2">ingest:</span>
+<span class="s2">  source: dir</span>
+<span class="s2">  args:</span>
+<span class="s2">    root: </span><span class="si">{</span><span class="n">audio_dir</span><span class="si">}</span>
+<span class="s2">    recursive: true</span>
+<span class="s2">stages:</span>
+<span class="s2">  - name: segment</span>
+<span class="s2">    op: fixed_segment</span>
+<span class="s2">    args:</span>
+<span class="s2">      segment_duration: 0.3</span>
+<span class="s2">      min_remaining: 0.1</span>
+<span class="s2">  - name: filter</span>
+<span class="s2">    op: duration_filter</span>
+<span class="s2">    args:</span>
+<span class="s2">      min_duration: 0.2</span>
+<span class="s2">  - name: pack</span>
+<span class="s2">    op: pack_kaldi</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">load_pipeline_spec</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="s2">&quot;run-quality-e2e&quot;</span><span class="p">)</span>
+    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="c1"># All stages complete</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;segment&quot;</span><span class="p">,</span> <span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="s2">&quot;pack&quot;</span><span class="p">]):</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="s2">&quot;_SUCCESS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+    <span class="c1"># Segmentation should produce more cuts than input</span>
+    <span class="n">segment_cuts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">read_cuts</span><span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;00_segment&quot;</span> <span class="o">/</span> <span class="s2">&quot;cuts.jsonl.gz&quot;</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_cuts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span>  <span class="c1"># 3 input files, each ~1s, with 0.3s segments → ~9</span>
+
+    <span class="c1"># Duration filter may drop short segments</span>
+    <span class="n">filter_cuts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">read_cuts</span><span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;01_filter&quot;</span> <span class="o">/</span> <span class="s2">&quot;cuts.jsonl.gz&quot;</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_cuts</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_cuts</span><span class="p">)</span>
+
+    <span class="c1"># Pack should write Kaldi files</span>
+    <span class="n">kaldi_dir</span> <span class="o">=</span> <span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;02_pack&quot;</span> <span class="o">/</span> <span class="s2">&quot;kaldi_output&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">kaldi_dir</span> <span class="o">/</span> <span class="s2">&quot;wav.scp&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="commit-testintegration-add-segment-filter-pack-quality-pipeline-test">Commit: <code>test(integration): add segment → filter → pack quality pipeline test</code></h3>
+<hr />
+<h2 id="task-9-full-verification-lint-type-tag">Task 9: Full verification, lint, type, tag</h2>
+<ul>
+<li>[ ] Run <code>pytest -v</code> — all tests pass</li>
+<li>[ ] <code>ruff check src tests</code> + <code>ruff format --check src tests</code> — clean</li>
+<li>[ ] <code>mypy src/voxkitchen tests</code> — clean</li>
+<li>[ ] <code>pre-commit run --all-files</code> — all hooks pass</li>
+<li>[ ] <code>vkit validate</code> works on a pipeline using the new operators</li>
+<li>[ ] Tag: <code>git tag -a plan-04-segment-quality-pack -m "Plan 4 complete: segment, quality, and pack operators"</code></li>
+</ul>
+<hr />
+<h2 id="plan-4-completion-checklist">Plan 4 Completion Checklist</h2>
+<ul>
+<li>[ ] All 11 new operators registered: <code>fixed_segment</code>, <code>webrtc_vad</code>, <code>silence_split</code>, <code>snr_estimate</code>, <code>duration_filter</code>, <code>audio_fingerprint_dedup</code>, <code>quality_score_filter</code>, <code>pack_kaldi</code>, <code>pack_parquet</code>, <code>pack_huggingface</code>, <code>pack_webdataset</code></li>
+<li>[ ] Segmentation operators create child cuts with correct <code>start</code>/<code>duration</code>/<code>provenance</code></li>
+<li>[ ] <code>quality_score_filter</code> evaluates conditions like <code>"metrics.snr &gt; 10"</code></li>
+<li>[ ] Pack operators write output in correct format (Kaldi text files, Parquet, HF Arrow, WebDataset tar)</li>
+<li>[ ] Integration test: full segment → filter → pack pipeline works</li>
+<li>[ ] All existing tests pass (no regressions)</li>
+<li>[ ] <code>git tag plan-04-segment-quality-pack</code> at HEAD</li>
+</ul>
+<h2 id="what-plans-5-8-will-build-on">What Plans 5-8 Will Build On</h2>
+<p><strong>Plan 5 (GPU operators):</strong> silero_vad, faster_whisper_asr, whisperx_asr, pyannote_diarize, speechbrain_langid, speechbrain_gender. These follow the same operator patterns but need <code>device="gpu"</code> and run through <code>GpuPoolExecutor</code>.</p>
+<p><strong>Plan 6 (Ingest recipes):</strong> LibriSpeech, CommonVoice, AISHELL-1. Download + convert to CutSet.</p>
+<p><strong>Plan 7 (Visualization):</strong> Rich inspect views, HTML report, Gradio panel. Uses <code>CutSet</code> and <code>read_cuts</code> extensively.</p>
+<p><strong>Plan 8 (Plugin + polish):</strong> entry_points, <code>vkit init</code>, docs, release.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1702 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>VoxKitchen 下一阶段开发路线图 - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#voxkitchen" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VoxKitchen 下一阶段开发路线图
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        阶段总览
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        阶段 1：场景化 Pipeline 模板
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="阶段 1：场景化 Pipeline 模板">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-tts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 TTS 数据制备模板
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-asr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 ASR 训练数据模板
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 数据清洗模板
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 说话人分析模板
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-vkit-init-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 vkit init --template 命令增强
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        阶段 2：文档站 + 教程
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="阶段 2：文档站 + 教程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 文档结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 算子参考自动生成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-mkdocsyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 mkdocs.yml 导航更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        阶段 3：公开发布准备
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="阶段 3：公开发布准备">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#31-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 GitHub 社区基础设施
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 README 优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-release-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 修复 Release Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-v020-release-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 v0.2.0 Release Notes 大纲
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        阶段 4：更多数据源 Recipes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="阶段 4：更多数据源 Recipes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#41-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 新增 Recipes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-musan-recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 MUSAN 噪声数据 Recipe（最高优先级）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-vkit-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 vkit recipes 命令
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        执行节奏建议
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        验收标准
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="voxkitchen">VoxKitchen 下一阶段开发路线图</h1>
+<h2 id="_1">阶段总览</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">顺序</th>
+<th>方向</th>
+<th>目标</th>
+<th style="text-align: center;">预估工作量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td>场景化 Pipeline 模板</td>
+<td>让用户 5 分钟内跑通完整流程</td>
+<td style="text-align: center;">中</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td>文档站 + 教程</td>
+<td>降低认知门槛，让用户自助</td>
+<td style="text-align: center;">中</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td>公开发布准备</td>
+<td>GitHub 社区基础设施 + 首次正式发布</td>
+<td style="text-align: center;">小</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td>更多数据源 Recipes</td>
+<td>扩大数据覆盖面</td>
+<td style="text-align: center;">中</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-pipeline">阶段 1：场景化 Pipeline 模板</h2>
+<h3 id="_2">目标</h3>
+<p>从"工具集合"变成"解决方案"。用户不需要自己组合算子，直接 <code>vkit init --template tts</code> 就能得到一个可运行的 TTS 数据制备 pipeline。</p>
+<h3 id="11-tts">1.1 TTS 数据制备模板</h3>
+<p><strong>场景</strong>：从粗糙的音频制备高质量 TTS 训练数据</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># templates/tts-data-prep.yaml</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts-data-prep</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Raw</span><span class="nv"> </span><span class="s">audio</span><span class="nv"> </span><span class="s">→</span><span class="nv"> </span><span class="s">TTS-ready</span><span class="nv"> </span><span class="s">dataset</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">word-level</span><span class="nv"> </span><span class="s">alignment&quot;</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dir</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/raw</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># 1. 基础处理</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">to_wav</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ffmpeg_convert</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_format</span><span class="p">:</span><span class="w"> </span><span class="nv">wav</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">22050</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">  </span><span class="c1"># TTS 常用 22.05kHz</span>
+
+<span class="w">  </span><span class="c1"># 2. 降噪</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">enhance</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speech_enhance</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> aggressiveness</span><span class="p">:</span><span class="w"> </span><span class="nv">0.3</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">  </span><span class="c1"># TTS 用轻度降噪，保留自然感</span>
+
+<span class="w">  </span><span class="c1"># 3. 切分</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="p p-Indicator">,</span><span class="nt"> min_speech_duration_ms</span><span class="p">:</span><span class="w"> </span><span class="nv">1000</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">  </span><span class="c1"># TTS 要较长段</span>
+
+<span class="w">  </span><span class="c1"># 4. 质量筛选</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr_estimate</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dnsmos</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dnsmos_score</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">2&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">15&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">15&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.dnsmos_ovrl</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">3.0&quot;</span>
+
+<span class="w">  </span><span class="c1"># 5. ASR + 强制对齐</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qwen3_asr</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Qwen/Qwen3-ASR-0.6B</span>
+<span class="w">      </span><span class="nt">return_timestamps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="c1"># 6. 打包</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
+</code></pre></div>
+<p><strong>配套文档</strong>：<code>docs/tutorials/tts-data-prep.md</code>
+- 为什么 TTS 要 22.05kHz
+- 降噪激进度如何选择
+- 质量阈值的含义（DNSMOS 3.0 = 什么水平）
+- 对齐结果怎么用于 TTS 训练</p>
+<h3 id="12-asr">1.2 ASR 训练数据模板</h3>
+<p><strong>场景</strong>：大规模音频 → 增强后的 ASR 训练数据</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># templates/asr-training-data.yaml</span>
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="c1"># 数据增强 3 倍</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speed</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speed_perturb</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> factors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1.1</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume_perturb</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> min_gain_db</span><span class="p">:</span><span class="w"> </span><span class="nv">-3</span><span class="p p-Indicator">,</span><span class="nt"> max_gain_db</span><span class="p">:</span><span class="w"> </span><span class="nv">3</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">faster_whisper_asr</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> model</span><span class="p">:</span><span class="w"> </span><span class="nv">large-v3</span><span class="p p-Indicator">,</span><span class="nt"> compute_type</span><span class="p">:</span><span class="w"> </span><span class="nv">float16</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">1&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">30&quot;</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_huggingface</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> output_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">./output/hf_dataset</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="13">1.3 数据清洗模板</h3>
+<p><strong>场景</strong>：清理质量差、有重复的原始数据</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># templates/data-cleaning.yaml</span>
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr_estimate</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clipping</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clipping_detect</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bandwidth</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bandwidth_estimate</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dedup</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audio_fingerprint_dedup</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> similarity_threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">3</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">0.5&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">60&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.clipping_ratio</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">0.01&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.bandwidth_khz</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">4&quot;</span><span class="w">   </span><span class="c1"># 排除电话线质量</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
+</code></pre></div>
+<h3 id="14">1.4 说话人分析模板</h3>
+<p><strong>场景</strong>：分析数据集中的说话人分布</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># templates/speaker-analysis.yaml</span>
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diarize</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote_diarize</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">embed</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_embed</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> method</span><span class="p">:</span><span class="w"> </span><span class="nv">wespeaker</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender_classify</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> method</span><span class="p">:</span><span class="w"> </span><span class="nv">f0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">langid</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whisper_langid</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> model</span><span class="p">:</span><span class="w"> </span><span class="nv">tiny</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
+</code></pre></div>
+<h3 id="15-vkit-init-template">1.5 <code>vkit init --template</code> 命令增强</h3>
+<p>当前 <code>vkit init</code> 只创建一个空模板。增强为：</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w">                         </span><span class="c1"># 空模板（现有行为）</span>
+vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span>--template<span class="w"> </span>tts<span class="w">          </span><span class="c1"># TTS 数据制备</span>
+vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span>--template<span class="w"> </span>asr<span class="w">          </span><span class="c1"># ASR 训练数据</span>
+vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span>--template<span class="w"> </span>cleaning<span class="w">     </span><span class="c1"># 数据清洗</span>
+vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span>--template<span class="w"> </span>speaker<span class="w">      </span><span class="c1"># 说话人分析</span>
+
+vkit<span class="w"> </span>init<span class="w"> </span>--list-templates<span class="w">                   </span><span class="c1"># 列出所有可用模板</span>
+</code></pre></div>
+<h3 id="_3">实现清单</h3>
+<ul>
+<li>[ ] 创建 <code>src/voxkitchen/templates/</code> 目录，存放模板 YAML</li>
+<li>[ ] 修改 <code>vkit init</code> 支持 <code>--template</code> 参数</li>
+<li>[ ] 创建 4 个模板 YAML</li>
+<li>[ ] 每个模板配套一个教程文档</li>
+<li>[ ] 创建 <code>vkit init --list-templates</code></li>
+<li>[ ] 测试每个模板的 <code>vkit validate</code></li>
+</ul>
+<hr />
+<h2 id="2">阶段 2：文档站 + 教程</h2>
+<h3 id="_4">目标</h3>
+<p>把 mkdocs 从 3 页扩展到完整的文档站，覆盖：入门 → 教程 → 参考 → 贡献指南。</p>
+<h3 id="21">2.1 文档结构</h3>
+<div class="highlight"><pre><span></span><code>docs/
+├── index.md                          # 首页（已有）
+├── getting-started.md                # 快速开始（已有，需更新）
+├── concepts/
+│   └── data-protocol.md              # 数据模型（已有）
+│
+├── tutorials/                        # 新增
+│   ├── tts-data-prep.md              # TTS 数据制备教程
+│   ├── asr-training-data.md          # ASR 训练数据教程
+│   ├── data-cleaning.md              # 数据清洗教程
+│   ├── custom-operator.md            # 如何写自定义算子
+│   └── download-datasets.md          # 数据下载教程
+│
+├── reference/                        # 新增
+│   ├── operators.md                  # 算子参考（自动生成）
+│   ├── recipes.md                    # 数据集 recipe 参考
+│   ├── cli.md                        # CLI 命令参考
+│   ├── tools-api.md                  # Python tools API 参考
+│   └── pipeline-yaml.md             # YAML 规范参考
+│
+└── contributing.md                   # 贡献指南（阶段 3）
+</code></pre></div>
+<h3 id="22">2.2 算子参考自动生成</h3>
+<p>写一个脚本 <code>scripts/gen_operator_docs.py</code>：
+- 遍历所有注册算子
+- 提取 docstring、config 字段、device、required_extras
+- 生成 Markdown 表格
+- 输出到 <code>docs/reference/operators.md</code></p>
+<p>这样每次加新算子后跑一次脚本就能更新文档。</p>
+<h3 id="23-mkdocsyml">2.3 mkdocs.yml 导航更新</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">nav</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Home</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">index.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Getting Started</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getting-started.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Concepts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Data Protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">concepts/data-protocol.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Tutorials</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">TTS Data Preparation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorials/tts-data-prep.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ASR Training Data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorials/asr-training-data.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Data Cleaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorials/data-cleaning.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Download Datasets</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorials/download-datasets.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Custom Operators</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorials/custom-operator.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Reference</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Operators</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference/operators.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Recipes &amp; Download</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference/recipes.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">CLI Commands</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference/cli.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Python Tools API</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference/tools-api.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Pipeline YAML</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference/pipeline-yaml.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Contributing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contributing.md</span>
+</code></pre></div>
+<h3 id="_5">实现清单</h3>
+<ul>
+<li>[ ] 创建 <code>scripts/gen_operator_docs.py</code> 自动生成算子文档</li>
+<li>[ ] 编写 4 个教程文档（配合阶段 1 的模板）</li>
+<li>[ ] 编写参考文档（CLI、tools API、YAML 规范、recipes）</li>
+<li>[ ] 更新 getting-started.md（反映新功能）</li>
+<li>[ ] 更新 mkdocs.yml 导航</li>
+<li>[ ] 部署到 GitHub Pages</li>
+</ul>
+<hr />
+<h2 id="3">阶段 3：公开发布准备</h2>
+<h3 id="_6">目标</h3>
+<p>让项目从 private develop 变成可以公开的开源项目。</p>
+<h3 id="31-github">3.1 GitHub 社区基础设施</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CONTRIBUTING.md</code></td>
+<td>开发环境搭建、commit 规范、如何加算子、PR 流程</td>
+</tr>
+<tr>
+<td><code>CHANGELOG.md</code></td>
+<td>v0.1.0 和 v0.2.0 的变更记录</td>
+</tr>
+<tr>
+<td><code>SECURITY.md</code></td>
+<td>漏洞报告流程</td>
+</tr>
+<tr>
+<td><code>CODE_OF_CONDUCT.md</code></td>
+<td>社区行为规范（用 Contributor Covenant）</td>
+</tr>
+<tr>
+<td><code>.github/ISSUE_TEMPLATE/bug_report.yml</code></td>
+<td>Bug 报告模板</td>
+</tr>
+<tr>
+<td><code>.github/ISSUE_TEMPLATE/feature_request.yml</code></td>
+<td>功能请求模板</td>
+</tr>
+<tr>
+<td><code>.github/ISSUE_TEMPLATE/new_dataset.yml</code></td>
+<td>新数据集 recipe 请求</td>
+</tr>
+<tr>
+<td><code>.github/PULL_REQUEST_TEMPLATE.md</code></td>
+<td>PR 模板</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-readme">3.2 README 优化</h3>
+<ul>
+<li>添加 badges（CI、PyPI、Python 版本、License）</li>
+<li>添加项目 logo/banner（可选）</li>
+<li>添加 "Who is this for" 段落</li>
+<li>添加 "Comparison with other tools" 段落（vs Lhotse、NeMo、SpeechBrain）</li>
+</ul>
+<h3 id="33-release-workflow">3.3 修复 Release Workflow</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># .github/workflows/release.yml 修复步骤</span>
+<span class="l l-Scalar l-Scalar-Plain">1. 在 GitHub Settings → Environments 创建 &quot;release&quot; 环境</span>
+<span class="l l-Scalar l-Scalar-Plain">2. 在 PyPI 注册 voxkitchen 包名（或用 pending publisher）</span>
+<span class="l l-Scalar l-Scalar-Plain">3. 配置 Trusted Publisher（GitHub → PyPI OIDC）</span>
+<span class="l l-Scalar l-Scalar-Plain">4. 打 v0.2.0 tag 触发发布</span>
+</code></pre></div>
+<h3 id="34-v020-release-notes">3.4 v0.2.0 Release Notes 大纲</h3>
+<div class="highlight"><pre><span></span><code><span class="gu">## v0.2.0 — Feature Expansion Release</span>
+
+<span class="gu">### New Operators (+9)</span>
+<span class="k">-</span><span class="w"> </span><span class="gs">**Augmentation**</span>: speed_perturb, volume_perturb, noise_augment, reverb_augment
+<span class="k">-</span><span class="w"> </span><span class="gs">**Annotation**</span>: speaker_embed, speech_enhance, forced_align, emotion_recognize, qwen3_asr
+
+<span class="gu">### New Features</span>
+<span class="k">-</span><span class="w"> </span>Lazy CutSet for large-scale manifest processing
+<span class="k">-</span><span class="w"> </span>Per-stage execution statistics (_stats.json)
+<span class="k">-</span><span class="w"> </span><span class="sb">`vkit download`</span> command for dataset downloads
+<span class="k">-</span><span class="w"> </span>FLEURS recipe (102-language HuggingFace dataset)
+<span class="k">-</span><span class="w"> </span>Operator categories in <span class="sb">`vkit operators`</span> output
+<span class="k">-</span><span class="w"> </span>Python tools API: extract_speaker_embedding, enhance_speech, align_words
+
+<span class="gu">### Infrastructure</span>
+<span class="k">-</span><span class="w"> </span>LibriSpeech and AISHELL download support
+<span class="k">-</span><span class="w"> </span>Scene-based pipeline templates (TTS, ASR, cleaning)
+<span class="k">-</span><span class="w"> </span>Documentation site with tutorials
+</code></pre></div>
+<h3 id="_7">实现清单</h3>
+<ul>
+<li>[ ] 创建 CONTRIBUTING.md</li>
+<li>[ ] 创建 CHANGELOG.md</li>
+<li>[ ] 创建 SECURITY.md + CODE_OF_CONDUCT.md</li>
+<li>[ ] 创建 Issue/PR templates</li>
+<li>[ ] README 添加 badges</li>
+<li>[ ] 配置 GitHub release environment + PyPI trusted publisher</li>
+<li>[ ] 打 v0.2.0 tag 并发布</li>
+</ul>
+<hr />
+<h2 id="4-recipes">阶段 4：更多数据源 Recipes</h2>
+<h3 id="_8">目标</h3>
+<p>覆盖主流中英文 + 多语种数据集，让"找数据"这个价值主张成立。</p>
+<h3 id="41-recipes">4.1 新增 Recipes</h3>
+<table>
+<thead>
+<tr>
+<th>数据集</th>
+<th>语言</th>
+<th>规模</th>
+<th>下载方式</th>
+<th style="text-align: center;">优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MUSAN</strong></td>
+<td>-</td>
+<td>噪声/音乐</td>
+<td>openslr</td>
+<td style="text-align: center;">P0（增强算子配套）</td>
+</tr>
+<tr>
+<td><strong>GigaSpeech</strong></td>
+<td>EN</td>
+<td>10k h</td>
+<td>HuggingFace</td>
+<td style="text-align: center;">P0</td>
+</tr>
+<tr>
+<td><strong>WenetSpeech</strong></td>
+<td>ZH</td>
+<td>10k h</td>
+<td>HuggingFace</td>
+<td style="text-align: center;">P0</td>
+</tr>
+<tr>
+<td><strong>MLS</strong></td>
+<td>8 lang</td>
+<td>50k h</td>
+<td>openslr</td>
+<td style="text-align: center;">P1</td>
+</tr>
+<tr>
+<td><strong>VoxCeleb 1/2</strong></td>
+<td>Multi</td>
+<td>2k h</td>
+<td>手动下载，只做 recipe</td>
+<td style="text-align: center;">P1</td>
+</tr>
+<tr>
+<td><strong>People's Speech</strong></td>
+<td>EN</td>
+<td>30k h</td>
+<td>HuggingFace</td>
+<td style="text-align: center;">P2</td>
+</tr>
+<tr>
+<td><strong>KeSpeech</strong></td>
+<td>ZH 方言</td>
+<td>1.5k h</td>
+<td>需申请</td>
+<td style="text-align: center;">P2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-musan-recipe">4.2 MUSAN 噪声数据 Recipe（最高优先级）</h3>
+<p>MUSAN 是增强算子（noise_augment、reverb_augment）的配套数据。有了它，用户可以：</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>download<span class="w"> </span>musan<span class="w"> </span>--root<span class="w"> </span>/data/musan
+</code></pre></div>
+<p>然后在 pipeline 里直接用：</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add_noise</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">noise_augment</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">noise_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/musan/noise</span>
+<span class="w">    </span><span class="nt">snr_range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">20</span><span class="p p-Indicator">]</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add_reverb</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reverb_augment</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">rir_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/musan/rir</span><span class="w">     </span><span class="c1"># 需要额外 RIR 数据</span>
+</code></pre></div>
+<h3 id="43-vkit-recipes">4.3 <code>vkit recipes</code> 命令</h3>
+<p>新增 CLI 命令，列出所有可用 recipe 及其下载状态：</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>vkit<span class="w"> </span>recipes
+┌─────────────┬──────────┬──────────────────┬──────────┐
+│<span class="w"> </span>Recipe<span class="w">      </span>│<span class="w"> </span>Language<span class="w"> </span>│<span class="w"> </span>Download<span class="w"> </span>Support<span class="w"> </span>│<span class="w"> </span>Status<span class="w">   </span>│
+├─────────────┼──────────┼──────────────────┼──────────┤
+│<span class="w"> </span>librispeech<span class="w"> </span>│<span class="w"> </span>EN<span class="w">       </span>│<span class="w"> </span>✓<span class="w"> </span>openslr<span class="w">        </span>│<span class="w"> </span>ready<span class="w">    </span>│
+│<span class="w"> </span>aishell<span class="w">     </span>│<span class="w"> </span>ZH<span class="w">       </span>│<span class="w"> </span>✓<span class="w"> </span>openslr<span class="w">        </span>│<span class="w"> </span>ready<span class="w">    </span>│
+│<span class="w"> </span>fleurs<span class="w">      </span>│<span class="w"> </span><span class="m">102</span><span class="w"> </span>lang<span class="w"> </span>│<span class="w"> </span>✓<span class="w"> </span>HuggingFace<span class="w">    </span>│<span class="w"> </span>ready<span class="w">    </span>│
+│<span class="w"> </span>commonvoice<span class="w"> </span>│<span class="w"> </span>Multi<span class="w">    </span>│<span class="w"> </span>✗<span class="w"> </span>manual<span class="w">         </span>│<span class="w"> </span>ready<span class="w">    </span>│
+│<span class="w"> </span>musan<span class="w">       </span>│<span class="w"> </span>-<span class="w">        </span>│<span class="w"> </span>✓<span class="w"> </span>openslr<span class="w">        </span>│<span class="w"> </span>ready<span class="w">    </span>│
+│<span class="w"> </span>gigaspeech<span class="w">  </span>│<span class="w"> </span>EN<span class="w">       </span>│<span class="w"> </span>✓<span class="w"> </span>HuggingFace<span class="w">    </span>│<span class="w"> </span>ready<span class="w">    </span>│
+│<span class="w"> </span>wenetspeech<span class="w"> </span>│<span class="w"> </span>ZH<span class="w">       </span>│<span class="w"> </span>✓<span class="w"> </span>HuggingFace<span class="w">    </span>│<span class="w"> </span>ready<span class="w">    </span>│
+└─────────────┴──────────┴──────────────────┴──────────┘
+</code></pre></div>
+<h3 id="_9">实现清单</h3>
+<ul>
+<li>[ ] MUSAN recipe + download</li>
+<li>[ ] GigaSpeech recipe + download</li>
+<li>[ ] WenetSpeech recipe + download</li>
+<li>[ ] MLS recipe + download</li>
+<li>[ ] VoxCeleb recipe（仅解析，无下载）</li>
+<li>[ ] <code>vkit recipes</code> CLI 命令</li>
+<li>[ ] 每个 recipe 配套 example pipeline</li>
+</ul>
+<hr />
+<h2 id="_10">执行节奏建议</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">周次</th>
+<th>工作内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">Week 1</td>
+<td>阶段 1：4 个场景模板 + <code>vkit init --template</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">Week 2</td>
+<td>阶段 2：自动生成算子文档 + 4 个教程</td>
+</tr>
+<tr>
+<td style="text-align: center;">Week 3</td>
+<td>阶段 2：参考文档 + mkdocs 部署</td>
+</tr>
+<tr>
+<td style="text-align: center;">Week 4</td>
+<td>阶段 3：CONTRIBUTING + Issue templates + Release</td>
+</tr>
+<tr>
+<td style="text-align: center;">Week 5-6</td>
+<td>阶段 4：MUSAN + GigaSpeech + WenetSpeech recipes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_11">验收标准</h2>
+<p>项目可以公开发布时，应满足：</p>
+<ol>
+<li><strong>新用户 5 分钟跑通</strong>：<code>pip install voxkitchen[all]</code> → <code>vkit init --template tts</code> → <code>vkit run pipeline.yaml</code> → 得到结果</li>
+<li><strong>文档自助</strong>：用户遇到问题能在文档站找到答案</li>
+<li><strong>贡献者友好</strong>：有人想加新算子，看 CONTRIBUTING.md + custom-operator 教程就能做</li>
+<li><strong>数据覆盖</strong>：中英文各有 2+ 个可直接下载的大规模数据集</li>
+<li><strong>CI 绿色</strong>：所有 test pass，release workflow 能发 PyPI</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

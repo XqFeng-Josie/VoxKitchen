@@ -1,0 +1,1897 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>VoxKitchen Plan 5: Auto-Labeling Operators (GPU-capable, CPU-tested) - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#voxkitchen-plan-5-auto-labeling-operators-gpu-capable-cpu-tested" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VoxKitchen Plan 5: Auto-Labeling Operators (GPU-capable, CPU-tested)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-design-cpu-fallback-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Design: CPU Fallback Pattern
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-design-annotation-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Design: Annotation Pattern
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-add-auto-labeling-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Add auto-labeling dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-silero_vad-operator-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: silero_vad operator (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 2: silero_vad operator (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setup()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        process()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-silero_vad-gpu-capable-segmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add silero_vad GPU-capable segmentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-faster_whisper_asr-operator-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: faster_whisper_asr operator (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 3: faster_whisper_asr operator (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setup()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#process_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        process()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-faster_whisper_asr-for-speech-transcription" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add faster_whisper_asr for speech transcription
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-whisperx_asr-operator-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: whisperx_asr operator (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 4: whisperx_asr operator (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setup()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#process_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        process()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-whisperx_asr-with-word-level-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add whisperx_asr with word-level alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-5-pyannote_diarize-operator-tdd-mocked-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: pyannote_diarize operator (TDD — mocked model)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 5: pyannote_diarize operator (TDD — mocked model)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setup()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#process_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        process()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-3-registration-attrs-always-run-functional-test-skipped-without-auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (3) — registration + attrs always run; functional test skipped without auth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featoperators-add-pyannote_diarize-for-speaker-diarization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(operators): add pyannote_diarize for speaker diarization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-6-speechbrain_langid-speechbrain_gender-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: speechbrain_langid + speechbrain_gender (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 6: speechbrain_langid + speechbrain_gender (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#speechbrain_langid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        speechbrain_langid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#speechbrain_gender" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        speechbrain_gender
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-4-per-operator-8-total" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (4 per operator, 8 total)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two commits:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-7-integration-test-asr-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Integration test — ASR pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 7: Integration test — ASR pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-testintegration-add-vad-asr-pipeline-test-cpu-slow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: test(integration): add VAD → ASR pipeline test (CPU, slow)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-8-full-verification-lint-type-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 8: Full verification, lint, type, tag
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-5-completion-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan 5 Completion Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plan 5 Completion Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operator-tally-after-plan-5-2222-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator tally after Plan 5: 22/22 complete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-plans-6-8-will-build-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Plans 6-8 Will Build On
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="voxkitchen-plan-5-auto-labeling-operators-gpu-capable-cpu-tested">VoxKitchen Plan 5: Auto-Labeling Operators (GPU-capable, CPU-tested)</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Implement the final 5 operators: <code>silero_vad</code> (GPU-accelerated VAD), <code>faster_whisper_asr</code> (ASR transcription), <code>whisperx_asr</code> (word-aligned ASR), <code>pyannote_diarize</code> (speaker diarization), and <code>speechbrain_langid</code> + <code>speechbrain_gender</code> (audio classification). After this plan, all 22 v0.1 operators are complete.</p>
+<p><strong>Development constraint: current dev machine has no GPU; production servers will have GPU.</strong> Design for GPU as the primary target. For testing:
+1. <code>device="gpu"</code> is correct — operators detect CUDA in <code>setup()</code> and fall back to CPU where the library supports it (silero, faster-whisper, speechbrain all work on CPU)
+2. Tests that CAN run on CPU: mark <code>@pytest.mark.slow</code> (model downloads take time) — these prove the operator logic works
+3. Tests that genuinely require GPU: mark <code>@pytest.mark.gpu</code> and skip honestly — no mocking to fake a pass
+4. <code>pyannote_diarize</code> needs HuggingFace auth token — mark <code>@pytest.mark.gpu</code> (can only be properly tested on a configured server)</p>
+<p><strong>Architecture:</strong> Each operator follows the same pattern: <code>setup()</code> loads a model (detecting CPU/GPU), <code>process()</code> runs inference per Cut and adds Supervisions or metrics. Unlike Plan 3/4 operators, these are <strong>annotation operators</strong> — they don't produce new audio files (<code>produces_audio=False</code>). They read audio bytes, run a model, and add text/speaker/language/gender annotations to existing Cuts via new Supervisions or updated metrics.</p>
+<p><strong>Tech Stack:</strong> silero-vad (torch.hub), faster-whisper (CTranslate2), whisperx (faster-whisper + alignment), pyannote.audio (speaker diarization), speechbrain (language/gender classification).</p>
+<hr />
+<h2 id="key-design-cpu-fallback-pattern">Key Design: CPU Fallback Pattern</h2>
+<p>Every GPU operator uses this pattern in <code>setup()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="c1"># Load model to self._device</span>
+</code></pre></div>
+<p>The class attribute <code>device = "gpu"</code> tells the runner to use <code>GpuPoolExecutor</code>, which spawns subprocesses with <code>CUDA_VISIBLE_DEVICES</code> set. On a CPU-only machine with <code>num_gpus: 1</code> (default), this spawns one subprocess where the operator detects no CUDA and uses CPU. This works transparently — no special handling needed.</p>
+<h2 id="key-design-annotation-pattern">Key Design: Annotation Pattern</h2>
+<p>Unlike basic/segment/quality operators, auto-labeling operators <strong>add Supervisions</strong> to Cuts:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+        <span class="n">audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">load_audio_for_cut</span><span class="p">(</span><span class="n">cut</span><span class="p">)</span>
+        <span class="c1"># Run model → get annotations (text, speaker, language, etc.)</span>
+        <span class="n">new_supervisions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_model</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">cut</span><span class="p">)</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;supervisions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">*</span><span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span><span class="p">,</span> <span class="o">*</span><span class="n">new_supervisions</span><span class="p">]</span>
+        <span class="p">})</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">updated</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+<p>The Cut itself is not recreated with new provenance — annotations are appended to the existing Cut's supervisions list. This preserves the Cut's identity and provenance chain from upstream stages.</p>
+<h2 id="test-strategy">Test Strategy</h2>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Model size</th>
+<th>CPU works?</th>
+<th>Test approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>silero_vad</code></td>
+<td>~2 MB</td>
+<td>Yes</td>
+<td>Real model on CPU, <code>@pytest.mark.slow</code></td>
+</tr>
+<tr>
+<td><code>faster_whisper_asr</code></td>
+<td>~75 MB (tiny)</td>
+<td>Yes (int8)</td>
+<td>Real model on CPU, <code>@pytest.mark.slow</code></td>
+</tr>
+<tr>
+<td><code>whisperx_asr</code></td>
+<td>~75 MB + alignment</td>
+<td>Yes (fallback)</td>
+<td>Real model on CPU, <code>@pytest.mark.slow</code></td>
+</tr>
+<tr>
+<td><code>pyannote_diarize</code></td>
+<td>~100 MB + HF auth</td>
+<td>Needs auth token</td>
+<td><code>@pytest.mark.gpu</code> — <strong>skip on dev machine</strong>, test on server</td>
+</tr>
+<tr>
+<td><code>speechbrain_langid</code></td>
+<td>~30 MB</td>
+<td>Yes</td>
+<td>Real model on CPU, <code>@pytest.mark.slow</code></td>
+</tr>
+<tr>
+<td><code>speechbrain_gender</code></td>
+<td>~30 MB</td>
+<td>Yes</td>
+<td>Real model on CPU, <code>@pytest.mark.slow</code></td>
+</tr>
+</tbody>
+</table>
+<p>Register markers in <code>pyproject.toml</code>:
+<div class="highlight"><pre><span></span><code><span class="k">[tool.pytest.ini_options]</span>
+<span class="n">markers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;slow: marks tests that download ML models (deselect with &#39;-m </span><span class="se">\&quot;</span><span class="s2">not slow</span><span class="se">\&quot;</span><span class="s2">&#39;)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;gpu: marks tests that require GPU or special server config (deselect with &#39;-m </span><span class="se">\&quot;</span><span class="s2">not gpu</span><span class="se">\&quot;</span><span class="s2">&#39;)&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div></p>
+<hr />
+<h2 id="file-structure">File Structure</h2>
+<div class="highlight"><pre><span></span><code>src/voxkitchen/operators/
+├── segment/
+│   └── silero_vad.py                # NEW: GPU-accelerated VAD
+├── annotate/
+│   ├── __init__.py
+│   ├── faster_whisper_asr.py        # NEW: ASR transcription
+│   ├── whisperx_asr.py              # NEW: word-aligned ASR
+│   ├── pyannote_diarize.py          # NEW: speaker diarization
+│   ├── speechbrain_langid.py        # NEW: language identification
+│   └── speechbrain_gender.py        # NEW: gender classification
+
+tests/unit/operators/
+├── segment/
+│   └── test_silero_vad.py           # NEW
+├── annotate/
+│   ├── __init__.py
+│   ├── test_faster_whisper_asr.py   # NEW
+│   ├── test_whisperx_asr.py         # NEW
+│   ├── test_pyannote_diarize.py     # NEW
+│   ├── test_speechbrain_langid.py   # NEW
+│   └── test_speechbrain_gender.py   # NEW
+</code></pre></div>
+<hr />
+<h2 id="task-1-add-auto-labeling-dependencies">Task 1: Add auto-labeling dependencies</h2>
+<p><strong>Files:</strong>
+- Modify: <code>pyproject.toml</code>
+- Modify: <code>.github/workflows/ci.yml</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Add new extras groups to <code>pyproject.toml</code></strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">[project.optional-dependencies]</span>
+<span class="n">audio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;torch&gt;=2.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;torchaudio&gt;=2.1&quot;</span><span class="p">]</span>
+<span class="n">segment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;webrtcvad&gt;=2.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;librosa&gt;=0.10&quot;</span><span class="p">]</span>
+<span class="n">quality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;simhash&gt;=2.1&quot;</span><span class="p">]</span>
+<span class="n">pack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;datasets&gt;=2.16&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;webdataset&gt;=0.2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;pyarrow&gt;=14&quot;</span><span class="p">]</span>
+<span class="n">asr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;faster-whisper&gt;=1.0&quot;</span><span class="p">]</span>
+<span class="n">diarize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;pyannote.audio&gt;=3.1&quot;</span><span class="p">]</span>
+<span class="n">classify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;speechbrain&gt;=1.0&quot;</span><span class="p">]</span>
+<span class="n">dev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;pytest&gt;=7.4&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;pytest-cov&gt;=4.1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ruff&gt;=0.4&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;mypy&gt;=1.8&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;pre-commit&gt;=3.6&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;scipy&gt;=1.11&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Notes:
+- <code>silero-vad</code> is loaded via <code>torch.hub</code> — no separate pip package needed, just <code>torch</code> from the <code>audio</code> extras.
+- <code>whisperx</code> wraps <code>faster-whisper</code> — add it to <code>asr</code> extras if it's a separate package, or just import it directly. Check if <code>whisperx</code> is pip-installable; if not, we implement the alignment ourselves using just faster-whisper output.
+- <code>speechbrain</code> is one package covering both langid and gender.</p>
+<ul>
+<li>[ ] <strong>Step 2: Add <code>slow</code> marker to pytest config</strong></li>
+</ul>
+<p>In <code>pyproject.toml</code> <code>[tool.pytest.ini_options]</code>:
+<div class="highlight"><pre><span></span><code><span class="n">markers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;slow: marks tests that download ML models (deselect with &#39;-m </span><span class="se">\&quot;</span><span class="s2">not slow</span><span class="se">\&quot;</span><span class="s2">&#39;)&quot;</span><span class="p">]</span>
+</code></pre></div></p>
+<ul>
+<li>[ ] <strong>Step 3: Update mypy overrides</strong></li>
+</ul>
+<p>Add <code>faster_whisper.*</code>, <code>pyannote.*</code>, <code>speechbrain.*</code>, <code>whisperx.*</code> to the ignore_missing_imports module list.</p>
+<ul>
+<li>[ ] <strong>Step 4: Update CI</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install package</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">python -m pip install --upgrade pip</span>
+<span class="w">          </span><span class="no">pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu</span>
+<span class="w">          </span><span class="no">pip install -e &quot;.[dev,segment,quality,pack,asr,classify]&quot;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pytest (skip slow model downloads and GPU tests in CI)</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pytest -v -m &quot;not slow and not gpu&quot; --cov=voxkitchen --cov-report=term-missing</span>
+</code></pre></div>
+<p>Note: CI skips <code>@pytest.mark.slow</code> tests to avoid downloading large models. Developers run <code>pytest</code> locally (without <code>-m</code>) to include model tests.</p>
+<p>Also note: <code>diarize</code> extras (<code>pyannote.audio</code>) is NOT installed in CI because it requires HF auth. Pyannote tests are mocked anyway.</p>
+<ul>
+<li>[ ] <strong>Step 5: Install locally</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span>torchaudio<span class="w"> </span>--index-url<span class="w"> </span>https://download.pytorch.org/whl/cpu
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,segment,quality,pack,asr,classify]&quot;</span>
+</code></pre></div>
+<p>Skip <code>diarize</code> unless you have a HuggingFace token set up.</p>
+<ul>
+<li>[ ] <strong>Step 6: Verify + commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>-q<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;not slow&quot;</span>
+</code></pre></div>
+<p>All 189 tests pass. Commit: <code>chore: add asr/diarize/classify dependency extras + slow test marker</code></p>
+<hr />
+<h2 id="task-2-silero_vad-operator-tdd">Task 2: <code>silero_vad</code> operator (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/segment/silero_vad.py</code>
+- Create: <code>tests/unit/operators/segment/test_silero_vad.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<p>The spec's most important segmentation operator. Uses the Silero VAD model via <code>torch.hub</code>.</p>
+<h3 id="config">Config</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SileroVadConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">min_speech_duration_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span>
+    <span class="n">min_silence_duration_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">speech_pad_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+</code></pre></div>
+<h3 id="setup">setup()</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utils</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+        <span class="s2">&quot;snakers4/silero-vad&quot;</span><span class="p">,</span> <span class="s2">&quot;silero_vad&quot;</span><span class="p">,</span> <span class="n">trust_repo</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="process">process()</h3>
+<p>For each Cut:
+1. <code>load_audio_for_cut(cut)</code> → audio, sr
+2. If sr != 16000: resample (silero requires 16kHz)
+3. Call silero's <code>get_speech_timestamps(audio_tensor, model, ...)</code> utility
+4. Each timestamp pair → a child Cut (same pattern as <code>fixed_segment</code>)</p>
+<p><strong>Class attrs:</strong> <code>name="silero_vad"</code>, <code>device="gpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code></p>
+<h3 id="tests-4">Tests (4)</h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_silero_vad_detects_speech</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real model: a sine wave should produce at least 1 speech segment.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_silero_vad_child_cuts_have_provenance</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_silero_vad_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">get_operator</span><span class="p">(</span><span class="s2">&quot;silero_vad&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SileroVadOperator</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_silero_vad_class_attrs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">SileroVadOperator</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span>
+    <span class="k">assert</span> <span class="n">SileroVadOperator</span><span class="o">.</span><span class="n">produces_audio</span> <span class="ow">is</span> <span class="kc">False</span>
+</code></pre></div>
+<p>The first two tests download the model (~2MB, fast). Mark them <code>@pytest.mark.slow</code> anyway for consistency.</p>
+<h3 id="commit-featoperators-add-silero_vad-gpu-capable-segmentation">Commit: <code>feat(operators): add silero_vad GPU-capable segmentation</code></h3>
+<hr />
+<h2 id="task-3-faster_whisper_asr-operator-tdd">Task 3: <code>faster_whisper_asr</code> operator (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/annotate/__init__.py</code>
+- Create: <code>tests/unit/operators/annotate/__init__.py</code>
+- Create: <code>src/voxkitchen/operators/annotate/faster_whisper_asr.py</code>
+- Create: <code>tests/unit/operators/annotate/test_faster_whisper_asr.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>src/voxkitchen/operators/annotate
+mkdir<span class="w"> </span>-p<span class="w"> </span>tests/unit/operators/annotate
+</code></pre></div>
+<h3 id="config_1">Config</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FasterWhisperAsrConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tiny&quot;</span>                <span class="c1"># model size: tiny, base, small, medium, large-v3</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># None = auto-detect</span>
+    <span class="n">beam_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">compute_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;int8&quot;</span>         <span class="c1"># int8 for CPU, float16 for GPU</span>
+</code></pre></div>
+<h3 id="setup_1">setup()</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">faster_whisper</span><span class="w"> </span><span class="kn">import</span> <span class="n">WhisperModel</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">compute_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_type</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span> <span class="ow">and</span> <span class="n">compute_type</span> <span class="o">==</span> <span class="s2">&quot;float16&quot;</span><span class="p">:</span>
+        <span class="n">compute_type</span> <span class="o">=</span> <span class="s2">&quot;int8&quot;</span>  <span class="c1"># float16 not supported on CPU</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">WhisperModel</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">compute_type</span><span class="o">=</span><span class="n">compute_type</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div>
+<h3 id="process_1">process()</h3>
+<p>For each Cut:
+1. <code>load_audio_for_cut(cut)</code> → audio, sr
+2. <code>segments, info = self._model.transcribe(audio, beam_size=..., language=...)</code>
+3. For each segment: create a <code>Supervision</code> with <code>text</code>, <code>start</code>, <code>duration</code>, <code>language=info.language</code>
+4. Append supervisions to the Cut</p>
+<div class="highlight"><pre><span></span><code><span class="n">new_sups</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+    <span class="n">new_sups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Supervision</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">__asr_</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_sups</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">recording_id</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">seg</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">seg</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">seg</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">seg</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+        <span class="n">language</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">language</span><span class="p">,</span>
+    <span class="p">))</span>
+<span class="n">updated</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;supervisions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">*</span><span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span><span class="p">,</span> <span class="o">*</span><span class="n">new_sups</span><span class="p">]})</span>
+</code></pre></div>
+<p><strong>Class attrs:</strong> <code>name="faster_whisper_asr"</code>, <code>device="gpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["asr"]</code></p>
+<h3 id="tests-4_1">Tests (4)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_faster_whisper_asr_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_faster_whisper_asr_class_attrs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_faster_whisper_asr_transcribes</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real tiny model on CPU: transcribe a sine wave. Text may be garbage but supervisions should exist.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">out_cut</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+    <span class="c1"># Should have at least some supervisions</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_cut</span><span class="o">.</span><span class="n">supervisions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_faster_whisper_asr_adds_language</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supervisions from ASR should have a language field set.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+</code></pre></div>
+<h3 id="commit-featoperators-add-faster_whisper_asr-for-speech-transcription">Commit: <code>feat(operators): add faster_whisper_asr for speech transcription</code></h3>
+<hr />
+<h2 id="task-4-whisperx_asr-operator-tdd">Task 4: <code>whisperx_asr</code> operator (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/annotate/whisperx_asr.py</code>
+- Create: <code>tests/unit/operators/annotate/test_whisperx_asr.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<p>WhisperX adds word-level timestamps on top of faster-whisper. If the <code>whisperx</code> package is not available, this operator falls back to <code>faster_whisper_asr</code> behavior (segment-level only).</p>
+<h3 id="config_2">Config</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">WhisperxAsrConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tiny&quot;</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">compute_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;int8&quot;</span>
+</code></pre></div>
+<h3 id="setup_2">setup()</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">whisperx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_whisperx</span> <span class="o">=</span> <span class="n">whisperx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">whisperx</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+            <span class="n">compute_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_type</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_whisperx</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="c1"># Fallback: use faster-whisper directly</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">faster_whisper</span><span class="w"> </span><span class="kn">import</span> <span class="n">WhisperModel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">WhisperModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">compute_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_whisperx</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div>
+<h3 id="process_2">process()</h3>
+<p>If whisperx available: use <code>whisperx.transcribe()</code> → <code>whisperx.align()</code> for word-level alignment.
+If fallback: same as <code>faster_whisper_asr</code> (segment-level).</p>
+<p><strong>Class attrs:</strong> <code>name="whisperx_asr"</code>, <code>device="gpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["asr"]</code></p>
+<h3 id="tests-3">Tests (3)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_whisperx_asr_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_whisperx_asr_transcribes</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Falls back to faster-whisper if whisperx not installed.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_cut</span><span class="o">.</span><span class="n">supervisions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_whisperx_asr_supervisions_have_text</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</code></pre></div>
+<h3 id="commit-featoperators-add-whisperx_asr-with-word-level-alignment">Commit: <code>feat(operators): add whisperx_asr with word-level alignment</code></h3>
+<hr />
+<h2 id="task-5-pyannote_diarize-operator-tdd-mocked-model">Task 5: <code>pyannote_diarize</code> operator (TDD — mocked model)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/annotate/pyannote_diarize.py</code>
+- Create: <code>tests/unit/operators/annotate/test_pyannote_diarize.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<p>Speaker diarization: assigns speaker labels to time intervals.</p>
+<p><strong>Problem:</strong> pyannote.audio requires accepting a user agreement on HuggingFace and setting <code>HF_TOKEN</code>. This makes real-model tests impractical for automated testing. <strong>Solution:</strong> tests mock the pyannote pipeline.</p>
+<h3 id="config_3">Config</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PyannoteDiarizeConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pyannote/speaker-diarization-3.1&quot;</span>
+    <span class="n">min_speakers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_speakers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">hf_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>      <span class="c1"># or read from HF_TOKEN env var</span>
+</code></pre></div>
+<h3 id="setup_3">setup()</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyannote.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+    <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">hf_token</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HF_TOKEN&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">use_auth_token</span><span class="o">=</span><span class="n">token</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="process_3">process()</h3>
+<p>For each Cut:
+1. Load audio → save to a temp wav (pyannote needs a file path or waveform dict)
+2. Run pipeline: <code>diarization = self._pipeline({"waveform": tensor, "sample_rate": sr})</code>
+3. For each turn in diarization: create a Supervision with <code>speaker</code> label</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">turn</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">speaker</span> <span class="ow">in</span> <span class="n">diarization</span><span class="o">.</span><span class="n">itertracks</span><span class="p">(</span><span class="n">yield_label</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">new_sups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Supervision</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">__diar_</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_sups</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">recording_id</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">recording_id</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">turn</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">turn</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">turn</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+        <span class="n">speaker</span><span class="o">=</span><span class="n">speaker</span><span class="p">,</span>
+    <span class="p">))</span>
+</code></pre></div>
+<p><strong>Class attrs:</strong> <code>name="pyannote_diarize"</code>, <code>device="gpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["diarize"]</code></p>
+<h3 id="tests-3-registration-attrs-always-run-functional-test-skipped-without-auth">Tests (3) — registration + attrs always run; functional test skipped without auth</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_pyannote_diarize_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_pyannote_diarize_class_attrs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">PyannoteDiarizeOperator</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;gpu&quot;</span>
+    <span class="k">assert</span> <span class="n">PyannoteDiarizeOperator</span><span class="o">.</span><span class="n">produces_audio</span> <span class="ow">is</span> <span class="kc">False</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">gpu</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_pyannote_diarize_adds_speaker_supervisions</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Requires HF_TOKEN env var + pyannote model access. Run on configured server only.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+</code></pre></div>
+<p>The functional test is marked <code>@pytest.mark.gpu</code> and honestly skipped on the dev machine. It will be tested on a GPU server with <code>HF_TOKEN</code> configured before release.</p>
+<h3 id="commit-featoperators-add-pyannote_diarize-for-speaker-diarization">Commit: <code>feat(operators): add pyannote_diarize for speaker diarization</code></h3>
+<hr />
+<h2 id="task-6-speechbrain_langid-speechbrain_gender-tdd">Task 6: <code>speechbrain_langid</code> + <code>speechbrain_gender</code> (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/operators/annotate/speechbrain_langid.py</code>
+- Create: <code>src/voxkitchen/operators/annotate/speechbrain_gender.py</code>
+- Create: <code>tests/unit/operators/annotate/test_speechbrain_langid.py</code>
+- Create: <code>tests/unit/operators/annotate/test_speechbrain_gender.py</code>
+- Modify: <code>src/voxkitchen/operators/__init__.py</code></p>
+<p>Both use SpeechBrain's pretrained classifiers.</p>
+<h3 id="speechbrain_langid"><code>speechbrain_langid</code></h3>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpeechBrainLangIdConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;speechbrain/lang-id-voxlingua107-ecapa&quot;</span>
+</code></pre></div></p>
+<p><strong>setup():</strong> Load the classifier:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">speechbrain.inference.classifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">EncoderClassifier</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_classifier</span> <span class="o">=</span> <span class="n">EncoderClassifier</span><span class="o">.</span><span class="n">from_hparams</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">run_opts</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)}</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p><strong>process():</strong> For each Cut:
+1. Load audio, ensure 16kHz mono
+2. <code>prediction = self._classifier.classify_batch(tensor)</code>
+3. Extract language label
+4. Update <code>cut.supervisions</code> with language, or directly set language on existing supervisions</p>
+<p>Simpler approach: just add the language to all supervisions in the cut, or add it to <code>cut.custom["language"]</code>:
+<div class="highlight"><pre><span></span><code><span class="n">updated</span> <span class="o">=</span> <span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;custom&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">cut</span><span class="o">.</span><span class="n">custom</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="n">lang</span><span class="p">}})</span>
+</code></pre></div></p>
+<p>Actually, per spec, the Supervision model has a <code>language</code> field. So add a new Supervision:
+<div class="highlight"><pre><span></span><code><span class="n">Supervision</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cut</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">__langid&quot;</span><span class="p">,</span> <span class="n">recording_id</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">recording_id</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">cut</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Class attrs:</strong> <code>name="speechbrain_langid"</code>, <code>device="gpu"</code>, <code>produces_audio=False</code>, <code>reads_audio_bytes=True</code>, <code>required_extras=["classify"]</code></p>
+<h3 id="speechbrain_gender"><code>speechbrain_gender</code></h3>
+<p>Same pattern but classifies gender (male/female).</p>
+<p><strong>Config:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpeechBrainGenderConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;speechbrain/spkrec-xvect-voxceleb&quot;</span>  <span class="c1"># or a gender-specific model</span>
+</code></pre></div></p>
+<p><strong>process():</strong> Similar to langid but sets <code>gender</code> on Supervision.</p>
+<p><strong>Note:</strong> SpeechBrain doesn't have a dedicated "gender classification" model out of the box. The common approach is to use a speaker embedding model and train a simple classifier on top. For v0.1, we can:
+- Use a speaker verification model to extract embeddings, then apply a simple heuristic
+- OR just use a pretrained model if one exists
+- OR simplify: mark the classification as "experimental" and use whatever SpeechBrain provides</p>
+<p>For simplicity, let's make <code>speechbrain_gender</code> use the same classifier API but with a gender-specific model path. If no reliable model exists, the operator can produce a placeholder classification (e.g., always "unknown") with a warning, and the real model can be swapped in later.</p>
+<h3 id="tests-4-per-operator-8-total">Tests (4 per operator, 8 total)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_speechbrain_langid_is_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speechbrain_langid_class_attrs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speechbrain_langid_classifies</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real model: classify language of a 1s sine wave. Result may be arbitrary but should be a valid language code.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_speechbrain_langid_adds_supervision_with_language</span><span class="p">(</span><span class="n">mono_wav_16k</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</code></pre></div>
+<p>Same pattern for gender (4 tests). If the gender model is unreliable, mark the test as <code>@pytest.mark.slow</code> and just verify the operator runs without error.</p>
+<h3 id="two-commits">Two commits:</h3>
+<ul>
+<li><code>feat(operators): add speechbrain_langid for language identification</code></li>
+<li><code>feat(operators): add speechbrain_gender for gender classification</code></li>
+</ul>
+<hr />
+<h2 id="task-7-integration-test-asr-pipeline">Task 7: Integration test — ASR pipeline</h2>
+<p><strong>Files:</strong>
+- Create: <code>tests/integration/test_asr_pipeline_e2e.py</code></p>
+<p>A pipeline exercising the annotation operators: <code>dir_scan → silero_vad → faster_whisper_asr → pack_manifest</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_vad_asr_pipeline</span><span class="p">(</span><span class="n">audio_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scan → Silero VAD → Faster Whisper ASR → Pack. All on CPU.&quot;&quot;&quot;</span>
+    <span class="n">work_dir</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;work&quot;</span>
+    <span class="n">yaml_path</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;pipeline.yaml&quot;</span>
+    <span class="n">yaml_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">version: &quot;0.1&quot;</span>
+<span class="s2">name: asr-e2e</span>
+<span class="s2">work_dir: </span><span class="si">{</span><span class="n">work_dir</span><span class="si">}</span>
+<span class="s2">num_gpus: 1</span>
+<span class="s2">num_cpu_workers: 1</span>
+<span class="s2">ingest:</span>
+<span class="s2">  source: dir</span>
+<span class="s2">  args:</span>
+<span class="s2">    root: </span><span class="si">{</span><span class="n">audio_dir</span><span class="si">}</span>
+<span class="s2">    recursive: true</span>
+<span class="s2">stages:</span>
+<span class="s2">  - name: vad</span>
+<span class="s2">    op: silero_vad</span>
+<span class="s2">    args:</span>
+<span class="s2">      threshold: 0.3</span>
+<span class="s2">  - name: asr</span>
+<span class="s2">    op: faster_whisper_asr</span>
+<span class="s2">    args:</span>
+<span class="s2">      model: tiny</span>
+<span class="s2">      compute_type: int8</span>
+<span class="s2">  - name: pack</span>
+<span class="s2">    op: pack_manifest</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">load_pipeline_spec</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="s2">&quot;run-asr-e2e&quot;</span><span class="p">)</span>
+    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="c1"># All stages complete</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;00_vad&quot;</span> <span class="o">/</span> <span class="s2">&quot;_SUCCESS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;01_asr&quot;</span> <span class="o">/</span> <span class="s2">&quot;_SUCCESS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;02_pack&quot;</span> <span class="o">/</span> <span class="s2">&quot;_SUCCESS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+    <span class="c1"># ASR should have added supervisions with text</span>
+    <span class="n">final_cuts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">read_cuts</span><span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="s2">&quot;02_pack&quot;</span> <span class="o">/</span> <span class="s2">&quot;cuts.jsonl.gz&quot;</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_cuts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="c1"># At least some cuts should have supervisions with text</span>
+    <span class="n">cuts_with_text</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_cuts</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">supervisions</span><span class="p">)]</span>
+    <span class="c1"># Note: a sine wave may not produce meaningful ASR output, but the pipeline should complete</span>
+</code></pre></div>
+<p>This test is <code>@pytest.mark.slow</code> (downloads both silero and whisper-tiny models).</p>
+<h3 id="commit-testintegration-add-vad-asr-pipeline-test-cpu-slow">Commit: <code>test(integration): add VAD → ASR pipeline test (CPU, slow)</code></h3>
+<hr />
+<h2 id="task-8-full-verification-lint-type-tag">Task 8: Full verification, lint, type, tag</h2>
+<ul>
+<li>[ ] <code>pytest -m "not slow and not gpu" -v</code> — all fast tests pass (registration + class attrs)</li>
+<li>[ ] <code>pytest -m "not gpu" -v</code> (optional, slow) — model-download tests pass on CPU</li>
+<li>[ ] <code>pytest -v</code> (on GPU server only) — full suite including pyannote</li>
+<li>[ ] <code>ruff check src tests</code> + <code>ruff format --check src tests</code></li>
+<li>[ ] <code>mypy src/voxkitchen tests</code></li>
+<li>[ ] <code>pre-commit run --all-files</code></li>
+<li>[ ] Tag: <code>git tag -a plan-05-gpu-operators -m "Plan 5 complete: all 22 operators (6 auto-labeling, CPU-tested)"</code></li>
+</ul>
+<hr />
+<h2 id="plan-5-completion-checklist">Plan 5 Completion Checklist</h2>
+<ul>
+<li>[ ] All 6 new operators registered: <code>silero_vad</code>, <code>faster_whisper_asr</code>, <code>whisperx_asr</code>, <code>pyannote_diarize</code>, <code>speechbrain_langid</code>, <code>speechbrain_gender</code></li>
+<li>[ ] All operators fall back to CPU when CUDA unavailable (verified in tests)</li>
+<li>[ ] <code>silero_vad</code> creates child Cuts (same pattern as <code>fixed_segment</code>/<code>webrtc_vad</code>)</li>
+<li>[ ] <code>faster_whisper_asr</code> adds Supervisions with <code>text</code> and <code>language</code></li>
+<li>[ ] <code>whisperx_asr</code> falls back to faster-whisper if whisperx not installed</li>
+<li>[ ] <code>pyannote_diarize</code> adds Supervisions with <code>speaker</code> labels (mocked in tests)</li>
+<li>[ ] <code>speechbrain_langid</code> adds language classification</li>
+<li>[ ] <code>speechbrain_gender</code> adds gender classification</li>
+<li>[ ] <code>@pytest.mark.slow</code> on CPU-capable model-download tests</li>
+<li>[ ] <code>@pytest.mark.gpu</code> on tests requiring GPU or HF auth (pyannote)</li>
+<li>[ ] CI runs with <code>-m "not slow and not gpu"</code> (no model downloads, no GPU)</li>
+<li>[ ] <code>pytest -m "not gpu"</code> passes locally (including slow CPU model tests)</li>
+<li>[ ] All existing 189 non-model tests still pass</li>
+<li>[ ] <code>git tag plan-05-gpu-operators</code> at HEAD</li>
+</ul>
+<h3 id="operator-tally-after-plan-5-2222-complete">Operator tally after Plan 5: 22/22 complete</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+<th>All done?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic</td>
+<td>4</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Segment</td>
+<td>4</td>
+<td>Yes (+silero_vad)</td>
+</tr>
+<tr>
+<td>Annotate</td>
+<td>5</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Quality</td>
+<td>4</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Pack</td>
+<td>5</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-plans-6-8-will-build-on">What Plans 6-8 Will Build On</h2>
+<p><strong>Plan 6 (Ingest recipes):</strong> LibriSpeech, CommonVoice, AISHELL-1. Download + convert.
+<strong>Plan 7 (Visualization):</strong> Rich inspect, HTML report, Gradio panel.
+<strong>Plan 8 (Plugin + polish):</strong> entry_points, <code>vkit init</code>, docs, release.</p>
+<p>No more operators after Plan 5. The remaining plans are about user-facing features and polish.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

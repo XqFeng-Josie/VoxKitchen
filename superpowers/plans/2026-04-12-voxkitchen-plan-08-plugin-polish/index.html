@@ -1,0 +1,1830 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>VoxKitchen Plan 8: Plugin System + Polish (Final Plan) - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#voxkitchen-plan-8-plugin-system-polish-final-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VoxKitchen Plan 8: Plugin System + Polish (Final Plan)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-plugin-discovery-via-entry_points-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Plugin discovery via entry_points (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 1: Plugin discovery via entry_points (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrate-into-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrate into registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featplugins-add-entry_points-lazy-discovery-for-operators-and-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(plugins): add entry_points lazy discovery for operators and recipes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-vkit-init-scaffolder-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: vkit init scaffolder (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 2: vkit init scaffolder (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-vkit-init-dir-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What vkit init &lt;dir&gt; does
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featcli-add-vkit-init-scaffolder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(cli): add vkit init scaffolder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-vkit-ingest-standalone-command-tdd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: vkit ingest standalone command (TDD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 3: vkit ingest standalone command (TDD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-vkit-ingest-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What vkit ingest does
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-in-mainpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wire in main.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-featcli-add-vkit-ingest-standalone-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: feat(cli): add vkit ingest standalone command
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-example-pipeline-yamls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Example pipeline YAMLs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 4: Example pipeline YAMLs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#minimalyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        minimal.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#librispeech-asryaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        librispeech-asr.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dir-resample-packyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dir-resample-pack.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-docs-add-example-pipeline-yamls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: docs: add example pipeline YAMLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-5-documentation-site-skeleton-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Documentation site skeleton (mkdocs)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 5: Documentation site skeleton (mkdocs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdocsyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mkdocs.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docsindexmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        docs/index.md
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-docs-add-mkdocs-documentation-site-skeleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: docs: add mkdocs documentation site skeleton
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-6-release-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Release workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 6: Release workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#releaseyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        release.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-ci-add-release-workflow-for-pypi-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: ci: add release workflow for PyPI publishing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-7-final-cleanup-smoke-test-all-cli-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Final cleanup + smoke test all CLI commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 7: Final cleanup + smoke test all CLI commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-chore-final-cleanup-remove-placeholders-update-smoke-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit: chore: final cleanup — remove placeholders, update smoke tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-8-full-verification-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 8: Full verification + tag
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-8-completion-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan 8 Completion Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v01-feature-completeness-after-plan-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.1 Feature Completeness After Plan 8
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="voxkitchen-plan-8-plugin-system-polish-final-plan">VoxKitchen Plan 8: Plugin System + Polish (Final Plan)</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Complete the v0.1 feature set: entry_points plugin discovery for third-party operators and recipes, <code>vkit init</code> scaffolder, <code>vkit ingest</code> standalone command, example pipeline YAMLs, and a basic documentation site. After this plan, VoxKitchen v0.1 is feature-complete.</p>
+<p><strong>Architecture:</strong> The plugin system is a thin lazy-loading layer on top of the existing registries. <code>vkit init</code> is a simple directory scaffolder. <code>vkit ingest</code> is a standalone wrapper around the existing ingest machinery. No new abstractions — just wiring up the remaining user-facing features.</p>
+<p><strong>Spec reference:</strong> Design spec sections 2 (skeleton), 6 (CLI), 8 (plugins), 9.6 (CI/release), 9.7 (docs).</p>
+<hr />
+<h2 id="file-structure">File Structure</h2>
+<div class="highlight"><pre><span></span><code>src/voxkitchen/
+├── plugins/
+│   ├── __init__.py
+│   └── discovery.py               # NEW: entry_points lazy loading
+│
+├── cli/
+│   ├── main.py                    # MODIFIED: wire init + ingest
+│   ├── init_cmd.py                # NEW: vkit init scaffolder
+│   └── ingest_cmd.py              # NEW: vkit ingest standalone
+
+examples/
+├── pipelines/
+│   ├── minimal.yaml               # NEW: identity-only pipeline
+│   ├── librispeech-asr.yaml       # NEW: from spec section 5.1
+│   └── dir-resample-pack.yaml     # NEW: basic audio processing
+└── README.md
+
+docs/
+├── index.md                       # NEW: landing page
+├── getting-started.md             # NEW: quickstart guide
+├── concepts/
+│   └── data-protocol.md           # NEW: Recording/Supervision/Cut explained
+├── mkdocs.yml                     # NEW: mkdocs config
+
+.github/workflows/
+├── ci.yml                         # (unchanged)
+├── docs.yml                       # NEW: build + deploy mkdocs to gh-pages
+└── release.yml                    # NEW: tag → PyPI + GitHub release
+
+tests/unit/
+├── plugins/
+│   ├── __init__.py
+│   └── test_discovery.py          # NEW
+├── cli/
+│   ├── test_init_cmd.py           # NEW
+│   └── test_ingest_cmd.py         # NEW
+</code></pre></div>
+<hr />
+<h2 id="task-1-plugin-discovery-via-entry_points-tdd">Task 1: Plugin discovery via entry_points (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/plugins/__init__.py</code>
+- Create: <code>src/voxkitchen/plugins/discovery.py</code>
+- Create: <code>tests/unit/plugins/__init__.py</code>
+- Create: <code>tests/unit/plugins/test_discovery.py</code>
+- Modify: <code>src/voxkitchen/operators/registry.py</code> — integrate lazy plugin loading</p>
+<h3 id="implementation">Implementation</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># plugins/discovery.py</span>
+<span class="sd">&quot;&quot;&quot;Lazy entry_points discovery for third-party operators and recipes.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">_loaded</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_plugins</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Discover and register third-party operators and recipes via entry_points.</span>
+
+<span class="sd">    Called lazily on first access to the operator registry (get_operator).</span>
+<span class="sd">    Safe to call multiple times — only runs once.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_loaded</span>
+    <span class="k">if</span> <span class="n">_loaded</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">_loaded</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">entry_points</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_operator</span>
+
+    <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">entry_points</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;voxkitchen.operators&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">op_cls</span> <span class="o">=</span> <span class="n">ep</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">register_operator</span><span class="p">(</span><span class="n">op_cls</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loaded plugin operator: </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ep</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;failed to load operator plugin: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.ingest.recipes</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_recipe</span>
+
+    <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">entry_points</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;voxkitchen.recipes&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">recipe</span> <span class="o">=</span> <span class="n">ep</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">register_recipe</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loaded plugin recipe: </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ep</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;failed to load recipe plugin: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="integrate-into-registry">Integrate into registry</h3>
+<p>In <code>operators/registry.py</code>, modify <code>get_operator</code>:
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_operator</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operator</span><span class="p">]:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.plugins.discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_plugins</span>
+    <span class="n">load_plugins</span><span class="p">()</span>  <span class="c1"># lazy, runs once</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_REGISTRY</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_REGISTRY</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="o">...</span>
+</code></pre></div></p>
+<h3 id="tests-4">Tests (4)</h3>
+<ol>
+<li><code>test_load_plugins_is_idempotent</code> — call twice, no error</li>
+<li><code>test_load_plugins_discovers_nothing_in_clean_env</code> — no third-party plugins → built-ins still work</li>
+<li><code>test_get_operator_triggers_plugin_loading</code> — verify <code>load_plugins</code> is called when <code>get_operator</code> is used</li>
+<li><code>test_failed_plugin_does_not_crash</code> — mock a broken entry_point → log warning, other operators still work</li>
+</ol>
+<h3 id="commit-featplugins-add-entry_points-lazy-discovery-for-operators-and-recipes">Commit: <code>feat(plugins): add entry_points lazy discovery for operators and recipes</code></h3>
+<hr />
+<h2 id="task-2-vkit-init-scaffolder-tdd">Task 2: <code>vkit init</code> scaffolder (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/cli/init_cmd.py</code>
+- Create: <code>tests/unit/cli/test_init_cmd.py</code>
+- Modify: <code>src/voxkitchen/cli/main.py</code></p>
+<h3 id="what-vkit-init-dir-does">What <code>vkit init &lt;dir&gt;</code> does</h3>
+<p>Creates a minimal pipeline project:
+<div class="highlight"><pre><span></span><code>&lt;dir&gt;/
+├── pipeline.yaml      # template pipeline
+└── README.md          # one-liner
+</code></pre></div></p>
+<p>No interactive prompts in v0.1 — just write a template. Keep it simple.</p>
+<h3 id="implementation_1">Implementation</h3>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># cli/init_cmd.py</span>
+<span class="sd">&quot;&quot;&quot;vkit init: scaffold a new pipeline project.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">PIPELINE_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">version: &quot;0.1&quot;</span>
+<span class="s2">name: my-pipeline</span>
+<span class="s2">description: &quot;A VoxKitchen pipeline&quot;</span>
+
+<span class="s2">work_dir: ./work/$</span><span class="si">{name}</span><span class="s2">-$</span><span class="si">{run_id}</span>
+
+<span class="s2">ingest:</span>
+<span class="s2">  source: dir</span>
+<span class="s2">  args:</span>
+<span class="s2">    root: ./data</span>
+<span class="s2">    recursive: true</span>
+
+<span class="s2">stages:</span>
+<span class="s2">  - name: resample</span>
+<span class="s2">    op: resample</span>
+<span class="s2">    args:</span>
+<span class="s2">      target_sr: 16000</span>
+<span class="s2">      target_channels: 1</span>
+
+<span class="s2">  - name: pack</span>
+<span class="s2">    op: pack_manifest</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">README_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2"># </span><span class="si">{name}</span>
+
+<span class="s2">A VoxKitchen pipeline project.</span>
+
+<span class="s2">## Usage</span>
+
+<span class="s2">```bash</span>
+<span class="s2">vkit validate pipeline.yaml</span>
+<span class="s2">vkit run pipeline.yaml</span>
+<span class="s2">vkit inspect run work/</span>
+</code></pre></div>
+"""</p>
+<p>def init_project(target: Path) -&gt; None:
+    """Create a minimal pipeline project directory."""
+    if target.exists() and any(target.iterdir()):
+        raise FileExistsError(f"directory is not empty: {target}")
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "pipeline.yaml").write_text(PIPELINE_TEMPLATE, encoding="utf-8")
+    (target / "README.md").write_text(
+        README_TEMPLATE.format(name=target.name), encoding="utf-8"
+    )
+<div class="highlight"><pre><span></span><code>### Wire in main.py
+
+Replace the `init` placeholder:
+```python
+@app.command(help=&quot;Scaffold a new pipeline project directory.&quot;)
+def init(path: Path = typer.Argument(..., help=&quot;Target directory.&quot;)) -&gt; None:
+    from voxkitchen.cli.init_cmd import init_project
+    init_project(path)
+    rprint(f&quot;[green]created[/green] pipeline project at {path}&quot;)
+</code></pre></div></p>
+<h3 id="tests-3">Tests (3)</h3>
+<ol>
+<li><code>test_init_creates_project(tmp_path)</code> — verify <code>pipeline.yaml</code> and <code>README.md</code> exist</li>
+<li><code>test_init_pipeline_yaml_is_valid(tmp_path)</code> — load with <code>load_pipeline_spec</code>, should not raise</li>
+<li><code>test_init_rejects_non_empty_dir(tmp_path)</code> — create a file, run init → FileExistsError</li>
+</ol>
+<h3 id="commit-featcli-add-vkit-init-scaffolder">Commit: <code>feat(cli): add vkit init scaffolder</code></h3>
+<hr />
+<h2 id="task-3-vkit-ingest-standalone-command-tdd">Task 3: <code>vkit ingest</code> standalone command (TDD)</h2>
+<p><strong>Files:</strong>
+- Create: <code>src/voxkitchen/cli/ingest_cmd.py</code>
+- Create: <code>tests/unit/cli/test_ingest_cmd.py</code>
+- Modify: <code>src/voxkitchen/cli/main.py</code></p>
+<h3 id="what-vkit-ingest-does">What <code>vkit ingest</code> does</h3>
+<p>Runs an ingest source independently (not as part of a pipeline). Writes the resulting CutSet to a manifest.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>dir<span class="w"> </span>--out<span class="w"> </span>cuts.jsonl.gz<span class="w"> </span>--root<span class="w"> </span>/data/audio<span class="w"> </span>--recursive
+vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>manifest<span class="w"> </span>--out<span class="w"> </span>cuts.jsonl.gz<span class="w"> </span>--path<span class="w"> </span>/existing/manifest.jsonl.gz
+vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>recipe<span class="w"> </span>--out<span class="w"> </span>cuts.jsonl.gz<span class="w"> </span>--recipe<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>/data/ls
+</code></pre></div>
+<h3 id="implementation_2">Implementation</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># cli/ingest_cmd.py</span>
+<span class="sd">&quot;&quot;&quot;vkit ingest: build a CutSet from a data source.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">typer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rich</span><span class="w"> </span><span class="kn">import</span> <span class="nb">print</span> <span class="k">as</span> <span class="n">rprint</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.ingest</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ingest_source</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.pipeline.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCHEMA_VERSION</span><span class="p">,</span> <span class="n">HeaderRecord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.utils.run_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_run_id</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ingest_command</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">recipe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">subsets</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># comma-separated</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run an ingest source and write the result to a manifest.&quot;&quot;&quot;</span>
+    <span class="c1"># Build args dict based on source type</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;dir&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
+            <span class="n">rprint</span><span class="p">(</span><span class="s2">&quot;[red]--root required for source=dir[/red]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="n">root</span><span class="p">,</span> <span class="s2">&quot;recursive&quot;</span><span class="p">:</span> <span class="n">recursive</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;manifest&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">rprint</span><span class="p">(</span><span class="s2">&quot;[red]--path required for source=manifest[/red]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;recipe&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">recipe</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
+            <span class="n">rprint</span><span class="p">(</span><span class="s2">&quot;[red]--recipe and --root required for source=recipe[/red]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;recipe&quot;</span><span class="p">:</span> <span class="n">recipe</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="n">root</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">subsets</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;subsets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subsets</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+
+    <span class="n">source_cls</span> <span class="o">=</span> <span class="n">get_ingest_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">source_cls</span><span class="o">.</span><span class="n">config_cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">run_id</span> <span class="o">=</span> <span class="n">generate_run_id</span><span class="p">()</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">RunContext</span><span class="p">(</span>
+        <span class="n">work_dir</span><span class="o">=</span><span class="n">out</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">pipeline_run_id</span><span class="o">=</span><span class="n">run_id</span><span class="p">,</span>
+        <span class="n">stage_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;ingest&quot;</span><span class="p">,</span>
+        <span class="n">num_gpus</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_cpu_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">gc_mode</span><span class="o">=</span><span class="s2">&quot;aggressive&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">source_obj</span> <span class="o">=</span> <span class="n">source_cls</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">cuts</span> <span class="o">=</span> <span class="n">source_obj</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="n">HeaderRecord</span><span class="p">(</span>
+        <span class="n">schema_version</span><span class="o">=</span><span class="n">SCHEMA_VERSION</span><span class="p">,</span>
+        <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+        <span class="n">pipeline_run_id</span><span class="o">=</span><span class="n">run_id</span><span class="p">,</span>
+        <span class="n">stage_name</span><span class="o">=</span><span class="s2">&quot;ingest&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cuts</span><span class="o">.</span><span class="n">to_jsonl_gz</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">rprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[green]wrote </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cuts</span><span class="p">)</span><span class="si">}</span><span class="s2"> cuts to </span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s2">[/green]&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="wire-in-mainpy">Wire in main.py</h3>
+<p>Replace the <code>ingest</code> placeholder:
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;Build an initial CutSet from a data source.&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ingest</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;--source&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;dir | manifest | recipe&quot;</span><span class="p">),</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;--out&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output cuts.jsonl.gz path&quot;</span><span class="p">),</span>
+    <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;--root&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Root directory (for dir/recipe)&quot;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;--path&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Manifest path (for source=manifest)&quot;</span><span class="p">),</span>
+    <span class="n">recipe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;--recipe&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Recipe name (for source=recipe)&quot;</span><span class="p">),</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;--recursive/--no-recursive&quot;</span><span class="p">),</span>
+    <span class="n">subsets</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;--subsets&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Comma-separated subset names&quot;</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.cli.ingest_cmd</span><span class="w"> </span><span class="kn">import</span> <span class="n">ingest_command</span>
+    <span class="n">ingest_command</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recipe</span><span class="o">=</span><span class="n">recipe</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">,</span> <span class="n">subsets</span><span class="o">=</span><span class="n">subsets</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="tests-3_1">Tests (3)</h3>
+<ol>
+<li><code>test_ingest_dir_writes_manifest(audio_dir, tmp_path)</code> — <code>["ingest", "--source", "dir", "--root", audio_dir, "--out", out_path]</code> → verify manifest exists with 3 cuts</li>
+<li><code>test_ingest_recipe_writes_manifest(mock_librispeech, tmp_path)</code> — using librispeech recipe</li>
+<li><code>test_ingest_missing_root_exits_1(tmp_path)</code> — <code>--source dir</code> without <code>--root</code> → exit 1</li>
+</ol>
+<h3 id="commit-featcli-add-vkit-ingest-standalone-command">Commit: <code>feat(cli): add vkit ingest standalone command</code></h3>
+<hr />
+<h2 id="task-4-example-pipeline-yamls">Task 4: Example pipeline YAMLs</h2>
+<p><strong>Files:</strong>
+- Create: <code>examples/pipelines/minimal.yaml</code>
+- Create: <code>examples/pipelines/librispeech-asr.yaml</code>
+- Create: <code>examples/pipelines/dir-resample-pack.yaml</code>
+- Create: <code>examples/README.md</code></p>
+<h3 id="minimalyaml"><code>minimal.yaml</code></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minimal</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">manifest</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./input.jsonl.gz</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pass</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">identity</span>
+</code></pre></div>
+<h3 id="librispeech-asryaml"><code>librispeech-asr.yaml</code></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">librispeech-asr</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Segment</span><span class="nv"> </span><span class="s">LibriSpeech,</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">ASR,</span><span class="nv"> </span><span class="s">pack</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">HuggingFace</span><span class="nv"> </span><span class="s">format&quot;</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span>
+<span class="nt">num_gpus</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="nt">num_cpu_workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recipe</span>
+<span class="w">  </span><span class="nt">recipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">librispeech</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/librispeech</span>
+<span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">train-clean-100</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dev-clean</span><span class="p p-Indicator">]</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">faster_whisper_asr</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> model</span><span class="p">:</span><span class="w"> </span><span class="nv">large-v3</span><span class="p p-Indicator">,</span><span class="nt"> language</span><span class="p">:</span><span class="w"> </span><span class="nv">en</span><span class="p p-Indicator">,</span><span class="nt"> compute_type</span><span class="p">:</span><span class="w"> </span><span class="nv">float16</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr_estimate</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> conditions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">0.5&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_huggingface</span>
+</code></pre></div>
+<h3 id="dir-resample-packyaml"><code>dir-resample-pack.yaml</code></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dir-resample-pack</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Resample</span><span class="nv"> </span><span class="s">local</span><span class="nv"> </span><span class="s">audio</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">16kHz</span><span class="nv"> </span><span class="s">mono</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">pack</span><span class="nv"> </span><span class="s">as</span><span class="nv"> </span><span class="s">Kaldi</span><span class="nv"> </span><span class="s">format&quot;</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dir</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data</span>
+<span class="w">    </span><span class="nt">recursive</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">normalize</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loudness_normalize</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_lufs</span><span class="p">:</span><span class="w"> </span><span class="nv">-23.0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_kaldi</span>
+</code></pre></div>
+<h3 id="commit-docs-add-example-pipeline-yamls">Commit: <code>docs: add example pipeline YAMLs</code></h3>
+<hr />
+<h2 id="task-5-documentation-site-skeleton-mkdocs">Task 5: Documentation site skeleton (mkdocs)</h2>
+<p><strong>Files:</strong>
+- Create: <code>mkdocs.yml</code>
+- Create: <code>docs/index.md</code>
+- Create: <code>docs/getting-started.md</code>
+- Create: <code>docs/concepts/data-protocol.md</code>
+- Create: <code>.github/workflows/docs.yml</code></p>
+<h3 id="mkdocsyml"><code>mkdocs.yml</code></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">site_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VoxKitchen</span>
+<span class="nt">site_description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A researcher-friendly speech data processing toolkit</span>
+<span class="nt">repo_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/voxkitchen/voxkitchen</span>
+
+<span class="nt">theme</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">material</span>
+<span class="w">  </span><span class="nt">palette</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">primary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">blue</span>
+
+<span class="nt">nav</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Home</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">index.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Getting Started</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getting-started.md</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Concepts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Data Protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">concepts/data-protocol.md</span>
+
+<span class="nt">markdown_extensions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admonition</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pymdownx.highlight</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pymdownx.superfences</span>
+</code></pre></div>
+<h3 id="docsindexmd"><code>docs/index.md</code></h3>
+<p><div class="highlight"><pre><span></span><code><span class="gh"># VoxKitchen</span>
+
+A researcher-friendly, declarative speech data processing toolkit.
+
+<span class="gu">## Features</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Declarative pipelines**</span>: Write YAML, run with <span class="sb">`vkit run`</span>
+<span class="k">-</span><span class="w"> </span><span class="gs">**22 built-in operators**</span>: Segmentation, ASR, diarization, quality filtering, packaging
+<span class="k">-</span><span class="w"> </span><span class="gs">**Resumable**</span>: Checkpoint every stage, resume after crashes
+<span class="k">-</span><span class="w"> </span><span class="gs">**Disk-aware**</span>: Aggressive GC for derived audio files
+<span class="k">-</span><span class="w"> </span><span class="gs">**Inspectable**</span>: Rich CLI + HTML report + Gradio panel
+<span class="k">-</span><span class="w"> </span><span class="gs">**Extensible**</span>: Plugin system for third-party operators and recipes
+
+<span class="gu">## Quick start</span>
+
+```bash
+pip install voxkitchen
+vkit init my-project
+cd my-project
+vkit run pipeline.yaml
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>### `docs/getting-started.md`
+Quick install, first pipeline, inspect results. Keep it under 100 lines.
+
+### `docs/concepts/data-protocol.md`
+Explain Recording, Supervision, Cut, CutSet, Provenance, JSONL.gz format. Keep it under 150 lines.
+
+### `.github/workflows/docs.yml`
+```yaml
+name: docs
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: &quot;3.12&quot;
+      - run: pip install mkdocs-material
+      - run: mkdocs gh-deploy --force
+</code></pre></div></p>
+<h3 id="commit-docs-add-mkdocs-documentation-site-skeleton">Commit: <code>docs: add mkdocs documentation site skeleton</code></h3>
+<hr />
+<h2 id="task-6-release-workflow">Task 6: Release workflow</h2>
+<p><strong>Files:</strong>
+- Create: <code>.github/workflows/release.yml</code></p>
+<h3 id="releaseyml"><code>release.yml</code></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">release</span>
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;v*&quot;</span><span class="p p-Indicator">]</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">publish</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">permissions</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">id-token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span><span class="w">  </span><span class="c1"># for PyPI trusted publishing</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">fetch-depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install build</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python -m build</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pypa/gh-action-pypi-publish@release/v1</span>
+</code></pre></div>
+<p>Also create a GitHub Release from the tag (can be manual or via <code>gh release create</code> in CI).</p>
+<h3 id="commit-ci-add-release-workflow-for-pypi-publishing">Commit: <code>ci: add release workflow for PyPI publishing</code></h3>
+<hr />
+<h2 id="task-7-final-cleanup-smoke-test-all-cli-commands">Task 7: Final cleanup + smoke test all CLI commands</h2>
+<p><strong>Files:</strong> Various small fixes</p>
+<ul>
+<li>[ ] Remove the <code>_not_implemented</code> helper from <code>main.py</code> if no commands use it</li>
+<li>[ ] Update <code>test_placeholder_commands_exit_with_code_1</code> — <code>init</code> and <code>ingest</code> are now real commands, update or remove the test</li>
+<li>[ ] Run <code>vkit init /tmp/test-project &amp;&amp; vkit validate /tmp/test-project/pipeline.yaml</code> — verify the scaffolded pipeline is valid</li>
+<li>[ ] Run <code>vkit ingest --source dir --root &lt;audio_dir&gt; --out /tmp/test.jsonl.gz</code> — verify it works</li>
+<li>[ ] Run <code>vkit inspect cuts /tmp/test.jsonl.gz</code> — verify output</li>
+</ul>
+<h3 id="commit-chore-final-cleanup-remove-placeholders-update-smoke-tests">Commit: <code>chore: final cleanup — remove placeholders, update smoke tests</code></h3>
+<hr />
+<h2 id="task-8-full-verification-tag">Task 8: Full verification + tag</h2>
+<ul>
+<li>[ ] <code>pytest -m "not slow and not gpu"</code> — all tests pass</li>
+<li>[ ] <code>ruff check src tests</code> + <code>ruff format --check</code></li>
+<li>[ ] <code>mypy src/voxkitchen tests</code></li>
+<li>[ ] <code>pre-commit run --all-files</code></li>
+<li>[ ] <code>vkit --help</code> — all 6 commands are real (no "not implemented")</li>
+<li>[ ] <code>vkit init</code>, <code>vkit ingest</code>, <code>vkit validate</code>, <code>vkit run</code>, <code>vkit inspect</code>, <code>vkit viz</code> — all respond correctly</li>
+<li>[ ] Example YAMLs pass <code>vkit validate</code></li>
+<li>[ ] Tag: <code>git tag -a v0.1.0-rc1 -m "VoxKitchen v0.1.0 release candidate 1"</code></li>
+</ul>
+<hr />
+<h2 id="plan-8-completion-checklist">Plan 8 Completion Checklist</h2>
+<ul>
+<li>[ ] Plugin discovery loads third-party operators/recipes via <code>entry_points</code></li>
+<li>[ ] Plugin errors are logged but don't crash the application</li>
+<li>[ ] <code>vkit init &lt;dir&gt;</code> creates a valid pipeline project</li>
+<li>[ ] <code>vkit ingest --source dir/manifest/recipe</code> works standalone</li>
+<li>[ ] Example YAMLs in <code>examples/pipelines/</code> are valid</li>
+<li>[ ] mkdocs site builds (<code>mkdocs build</code> succeeds)</li>
+<li>[ ] <code>.github/workflows/docs.yml</code> deploys to gh-pages on push to main</li>
+<li>[ ] <code>.github/workflows/release.yml</code> publishes to PyPI on <code>v*</code> tags</li>
+<li>[ ] All CLI commands are real (no placeholders remain)</li>
+<li>[ ] All existing tests pass</li>
+<li>[ ] <code>git tag v0.1.0-rc1</code></li>
+</ul>
+<hr />
+<h2 id="v01-feature-completeness-after-plan-8">v0.1 Feature Completeness After Plan 8</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data protocol (Recording/Supervision/Cut/CutSet)</td>
+<td>Done (Plan 1)</td>
+</tr>
+<tr>
+<td>Pipeline engine (YAML, runner, executors, GC)</td>
+<td>Done (Plan 2)</td>
+</tr>
+<tr>
+<td>DirScan + ManifestImport ingest</td>
+<td>Done (Plans 2-3)</td>
+</tr>
+<tr>
+<td>22 operators (basic/segment/annotate/quality/pack)</td>
+<td>Done (Plans 3-5)</td>
+</tr>
+<tr>
+<td>3 ingest recipes (LibriSpeech/CommonVoice/AISHELL)</td>
+<td>Done (Plan 6)</td>
+</tr>
+<tr>
+<td>Rich CLI inspect</td>
+<td>Done (Plan 7)</td>
+</tr>
+<tr>
+<td>HTML report</td>
+<td>Done (Plan 7)</td>
+</tr>
+<tr>
+<td>Gradio panel</td>
+<td>Done (Plan 7)</td>
+</tr>
+<tr>
+<td>Plugin system (entry_points)</td>
+<td>Plan 8</td>
+</tr>
+<tr>
+<td><code>vkit init</code> scaffolder</td>
+<td>Plan 8</td>
+</tr>
+<tr>
+<td><code>vkit ingest</code> standalone</td>
+<td>Plan 8</td>
+</tr>
+<tr>
+<td>Example pipelines</td>
+<td>Plan 8</td>
+</tr>
+<tr>
+<td>Documentation site</td>
+<td>Plan 8</td>
+</tr>
+<tr>
+<td>Release workflow</td>
+<td>Plan 8</td>
+</tr>
+</tbody>
+</table>
+<p>After Plan 8: <strong>v0.1.0-rc1 ready for release.</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

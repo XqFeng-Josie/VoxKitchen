@@ -1,0 +1,2668 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>VoxKitchen v0.1 Design Spec - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#voxkitchen-v01-design-spec" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VoxKitchen v0.1 Design Spec
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-overview-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Overview and Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Overview and Scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-positioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Positioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-target-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Target Users
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-in-scope-for-v01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 In Scope for v0.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-non-goals-v01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Non-Goals (v0.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-success-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Success Criterion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-repository-skeleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Repository Skeleton
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Repository Skeleton">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-layout-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Layout Decisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-data-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Data Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Data Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-core-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Core Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-cutset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 CutSet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-serialization-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Serialization Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-directory-layout-for-a-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Directory Layout for a Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-provenance-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Provenance Chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-schema-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Schema Versioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-operator-abstraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Operator Abstraction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Operator Abstraction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-an-operator-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What an Operator Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Base Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-execution-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Execution Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-registration-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Registration Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-example-silero-vad-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Example: Silero VAD Operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-built-in-operator-catalog-v01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Built-in Operator Catalog (v0.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-pipeline-and-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Pipeline and Runner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Pipeline and Runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-pipeline-yaml-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Pipeline YAML Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-pipelinespec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 PipelineSpec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-runner-execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Runner Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-executor-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Executor Implementations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-garbage-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Garbage Collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#57-dry-run-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 Dry Run and Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-command-line-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Command-Line Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Command-Line Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-top-level-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Top-Level Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-command-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Command Details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-output-and-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Output and Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Exit Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Visualization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-rich-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Rich CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-static-html-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Static HTML Report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-gradio-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Gradio Panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-how-they-complement-each-other" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 How They Complement Each Other
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-plugin-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Plugin Mechanism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Plugin Mechanism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-two-plugin-kinds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Two Plugin Kinds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-lazy-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Lazy Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-plugin-error-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Plugin Error Isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-deliberate-non-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Deliberate Non-Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-first-party-recipes-are-hard-coded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 First-Party Recipes Are Hard-Coded
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-dependencies-packaging-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Dependencies, Packaging, CI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Dependencies, Packaging, CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-python-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Python Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-core-dependencies-and-extras-plan-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Core Dependencies and Extras (Plan B)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-packaging-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Packaging Tooling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Testing Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-code-quality-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 Code Quality Tooling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96-ci-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 CI (GitHub Actions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#97-documentation-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 Documentation Site
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-non-goals-v01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Non-Goals (v0.1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Non-Goals (v0.1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#functional-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functional Non-Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Non-Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operational-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational Non-Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Non-Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Non-Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-guiding-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Guiding Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-success-criteria-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: Success Criteria Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="voxkitchen-v01-design-spec">VoxKitchen v0.1 Design Spec</h1>
+<ul>
+<li><strong>Project codename</strong>: SpeechDatasetHub (internal)</li>
+<li><strong>Public name</strong>: VoxKitchen</li>
+<li><strong>Python package</strong>: <code>voxkitchen</code></li>
+<li><strong>CLI command</strong>: <code>vkit</code></li>
+<li><strong>License</strong>: Apache 2.0</li>
+<li><strong>Python</strong>: 3.10+</li>
+<li><strong>Date</strong>: 2026-04-11</li>
+<li><strong>Scope</strong>: v0.1 MVP</li>
+</ul>
+<h2 id="1-overview-and-scope">1. Overview and Scope</h2>
+<h3 id="11-positioning">1.1 Positioning</h3>
+<p>VoxKitchen is a researcher-friendly, declarative speech data processing toolkit with a unified data protocol. Its purpose is to make the path from raw audio to training-ready datasets reproducible, resumable, and inspectable.</p>
+<p>The metaphor is a <strong>kitchen</strong>: <code>pipeline.yaml</code> is a recipe, operators are cooking steps, ingest recipes are ingredient prep, <code>pack</code> is plating, and <code>vkit viz</code> is tasting.</p>
+<h3 id="12-target-users">1.2 Target Users</h3>
+<ul>
+<li><strong>Primary</strong>: speech researchers working on ASR, TTS, speaker recognition, and speech LLMs.</li>
+<li><strong>Secondary</strong>: data engineers and small teams organizing internal speech corpora.</li>
+</ul>
+<h3 id="13-in-scope-for-v01">1.3 In Scope for v0.1</h3>
+<ol>
+<li>A unified Lhotse-style data protocol (Recording / Supervision / Cut), implemented in-house without a hard dependency on Lhotse.</li>
+<li>Project skeleton: Python package, CLI, configuration system, plugin entry points.</li>
+<li>Pipeline engine: YAML declaration, stage-parallel multi-GPU runner, aggressive GC by default.</li>
+<li>Built-in operators covering 5 categories: basic processing, segmentation, auto-labeling, quality filtering, and packaging.</li>
+<li>Ingestion: directory scan, manifest import, and 2–3 dataset recipes (LibriSpeech, CommonVoice, AISHELL-1).</li>
+<li>Visualization triad: Rich CLI, self-contained HTML report, and a transient local Gradio panel.</li>
+</ol>
+<h3 id="14-non-goals-v01">1.4 Non-Goals (v0.1)</h3>
+<p>See section 10 for the full list. Summary: no catalog UI, no crawlers, no manual annotation UI, no distributed execution, no training, no long-running server, no databases, no Windows/macOS CI, no Docker image, no multi-language docs.</p>
+<h3 id="15-success-criterion">1.5 Success Criterion</h3>
+<p>A researcher points at a LibriSpeech directory, writes ~20 lines of YAML, runs one <code>vkit run pipeline.yaml</code>, and after a reasonable time produces a HuggingFace Datasets directory containing ASR transcripts, speaker IDs, quality scores, and full provenance — plus a self-contained <code>report.html</code>. The pipeline supports <code>--resume-from &lt;stage&gt;</code> and bounds disk usage via aggressive GC.</p>
+<hr />
+<h2 id="2-repository-skeleton">2. Repository Skeleton</h2>
+<div class="highlight"><pre><span></span><code>voxkitchen/
+├── pyproject.toml
+├── README.md
+├── LICENSE                        # Apache 2.0
+├── CHANGELOG.md
+├── docs/
+│   ├── index.md
+│   ├── getting-started.md
+│   ├── concepts/
+│   ├── recipes/
+│   ├── operators/
+│   └── contributing.md
+├── src/voxkitchen/
+│   ├── __init__.py
+│   ├── __main__.py
+│   │
+│   ├── schema/
+│   │   ├── __init__.py
+│   │   ├── recording.py
+│   │   ├── supervision.py
+│   │   ├── cut.py
+│   │   ├── cutset.py
+│   │   ├── provenance.py
+│   │   └── io.py
+│   │
+│   ├── operators/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── registry.py
+│   │   ├── basic/
+│   │   ├── segment/
+│   │   ├── annotate/
+│   │   ├── quality/
+│   │   └── pack/
+│   │
+│   ├── pipeline/
+│   │   ├── __init__.py
+│   │   ├── spec.py
+│   │   ├── loader.py
+│   │   ├── runner.py
+│   │   ├── executor.py
+│   │   ├── checkpoint.py
+│   │   ├── gc.py
+│   │   └── context.py
+│   │
+│   ├── ingest/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── dir_scan.py
+│   │   ├── manifest_import.py
+│   │   └── recipes/
+│   │       ├── __init__.py
+│   │       ├── base.py
+│   │       ├── librispeech.py
+│   │       ├── commonvoice.py
+│   │       └── aishell.py
+│   │
+│   ├── viz/
+│   │   ├── __init__.py
+│   │   ├── cli.py
+│   │   ├── report/
+│   │   │   ├── generator.py
+│   │   │   ├── templates/
+│   │   │   └── assets/
+│   │   └── panel/
+│   │       └── app.py
+│   │
+│   ├── cli/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── run.py
+│   │   ├── ingest.py
+│   │   ├── inspect.py
+│   │   ├── viz.py
+│   │   ├── validate.py
+│   │   └── init.py
+│   │
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── defaults.py
+│   │   └── settings.py
+│   │
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── audio.py
+│   │   ├── hashing.py
+│   │   ├── logging.py
+│   │   ├── progress.py
+│   │   └── gpu.py
+│   │
+│   └── plugins/
+│       ├── __init__.py
+│       └── discovery.py
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── gpu/
+│   ├── fixtures/
+│   └── conftest.py
+│
+├── examples/
+│   ├── pipelines/
+│   │   ├── minimal.yaml
+│   │   ├── librispeech-asr.yaml
+│   │   └── cv-diar-pack.yaml
+│   └── notebooks/
+│
+├── recipes/                       # community recipe contributions
+│   └── README.md
+│
+└── .github/
+    ├── workflows/
+    │   ├── ci.yml
+    │   ├── docs.yml
+    │   └── release.yml
+    └── ISSUE_TEMPLATE/
+</code></pre></div>
+<h3 id="21-layout-decisions">2.1 Layout Decisions</h3>
+<ul>
+<li><strong><code>src/</code> layout</strong> to avoid accidentally importing uninstalled code during development.</li>
+<li><strong>Strict module boundaries</strong>: <code>schema</code> depends on nothing internal; <code>operators</code> depends on <code>schema + utils</code>; <code>pipeline</code> depends on <code>schema + operators + utils</code>; <code>cli</code> depends on all. No circular imports.</li>
+<li><strong>One file per operator</strong> under <code>operators/&lt;category&gt;/</code>. Adding a new operator requires creating one new file, never editing existing code.</li>
+<li><strong><code>viz/report/assets/</code> is fully self-contained</strong>. No CDN references. <code>report.html</code> works on offline research machines.</li>
+<li><strong>Two recipe directories with different roles</strong>:</li>
+<li><code>src/voxkitchen/ingest/recipes/</code>: v0.1 built-in ingest recipe code.</li>
+<li>Top-level <code>recipes/</code>: example pipeline YAMLs for complete dataset processing flows.</li>
+<li><strong>Explicitly absent</strong>: no <code>models/</code> (we do not host weights), no <code>api/</code> (no REST), no <code>db/</code> (no database).</li>
+</ul>
+<hr />
+<h2 id="3-data-protocol">3. Data Protocol</h2>
+<h3 id="31-design-principles">3.1 Design Principles</h3>
+<ol>
+<li><strong>Immutable records, chained evolution</strong>: every stage reads a <code>CutSet</code> and produces a new <code>CutSet</code>. The original is not modified. History is tracked via Provenance.</li>
+<li><strong>Flat JSONL.gz serialization</strong>: one JSON per line, gzipped. Inspectable with <code>zcat | head</code> and <code>zcat | jq</code>. Friendly to <code>rsync</code>, <code>diff</code>, and streaming writers.</li>
+<li><strong>Every field is optional except the essentials</strong>: before ASR runs, <code>supervision.text</code> is <code>None</code>, not an error.</li>
+<li><strong>User extensions go in <code>custom: dict[str, Any]</code></strong>. No arbitrary top-level fields — prevents schema fragmentation while keeping extensibility.</li>
+<li><strong>Strong typing with Pydantic v2</strong>. All dataclasses are Pydantic v2 BaseModel subclasses.</li>
+</ol>
+<h3 id="32-core-types">3.2 Core Types</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># schema/recording.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AudioSource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">]</span>
+    <span class="n">channels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Recording</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AudioSource</span><span class="p">]</span>
+    <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">num_channels</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">checksum</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">custom</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># schema/supervision.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Supervision</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">recording_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">speaker</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">gender</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">age_range</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">custom</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># schema/cut.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Cut</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">recording_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">supervisions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Supervision</span><span class="p">]</span>
+    <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">provenance</span><span class="p">:</span> <span class="n">Provenance</span>
+    <span class="n">custom</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># schema/provenance.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Provenance</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">source_cut_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">generated_by</span><span class="p">:</span> <span class="nb">str</span>           <span class="c1"># e.g. &quot;silero_vad@0.4.1&quot;</span>
+    <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span>             <span class="c1"># e.g. &quot;02_vad&quot;</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">pipeline_run_id</span><span class="p">:</span> <span class="nb">str</span>
+</code></pre></div>
+<h3 id="33-cutset">3.3 CutSet</h3>
+<p><code>CutSet</code> wraps a sequence of Cuts with lazy I/O and functional operations. It is not a Pydantic model; it is a thin wrapper over a JSONL.gz stream.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CutSet</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_jsonl_gz</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CutSet&quot;</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_jsonl_gz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;CutSet&quot;</span><span class="p">]:</span> <span class="o">...</span>   <span class="c1"># for GPU sharding</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CutSet&quot;</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CutSet&quot;</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Cut</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+</code></pre></div>
+<h3 id="34-serialization-format">3.4 Serialization Format</h3>
+<p>Each stage writes a <code>cuts.jsonl.gz</code> file. The first line is a header record for schema versioning:</p>
+<div class="highlight"><pre><span></span><code>{&quot;__type__&quot;: &quot;voxkitchen.header&quot;, &quot;schema_version&quot;: &quot;0.1&quot;, &quot;created_at&quot;: &quot;2026-04-11T10:30:00Z&quot;, &quot;pipeline_run_id&quot;: &quot;run-a1b2c3&quot;, &quot;stage_name&quot;: &quot;02_vad&quot;}
+{&quot;__type__&quot;: &quot;cut&quot;, &quot;id&quot;: &quot;...&quot;, &quot;recording_id&quot;: &quot;...&quot;, &quot;start&quot;: 0.0, &quot;duration&quot;: 3.45, ...}
+{&quot;__type__&quot;: &quot;cut&quot;, ...}
+</code></pre></div>
+<h3 id="35-directory-layout-for-a-run">3.5 Directory Layout for a Run</h3>
+<div class="highlight"><pre><span></span><code>work_dir/
+├── recordings.jsonl.gz        # all Recordings, shared across stages
+├── run.yaml                   # expanded snapshot of the pipeline YAML
+├── 00_ingest/
+│   ├── cuts.jsonl.gz
+│   └── _SUCCESS
+├── 01_format_convert/
+│   ├── cuts.jsonl.gz
+│   ├── derived/               # new wav files, GC&#39;d per plan
+│   └── _SUCCESS
+├── 02_vad/
+│   ├── cuts.jsonl.gz
+│   └── _SUCCESS
+├── ...
+└── report.html
+</code></pre></div>
+<p>Only stages that materialize new audio (format convert, resample, pack) write to <code>derived/</code>. Other operators only update supervisions/metrics and produce tiny manifests.</p>
+<p>New Recordings created by materialization stages are <strong>appended</strong> to <code>recordings.jsonl.gz</code> with fresh IDs. Original Recordings are never replaced.</p>
+<h3 id="36-provenance-chain">3.6 Provenance Chain</h3>
+<p>Every Cut's <code>provenance.source_cut_id</code> points at its parent Cut in the previous stage. Across stages this forms a DAG, traversable via <code>vkit inspect trace &lt;cut_id&gt;</code>.</p>
+<p>Stage-level parameters (YAML args) are not duplicated per Cut — they live in <code>work_dir/run.yaml</code>, linked via <code>pipeline_run_id</code>.</p>
+<h3 id="37-schema-versioning">3.7 Schema Versioning</h3>
+<ul>
+<li><code>schema_version</code> lives in every <code>cuts.jsonl.gz</code> header.</li>
+<li>Version mismatches trigger migration functions in <code>schema/migrations/</code> (none needed for v0.1).</li>
+<li>v0.1 starts at <code>"0.1"</code>.</li>
+</ul>
+<hr />
+<h2 id="4-operator-abstraction">4. Operator Abstraction</h2>
+<h3 id="41-what-an-operator-is">4.1 What an Operator Is</h3>
+<p>An Operator is a pure transformation <code>CutSet → CutSet</code>. All pipeline behavior composes from operators. Each operator defines:</p>
+<ul>
+<li>A unique <code>name</code> (referenced in YAML).</li>
+<li>A Pydantic <code>OperatorConfig</code> subclass declaring all parameters with defaults.</li>
+<li>A <code>process()</code> implementation.</li>
+<li>Optional <code>setup()</code> / <code>teardown()</code> for model load/release.</li>
+<li>A <code>device</code> declaration (<code>"cpu"</code> or <code>"gpu"</code>).</li>
+<li>A <code>produces_audio</code> declaration (for GC tracking).</li>
+<li>A <code>reads_audio_bytes</code> declaration (default <code>True</code>; used by GC planning).</li>
+<li>A <code>required_extras</code> declaration for dependency hinting.</li>
+</ul>
+<h3 id="42-base-class">4.2 Base Class</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># operators/base.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OperatorConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Operator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">config_cls</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">OperatorConfig</span><span class="p">]]</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="s2">&quot;gpu&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">produces_audio</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reads_audio_bytes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">required_extras</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">OperatorConfig</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">ctx</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</code></pre></div>
+<p><code>process()</code> takes a <code>CutSet</code> shard, not a single Cut — this allows batched execution (e.g. ASR batch_size=8).</p>
+<h3 id="43-execution-modes">4.3 Execution Modes</h3>
+<ul>
+<li><strong>CpuOperator</strong> (<code>device="cpu"</code>): dispatched to <code>CpuPoolExecutor</code>, which uses <code>multiprocessing.Pool</code> with <code>num_workers</code> = CLI <code>--num-workers</code> or YAML <code>num_cpu_workers</code>.</li>
+<li><strong>GpuOperator</strong> (<code>device="gpu"</code>): dispatched to <code>GpuPoolExecutor</code>, which spawns N worker processes (N = <code>--num-gpus</code>), each binding one GPU via <code>CUDA_VISIBLE_DEVICES</code> before importing torch. In <code>setup()</code> the operator loads a private model copy.</li>
+</ul>
+<p>Operator authors only write <code>process(cuts) -&gt; cuts</code>. Sharding, process management, and GPU binding are handled by the executor.</p>
+<h3 id="44-registration-mechanism">4.4 Registration Mechanism</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># operators/registry.py</span>
+
+<span class="n">_REGISTRY</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operator</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">register_operator</span><span class="p">(</span><span class="n">op_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operator</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">op_cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_REGISTRY</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operator &#39;</span><span class="si">{</span><span class="n">op_cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; already registered&quot;</span><span class="p">)</span>
+    <span class="n">_REGISTRY</span><span class="p">[</span><span class="n">op_cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">op_cls</span>
+    <span class="k">return</span> <span class="n">op_cls</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_operator</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operator</span><span class="p">]:</span>
+    <span class="n">_ensure_plugins_loaded</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_REGISTRY</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">UnknownOperatorError</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">suggestions</span><span class="o">=</span><span class="n">_fuzzy_match</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_REGISTRY</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+</code></pre></div>
+<p>Built-in operators are registered via imports from <code>operators/__init__.py</code>. Third-party operators register via <code>entry_points</code> (section 8). First access to the registry triggers a one-time plugin discovery pass.</p>
+<h3 id="45-example-silero-vad-operator">4.5 Example: Silero VAD Operator</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># operators/segment/silero_vad.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SileroVadConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">min_speech_duration_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span>
+    <span class="n">min_silence_duration_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">speech_pad_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">model_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v4.0&quot;</span>
+
+<span class="nd">@register_operator</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SileroVadOperator</span><span class="p">(</span><span class="n">Operator</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;silero_vad&quot;</span>
+    <span class="n">config_cls</span> <span class="o">=</span> <span class="n">SileroVadConfig</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;gpu&quot;</span>
+    <span class="n">produces_audio</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">required_extras</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># silero-vad is in core under Plan B</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;snakers4/silero-vad&quot;</span><span class="p">,</span> <span class="s2">&quot;silero_vad&quot;</span><span class="p">,</span> <span class="n">trust_repo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cut</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">load_audio_for_cut</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span> <span class="n">sr</span><span class="o">=</span><span class="mi">16000</span><span class="p">)</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detect_speech</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">timestamps</span><span class="p">):</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_child_cut</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="46-built-in-operator-catalog-v01">4.6 Built-in Operator Catalog (v0.1)</h3>
+<p>In Plan B (section 9.2), most audio-processing dependencies are in core. Only <code>asr</code>, <code>diarize</code>, and <code>classify</code> exist as true optional extras; operators depending on in-core libraries have <code>required_extras=[]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th><code>name</code></th>
+<th>Underlying lib</th>
+<th>device</th>
+<th>produces_audio</th>
+<th>required_extras</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Basic</strong></td>
+<td><code>ffmpeg_convert</code></td>
+<td>ffmpeg-python</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>resample</code></td>
+<td>torchaudio</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>channel_merge</code></td>
+<td>torchaudio</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>loudness_normalize</code></td>
+<td>pyloudnorm</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Segment</strong></td>
+<td><code>silero_vad</code></td>
+<td>silero-vad</td>
+<td>gpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>webrtc_vad</code></td>
+<td>webrtcvad</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>fixed_segment</code></td>
+<td>— (pure compute)</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>silence_split</code></td>
+<td>librosa</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Annotate</strong></td>
+<td><code>faster_whisper_asr</code></td>
+<td>faster-whisper</td>
+<td>gpu</td>
+<td>no</td>
+<td>asr</td>
+</tr>
+<tr>
+<td></td>
+<td><code>whisperx_asr</code></td>
+<td>whisperx</td>
+<td>gpu</td>
+<td>no</td>
+<td>asr</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pyannote_diarize</code></td>
+<td>pyannote.audio</td>
+<td>gpu</td>
+<td>no</td>
+<td>diarize</td>
+</tr>
+<tr>
+<td></td>
+<td><code>speechbrain_langid</code></td>
+<td>speechbrain</td>
+<td>gpu</td>
+<td>no</td>
+<td>classify</td>
+</tr>
+<tr>
+<td></td>
+<td><code>speechbrain_gender</code></td>
+<td>speechbrain</td>
+<td>gpu</td>
+<td>no</td>
+<td>classify</td>
+</tr>
+<tr>
+<td><strong>Quality</strong></td>
+<td><code>snr_estimate</code></td>
+<td>torchaudio</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>duration_filter</code></td>
+<td>—</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>audio_fingerprint_dedup</code></td>
+<td>librosa + simhash</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>quality_score_filter</code></td>
+<td>—</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Pack</strong></td>
+<td><code>pack_huggingface</code></td>
+<td>datasets</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pack_webdataset</code></td>
+<td>webdataset</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pack_parquet</code></td>
+<td>pyarrow</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pack_kaldi</code></td>
+<td>—</td>
+<td>cpu</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pack_manifest</code></td>
+<td>—</td>
+<td>cpu</td>
+<td>no</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>All 22 operators ship in v0.1 with unit tests, at least one example YAML reference, and auto-generated reference docs.</p>
+<hr />
+<h2 id="5-pipeline-and-runner">5. Pipeline and Runner</h2>
+<h3 id="51-pipeline-yaml-example">5.1 Pipeline YAML Example</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">librispeech-asr-pipeline</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Segment</span><span class="nv"> </span><span class="s">LibriSpeech,</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">ASR,</span><span class="nv"> </span><span class="s">pack</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">HF</span><span class="nv"> </span><span class="s">format&quot;</span>
+
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/work/${name}-${run_id}</span>
+<span class="nt">num_gpus</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="nt">num_cpu_workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
+<span class="nt">gc_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aggressive</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recipe</span>
+<span class="w">  </span><span class="nt">recipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">librispeech</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/librispeech</span>
+<span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">train-clean-100</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dev-clean</span><span class="p p-Indicator">]</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="p p-Indicator">,</span><span class="nt"> target_channels</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="p p-Indicator">,</span><span class="nt"> min_speech_duration_ms</span><span class="p">:</span><span class="w"> </span><span class="nv">250</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">faster_whisper_asr</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> model</span><span class="p">:</span><span class="w"> </span><span class="nv">large-v3</span><span class="p p-Indicator">,</span><span class="nt"> language</span><span class="p">:</span><span class="w"> </span><span class="nv">en</span><span class="p p-Indicator">,</span><span class="nt"> batch_size</span><span class="p">:</span><span class="w"> </span><span class="nv">8</span><span class="p p-Indicator">,</span><span class="nt"> compute_type</span><span class="p">:</span><span class="w"> </span><span class="nv">float16</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr_estimate</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter_short</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duration_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> min</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="p p-Indicator">,</span><span class="nt"> max</span><span class="p">:</span><span class="w"> </span><span class="nv">30.0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter_noisy</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> conditions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_huggingface</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> output_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">/data/out/librispeech-asr</span><span class="p p-Indicator">,</span><span class="nt"> split_field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;custom.split&quot;</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="52-pipelinespec">5.2 PipelineSpec</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># pipeline/spec.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StageSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">op</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IngestSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">,</span> <span class="s2">&quot;manifest&quot;</span><span class="p">,</span> <span class="s2">&quot;recipe&quot;</span><span class="p">]</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">recipe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PipelineSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">work_dir</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">num_gpus</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">num_cpu_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">gc_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;aggressive&quot;</span><span class="p">,</span> <span class="s2">&quot;keep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;aggressive&quot;</span>
+    <span class="n">ingest</span><span class="p">:</span> <span class="n">IngestSpec</span>
+    <span class="n">stages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StageSpec</span><span class="p">]</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;stages&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unique_stage_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="o">...</span>
+</code></pre></div>
+<p><code>loader.py</code> handles <code>YAML → PipelineSpec</code>, expanding <code>${name}</code>, <code>${run_id}</code>, and <code>${env:VAR}</code> interpolations. <code>validate.py</code> performs deeper checks (operator existence, config instantiation, recipe existence, GC plan).</p>
+<p>After validation, <code>work_dir/run.yaml</code> is written as a fully-expanded snapshot and becomes the authoritative configuration for provenance.</p>
+<h3 id="53-runner-execution-flow">5.3 Runner Execution Flow</h3>
+<div class="highlight"><pre><span></span><code>vkit run pipeline.yaml
+  │
+  ├─ load &amp; validate        → PipelineSpec, run_id, work_dir
+  ├─ detect resume          → scan work_dir for stages with _SUCCESS marker
+  ├─ ingest stage           → IngestSource.run() → 00_ingest/cuts.jsonl.gz
+  ├─ plan GC                → static analysis of stages to compute last_consumer map
+  │
+  ├─ for stage in stages:
+  │    ├─ get_operator(stage.op)
+  │    ├─ op_cfg = OperatorConfig.parse(stage.args)
+  │    ├─ executor = GpuPoolExecutor if op.device == &quot;gpu&quot; else CpuPoolExecutor
+  │    ├─ in_cuts = CutSet.from_jsonl_gz(prev_stage/cuts.jsonl.gz)
+  │    ├─ out_cuts = executor.run(operator_cls, op_cfg, in_cuts, ctx)
+  │    ├─ write stage_dir/cuts.jsonl.gz
+  │    ├─ write stage_dir/_SUCCESS
+  │    ├─ run GC             → move derived/ of newly-expired stages to trash
+  │    └─ emit progress      → Rich live UI + structured log
+  │
+  └─ finalize                → write work_dir/report.html, empty trash
+</code></pre></div>
+<p><strong>Stage directory naming</strong>: <code>work_dir/&lt;NN&gt;_&lt;stage_name&gt;/</code> where <code>NN</code> is the zero-padded 1-based stage index (<code>00_ingest</code>, <code>01_resample</code>, <code>02_vad</code>, …). The numeric prefix guarantees lexicographic ordering matches execution order when a user does <code>ls work_dir/</code>.</p>
+<p><strong>Resume policy</strong>: a stage is considered complete only if both <code>cuts.jsonl.gz</code> and <code>_SUCCESS</code> exist. If <code>cuts.jsonl.gz</code> exists without <code>_SUCCESS</code>, the stage is rerun.</p>
+<p>All I/O is mediated by <code>RunContext</code>; no path hardcoding in operators.</p>
+<h3 id="54-executor-implementations">5.4 Executor Implementations</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># pipeline/executor.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Executor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operator</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">OperatorConfig</span><span class="p">,</span>
+            <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CpuPoolExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator_cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">cuts</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">shards</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">_cpu_init</span><span class="p">,</span>
+            <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="n">operator_cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">ctx</span><span class="p">),</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">out_shards</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">_cpu_process</span><span class="p">,</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shards</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">out_shards</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GpuPoolExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_gpus</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator_cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">cuts</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">shards</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_gpus</span><span class="p">)</span>
+        <span class="n">processes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">gpu_id</span><span class="p">,</span> <span class="n">shard</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">_gpu_worker</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">gpu_id</span><span class="p">,</span> <span class="n">operator_cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">shard</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span>
+                      <span class="n">stage_shard_dir</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">gpu_id</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">exitcode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">StageFailedError</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="o">.</span><span class="n">concat_from_disk</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">stage_shard_dir</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;cuts.jsonl.gz&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_gpus</span><span class="p">)]</span>
+        <span class="p">)</span>
+</code></pre></div>
+<p>Each GPU worker writes its shard output to disk rather than returning it via IPC. This avoids serializing gigabytes of data across process boundaries and leaves partial shards for diagnostics when a worker crashes.</p>
+<p><code>CUDA_VISIBLE_DEVICES</code> binding happens inside <code>_gpu_worker</code> before torch is imported, so each worker always sees its GPU as <code>cuda:0</code>.</p>
+<h3 id="55-garbage-collection">5.5 Garbage Collection</h3>
+<p>GC planning runs once at pipeline startup, producing a <code>GcPlan</code> that maps each <code>produces_audio=True</code> stage to its <code>last_consumer</code> — the last downstream stage with <code>reads_audio_bytes=True</code>. After a stage completes, any upstream stages whose <code>last_consumer</code> has just finished are eligible for GC.</p>
+<p><strong>Trash safety net</strong>: GC'd directories are renamed to <code>work_dir/derived_trash/&lt;stage&gt;/</code>, not immediately deleted. Trash is emptied only after the entire pipeline completes successfully. Crashed runs leave trash for diagnostics.</p>
+<p><code>gc_mode: keep</code> or <code>--keep-intermediates</code> disables GC entirely.</p>
+<h3 id="56-error-handling">5.6 Error Handling</h3>
+<ul>
+<li><strong>Single Cut error</strong>: logged and skipped. Appended to <code>work_dir/&lt;stage&gt;/_errors.jsonl</code>. Pipeline continues.</li>
+<li><strong>Whole-shard / stage failure</strong>: runner exits with an error. No automatic retry — operator errors are assumed to be real bugs, not transient faults.</li>
+</ul>
+<p>Error record format:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;cut_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;faster_whisper_asr&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;traceback&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">}</span>
+</code></pre></div>
+<p>Inspectable via <code>vkit inspect errors &lt;work_dir&gt;</code>.</p>
+<h3 id="57-dry-run-and-validation">5.7 Dry Run and Validation</h3>
+<ul>
+<li><code>vkit validate pipeline.yaml</code> — parse and schema-check only. No data touched. Seconds.</li>
+<li><code>vkit run pipeline.yaml --dry-run</code> — full validation plus a printed summary of stages, operator params (expanded defaults), executor types, and the GC plan. No models loaded, no audio processed.</li>
+</ul>
+<hr />
+<h2 id="6-command-line-interface">6. Command-Line Interface</h2>
+<h3 id="61-top-level-commands">6.1 Top-Level Commands</h3>
+<p>The CLI exposes <strong>6 commands</strong>:</p>
+<div class="highlight"><pre><span></span><code>vkit init        Scaffold a new pipeline project directory
+vkit ingest      Build an initial CutSet from a data source
+vkit validate    Parse and validate a pipeline YAML (no execution)
+vkit run         Execute a pipeline
+vkit inspect     View cuts, recordings, run progress, trace, or errors
+vkit viz         Launch local Gradio panel to explore a CutSet
+</code></pre></div>
+<p>Built with <strong>Typer</strong>. Auto-generated <code>--help</code> for each command and subcommand.</p>
+<h3 id="62-command-details">6.2 Command Details</h3>
+<p><strong><code>vkit init &lt;dir&gt;</code></strong> — interactive scaffolder. Generates <code>pipeline.yaml</code>, <code>README.md</code>, <code>.gitignore</code>. Prompts for ingest source and a few starter stages.</p>
+<p><strong><code>vkit ingest --source &lt;dir|manifest|recipe&gt; [args] --out &lt;path&gt;</code></strong> — standalone, not coupled to a pipeline. Produces a <code>cuts.jsonl.gz</code> and a <code>recordings.jsonl.gz</code>.</p>
+<p>Examples:
+<div class="highlight"><pre><span></span><code>vkit ingest --source dir /data/my_audio --out cuts.jsonl.gz
+vkit ingest --source recipe librispeech --subset train-clean-100 --out cuts.jsonl.gz
+</code></pre></div></p>
+<p><strong><code>vkit validate pipeline.yaml</code></strong> — parse, validate schema, check operator extras, run GC plan. Exits with status 1 on failure. Also reports any plugin load errors encountered during discovery.</p>
+<p><strong><code>vkit run pipeline.yaml [options]</code></strong> — the only command that processes data.</p>
+<p>Options:
+- <code>--num-gpus N</code> / <code>--num-workers N</code>
+- <code>--work-dir PATH</code>
+- <code>--resume-from STAGE</code>
+- <code>--stop-at STAGE</code>
+- <code>--dry-run</code>
+- <code>--keep-intermediates</code></p>
+<p><strong><code>vkit inspect &lt;subcommand&gt; [args]</code></strong> — explicit subcommands for discoverability:
+<div class="highlight"><pre><span></span><code>vkit inspect cuts &lt;path&gt;
+vkit inspect recordings &lt;path&gt;
+vkit inspect run &lt;work_dir&gt;
+vkit inspect trace &lt;cut_id&gt; --in &lt;path&gt;
+vkit inspect errors &lt;work_dir&gt;
+</code></pre></div></p>
+<p><strong><code>vkit viz &lt;path&gt;</code></strong> — starts a local Gradio server at <code>127.0.0.1:7860</code>. Not a long-running service — Ctrl+C exits.</p>
+<h3 id="63-output-and-logging">6.3 Output and Logging</h3>
+<ul>
+<li><strong>stdout</strong>: Rich live progress + key events + final summary.</li>
+<li><strong>stderr</strong>: warnings and error tracebacks.</li>
+<li><strong><code>work_dir/logs/run.jsonl</code></strong>: structured JSON-per-line machine-readable log with stage timing, processed Cut counts, error counts, and GPU utilization samples.</li>
+</ul>
+<p>When <code>sys.stdout.isatty()</code> is false (CI, redirects, <code>nohup</code>), the runner downgrades to plain text progress output (one line every 30 seconds), no Rich live display.</p>
+<h3 id="64-exit-codes">6.4 Exit Codes</h3>
+<ul>
+<li><code>0</code> success</li>
+<li><code>1</code> user error (bad YAML, unknown operator, illegal arg)</li>
+<li><code>2</code> runtime error (stage execution failed)</li>
+<li><code>3</code> resource error (disk full, GPU unavailable, network download failed)</li>
+<li><code>130</code> Ctrl+C</li>
+</ul>
+<hr />
+<h2 id="7-visualization">7. Visualization</h2>
+<p>Three independent modules. No shared state beyond the data protocol.</p>
+<h3 id="71-rich-cli">7.1 Rich CLI</h3>
+<p><strong>Dependency</strong>: <code>rich</code>.</p>
+<p><strong>At run time</strong>: a Rich <code>Live</code> view with a top-level pipeline progress bar, per-stage shard progress (one line per GPU worker), and a rolling tail of recent log events. Non-TTY environments fall back to plain-text line output every 30 seconds.</p>
+<p><strong>For <code>vkit inspect</code></strong>: Rich <code>Table</code> + <code>Tree</code> + <code>Panel</code>.</p>
+<p><code>inspect cuts</code> output:
+1. Overview panel (count, total duration, mean, workload estimate).
+2. Distribution table (duration histogram, language distribution, speaker distribution).
+3. Metrics table (min / p50 / p95 / max for each <code>metrics</code> field).</p>
+<p><code>inspect trace</code> uses a Tree to show the Provenance chain:</p>
+<div class="highlight"><pre><span></span><code>Cut: librispeech-1089-134686-0001__vad_3__asr
+├─ source_cut: librispeech-1089-134686-0001__vad_3
+│  └─ source_cut: librispeech-1089-134686-0001
+│     └─ source_cut: librispeech-1089-134686-0001 (raw)
+└─ generated_by: faster_whisper_asr@large-v3
+</code></pre></div>
+<p><strong>Explicitly not doing</strong>: Textual TUI apps, matplotlib-in-terminal rendering.</p>
+<h3 id="72-static-html-report">7.2 Static HTML Report</h3>
+<p><strong>Dependencies</strong>: <code>jinja2</code>, <code>plotly</code> (offline mode).</p>
+<p><strong>Trigger</strong>: <code>vkit run</code> generates <code>work_dir/report.html</code> automatically on success. Can also be (re)generated with <code>vkit inspect run &lt;work_dir&gt; --html</code>.</p>
+<p><strong>Layout</strong>:</p>
+<div class="highlight"><pre><span></span><code>viz/report/
+├── generator.py
+├── templates/
+│   ├── base.html.j2
+│   ├── overview.html.j2
+│   ├── stages.html.j2
+│   └── samples.html.j2
+└── assets/
+    ├── style.css            # ~20 KB
+    ├── plotly.min.js        # ~3 MB
+    └── wavesurfer.min.js    # ~80 KB
+</code></pre></div>
+<p><strong>Report contents</strong>:</p>
+<ol>
+<li>Header: pipeline name, <code>run_id</code>, start/end time, total duration, embedded YAML (folded <code>&lt;details&gt;</code> block).</li>
+<li>Overview: funnel chart of Cut counts across stages (Plotly).</li>
+<li>Per-stage cards: duration, Cut counts, error counts, sampled GPU utilization (for GPU stages).</li>
+<li>Data distributions: histograms and pie charts for duration, SNR, language, speaker counts (Plotly).</li>
+<li>Sample playback: 10 randomly-sampled Cuts with <code>&lt;audio&gt;</code> tags, waveforms (wavesurfer.js), transcriptions, and provenance summary.</li>
+<li>Provenance DAG: Plotly Sankey diagram of pipeline structure.</li>
+</ol>
+<p><strong>Constraints</strong>:
+- <strong>Self-contained</strong>: no CDN references. Works offline.
+- <strong>Fully static</strong>: double-clicking the file opens it. No server required.
+- <strong>Size cap</strong>: ~5 MB total. Audio samples referenced by relative paths, not inlined.</p>
+<h3 id="73-gradio-panel">7.3 Gradio Panel</h3>
+<p><strong>Dependency</strong>: <code>gradio</code>.</p>
+<p><strong>Trigger</strong>: <code>vkit viz &lt;cuts.jsonl.gz&gt;</code> or <code>vkit viz &lt;work_dir&gt;</code>. Launches a transient local server at <code>127.0.0.1:7860</code>. Ctrl+C exits.</p>
+<p><strong>Features</strong>:</p>
+<ol>
+<li>Paginated Cut table (default sort by duration). Filterable by language, speaker, duration range, SNR range.</li>
+<li>Cut detail view: waveform, audio player, supervisions, provenance chain.</li>
+<li><strong>Semantic filter expression</strong>: a field accepting expressions like <code>duration &gt; 5 and metrics.snr &gt; 15</code>. Implemented as an AST whitelist evaluator that permits literals, attribute access, comparisons, and boolean combinators only. No <code>eval</code>. No function calls.</li>
+<li>Export: selected subset → new <code>cuts.jsonl.gz</code> written to disk.</li>
+</ol>
+<p><strong>Implementation scope</strong>: a single <code>viz/panel/app.py</code> file, ~300 lines of Gradio. No user accounts, no persistent connections, no multi-file comparison.</p>
+<h3 id="74-how-they-complement-each-other">7.4 How They Complement Each Other</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Scenario</th>
+<th>Lifetime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rich CLI</strong></td>
+<td>ssh terminal, CI logs, run-time feedback</td>
+<td>transient</td>
+</tr>
+<tr>
+<td><strong>HTML report</strong></td>
+<td>shareable artifact for collaborators, paper appendices</td>
+<td>persistent file</td>
+</tr>
+<tr>
+<td><strong>Gradio panel</strong></td>
+<td>local exploration, filtering, ad-hoc cleanup</td>
+<td>temporary service</td>
+</tr>
+</tbody>
+</table>
+<p>No overlap, no gaps.</p>
+<hr />
+<h2 id="8-plugin-mechanism">8. Plugin Mechanism</h2>
+<h3 id="81-two-plugin-kinds">8.1 Two Plugin Kinds</h3>
+<p>Both use Python packaging <code>entry_points</code> — the standard mechanism (pytest, airflow, jupyter).</p>
+<p><strong>Operator plugins</strong> via group <code>voxkitchen.operators</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project.entry-points.</span><span class="s2">&quot;voxkitchen.operators&quot;</span><span class="k">]</span>
+<span class="n">my_vad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;voxkitchen_my_vad.operator:MyVadOperator&quot;</span>
+</code></pre></div>
+<p>Users install with <code>pip install voxkitchen-my-vad</code> and reference <code>op: my_vad</code> in their pipeline YAML.</p>
+<p><strong>Recipe plugins</strong> via group <code>voxkitchen.recipes</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project.entry-points.</span><span class="s2">&quot;voxkitchen.recipes&quot;</span><span class="k">]</span>
+<span class="n">gigaspeech</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;voxkitchen_gigaspeech.recipe:GigaSpeechRecipe&quot;</span>
+</code></pre></div>
+<h3 id="82-lazy-discovery">8.2 Lazy Discovery</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># plugins/discovery.py</span>
+
+<span class="n">_loaded</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_plugins</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">_loaded</span>
+    <span class="k">if</span> <span class="n">_loaded</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">entry_points</span>
+    <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">entry_points</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;voxkitchen.operators&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">register_operator</span><span class="p">(</span><span class="n">ep</span><span class="o">.</span><span class="n">load</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">_log_plugin_error</span><span class="p">(</span><span class="n">ep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">entry_points</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;voxkitchen.recipes&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">register_recipe</span><span class="p">(</span><span class="n">ep</span><span class="o">.</span><span class="n">load</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">_log_plugin_error</span><span class="p">(</span><span class="n">ep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="n">_loaded</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+<p>Discovery is triggered lazily on the first call to <code>get_operator()</code> or <code>list_operators()</code>. Commands that do not need the registry (e.g. <code>vkit --help</code>) never trigger plugin loading.</p>
+<h3 id="83-plugin-error-isolation">8.3 Plugin Error Isolation</h3>
+<p>A third-party plugin that fails to import must not break <code>vkit</code>:</p>
+<ul>
+<li>Exceptions from <code>ep.load()</code> are caught, logged, and the plugin is skipped.</li>
+<li>Plugins that failed to load are reported by <code>vkit validate</code>.</li>
+<li>When a user references an unknown operator, the error message suggests checking <code>vkit validate</code> for plugin load failures.</li>
+</ul>
+<h3 id="84-deliberate-non-features">8.4 Deliberate Non-Features</h3>
+<ul>
+<li>No plugin API version negotiation. Third parties track the <code>voxkitchen</code> version.</li>
+<li>No hot reload.</li>
+<li>No plugin sandbox or permission system. Python cannot provide this; pretending otherwise gives false security.</li>
+<li>No plugin marketplace or central index. PyPI is the index. The docs maintain a "known plugins" page.</li>
+<li>No plugin dependency conflict detection. <code>pip</code> handles this.</li>
+</ul>
+<h3 id="85-first-party-recipes-are-hard-coded">8.5 First-Party Recipes Are Hard-Coded</h3>
+<p>Built-in recipes (<code>librispeech</code>, <code>commonvoice</code>, <code>aishell</code>) register via direct imports in <code>ingest/recipes/__init__.py</code>, not via <code>entry_points</code>. Rationale:
+- They ship with VoxKitchen and have no independent lifecycle.
+- Zero discovery overhead.
+- Clearer stack traces when something goes wrong.</p>
+<p>Third-party recipes go through <code>entry_points</code>. Two paths, clear responsibilities.</p>
+<hr />
+<h2 id="9-dependencies-packaging-ci">9. Dependencies, Packaging, CI</h2>
+<h3 id="91-python-version">9.1 Python Version</h3>
+<p><strong>Minimum: Python 3.10</strong>. CI matrix runs 3.10, 3.11, 3.12.</p>
+<p>Rationale: <code>match</code> statements, modern union syntax, <code>tomllib</code> (3.11+), and improved performance. Pydantic v2 and torch 2.x have dropped 3.9 support.</p>
+<h3 id="92-core-dependencies-and-extras-plan-b">9.2 Core Dependencies and Extras (Plan B)</h3>
+<p><code>pip install voxkitchen</code> installs a "batteries-included-minus-GPU-models" set that gives the user a complete non-GPU workflow. Install size ~2.5 GB, ~40 seconds on a typical link.</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project]</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="c1"># schema + pipeline core</span>
+<span class="w">  </span><span class="s2">&quot;pydantic&gt;=2.5,&lt;3&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;pyyaml&gt;=6&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;typer&gt;=0.12&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;rich&gt;=13&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;numpy&gt;=1.24&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;soundfile&gt;=0.12&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;tqdm&gt;=4.66&quot;</span><span class="p">,</span>
+
+<span class="w">  </span><span class="c1"># Plan B: non-GPU audio stack included by default</span>
+<span class="w">  </span><span class="s2">&quot;torch&gt;=2.1&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1"># CPU build</span>
+<span class="w">  </span><span class="s2">&quot;torchaudio&gt;=2.1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;ffmpeg-python&gt;=0.2&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;pyloudnorm&gt;=0.1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;silero-vad&gt;=4.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;webrtcvad&gt;=2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;librosa&gt;=0.10&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;simhash&gt;=2.1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;datasets&gt;=2.16&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;webdataset&gt;=0.2&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;pyarrow&gt;=14&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;jinja2&gt;=3.1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;plotly&gt;=5.18&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;gradio&gt;=4.12&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="k">[project.optional-dependencies]</span>
+<span class="n">asr</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;faster-whisper&gt;=1.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;whisperx&gt;=3.1&quot;</span><span class="p">]</span>
+<span class="n">diarize</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;pyannote.audio&gt;=3.1&quot;</span><span class="p">]</span>
+<span class="n">classify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;speechbrain&gt;=1.0&quot;</span><span class="p">]</span>
+<span class="n">all</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;voxkitchen[asr,diarize,classify]&quot;</span><span class="p">]</span>
+<span class="n">dev</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;pytest&gt;=7.4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;pytest-cov&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ruff&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mypy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;pre-commit&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><strong>Lazy extras checking</strong>: each <code>Operator</code> declares <code>required_extras</code>. <code>vkit validate</code> verifies required extras are installed and emits a precise <code>pip install voxkitchen[asr]</code> hint when they are not. Actual <code>import faster_whisper</code> happens inside <code>setup()</code> so <code>validate</code> does not need heavy libraries.</p>
+<p><strong>Install size comparison</strong> (Linux x86_64, 50 MB/s):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Download</th>
+<th>Installed</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>voxkitchen</code> (core, Plan B)</td>
+<td>~900 MB</td>
+<td>~2.5 GB</td>
+<td>~40 s</td>
+</tr>
+<tr>
+<td><code>voxkitchen[asr]</code></td>
+<td>~3 GB</td>
+<td>~7 GB</td>
+<td>~2 min</td>
+</tr>
+<tr>
+<td><code>voxkitchen[all]</code></td>
+<td>~4.5 GB</td>
+<td>~12 GB</td>
+<td>~3 min</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-packaging-tooling">9.3 Packaging Tooling</h3>
+<ul>
+<li><strong>Build backend</strong>: <code>hatchling</code> (PEP 517, minimal config).</li>
+<li><strong>Version management</strong>: <code>hatch-vcs</code> (versions from git tags).</li>
+<li><strong>Not using</strong>: Poetry (lockfiles are wrong for libraries).</li>
+</ul>
+<h3 id="94-testing-strategy">9.4 Testing Strategy</h3>
+<p>Three tiers:</p>
+<p><strong>Unit tests (<code>tests/unit/</code>)</strong>: schema serialization, CutSet split/merge, GC plan computation, YAML validation, provenance construction. All external libraries mocked. Target: full suite under 30 seconds on a laptop.</p>
+<p><strong>Integration tests (<code>tests/integration/</code>)</strong>: small end-to-end pipelines on a 10-second fixture audio file (<code>tests/fixtures/short.wav</code>). GPU operators replaced with mock operators on CI. Target: full suite under 3 minutes.</p>
+<p><strong>GPU smoke tests (<code>tests/gpu/</code>)</strong>: real models with silero, faster-whisper, pyannote. CI skips these (no GPU runners). Contributors run locally; required before releases.</p>
+<p><strong>Coverage target</strong>: unit tests ≥ 80%. No 100% goal (over-engineering trap).</p>
+<h3 id="95-code-quality-tooling">9.5 Code Quality Tooling</h3>
+<ul>
+<li><strong>ruff</strong>: lint + format</li>
+<li><strong>mypy</strong>: strict mode type checking</li>
+<li><strong>pre-commit</strong>: runs both automatically</li>
+</ul>
+<p>Not using: black (ruff format is sufficient), pylint (ruff covers), bandit (research tool, not production surface).</p>
+<h3 id="96-ci-github-actions">9.6 CI (GitHub Actions)</h3>
+<div class="highlight"><pre><span></span><code>.github/workflows/
+├── ci.yml          # push/PR: ruff + mypy + unit + integration on 3.10/3.11/3.12
+├── docs.yml        # push main: build mkdocs → gh-pages
+└── release.yml     # tag push: build sdist/wheel → PyPI + GitHub Release
+</code></pre></div>
+<ul>
+<li>Linux x86_64 only. No macOS or Windows runners.</li>
+<li>No Docker image in v0.1.</li>
+</ul>
+<h3 id="97-documentation-site">9.7 Documentation Site</h3>
+<ul>
+<li><strong>mkdocs + mkdocs-material</strong></li>
+<li>API reference auto-generated from docstrings.</li>
+<li>Operator parameter reference auto-generated from Pydantic models.</li>
+<li>Example pipelines linked 1:1 with doc pages.</li>
+<li>Hosted on GitHub Pages.</li>
+<li>English primary, Chinese README and core-concepts page. No video tutorials. No interactive playground.</li>
+</ul>
+<hr />
+<h2 id="10-non-goals-v01">10. Non-Goals (v0.1)</h2>
+<h3 id="functional-non-goals">Functional Non-Goals</h3>
+<ol>
+<li>Open-source dataset <strong>catalog UI</strong>. Only 3 ingest recipes ship in v0.1.</li>
+<li><strong>Crawler subsystem</strong>. Deferred; has legal and ethical surface that requires its own design.</li>
+<li><strong>Manual annotation Web UI</strong>. <code>vkit viz</code> is read-only exploration, not a human labeling tool.</li>
+<li><strong>Model training</strong>. VoxKitchen produces datasets; training is downstream.</li>
+<li><strong>Dataset version management / DVC integration</strong>. Users can layer Git LFS or DVC on top of VoxKitchen outputs.</li>
+</ol>
+<h3 id="architectural-non-goals">Architectural Non-Goals</h3>
+<ol>
+<li><strong>Distributed execution</strong>. Single-machine multi-GPU only. Ray/Dask integration deferred.</li>
+<li><strong>Pipeline parallelism</strong>. Stage parallelism only. Accepts suboptimal GPU utilization in exchange for simplicity and resumability.</li>
+<li><strong>Plugin API version negotiation</strong>.</li>
+<li><strong>Plugin sandbox or permission system</strong>.</li>
+<li><strong>Cloud storage backends</strong> (S3, OSS, GCS). Local filesystem only. The <code>RunContext</code> I/O indirection is designed to accommodate future backends but they are not implemented.</li>
+<li><strong>Database backend</strong>. All state lives in files (<code>cuts.jsonl.gz</code> + <code>_SUCCESS</code> markers).</li>
+</ol>
+<h3 id="operational-non-goals">Operational Non-Goals</h3>
+<ol>
+<li><strong>Long-running server</strong>. <code>vkit viz</code> is transient.</li>
+<li><strong>REST / gRPC APIs</strong>.</li>
+<li><strong>User accounts or permissions</strong>.</li>
+<li><strong>SQL-style querying</strong>. Use <code>vkit inspect</code> and <code>vkit viz</code> semantic filters.</li>
+</ol>
+<h3 id="platform-non-goals">Platform Non-Goals</h3>
+<ol>
+<li><strong>Windows / macOS CI</strong>. Linux x86_64 only. Other platforms best-effort without guarantees.</li>
+<li><strong>ARM / Apple Silicon optimization</strong>. CPU torch works on M-series Macs for pipeline authoring. GPU operators do not support MPS backend.</li>
+<li><strong>Docker image</strong>. v0.1 ships as a PyPI package only.</li>
+</ol>
+<h3 id="documentation-non-goals">Documentation Non-Goals</h3>
+<ol>
+<li><strong>Multi-language documentation</strong>. English primary, with a Chinese README and core concepts page.</li>
+<li><strong>Video tutorials</strong>.</li>
+</ol>
+<hr />
+<h2 id="appendix-a-guiding-principles">Appendix A: Guiding Principles</h2>
+<ol>
+<li><strong>Simplicity over efficiency</strong>. Every design choice where simplicity and raw performance conflict resolves in favor of simplicity. This is project-wide policy, not a local trade-off.</li>
+<li><strong>No over-engineering</strong>. Every abstraction, retry mechanism, fallback, or auto-detection must justify itself against a concrete demonstrated need. Hypothetical flexibility is rejected.</li>
+<li><strong>Inspectable intermediate state</strong>. Every stage writes a valid manifest that can be examined, queried, and reused by hand. Resume and debugging fall out naturally.</li>
+<li><strong>Declarative when possible, imperative when necessary</strong>. YAML is the primary interface; Python API is the fallback for users who need dynamic behavior.</li>
+<li><strong>Researcher ergonomics</strong>. Reproducibility, provenance, and offline operation take precedence over operational polish aimed at production deployment.</li>
+</ol>
+<h2 id="appendix-b-success-criteria-checklist">Appendix B: Success Criteria Checklist</h2>
+<p>The v0.1 release is complete when:</p>
+<ul>
+<li>[ ] All 22 built-in operators are implemented with unit tests and reference docs.</li>
+<li>[ ] All 3 ingest recipes (LibriSpeech, CommonVoice, AISHELL-1) are implemented and tested against real downloads.</li>
+<li>[ ] The example pipeline <code>examples/pipelines/librispeech-asr.yaml</code> runs end-to-end on a single machine with 4 GPUs and produces a HuggingFace Datasets directory plus a <code>report.html</code>.</li>
+<li>[ ] <code>vkit run --resume-from</code> works correctly after a simulated mid-pipeline crash.</li>
+<li>[ ] <code>--keep-intermediates</code> and aggressive GC both produce correct results on the example pipeline.</li>
+<li>[ ] <code>vkit viz</code> launches the Gradio panel and displays the example pipeline output interactively.</li>
+<li>[ ] Plugin discovery loads a toy third-party operator from a separately-installed package.</li>
+<li>[ ] <code>pip install voxkitchen</code> succeeds in a clean Python 3.10 / 3.11 / 3.12 environment and produces a working <code>vkit --help</code>.</li>
+<li>[ ] <code>pip install voxkitchen[asr,diarize,classify]</code> succeeds and enables all GPU operators.</li>
+<li>[ ] Documentation site builds and deploys via <code>docs.yml</code>.</li>
+<li>[ ] <code>ci.yml</code> is green on all supported Python versions.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
