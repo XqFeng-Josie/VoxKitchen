@@ -137,7 +137,7 @@ def create_app(manifest_path: str) -> Any:
         )
 
         for inp in filter_inputs:
-            inp.change(filter_cuts, filter_inputs, table)
+            inp.change(filter_cuts, filter_inputs, table)  # type: ignore[attr-defined]
 
         gr.Markdown("---\n### Cut Detail")
         with gr.Row():
