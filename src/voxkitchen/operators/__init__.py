@@ -138,6 +138,10 @@ try:
     from voxkitchen.operators.synthesize import tts_chattts as _synth_chattts  # noqa: F401
 except ImportError:
     pass  # ChatTTS not installed
+try:
+    from voxkitchen.operators.synthesize import tts_cosyvoice as _synth_cosyvoice  # noqa: F401
+except ImportError:
+    pass  # cosyvoice not installed
 
 # --- pack (optional: datasets, webdataset, pyarrow) ---
 from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
