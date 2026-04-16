@@ -2,7 +2,7 @@
 
 Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
 
-**43 operators** across 7 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, and output packing.
+**51 operators** across 8 categories: audio processing, segmentation, augmentation, TTS synthesis, annotation (ASR/diarization/alignment/emotion), quality metrics, and output packing.
 
 ## Get Started
 
@@ -27,7 +27,7 @@ vkit init my-project --template speaker   # Speaker analysis
 
 ## Reference
 
-- [Operators](reference/operators.md) — all 43 operators with config and YAML examples
+- [Operators](reference/operators.md) — all 51 operators with config and YAML examples
 - [Recipes & Download](reference/recipes.md) — dataset recipes and `vkit download`
 - [CLI Commands](reference/cli.md) — complete CLI reference
 - [Python Tools API](reference/tools-api.md) — standalone functions for quick tasks

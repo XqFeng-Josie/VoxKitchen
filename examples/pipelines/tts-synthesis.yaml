@@ -1,0 +1,26 @@
+# Synthesize speech from text using Kokoro TTS.
+# Usage: vkit run examples/pipelines/tts-synthesis.yaml
+# Requires: pip install voxkitchen[tts-kokoro]
+#
+# Input: a CutSet manifest with text in supervisions (no audio needed).
+# Output: synthesized WAV files + CutSet manifest.
+
+version: "0.1"
+name: tts-synthesis
+work_dir: ./work/${name}
+
+ingest:
+  source: manifest
+  args:
+    path: ./text_scripts.jsonl.gz
+
+stages:
+  - name: synthesize
+    op: tts_kokoro
+    args:
+      voice: af_heart
+      lang_code: a
+      speed: 1.0
+
+  - name: pack
+    op: pack_jsonl

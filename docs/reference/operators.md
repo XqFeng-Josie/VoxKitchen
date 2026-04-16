@@ -1,6 +1,6 @@
 # Operator Reference
 
-VoxKitchen ships with **47 built-in operators** across 7 categories.
+VoxKitchen ships with **51 built-in operators** across 8 categories.
 
 !!! tip
     Run `vkit operators` to see this list in your terminal, or `vkit operators show <name>` for details.
@@ -14,6 +14,7 @@ VoxKitchen ships with **47 built-in operators** across 7 categories.
 - [Quality & Filtering](#quality) (11 operators)
 - [Output / Packing](#pack) (6 operators)
 - [Utility](#noop) (1 operators)
+- [Synthesize](#synthesize) (4 operators)
 
 ## Audio Processing { #basic }
 
@@ -1233,6 +1234,122 @@ recording.  ``origin_id`` traces back to the source filename.
 ```yaml
 - name: my_identity
   op: identity
+```
+
+---
+
+## Synthesize { #synthesize }
+
+### `tts_chattts`
+
+**Synthesize conversational speech using ChatTTS.**
+
+- **Device:** gpu
+- **Install:** `pip install voxkitchen[tts-chattts]`
+- **Produces audio:** Yes
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `seed` | int | None | `None` |  |
+| `temperature` | float | `0.3` |  |
+| `top_p` | float | `0.7` |  |
+| `top_k` | int | `20` |  |
+
+```yaml
+- name: my_tts_chattts
+  op: tts_chattts
+  args:
+    seed: None
+    temperature: 0.3
+    top_p: 0.7
+    top_k: 20
+```
+
+---
+
+### `tts_cosyvoice`
+
+**Synthesize speech using CosyVoice2 with optional voice cloning.**
+
+- **Device:** gpu
+- **Install:** `pip install voxkitchen[tts-cosyvoice]`
+- **Produces audio:** Yes
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `model_id` | str | `FunAudioLLM/CosyVoice2-0.5B` |  |
+| `mode` | str | `sft` |  |
+| `spk_id` | str | `default` |  |
+| `reference_audio` | str | None | `None` |  |
+| `reference_text` | str | None | `None` |  |
+
+```yaml
+- name: my_tts_cosyvoice
+  op: tts_cosyvoice
+  args:
+    model_id: FunAudioLLM/CosyVoice2-0.5B
+    mode: sft
+    spk_id: default
+    reference_audio: None
+    reference_text: None
+```
+
+---
+
+### `tts_fish_speech`
+
+**Synthesize speech using Fish-Speech codec language model.**
+
+- **Device:** gpu
+- **Install:** `pip install voxkitchen[tts-fish-speech]`
+- **Produces audio:** Yes
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `model_id` | str | `fishaudio/fish-speech-1.5` |  |
+| `reference_audio` | str | None | `None` |  |
+| `reference_text` | str | None | `None` |  |
+| `max_new_tokens` | int | `1024` |  |
+| `top_p` | float | `0.7` |  |
+| `temperature` | float | `0.7` |  |
+| `repetition_penalty` | float | `1.2` |  |
+
+```yaml
+- name: my_tts_fish_speech
+  op: tts_fish_speech
+  args:
+    model_id: fishaudio/fish-speech-1.5
+    reference_audio: None
+    reference_text: None
+    max_new_tokens: 1024
+    top_p: 0.7
+    temperature: 0.7
+    repetition_penalty: 1.2
+```
+
+---
+
+### `tts_kokoro`
+
+**Synthesize speech from text using Kokoro TTS.**
+
+- **Device:** cpu
+- **Install:** `pip install voxkitchen[tts-kokoro]`
+- **Produces audio:** Yes
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `voice` | str | `af_heart` |  |
+| `lang_code` | str | `a` |  |
+| `speed` | float | `1.0` |  |
+
+```yaml
+- name: my_tts_kokoro
+  op: tts_kokoro
+  args:
+    voice: af_heart
+    lang_code: a
+    speed: 1.0
 ```
 
 ---

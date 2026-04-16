@@ -87,7 +87,7 @@ Available datasets: `librispeech`, `aishell`, `fleurs`. See [Recipes & Download]
 ## Discover operators
 
 ```bash
-# List all 43 operators (grouped by category)
+# List all 51 operators (grouped by category)
 vkit operators
 
 # Show config fields + YAML example for any operator
@@ -104,6 +104,7 @@ For quick one-off tasks without writing a YAML pipeline:
 from voxkitchen.tools import (
     audio_info, transcribe, detect_speech, estimate_snr,
     extract_speaker_embedding, enhance_speech, align_words,
+    synthesize,
 )
 
 audio_info("speech.wav")
@@ -120,6 +121,13 @@ emb = extract_speaker_embedding("speaker.wav")
 
 # Forced alignment (requires: pip install voxkitchen[align])
 align_words("speech.wav", "hello world", language="English")
+
+# TTS synthesis (requires: pip install voxkitchen[tts-kokoro])
+synthesize("Hello world!", "output.wav", engine="kokoro")
+
+# Voice cloning (requires: pip install voxkitchen[tts-cosyvoice])
+synthesize("你好", "clone.wav", engine="cosyvoice",
+           reference_audio="ref.wav", reference_text="参考文本")
 ```
 
 ## Next steps
@@ -127,5 +135,5 @@ align_words("speech.wav", "hello world", language="English")
 - [TTS Tutorial](tutorials/tts-data-prep.md) — end-to-end TTS data preparation
 - [ASR Tutorial](tutorials/asr-training-data.md) — augmented ASR training data
 - [Data Cleaning Tutorial](tutorials/data-cleaning.md) — quality metrics and filtering
-- [Operators Reference](reference/operators.md) — all 43 operators with config details
+- [Operators Reference](reference/operators.md) — all 51 operators with config details
 - [Data Protocol](concepts/data-protocol.md) — understand Recording / Supervision / Cut
