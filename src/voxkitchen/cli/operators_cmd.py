@@ -17,6 +17,25 @@ operators_app = typer.Typer(
     invoke_without_command=True,
 )
 
+# Display-friendly category names and order
+_CATEGORY_LABELS = {
+    "basic": "Audio",
+    "segment": "Segmentation",
+    "augment": "Augmentation",
+    "annotate": "Annotation",
+    "quality": "Quality",
+    "pack": "Pack",
+    "noop": "Utility",
+}
+
+_CATEGORY_ORDER = list(_CATEGORY_LABELS.keys())
+
+
+def _get_category(op_cls: type) -> str:
+    """Extract category from module path: voxkitchen.operators.<category>.<name>."""
+    parts = op_cls.__module__.split(".")
+    return parts[2] if len(parts) > 2 else "other"
+
 
 @operators_app.callback()
 def list_all(ctx: typer.Context) -> None:
@@ -26,16 +45,37 @@ def list_all(ctx: typer.Context) -> None:
     from voxkitchen.operators.registry import get_operator, list_operators
 
     names = list_operators()
+
+    # Group by category
+    groups: dict[str, list[tuple[str, type]]] = {}
+    for name in names:
+        op_cls = get_operator(name)
+        cat = _get_category(op_cls)
+        groups.setdefault(cat, []).append((name, op_cls))
+
     t = Table(title=f"Available operators ({len(names)})")
+    t.add_column("Category", style="bold")
     t.add_column("Name")
     t.add_column("Device")
     t.add_column("Description")
 
-    for name in names:
-        op_cls = get_operator(name)
-        doc = (op_cls.__doc__ or "").strip().split("\n")[0]
-        t.add_row(name, op_cls.device, doc)
+    # Print in category order
+    sorted_cats = sorted(groups.keys(), key=lambda c: _CATEGORY_ORDER.index(c) if c in _CATEGORY_ORDER else 99)
+    for cat in sorted_cats:
+        label = _CATEGORY_LABELS.get(cat, cat.title())
+        ops = groups[cat]
+        for i, (name, op_cls) in enumerate(ops):
+            doc = (op_cls.__doc__ or "").strip().split("\n")[0]
+            cat_col = label if i == 0 else ""
+            t.add_row(cat_col, name, op_cls.device, doc)
+        # Add separator between categories (except last)
+        if cat != sorted_cats[-1]:
+            t.add_row("", "", "", "")
+
     console.print(t)
+    console.print()
+    console.print("[dim]Use[/dim] [bold]vkit operators show <name>[/bold] [dim]to see config fields and YAML example.[/dim]")
+    console.print()
 
 
 @operators_app.command(name="show")
@@ -50,10 +90,14 @@ def show(name: str = typer.Argument(..., help="Operator name.")) -> None:
         raise typer.Exit(code=1) from exc
 
     # Header
-    console.print(f"\n[bold]{op_cls.name}[/bold]  (device: {op_cls.device})")
+    cat = _get_category(op_cls)
+    label = _CATEGORY_LABELS.get(cat, cat.title())
+    console.print(f"\n[bold]{op_cls.name}[/bold]  (device: {op_cls.device}, category: {label})")
     if op_cls.required_extras:
         extras = ",".join(op_cls.required_extras)
         console.print(f"  install: pip install voxkitchen[{extras}]")
+    else:
+        console.print("  install: pip install voxkitchen")
     console.print()
 
     # Docstring — highlight warnings
