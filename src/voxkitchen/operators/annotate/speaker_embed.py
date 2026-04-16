@@ -69,10 +69,14 @@ class SpeakerEmbedOperator(Operator):
         return self._process_speechbrain(cuts)
 
     def _process_wespeaker(self, cuts: CutSet) -> CutSet:
+        import torch
+
         out_cuts: list[Cut] = []
         for cut in cuts:
             audio, sr = load_audio_for_cut(cut)
-            embedding = self._model.extract_embedding_from_pcm(audio, sample_rate=sr)
+            # WeSpeaker expects a torch tensor, not numpy array
+            pcm = torch.from_numpy(audio).unsqueeze(0) if audio.ndim == 1 else torch.from_numpy(audio)
+            embedding = self._model.extract_embedding_from_pcm(pcm, sample_rate=sr)
             if hasattr(embedding, "numpy"):
                 embedding = embedding.numpy()
             emb_list = np.array(embedding).flatten().tolist()
