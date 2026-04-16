@@ -338,7 +338,7 @@ Each function creates a temporary Cut + RunContext, runs the corresponding opera
 ## Project Structure
 
 ```
-src/voxkitchen/
+voxkitchen/
   cli/                  # Typer CLI app
   operators/            # 51 operators across 8 categories
     basic/              #   resample, ffmpeg_convert, ...

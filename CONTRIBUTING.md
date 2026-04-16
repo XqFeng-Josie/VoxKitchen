@@ -35,9 +35,9 @@ pytest --cov=voxkitchen --cov-report=term-missing
 We use **ruff** for linting and formatting, **mypy** for type checking.
 
 ```bash
-ruff check src tests          # Lint
-ruff format src tests         # Format
-mypy src/voxkitchen tests     # Type check
+ruff check voxkitchen tests   # Lint
+ruff format voxkitchen tests  # Format
+mypy voxkitchen tests         # Type check
 ```
 
 Pre-commit hooks run these automatically on `git commit`.
@@ -62,7 +62,7 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
 1. **Create the operator file** in the appropriate category:
 
    ```
-   src/voxkitchen/operators/<category>/<name>.py
+   voxkitchen/operators/<category>/<name>.py
    ```
 
    Categories: `basic/`, `segment/`, `augment/`, `annotate/`, `quality/`, `pack/`
@@ -90,7 +90,7 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
            ...
    ```
 
-3. **Register** in `src/voxkitchen/operators/__init__.py`:
+3. **Register** in `voxkitchen/operators/__init__.py`:
 
    ```python
    from voxkitchen.operators.<category> import <module> as _alias  # noqa: F401
@@ -110,10 +110,10 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
 
 ## Adding a New Recipe
 
-1. Create `src/voxkitchen/ingest/recipes/<name>.py`
+1. Create `voxkitchen/ingest/recipes/<name>.py`
 2. Subclass `Recipe`, implement `prepare()`, optionally override `download()`
 3. Call `register_recipe(YourRecipe())` at module bottom
-4. Import in `src/voxkitchen/ingest/recipes/__init__.py`
+4. Import in `voxkitchen/ingest/recipes/__init__.py`
 5. Add tests in `tests/unit/ingest/recipes/`
 
 ## Pull Request Process

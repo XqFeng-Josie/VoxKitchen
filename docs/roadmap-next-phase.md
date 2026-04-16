@@ -213,7 +213,7 @@ vkit init --list-templates                   # 列出所有可用模板
 
 ### 实现清单
 
-- [ ] 创建 `src/voxkitchen/templates/` 目录，存放模板 YAML
+- [ ] 创建 `voxkitchen/templates/` 目录，存放模板 YAML
 - [ ] 修改 `vkit init` 支持 `--template` 参数
 - [ ] 创建 4 个模板 YAML
 - [ ] 每个模板配套一个教程文档

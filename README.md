@@ -63,6 +63,9 @@ pip install -e ".[classify]"      # SpeechBrain language ID
 pip install -e ".[gender]"        # inaSpeechSegmenter gender detection
 pip install -e ".[speaker]"       # WeSpeaker speaker embeddings (installs from GitHub)
 #
+#   Audio codec
+pip install -e ".[codec]"         # Encodec + DAC neural audio codec tokenization
+#
 #   Enhancement & alignment
 pip install -e ".[enhance]"       # DeepFilterNet speech denoising
 pip install -e ".[align]"         # Qwen3 ASR + forced alignment (30 langs + Chinese)

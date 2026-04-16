@@ -24,10 +24,10 @@ jobs:
         run: pip install ruff
 
       - name: Ruff lint
-        run: ruff check src tests
+        run: ruff check voxkitchen tests
 
       - name: Ruff format check
-        run: ruff format --check src tests
+        run: ruff format --check voxkitchen tests
 
   test:
     runs-on: ubuntu-latest
@@ -83,4 +83,4 @@ jobs:
           pip install -e . --no-deps
 
       - name: Mypy
-        run: mypy src/voxkitchen
+        run: mypy voxkitchen

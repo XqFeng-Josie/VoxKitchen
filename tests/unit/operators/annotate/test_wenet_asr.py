@@ -1,22 +1,22 @@
-"""Unit tests for whisper_openai_asr operator."""
+"""Unit tests for wenet_asr operator."""
 
 from __future__ import annotations
 
 try:
-    import whisper  # noqa: F401
+    import wenet  # noqa: F401
 except ImportError:
     import pytest
 
-    pytest.skip("openai-whisper not available", allow_module_level=True)
+    pytest.skip("wenet not available", allow_module_level=True)
 
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
 
-from voxkitchen.operators.annotate.whisper_openai_asr import (
-    WhisperOpenaiAsrConfig,
-    WhisperOpenaiAsrOperator,
+from voxkitchen.operators.annotate.wenet_asr import (
+    WenetAsrConfig,
+    WenetAsrOperator,
 )
 from voxkitchen.operators.registry import get_operator
 from voxkitchen.pipeline.context import RunContext
@@ -63,34 +63,28 @@ def _cut_from_path(audio_path: Path) -> Cut:
 # ---------------------------------------------------------------------------
 
 
-def test_whisper_openai_asr_is_registered() -> None:
-    assert get_operator("whisper_openai_asr") is WhisperOpenaiAsrOperator
+def test_wenet_asr_is_registered() -> None:
+    assert get_operator("wenet_asr") is WenetAsrOperator
 
 
-def test_whisper_openai_asr_class_attrs() -> None:
-    assert WhisperOpenaiAsrOperator.device == "gpu"
-    assert WhisperOpenaiAsrOperator.produces_audio is False
-    assert WhisperOpenaiAsrOperator.reads_audio_bytes is True
-    assert "whisper" in WhisperOpenaiAsrOperator.required_extras
-    # Config defaults
-    cfg = WhisperOpenaiAsrConfig()
-    assert cfg.model == "tiny"
-    assert cfg.language is None
-    assert cfg.beam_size == 5
-    assert cfg.fp16 is True
+def test_wenet_asr_class_attrs() -> None:
+    assert WenetAsrOperator.device == "gpu"
+    assert WenetAsrOperator.produces_audio is False
+    assert WenetAsrOperator.reads_audio_bytes is True
+    assert "wenet" in WenetAsrOperator.required_extras
 
 
 # ---------------------------------------------------------------------------
-# Slow (downloads whisper-tiny ~75 MB)
+# Slow (downloads WeNet model)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.slow
-def test_whisper_openai_asr_transcribes(mono_wav_16k: Path, tmp_path: Path) -> None:
-    """Real tiny model on CPU: a sine wave should complete without error."""
+def test_wenet_asr_transcribes(mono_wav_16k: Path, tmp_path: Path) -> None:
+    """Real model on CPU: a sine wave should complete and return 1 cut."""
     cut = _cut_from_path(mono_wav_16k)
-    config = WhisperOpenaiAsrConfig(model="tiny", fp16=False)
-    op = WhisperOpenaiAsrOperator(config, ctx=_ctx(tmp_path))
+    config = WenetAsrConfig(model="chinese")
+    op = WenetAsrOperator(config, ctx=_ctx(tmp_path))
     op.setup()
     result = list(op.process(CutSet([cut])))
     op.teardown()

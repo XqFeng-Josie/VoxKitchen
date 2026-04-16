@@ -1,22 +1,22 @@
-"""Unit tests for whisper_openai_asr operator."""
+"""Unit tests for sensevoice_asr operator."""
 
 from __future__ import annotations
 
 try:
-    import whisper  # noqa: F401
+    from funasr import AutoModel  # noqa: F401
 except ImportError:
     import pytest
 
-    pytest.skip("openai-whisper not available", allow_module_level=True)
+    pytest.skip("funasr not available", allow_module_level=True)
 
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
 
-from voxkitchen.operators.annotate.whisper_openai_asr import (
-    WhisperOpenaiAsrConfig,
-    WhisperOpenaiAsrOperator,
+from voxkitchen.operators.annotate.sensevoice_asr import (
+    SenseVoiceAsrConfig,
+    SenseVoiceAsrOperator,
 )
 from voxkitchen.operators.registry import get_operator
 from voxkitchen.pipeline.context import RunContext
@@ -63,37 +63,46 @@ def _cut_from_path(audio_path: Path) -> Cut:
 # ---------------------------------------------------------------------------
 
 
-def test_whisper_openai_asr_is_registered() -> None:
-    assert get_operator("whisper_openai_asr") is WhisperOpenaiAsrOperator
+def test_sensevoice_asr_is_registered() -> None:
+    assert get_operator("sensevoice_asr") is SenseVoiceAsrOperator
 
 
-def test_whisper_openai_asr_class_attrs() -> None:
-    assert WhisperOpenaiAsrOperator.device == "gpu"
-    assert WhisperOpenaiAsrOperator.produces_audio is False
-    assert WhisperOpenaiAsrOperator.reads_audio_bytes is True
-    assert "whisper" in WhisperOpenaiAsrOperator.required_extras
-    # Config defaults
-    cfg = WhisperOpenaiAsrConfig()
-    assert cfg.model == "tiny"
-    assert cfg.language is None
-    assert cfg.beam_size == 5
-    assert cfg.fp16 is True
+def test_sensevoice_asr_class_attrs() -> None:
+    assert SenseVoiceAsrOperator.device == "gpu"
+    assert SenseVoiceAsrOperator.produces_audio is False
+    assert SenseVoiceAsrOperator.reads_audio_bytes is True
+    assert "funasr" in SenseVoiceAsrOperator.required_extras
 
 
 # ---------------------------------------------------------------------------
-# Slow (downloads whisper-tiny ~75 MB)
+# Slow (downloads SenseVoice model)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.slow
-def test_whisper_openai_asr_transcribes(mono_wav_16k: Path, tmp_path: Path) -> None:
-    """Real tiny model on CPU: a sine wave should complete without error."""
+def test_sensevoice_asr_transcribes(mono_wav_16k: Path, tmp_path: Path) -> None:
+    """Real model: a sine wave should complete without error and return 1 cut."""
     cut = _cut_from_path(mono_wav_16k)
-    config = WhisperOpenaiAsrConfig(model="tiny", fp16=False)
-    op = WhisperOpenaiAsrOperator(config, ctx=_ctx(tmp_path))
+    config = SenseVoiceAsrConfig()
+    op = SenseVoiceAsrOperator(config, ctx=_ctx(tmp_path))
     op.setup()
     result = list(op.process(CutSet([cut])))
     op.teardown()
 
     assert len(result) == 1
-    assert isinstance(result[0].supervisions, list)
+
+
+@pytest.mark.slow
+def test_sensevoice_asr_auto_language_sets_none(mono_wav_16k: Path, tmp_path: Path) -> None:
+    """When language='auto', supervisions should have language=None (auto-detect)."""
+    cut = _cut_from_path(mono_wav_16k)
+    config = SenseVoiceAsrConfig(language="auto")
+    op = SenseVoiceAsrOperator(config, ctx=_ctx(tmp_path))
+    op.setup()
+    result = list(op.process(CutSet([cut])))
+    op.teardown()
+
+    assert len(result) == 1
+    for sup in result[0].supervisions:
+        # When language="auto", the operator sets supervision.language=None
+        assert sup.language is None

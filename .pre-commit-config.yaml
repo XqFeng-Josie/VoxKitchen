@@ -24,5 +24,5 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        files: ^(src/voxkitchen|tests)/
-        args: [src/voxkitchen, tests]
+        files: ^(voxkitchen|tests)/
+        args: [voxkitchen, tests]

@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-# Resolve: src/voxkitchen/templates/ -> ../../.. -> project root -> examples/pipelines/
-TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent.parent / "examples" / "pipelines"
+# Resolve: voxkitchen/templates/ -> ../.. -> project root -> examples/pipelines/
+TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent / "examples" / "pipelines"
 
 TEMPLATES: dict[str, dict[str, str]] = {
     "tts": {

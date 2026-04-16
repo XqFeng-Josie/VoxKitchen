@@ -90,16 +90,16 @@ fallback-version = "0.0.0.dev0"
 raw-options = { fallback_version = "0.0.0.dev0", tag_regex = "^(?:v)?(?P<version>[0-9]+(?:\\.[0-9]+)+)$" }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/voxkitchen"]
+packages = ["voxkitchen"]
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/voxkitchen/_version.py"
+version-file = "voxkitchen/_version.py"
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-src = ["src", "tests"]
-extend-exclude = ["src/voxkitchen/_version.py"]
+src = ["voxkitchen", "tests"]
+extend-exclude = ["voxkitchen/_version.py"]
 
 [tool.ruff.lint]
 select = [
@@ -124,7 +124,7 @@ extend-immutable-calls = ["typer.Argument", "typer.Option"]
 python_version = "3.10"
 strict = true
 warn_unused_ignores = false  # optional deps may or may not be installed
-files = ["src/voxkitchen", "tests"]
+files = ["voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
 module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*", "tqdm.*", "encodec.*", "dac.*", "kokoro.*", "ChatTTS.*", "cosyvoice.*", "modelscope.*", "fish_speech.*", "huggingface_hub.*"]
@@ -140,7 +140,7 @@ ignore_missing_imports = true
 minversion = "7.4"
 addopts = "-ra --strict-markers --strict-config"
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["."]
 markers = [
     "slow: marks tests that download ML models (deselect with '-m \"not slow\"')",
     "gpu: marks tests that require GPU or special server config (deselect with '-m \"not gpu\"')",
