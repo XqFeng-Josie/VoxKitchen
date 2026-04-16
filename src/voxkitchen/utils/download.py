@@ -50,5 +50,5 @@ def extract_tar(archive: Path, dest: Path) -> None:
     else:
         mode = "r:*"
     logger.info("extracting %s → %s", archive.name, dest)
-    with tarfile.open(archive, mode) as tar:
+    with tarfile.open(str(archive), mode) as tar:  # type: ignore[call-overload]
         tar.extractall(path=dest, filter="data")

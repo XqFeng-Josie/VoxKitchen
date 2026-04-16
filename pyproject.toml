@@ -122,7 +122,7 @@ warn_unused_ignores = false  # optional deps may or may not be installed
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*", "tqdm.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

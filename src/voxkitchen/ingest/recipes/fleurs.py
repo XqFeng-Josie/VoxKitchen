@@ -23,7 +23,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import soundfile as sf
 
@@ -85,7 +85,7 @@ class FleursRecipe(Recipe):
 
     def _row_to_cut(
         self,
-        row: dict,
+        row: dict[str, Any],
         lang: str,
         split: str,
         ctx: RunContext,  # type: ignore[type-arg]

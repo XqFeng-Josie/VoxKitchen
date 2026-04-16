@@ -97,10 +97,13 @@ class SpeedPerturbOperator(Operator):
             resampler = torchaudio.transforms.Resample(orig_freq=src_sr, new_freq=sr)
             result = resampler(tensor)
             if result.shape[0] == 1:
-                return result.squeeze(0).numpy().astype(np.float32)
-            return result.T.numpy().astype(np.float32)
+                out: _Audio = result.squeeze(0).numpy().astype(np.float32)
+            else:
+                out = result.T.numpy().astype(np.float32)
+            return out
         except ImportError:
             from scipy.signal import resample as scipy_resample
 
             new_len = int(len(audio) / factor)
-            return scipy_resample(audio, new_len).astype(np.float32)
+            out = np.asarray(scipy_resample(audio, new_len), dtype=np.float32)
+            return out

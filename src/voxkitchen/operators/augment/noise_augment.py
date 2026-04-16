@@ -107,7 +107,7 @@ class NoiseAugmentOperator(Operator):
     @staticmethod
     def _load_noise(
         noise_path: Path, target_sr: int, target_len: int, rng: np.random.RandomState
-    ) -> np.ndarray:  # type: ignore[type-arg]
+    ) -> Any:
         """Load noise, resample if needed, trim or loop to target_len."""
         noise, noise_sr = sf.read(str(noise_path), dtype="float32")
         # Convert stereo to mono
@@ -134,10 +134,10 @@ class NoiseAugmentOperator(Operator):
 
     @staticmethod
     def _mix_at_snr(
-        signal: np.ndarray,
-        noise: np.ndarray,
-        snr_db: float,  # type: ignore[type-arg]
-    ) -> np.ndarray:  # type: ignore[type-arg]
+        signal: np.ndarray,  # type: ignore[type-arg]
+        noise: np.ndarray,  # type: ignore[type-arg]
+        snr_db: float,
+    ) -> Any:
         """Mix signal and noise at the specified SNR (dB)."""
         sig_power = float(np.mean(signal**2))
         noise_power = float(np.mean(noise**2))

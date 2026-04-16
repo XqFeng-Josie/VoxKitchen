@@ -34,7 +34,7 @@ def list_recipes(ctx: typer.Context) -> None:
             dl = "[green]openslr[/green]"
         elif (
             hasattr(recipe, "download")
-            and type(recipe).download is not type(recipe).__mro__[1].download
+            and type(recipe).download is not type(recipe).__mro__[1].download  # type: ignore[attr-defined]
         ):
             # Has custom download() override (e.g. FLEURS via HuggingFace)
             dl = "[green]HuggingFace[/green]"
