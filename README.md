@@ -53,7 +53,7 @@ pip install -e ".[quality]"       # simhash (audio deduplication)
 pip install -e ".[diarize]"       # pyannote speaker diarization (needs HF_TOKEN, see below)
 pip install -e ".[classify]"      # SpeechBrain language ID
 pip install -e ".[gender]"        # inaSpeechSegmenter gender detection
-pip install -e ".[speaker]"       # WeSpeaker speaker embeddings
+pip install -e ".[speaker]"       # WeSpeaker speaker embeddings (installs from GitHub)
 #
 #   Enhancement & alignment
 pip install -e ".[enhance]"       # DeepFilterNet speech denoising
