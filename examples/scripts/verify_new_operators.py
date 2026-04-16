@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Verify that the new operators (speaker_embed, speech_enhance, forced_align) work correctly.
+"""Verify that the new operators work correctly.
+
+Tests: reverb_augment, speaker_embed, speech_enhance, emotion_recognize, forced_align.
 
 Usage:
     # 1. Install the required extras
     pip install -e ".[speaker]"     # WeSpeaker for speaker_embed
     pip install -e ".[enhance]"     # DeepFilterNet for speech_enhance
-    pip install -e ".[align]"       # ctc-forced-aligner for forced_align
+    pip install -e ".[funasr]"      # emotion2vec for emotion_recognize
+    pip install -e ".[align]"       # Qwen3 for forced_align + qwen3_asr
 
     # 2. Run this script with a test wav file
     python examples/scripts/verify_new_operators.py path/to/audio.wav
@@ -79,7 +82,7 @@ def verify_speech_enhance(audio_path: str) -> None:
 
 
 def verify_forced_align(audio_path: str) -> None:
-    _separator("forced_align (ctc-forced-aligner)")
+    _separator("forced_align (Qwen3-ForcedAligner)")
     try:
         from voxkitchen.tools import align_words, transcribe
 
@@ -95,7 +98,7 @@ def verify_forced_align(audio_path: str) -> None:
 
         # Then align
         print("  Step 2: Aligning words...")
-        words = align_words(audio_path, text)
+        words = align_words(audio_path, text, language="English")
         print(f"  Word count: {len(words)}")
         for w in words[:5]:
             print(f"    {w['text']:15s} {w['start']:.3f}s - {w['end']:.3f}s")
@@ -105,6 +108,41 @@ def verify_forced_align(audio_path: str) -> None:
     except ImportError as e:
         print(f"  SKIP: {e}")
         print(f"  Install: pip install -e '.[asr,align]'")
+    except Exception as e:
+        print(f"  FAIL: {e}")
+
+
+def verify_emotion_recognize(audio_path: str) -> None:
+    _separator("emotion_recognize (emotion2vec)")
+    try:
+        from voxkitchen.tools import _make_ctx, _make_cut
+
+        from voxkitchen.operators.annotate.emotion_recognize import (
+            EmotionRecognizeConfig,
+            EmotionRecognizeOperator,
+        )
+        from voxkitchen.schema.cutset import CutSet
+
+        cut = _make_cut(Path(audio_path))
+        ctx = _make_ctx()
+        config = EmotionRecognizeConfig(model="iic/emotion2vec_plus_base")
+        op = EmotionRecognizeOperator(config, ctx)
+        op.setup()
+        result = op.process(CutSet([cut]))
+        op.teardown()
+
+        out_cut = next(iter(result))
+        emotion = out_cut.custom.get("emotion", "?")
+        scores = out_cut.custom.get("emotion_scores", {})
+        print(f"  Emotion: {emotion}")
+        if scores:
+            top3 = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:3]
+            for name, score in top3:
+                print(f"    {name:12s} {score:.4f}")
+        print(f"  OK")
+    except ImportError as e:
+        print(f"  SKIP: {e}")
+        print(f"  Install: pip install -e '.[funasr]'")
     except Exception as e:
         print(f"  FAIL: {e}")
 
@@ -173,6 +211,7 @@ def main() -> None:
     verify_speaker_embed(audio_path)
     verify_speaker_embed_speechbrain(audio_path)
     verify_speech_enhance(audio_path)
+    verify_emotion_recognize(audio_path)
     verify_forced_align(audio_path)
 
     print(f"\n{'=' * 60}")

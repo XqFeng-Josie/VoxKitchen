@@ -1,5 +1,9 @@
 # VoxKitchen
 
+[![CI](https://github.com/voxkitchen/voxkitchen/actions/workflows/ci.yml/badge.svg)](https://github.com/voxkitchen/voxkitchen/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
+
 Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
 
 > **Status:** Pre-alpha. API is unstable.
@@ -176,6 +180,7 @@ vkit inspect trace <id> --in <work_dir>   Trace a cut's provenance
 vkit inspect errors <work_dir>            Show per-cut errors
 vkit operators                List all operators
 vkit operators show <name>    Operator detail + config
+vkit recipes                  List available dataset recipes
 vkit viz <path>               Gradio interactive explorer
 ```
 

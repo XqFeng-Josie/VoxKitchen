@@ -12,113 +12,120 @@ git clone https://github.com/voxkitchen/voxkitchen.git
 cd voxkitchen
 pip install -e .
 
-# Install extras for GPU server (ASR, quality analysis, etc.)
-pip install -e ".[asr,whisper,pitch,dnsmos,segment]"
+# Install extras as needed
+pip install -e ".[audio]"          # torch + torchaudio (for VAD, augmentation)
+pip install -e ".[asr]"            # faster-whisper ASR
+pip install -e ".[align]"          # Qwen3 ASR + forced alignment
+pip install -e ".[enhance]"        # DeepFilterNet denoising
+pip install -e ".[speaker]"        # WeSpeaker speaker embeddings
+
+# Or install everything at once
+pip install -e ".[all]"
 ```
 
 ## Your first pipeline
 
-### 1. Initialize a project
+### Option A: Use a template (recommended)
+
+```bash
+vkit init my-project --template tts    # TTS data preparation
+cd my-project
+```
+
+Available templates:
+
+| Template | Use case |
+|----------|----------|
+| `tts` | TTS training data: denoise, segment, ASR, word alignment |
+| `asr` | ASR training data: augmentation, transcription, filtering |
+| `cleaning` | Data cleaning: quality metrics, dedup, filtering |
+| `speaker` | Speaker analysis: diarization, embeddings, gender, language |
+
+See all templates: `vkit init --list-templates`
+
+### Option B: Start from scratch
 
 ```bash
 vkit init my-project
 cd my-project
 ```
 
-This creates a `pipeline.yaml` and a `data/` directory.
-
-### 2. Add your audio
-
-Put some `.wav`, `.flac`, or `.mp3` files into the `data/` directory.
-
-### 3. Edit pipeline.yaml
-
-Replace the contents with:
-
-```yaml
-version: "0.1"
-name: my-first-pipeline
-work_dir: ./work/${run_id}
-
-ingest:
-  source: dir
-  args:
-    root: ./data
-    recursive: true
-
-stages:
-  - name: resample
-    op: resample
-    args:
-      target_sr: 16000
-      target_channels: 1
-
-  - name: pack
-    op: pack_manifest
-```
-
-This pipeline scans `data/`, resamples everything to 16kHz mono, and writes a manifest.
-
-### 4. Validate (optional)
+### Add your audio and run
 
 ```bash
+# Put audio files in the data/ directory
+cp /path/to/your/audio/*.wav data/
+
+# Validate the pipeline
 vkit run pipeline.yaml --dry-run
+
+# Run it
+vkit run pipeline.yaml
+
+# Inspect results
+vkit inspect run work/                              # stage summary + timing
+vkit inspect cuts work/*/07_pack/cuts.jsonl.gz       # cut statistics
+open work/report.html                                # visual report
 ```
 
-### 5. Run
+## Download a dataset
+
+Download and process a public dataset in two commands:
 
 ```bash
+# Download LibriSpeech dev-clean (5.4 hours, ~350 MB)
+vkit download librispeech --root ./librispeech --subsets dev-clean
+
+# Process it
+vkit init ls-project --template asr
+# Edit pipeline.yaml: change ingest root to ./librispeech
 vkit run pipeline.yaml
 ```
 
-### 6. Inspect results
-
-```bash
-# Stage summary
-vkit inspect run work/
-
-# Cut statistics
-vkit inspect cuts work/01_pack/cuts.jsonl.gz
-
-# Open the auto-generated HTML report
-open work/report.html
-```
+Available datasets: `librispeech`, `aishell`, `fleurs`. See [Recipes & Download](reference/recipes.md).
 
 ## Discover operators
 
 ```bash
-# List all 27 operators
+# List all 43 operators (grouped by category)
 vkit operators
 
-# Show config fields for any operator
+# Show config fields + YAML example for any operator
 vkit operators show silero_vad
-vkit operators show faster_whisper_asr
+vkit operators show qwen3_asr
+vkit operators show noise_augment
 ```
 
-## Standalone tools
+## Python tools API
 
 For quick one-off tasks without writing a YAML pipeline:
 
-```bash
-# Ingest audio without a pipeline
-vkit ingest --source dir --root /path/to/audio --out my-cuts.jsonl.gz
-
-# Interactive exploration (requires pip install voxkitchen[viz-panel])
-vkit viz my-cuts.jsonl.gz
-```
-
-Or use the Python API directly:
-
 ```python
-from voxkitchen.tools import transcribe, estimate_snr, audio_info
+from voxkitchen.tools import (
+    audio_info, transcribe, detect_speech, estimate_snr,
+    extract_speaker_embedding, enhance_speech, align_words,
+)
 
 audio_info("speech.wav")
+# AudioInfo(sample_rate=16000, duration=3.2, num_channels=1, format='WAV')
+
 transcribe("speech.wav", model="tiny")
+# [SpeechSegment(start=0.0, end=3.2, text="Hello world")]
+
 estimate_snr("speech.wav")
+# 18.3
+
+# Speaker embedding (requires: pip install voxkitchen[speaker])
+emb = extract_speaker_embedding("speaker.wav")
+
+# Forced alignment (requires: pip install voxkitchen[align])
+align_words("speech.wav", "hello world", language="English")
 ```
 
 ## Next steps
 
-- Browse [example pipelines](../examples/pipelines/) for real-world workflows
-- Read [Data Protocol](concepts/data-protocol.md) to understand Recording / Supervision / Cut
-- Run `vkit operators show <name>` for any operator's config reference
+- [TTS Tutorial](tutorials/tts-data-prep.md) — end-to-end TTS data preparation
+- [ASR Tutorial](tutorials/asr-training-data.md) — augmented ASR training data
+- [Data Cleaning Tutorial](tutorials/data-cleaning.md) — quality metrics and filtering
+- [Operators Reference](reference/operators.md) — all 43 operators with config details
+- [Data Protocol](concepts/data-protocol.md) — understand Recording / Supervision / Cut
