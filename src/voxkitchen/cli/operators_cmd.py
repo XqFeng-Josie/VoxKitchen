@@ -60,7 +60,9 @@ def list_all(ctx: typer.Context) -> None:
     t.add_column("Description")
 
     # Print in category order
-    sorted_cats = sorted(groups.keys(), key=lambda c: _CATEGORY_ORDER.index(c) if c in _CATEGORY_ORDER else 99)
+    sorted_cats = sorted(
+        groups.keys(), key=lambda c: _CATEGORY_ORDER.index(c) if c in _CATEGORY_ORDER else 99
+    )
     for cat in sorted_cats:
         label = _CATEGORY_LABELS.get(cat, cat.title())
         ops = groups[cat]
@@ -74,7 +76,9 @@ def list_all(ctx: typer.Context) -> None:
 
     console.print(t)
     console.print()
-    console.print("[dim]Use[/dim] [bold]vkit operators show <name>[/bold] [dim]to see config fields and YAML example.[/dim]")
+    console.print(
+        "[dim]Use[/dim] [bold]vkit operators show <name>[/bold] [dim]to see config fields and YAML example.[/dim]"
+    )
     console.print()
 
 

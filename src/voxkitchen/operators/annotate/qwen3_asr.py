@@ -98,7 +98,11 @@ class Qwen3AsrOperator(Operator):
 
                 # Store timestamps in custom if available
                 custom = dict(cut.custom) if cut.custom else {}
-                if self.config.return_timestamps and hasattr(result, "time_stamps") and result.time_stamps:
+                if (
+                    self.config.return_timestamps
+                    and hasattr(result, "time_stamps")
+                    and result.time_stamps
+                ):
                     custom["word_alignments"] = [
                         {
                             "text": seg.text,

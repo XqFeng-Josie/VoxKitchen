@@ -79,9 +79,7 @@ def test_bandwidth_estimate_adds_metric(mono_wav_16k: Path, tmp_path: Path) -> N
     assert result[0].metrics["bandwidth_khz"] > 0.0
 
 
-def test_bandwidth_estimate_preserves_other_metrics(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_bandwidth_estimate_preserves_other_metrics(mono_wav_16k: Path, tmp_path: Path) -> None:
     """bandwidth_estimate merges into existing metrics without dropping them."""
     cut = _cut_from_path(mono_wav_16k)
     cut = cut.model_copy(update={"metrics": {"existing": 1.0}})

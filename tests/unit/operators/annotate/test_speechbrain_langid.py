@@ -12,11 +12,11 @@ import soundfile as sf
 # Skip entire module if speechbrain is not installed.
 pytest.importorskip("speechbrain")
 
-from voxkitchen.operators.registry import get_operator  # noqa: E402
-from voxkitchen.schema.cut import Cut  # noqa: E402
-from voxkitchen.schema.cutset import CutSet  # noqa: E402
-from voxkitchen.schema.provenance import Provenance  # noqa: E402
-from voxkitchen.schema.recording import AudioSource, Recording  # noqa: E402
+from voxkitchen.operators.registry import get_operator
+from voxkitchen.schema.cut import Cut
+from voxkitchen.schema.cutset import CutSet
+from voxkitchen.schema.provenance import Provenance
+from voxkitchen.schema.recording import AudioSource, Recording
 
 # ---------------------------------------------------------------------------
 # Fixture

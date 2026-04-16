@@ -25,10 +25,10 @@ def download_command(
 
     recipe.download(root, subset_list)
 
-    rprint(f"[green]Download complete.[/green]")
-    rprint(f"\nUse in pipeline YAML:")
-    rprint(f"  ingest:")
-    rprint(f"    source: recipe")
+    rprint("[green]Download complete.[/green]")
+    rprint("\nUse in pipeline YAML:")
+    rprint("  ingest:")
+    rprint("    source: recipe")
     rprint(f"    recipe: {recipe_name}")
-    rprint(f"    args:")
+    rprint("    args:")
     rprint(f"      root: {root}")

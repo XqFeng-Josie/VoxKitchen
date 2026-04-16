@@ -47,9 +47,7 @@ class NoiseAugmentOperator(Operator):
         assert isinstance(self.config, NoiseAugmentConfig)
         noise_root = Path(self.config.noise_dir)
         self._noise_files = sorted(
-            p
-            for p in noise_root.rglob("*")
-            if p.suffix.lower() in AUDIO_EXTENSIONS and p.is_file()
+            p for p in noise_root.rglob("*") if p.suffix.lower() in AUDIO_EXTENSIONS and p.is_file()
         )
         if not self._noise_files:
             raise FileNotFoundError(f"no audio files found in noise_dir: {noise_root}")
@@ -135,7 +133,9 @@ class NoiseAugmentOperator(Operator):
 
     @staticmethod
     def _mix_at_snr(
-        signal: np.ndarray, noise: np.ndarray, snr_db: float  # type: ignore[type-arg]
+        signal: np.ndarray,
+        noise: np.ndarray,
+        snr_db: float,  # type: ignore[type-arg]
     ) -> np.ndarray:  # type: ignore[type-arg]
         """Mix signal and noise at the specified SNR (dB)."""
         sig_power = float(np.mean(signal**2))

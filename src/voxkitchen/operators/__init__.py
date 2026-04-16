@@ -67,9 +67,9 @@ try:
 except ImportError:
     pass  # whisperx not installed
 try:
+    from voxkitchen.operators.annotate import emotion_recognize as _annotate_emotion  # noqa: F401
     from voxkitchen.operators.annotate import paraformer_asr as _annotate_paraformer  # noqa: F401
     from voxkitchen.operators.annotate import sensevoice_asr as _annotate_sensevoice  # noqa: F401
-    from voxkitchen.operators.annotate import emotion_recognize as _annotate_emotion  # noqa: F401
 except ImportError:
     pass  # funasr not installed
 try:
@@ -86,18 +86,19 @@ except ImportError:
     pass  # wenet not installed
 try:
     from voxkitchen.operators.annotate import pyannote_diarize as _annotate_diar  # noqa: F401
-except ImportError:
-    pass  # pyannote.audio not installed
+except (ImportError, AttributeError):
+    pass  # pyannote.audio not installed or torchaudio incompatible
 try:
     from voxkitchen.operators.annotate import speechbrain_langid as _annotate_langid  # noqa: F401
-except ImportError:
-    pass  # speechbrain not installed
+except (ImportError, AttributeError):
+    pass  # speechbrain not installed or torchaudio incompatible
 
 from voxkitchen.operators.annotate import gender_classify as _annotate_gender  # noqa: F401
+
 try:
     from voxkitchen.operators.annotate import speaker_embed as _annotate_spkemb  # noqa: F401
-except ImportError:
-    pass  # wespeaker / speechbrain not installed
+except (ImportError, AttributeError):
+    pass  # wespeaker not installed or torchaudio incompatible
 try:
     from voxkitchen.operators.annotate import speech_enhance as _annotate_enhance  # noqa: F401
 except ImportError:
@@ -114,6 +115,7 @@ try:
 except ImportError:
     pass  # torch not installed
 from voxkitchen.operators.augment import noise_augment as _aug_noise  # noqa: F401
+
 try:
     from voxkitchen.operators.augment import reverb_augment as _aug_reverb  # noqa: F401
 except ImportError:

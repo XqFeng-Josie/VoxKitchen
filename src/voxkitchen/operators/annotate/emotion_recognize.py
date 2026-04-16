@@ -82,7 +82,9 @@ class EmotionRecognizeOperator(Operator):
 
                 if labels:
                     label_idx = labels[0] if isinstance(labels[0], int) else 0
-                    emotion = EMOTION_LABELS[label_idx] if label_idx < len(EMOTION_LABELS) else "unknown"
+                    emotion = (
+                        EMOTION_LABELS[label_idx] if label_idx < len(EMOTION_LABELS) else "unknown"
+                    )
                     custom["emotion"] = emotion
                     custom["emotion_label_idx"] = label_idx
 

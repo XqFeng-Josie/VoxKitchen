@@ -110,7 +110,9 @@ class SpeechEnhanceOperator(Operator):
 
     @staticmethod
     def _resample(
-        audio: np.ndarray, orig_sr: int, target_sr: int  # type: ignore[type-arg]
+        audio: np.ndarray,
+        orig_sr: int,
+        target_sr: int,  # type: ignore[type-arg]
     ) -> np.ndarray:  # type: ignore[type-arg]
         try:
             import torch

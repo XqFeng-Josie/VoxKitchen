@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import gzip
 import tarfile
 from pathlib import Path
 

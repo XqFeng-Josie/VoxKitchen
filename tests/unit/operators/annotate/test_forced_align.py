@@ -92,9 +92,7 @@ def test_forced_align_does_not_produce_audio() -> None:
     assert ForcedAlignOperator.produces_audio is False
 
 
-def test_forced_align_skips_cuts_without_text(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_forced_align_skips_cuts_without_text(mono_wav_16k: Path, tmp_path: Path) -> None:
     ctx = _ctx(tmp_path)
     cut = _cut_no_text(mono_wav_16k)
     cs = CutSet([cut])

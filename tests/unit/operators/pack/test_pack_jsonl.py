@@ -67,7 +67,7 @@ def test_pack_jsonl_writes_output_file(mono_wav_16k: Path, tmp_path: Path) -> No
     output_path = tmp_path / "manifest.jsonl"
     config = PackJsonlConfig(output_path=str(output_path))
     op = PackJsonlOperator(config, ctx=ctx)
-    result = op.process(cs)
+    op.process(cs)
 
     assert output_path.exists()
     lines = output_path.read_text().strip().splitlines()

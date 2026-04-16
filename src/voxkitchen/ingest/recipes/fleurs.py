@@ -84,7 +84,11 @@ class FleursRecipe(Recipe):
         return CutSet(cuts)
 
     def _row_to_cut(
-        self, row: dict, lang: str, split: str, ctx: RunContext  # type: ignore[type-arg]
+        self,
+        row: dict,
+        lang: str,
+        split: str,
+        ctx: RunContext,  # type: ignore[type-arg]
     ) -> Cut | None:
         """Convert a HuggingFace dataset row to a Cut."""
         audio_info = row.get("audio", {})
@@ -150,11 +154,7 @@ class FleursRecipe(Recipe):
         )
 
     def _discover_languages(self, root: Path) -> list[str]:
-        return sorted(
-            p.name
-            for p in root.iterdir()
-            if p.is_dir() and p.name != ".cache"
-        )
+        return sorted(p.name for p in root.iterdir() if p.is_dir() and p.name != ".cache")
 
 
 register_recipe(FleursRecipe())

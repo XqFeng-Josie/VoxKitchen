@@ -65,9 +65,7 @@ def test_emotion_recognize_does_not_produce_audio() -> None:
 
 
 @pytest.mark.slow
-def test_emotion_recognize_returns_emotion_label(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_emotion_recognize_returns_emotion_label(mono_wav_16k: Path, tmp_path: Path) -> None:
     ctx = _ctx(tmp_path)
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = EmotionRecognizeConfig(model="iic/emotion2vec_plus_base")
@@ -79,8 +77,15 @@ def test_emotion_recognize_returns_emotion_label(
     out_cut = next(iter(result))
     assert "emotion" in out_cut.custom
     assert out_cut.custom["emotion"] in [
-        "angry", "disgusted", "fearful", "happy",
-        "neutral", "other", "sad", "surprised", "unknown",
+        "angry",
+        "disgusted",
+        "fearful",
+        "happy",
+        "neutral",
+        "other",
+        "sad",
+        "surprised",
+        "unknown",
     ]
     assert "emotion_scores" in out_cut.custom
     assert "emotion_model" in out_cut.custom

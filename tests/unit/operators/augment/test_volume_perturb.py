@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-import pytest
 import soundfile as sf
 
 from voxkitchen.operators.augment.volume_perturb import (
@@ -61,9 +60,7 @@ def test_volume_perturb_produces_audio() -> None:
     assert VolumePerturbOperator.produces_audio is True
 
 
-def test_volume_perturb_output_count_matches_input(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_volume_perturb_output_count_matches_input(mono_wav_16k: Path, tmp_path: Path) -> None:
     ctx = _ctx(tmp_path)
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = VolumePerturbConfig(min_gain_db=-3.0, max_gain_db=3.0)

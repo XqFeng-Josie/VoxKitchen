@@ -65,9 +65,7 @@ def test_speed_perturb_produces_audio() -> None:
     assert SpeedPerturbOperator.produces_audio is True
 
 
-def test_speed_perturb_generates_one_cut_per_factor(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_speed_perturb_generates_one_cut_per_factor(mono_wav_16k: Path, tmp_path: Path) -> None:
     ctx = _ctx(tmp_path)
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = SpeedPerturbConfig(factors=[0.9, 1.1])
@@ -109,9 +107,7 @@ def test_speed_perturb_preserves_sample_rate(mono_wav_16k: Path, tmp_path: Path)
     assert info.samplerate == 16000
 
 
-def test_speed_perturb_factor_1_preserves_duration(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_speed_perturb_factor_1_preserves_duration(mono_wav_16k: Path, tmp_path: Path) -> None:
     ctx = _ctx(tmp_path)
     original = _cut_from_path(mono_wav_16k)
     cs = CutSet([original])

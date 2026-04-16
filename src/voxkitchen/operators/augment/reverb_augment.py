@@ -49,9 +49,7 @@ class ReverbAugmentOperator(Operator):
         assert isinstance(self.config, ReverbAugmentConfig)
         rir_root = Path(self.config.rir_dir)
         self._rir_files = sorted(
-            p
-            for p in rir_root.rglob("*")
-            if p.suffix.lower() in AUDIO_EXTENSIONS and p.is_file()
+            p for p in rir_root.rglob("*") if p.suffix.lower() in AUDIO_EXTENSIONS and p.is_file()
         )
         if not self._rir_files:
             raise FileNotFoundError(f"no audio files found in rir_dir: {rir_root}")

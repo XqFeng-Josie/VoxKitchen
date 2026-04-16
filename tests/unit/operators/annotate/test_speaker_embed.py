@@ -9,7 +9,7 @@ import pytest
 
 try:
     import wespeaker  # noqa: F401
-except ImportError:
+except (ImportError, AttributeError):
     pytest.skip("wespeaker not available", allow_module_level=True)
 
 from voxkitchen.operators.annotate.speaker_embed import (
@@ -61,9 +61,7 @@ def test_speaker_embed_is_registered() -> None:
 
 
 @pytest.mark.slow
-def test_speaker_embed_wespeaker_extracts_embedding(
-    mono_wav_16k: Path, tmp_path: Path
-) -> None:
+def test_speaker_embed_wespeaker_extracts_embedding(mono_wav_16k: Path, tmp_path: Path) -> None:
     ctx = _ctx(tmp_path)
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = SpeakerEmbedConfig(method="wespeaker")

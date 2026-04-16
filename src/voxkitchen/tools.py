@@ -568,9 +568,7 @@ def extract_speaker_embedding(
     config = SpeakerEmbedConfig(
         method=method,
         wespeaker_model=model if method == "wespeaker" else "english",
-        speechbrain_model=model
-        if method == "speechbrain"
-        else "speechbrain/spkrec-ecapa-voxceleb",
+        speechbrain_model=model if method == "speechbrain" else "speechbrain/spkrec-ecapa-voxceleb",
     )
     op = SpeakerEmbedOperator(config, ctx)
     op.setup()

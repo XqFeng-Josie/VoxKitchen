@@ -108,6 +108,8 @@ select = [
 ]
 ignore = [
     "E501",
+    "RUF012",  # mutable class defaults — intentional pattern for download_urls/required_extras
+    "RUF059",  # unused unpack variable — `audio, sr = load_audio(...)` pattern
 ]
 
 [tool.ruff.lint.flake8-bugbear]

@@ -21,7 +21,7 @@ def _make_mock_librispeech(tmp_path: Path) -> Path:
         audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
         sf.write(subset / fname, audio, 16000)
     (subset / "1089-134686.trans.txt").write_text(
-        "1089-134686-0001 HELLO WORLD\n" "1089-134686-0002 GOODBYE WORLD\n"
+        "1089-134686-0001 HELLO WORLD\n1089-134686-0002 GOODBYE WORLD\n"
     )
     return tmp_path / "libri"
 

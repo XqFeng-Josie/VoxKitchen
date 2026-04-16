@@ -18,7 +18,7 @@ def mock_librispeech(tmp_path: Path) -> Path:
     for utt_id in ["0001", "0002"]:
         sf.write(subset / f"1089-134686-{utt_id}.flac", audio, 16000)
     (subset / "1089-134686.trans.txt").write_text(
-        "1089-134686-0001 HELLO WORLD\n" "1089-134686-0002 GOODBYE WORLD\n"
+        "1089-134686-0001 HELLO WORLD\n1089-134686-0002 GOODBYE WORLD\n"
     )
     return tmp_path
 
@@ -50,6 +50,6 @@ def mock_aishell(tmp_path: Path) -> Path:
     trans_dir = tmp_path / "data_aishell" / "transcript"
     trans_dir.mkdir(parents=True)
     (trans_dir / "aishell_transcript_v0.8.txt").write_text(
-        "BAC001 你 好 世 界\n" "BAC002 再 见 世 界\n"
+        "BAC001 你 好 世 界\nBAC002 再 见 世 界\n"
     )
     return tmp_path

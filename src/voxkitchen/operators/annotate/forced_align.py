@@ -15,8 +15,6 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-import numpy as np
-
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut

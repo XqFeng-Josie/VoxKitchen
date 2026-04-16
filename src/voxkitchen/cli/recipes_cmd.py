@@ -32,7 +32,10 @@ def list_recipes(ctx: typer.Context) -> None:
         recipe = _RECIPES[name]
         if recipe.download_urls:
             dl = "[green]openslr[/green]"
-        elif hasattr(recipe, "download") and type(recipe).download is not type(recipe).__mro__[1].download:
+        elif (
+            hasattr(recipe, "download")
+            and type(recipe).download is not type(recipe).__mro__[1].download
+        ):
             # Has custom download() override (e.g. FLEURS via HuggingFace)
             dl = "[green]HuggingFace[/green]"
         else:
@@ -53,5 +56,7 @@ def list_recipes(ctx: typer.Context) -> None:
     console.print(t)
     console.print()
     console.print("[dim]Download:[/dim] [bold]vkit download <recipe> --root <dir>[/bold]")
-    console.print("[dim]Use in pipeline:[/dim] ingest: {{ source: recipe, recipe: <name>, args: {{ root: <dir> }} }}")
+    console.print(
+        "[dim]Use in pipeline:[/dim] ingest: {{ source: recipe, recipe: <name>, args: {{ root: <dir> }} }}"
+    )
     console.print()

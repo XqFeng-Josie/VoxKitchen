@@ -81,6 +81,6 @@ def test_loudness_normalize_adjusts_level(mono_wav_16k: Path, tmp_path: Path) ->
     audio, sr = sf.read(str(derived_path), dtype="float32")
     meter = pyloudnorm.Meter(sr)
     measured_lufs: float = meter.integrated_loudness(audio.astype(np.float64))
-    assert (
-        abs(measured_lufs - target_lufs) < 2.0
-    ), f"Expected loudness near {target_lufs} LUFS, got {measured_lufs:.2f} LUFS"
+    assert abs(measured_lufs - target_lufs) < 2.0, (
+        f"Expected loudness near {target_lufs} LUFS, got {measured_lufs:.2f} LUFS"
+    )

@@ -18,15 +18,15 @@ if not _has_backend:
     except ImportError:
         pass
 
-if not _has_backend:
-    import pytest
+import pytest  # noqa: E402
 
+if not _has_backend:
     pytest.skip("neither openai-whisper nor faster-whisper available", allow_module_level=True)
 
-from voxkitchen.operators.annotate.whisper_langid import (
+from voxkitchen.operators.annotate.whisper_langid import (  # noqa: E402
     WhisperLangidOperator,
 )
-from voxkitchen.operators.registry import get_operator
+from voxkitchen.operators.registry import get_operator  # noqa: E402
 
 
 def test_whisper_langid_is_registered() -> None:

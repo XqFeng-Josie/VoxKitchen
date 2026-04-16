@@ -77,7 +77,9 @@ class SpeakerEmbedOperator(Operator):
         for cut in cuts:
             audio, sr = load_audio_for_cut(cut)
             # WeSpeaker expects a torch tensor, not numpy array
-            pcm = torch.from_numpy(audio).unsqueeze(0) if audio.ndim == 1 else torch.from_numpy(audio)
+            pcm = (
+                torch.from_numpy(audio).unsqueeze(0) if audio.ndim == 1 else torch.from_numpy(audio)
+            )
             embedding = self._model.extract_embedding_from_pcm(pcm, sample_rate=sr)
             if hasattr(embedding, "numpy"):
                 embedding = embedding.numpy()
