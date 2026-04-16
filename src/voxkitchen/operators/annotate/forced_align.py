@@ -5,6 +5,12 @@ Results are stored in ``cut.custom["word_alignments"]`` as a list of
 ``{"text": str, "start": float, "end": float}`` dicts.
 
 Cuts without text supervisions are passed through unchanged.
+
+The underlying model is Meta's MMS (Massively Multilingual Speech),
+trained on 1,130 languages. It uses a Latin-alphabet character set,
+so it works best with Latin-script languages (English, French, German,
+Spanish, etc.). For non-Latin scripts (Chinese, Arabic, etc.), the text
+would need uroman transliteration first (not yet supported).
 """
 
 from __future__ import annotations

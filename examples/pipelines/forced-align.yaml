@@ -1,4 +1,7 @@
 # Forced alignment: ASR first, then align words to audio.
+# Uses Meta's MMS model (1,130 languages, Latin-alphabet based).
+# Best for Latin-script languages (en, fr, de, es, etc.).
+#
 # Usage: vkit run examples/pipelines/forced-align.yaml
 # Requires: pip install voxkitchen[asr,align]
 
