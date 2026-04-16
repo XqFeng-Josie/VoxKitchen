@@ -63,6 +63,12 @@ pip install -e ".[speaker]"       # WeSpeaker speaker embeddings (installs from 
 pip install -e ".[enhance]"       # DeepFilterNet speech denoising
 pip install -e ".[align]"         # Qwen3 ASR + forced alignment (30 langs + Chinese)
 #
+#   TTS synthesis
+pip install -e ".[tts-kokoro]"      # Kokoro TTS (lightweight, CPU-capable)
+pip install -e ".[tts-chattts]"     # ChatTTS (conversational style, GPU)
+pip install -e ".[tts-cosyvoice]"   # CosyVoice2 (voice cloning, GPU)
+pip install -e ".[tts-fish-speech]" # Fish-Speech (voice cloning, GPU)
+#
 #   Output & visualization
 pip install -e ".[pack]"          # HuggingFace datasets, WebDataset, Parquet
 pip install -e ".[viz]"           # HTML report (Jinja2 + Plotly)
@@ -144,13 +150,14 @@ stages:
 
 ## Operators
 
-47 built-in operators across 7 categories:
+51 built-in operators across 8 categories:
 
 | Category | Operators |
 |----------|-----------|
 | **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize`, `identity` |
 | **Segmentation** | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
 | **Augmentation** | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
+| **Synthesize** | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` |
 | **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `codec_tokenize`, `mel_extract` |
 | **Quality** | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
 | **Pack** | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
@@ -216,6 +223,14 @@ enhance_speech("noisy.wav", "clean.wav", aggressiveness=0.5)
 # Forced alignment (requires: pip install voxkitchen[align])
 align_words("speech.wav", "hello world")
 # [{"text": "hello", "start": 0.12, "end": 0.58}, ...]
+
+# TTS synthesis (requires: pip install voxkitchen[tts-kokoro])
+from voxkitchen.tools import synthesize
+synthesize("Hello world!", "output.wav", engine="kokoro")
+
+# Voice cloning (requires: pip install voxkitchen[tts-cosyvoice])
+synthesize("你好", "clone.wav", engine="cosyvoice",
+           reference_audio="ref.wav", reference_text="参考文本")
 ```
 
 ## Key features

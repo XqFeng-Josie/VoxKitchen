@@ -56,10 +56,14 @@ speaker = ["wespeaker @ git+https://github.com/wenet-e2e/wespeaker.git"]
 enhance = ["deepfilternet>=0.5"]
 align = ["qwen-asr>=0.0.6"]
 codec = ["encodec>=0.1", "descript-audio-codec>=1.0"]
+tts-kokoro = ["kokoro>=0.9", "soundfile>=0.12", "misaki[zh,ja,ko,vi]>=0.9"]
+tts-chattts = ["ChatTTS>=0.2"]
+tts-cosyvoice = ["modelscope>=1.0"]
+tts-fish-speech = ["fish-speech>=1.5"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 all = [
-    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,gender,speaker,enhance,viz,viz-panel]",
+    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,gender,speaker,enhance,codec,align,tts-kokoro,tts-chattts,tts-cosyvoice,tts-fish-speech,viz,viz-panel]",
 ]
 dev = [
     "voxkitchen[all]",
@@ -123,7 +127,7 @@ warn_unused_ignores = false  # optional deps may or may not be installed
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*", "tqdm.*", "encodec.*", "dac.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*", "tqdm.*", "encodec.*", "dac.*", "kokoro.*", "ChatTTS.*", "cosyvoice.*", "modelscope.*", "fish_speech.*", "huggingface_hub.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

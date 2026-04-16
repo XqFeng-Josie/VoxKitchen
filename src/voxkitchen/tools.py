@@ -781,3 +781,172 @@ def tokenize_audio(
     out_cut = next(iter(result))
     tokens: list[list[int]] = out_cut.custom.get("codec_tokens", [])
     return tokens
+
+
+# ---------------------------------------------------------------------------
+# TTS Synthesis
+# ---------------------------------------------------------------------------
+
+
+def synthesize(
+    text: str,
+    output_path: str | Path,
+    *,
+    engine: str = "kokoro",
+    voice: str | None = None,
+    language: str | None = None,
+    speed: float = 1.0,
+    seed: int | None = None,
+    reference_audio: str | None = None,
+    reference_text: str | None = None,
+) -> Path:
+    """Synthesize speech from text and save to a WAV file.
+
+    Args:
+        engine: TTS engine. Options:
+
+            - ``"kokoro"`` — lightweight (82M), CPU-capable, 8 languages
+            - ``"chattts"`` — conversational style, Chinese/English, GPU
+            - ``"cosyvoice"`` — CosyVoice2, zero-shot voice cloning, GPU
+            - ``"fish_speech"`` — Fish-Speech, zero-shot cloning, GPU
+
+        voice: Voice/speaker ID (engine-specific). Defaults:
+
+            - kokoro: ``"af_heart"``
+            - cosyvoice: ``"default"`` (sft mode)
+
+        language: Language code (kokoro only):
+            ``"a"`` (AmE), ``"b"`` (BrE), ``"j"`` (Japanese), ``"z"`` (Mandarin)
+        speed: Speech speed multiplier (kokoro only).
+        seed: Random seed for speaker sampling (chattts only).
+        reference_audio: Path to reference audio for voice cloning
+            (cosyvoice zero_shot/cross_lingual, fish_speech).
+        reference_text: Transcript of reference audio
+            (cosyvoice zero_shot only).
+
+    Returns:
+        Path to the output WAV file.
+
+    Example::
+
+        from voxkitchen.tools import synthesize
+
+        # Kokoro (lightweight, CPU)
+        synthesize("Hello world!", "output.wav", engine="kokoro")
+
+        # ChatTTS (conversational Chinese)
+        synthesize("你好世界", "output.wav", engine="chattts", seed=42)
+
+        # CosyVoice2 (voice cloning)
+        synthesize("你好", "clone.wav", engine="cosyvoice",
+                   reference_audio="ref.wav", reference_text="参考文本")
+
+        # Fish-Speech (voice cloning)
+        synthesize("Hello", "clone.wav", engine="fish_speech",
+                   reference_audio="ref.wav")
+    """
+    from voxkitchen.operators.base import Operator
+    from voxkitchen.schema.supervision import Supervision
+
+    out = Path(output_path)
+
+    # Build a text-only Cut
+    cut_id = "synth-0"
+    cut = Cut(
+        id=cut_id,
+        recording_id=f"text-{cut_id}",
+        start=0.0,
+        duration=0.0,
+        supervisions=[
+            Supervision(
+                id=f"sup-{cut_id}",
+                recording_id=f"text-{cut_id}",
+                start=0.0,
+                duration=0.0,
+                text=text,
+            )
+        ],
+        provenance=Provenance(
+            source_cut_id=None,
+            generated_by="tools",
+            stage_name="standalone",
+            created_at=datetime.now(tz=timezone.utc),
+            pipeline_run_id="standalone",
+        ),
+    )
+    ctx = _make_ctx()
+
+    op: Operator
+    if engine == "kokoro":
+        from voxkitchen.operators.synthesize.tts_kokoro import (
+            TtsKokoroConfig,
+            TtsKokoroOperator,
+        )
+
+        config = TtsKokoroConfig(
+            voice=voice or "af_heart",
+            lang_code=language or "a",
+            speed=speed,
+        )
+        op = TtsKokoroOperator(config, ctx)
+
+    elif engine == "chattts":
+        from voxkitchen.operators.synthesize.tts_chattts import (
+            TtsChatTTSConfig,
+            TtsChatTTSOperator,
+        )
+
+        config = TtsChatTTSConfig(seed=seed)  # type: ignore[assignment]
+        op = TtsChatTTSOperator(config, ctx)
+
+    elif engine == "cosyvoice":
+        from voxkitchen.operators.synthesize.tts_cosyvoice import (
+            TtsCosyVoiceConfig,
+            TtsCosyVoiceOperator,
+        )
+
+        mode = "sft"
+        if reference_audio and reference_text:
+            mode = "zero_shot"
+        elif reference_audio:
+            mode = "cross_lingual"
+        config = TtsCosyVoiceConfig(  # type: ignore[assignment]
+            mode=mode,
+            spk_id=voice or "default",
+            reference_audio=reference_audio,
+            reference_text=reference_text,
+        )
+        op = TtsCosyVoiceOperator(config, ctx)
+
+    elif engine == "fish_speech":
+        from voxkitchen.operators.synthesize.tts_fish_speech import (
+            TtsFishSpeechConfig,
+            TtsFishSpeechOperator,
+        )
+
+        config = TtsFishSpeechConfig(  # type: ignore[assignment]
+            reference_audio=reference_audio,
+            reference_text=reference_text,
+        )
+        op = TtsFishSpeechOperator(config, ctx)
+
+    else:
+        raise ValueError(
+            f"unknown TTS engine: {engine!r}. "
+            f"Options: 'kokoro', 'chattts', 'cosyvoice', 'fish_speech'"
+        )
+
+    op.setup()
+    try:
+        result = op.process(CutSet([cut]))
+    finally:
+        op.teardown()
+
+    out_cut = next(iter(result))
+    if out_cut.recording:
+        import shutil
+
+        derived = Path(out_cut.recording.sources[0].source)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(derived, out)
+    return out
