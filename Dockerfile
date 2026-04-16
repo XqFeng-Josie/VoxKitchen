@@ -8,16 +8,16 @@
 #   docker build -t voxkitchen .
 #
 # Run a pipeline:
-#   docker run --rm -v /data/raw_audio:/data voxkitchen vkit run pipeline.yaml
+#   docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 #
 # Run with GPU:
-#   docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen vkit run pipeline.yaml
-#
-# Interactive:
-#   docker run --rm -it voxkitchen bash
+#   docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 #
 # Run tests:
-#   docker run --rm voxkitchen pytest tests/unit/operators/ -v -m "not gpu"
+#   docker run --rm --entrypoint pytest voxkitchen tests/unit/operators/ -v -m "not gpu"
+#
+# Interactive shell:
+#   docker run --rm -it --entrypoint bash voxkitchen
 # ============================================================
 
 FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
@@ -71,6 +71,6 @@ RUN pip install "deepfilternet>=0.5" 2>&1 \
 COPY . .
 RUN pip install -e . --no-deps
 
-# ---- default: start interactive CLI ----
+# ---- default: vkit CLI ----
 ENTRYPOINT ["vkit"]
 CMD ["--help"]

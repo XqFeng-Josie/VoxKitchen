@@ -93,6 +93,7 @@ pip install -e ".[all]"
 All 51 operators pre-installed, no system dependency issues:
 
 ```bash
+# Build locally (or pull pre-built, see below)
 docker build -t voxkitchen .
 
 # Run a pipeline
@@ -104,9 +105,18 @@ docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 # List operators
 docker run --rm voxkitchen operators
 
+# Run tests (see tests/README.md for more)
+docker run --rm --entrypoint pytest voxkitchen tests/unit/operators/ -v -m "not gpu"
+
 # Interactive shell
 docker run --rm -it --entrypoint bash voxkitchen
 ```
+
+<!-- TODO: pre-built image available at:
+```bash
+docker pull ghcr.io/voxkitchen/voxkitchen:latest
+```
+-->
 
 ### Configuration
 
