@@ -88,6 +88,27 @@ pip install -e ".[asr,whisper,pitch,dnsmos,segment,diarize]"
 pip install -e ".[all]"
 ```
 
+### Docker
+
+Avoids system dependency issues (FFmpeg dev libs, espeak-ng, etc.):
+
+```bash
+# Build
+docker build -t voxkitchen-test .
+
+# Run pipeline
+docker run --rm -v $(pwd)/data:/data voxkitchen-test vkit run pipeline.yaml
+
+# Run tests
+docker run --rm voxkitchen-test pytest tests/unit/operators/ -v -m "not gpu"
+
+# GPU support
+docker run --rm --gpus all voxkitchen-test vkit run pipeline.yaml
+
+# Interactive
+docker run --rm -it voxkitchen-test bash
+```
+
 ### Configuration
 
 Some operators require API tokens. Copy `.env.example` to `.env`:
