@@ -58,7 +58,7 @@ align = ["ctc-forced-aligner>=0.1"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 all = [
-    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,speaker,enhance,viz,viz-panel]",
+    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,gender,speaker,enhance,viz,viz-panel]",
 ]
 dev = [
     "voxkitchen[all]",

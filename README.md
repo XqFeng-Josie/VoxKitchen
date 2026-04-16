@@ -144,7 +144,7 @@ stages:
 
 | Category | Operators |
 |----------|-----------|
-| **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize` |
+| **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize`, `identity` |
 | **Segmentation** | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
 | **Augmentation** | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
 | **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize` |
@@ -166,6 +166,7 @@ vkit init <path>              Scaffold a new project
 vkit run <yaml>               Execute a pipeline
 vkit run <yaml> --dry-run     Validate without executing
 vkit validate <yaml>          Check YAML syntax
+vkit download <recipe> --root <dir>       Download a dataset
 vkit ingest --source dir ...  Build CutSet without a pipeline
 vkit inspect cuts <path>      CutSet statistics
 vkit inspect run <work_dir>   Pipeline stage summary
