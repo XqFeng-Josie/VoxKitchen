@@ -105,9 +105,6 @@ docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 # List operators
 docker run --rm voxkitchen operators
 
-# Run tests (see tests/README.md for more)
-docker run --rm --entrypoint pytest voxkitchen tests/unit/operators/ -v -m "not gpu"
-
 # Interactive shell
 docker run --rm -it --entrypoint bash voxkitchen
 ```
