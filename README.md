@@ -90,23 +90,22 @@ pip install -e ".[all]"
 
 ### Docker
 
-Avoids system dependency issues (FFmpeg dev libs, espeak-ng, etc.):
+All 51 operators pre-installed, no system dependency issues:
 
 ```bash
-# Build
-docker build -t voxkitchen-test .
+docker build -t voxkitchen .
 
-# Run pipeline
-docker run --rm -v $(pwd)/data:/data voxkitchen-test vkit run pipeline.yaml
+# Run a pipeline
+docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 
-# Run tests
-docker run --rm voxkitchen-test pytest tests/unit/operators/ -v -m "not gpu"
+# GPU support (requires nvidia-docker)
+docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 
-# GPU support
-docker run --rm --gpus all voxkitchen-test vkit run pipeline.yaml
+# List operators
+docker run --rm voxkitchen operators
 
-# Interactive
-docker run --rm -it voxkitchen-test bash
+# Interactive shell
+docker run --rm -it --entrypoint bash voxkitchen
 ```
 
 ### Configuration
