@@ -104,8 +104,9 @@ except ImportError:
     pass  # deepfilternet not installed
 try:
     from voxkitchen.operators.annotate import forced_align as _annotate_align  # noqa: F401
+    from voxkitchen.operators.annotate import qwen3_asr as _annotate_qwen3  # noqa: F401
 except ImportError:
-    pass  # ctc-forced-aligner not installed
+    pass  # qwen-asr not installed
 
 # --- augment (optional: torch/torchaudio for speed_perturb) ---
 try:

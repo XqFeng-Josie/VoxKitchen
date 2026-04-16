@@ -8,9 +8,9 @@ from pathlib import Path
 import pytest
 
 try:
-    import ctc_forced_aligner  # noqa: F401
+    import qwen_asr  # noqa: F401
 except ImportError:
-    pytest.skip("ctc-forced-aligner not available", allow_module_level=True)
+    pytest.skip("qwen-asr not available", allow_module_level=True)
 
 from voxkitchen.operators.annotate.forced_align import (
     ForcedAlignConfig,

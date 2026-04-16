@@ -54,7 +54,7 @@ classify = ["speechbrain>=1.0"]
 gender = ["inaSpeechSegmenter>=0.2"]
 speaker = ["wespeaker @ git+https://github.com/wenet-e2e/wespeaker.git"]
 enhance = ["deepfilternet>=0.5"]
-align = ["ctc-forced-aligner>=0.1"]
+align = ["qwen-asr>=0.0.6"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 all = [

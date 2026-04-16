@@ -639,27 +639,29 @@ def align_words(
     audio_path: str | Path,
     text: str,
     *,
-    model_type: str = "MMS_FA",
-    language: str = "eng",
+    language: str = "Chinese",
 ) -> list[dict[str, object]]:
-    """Align text to audio at word level using CTC forced alignment.
+    """Align text to audio at word/character level using Qwen3-ForcedAligner.
+
+    Supports 11 languages: Chinese, English, Cantonese, French, German,
+    Italian, Japanese, Korean, Portuguese, Russian, Spanish.
 
     Args:
         text: The text to align (e.g. from a prior ASR transcription).
-        model_type: torchaudio alignment pipeline. Default "MMS_FA" (Meta's
-            Massively Multilingual Speech). Other options:
-            "WAV2VEC2_ASR_BASE_960H", "HUBERT_ASR_LARGE", etc.
-        language: ISO 639-3 language code (default "eng"). Used for text
-            normalization (lowercasing, punctuation removal).
+        language: Language name (default "Chinese"). Must match the
+            audio language for best results.
 
     Returns:
         List of word alignments, each a dict with "text", "start", "end".
 
     Example::
 
-        words = align_words("speech.wav", "hello world")
+        words = align_words("speech.wav", "hello world", language="English")
         for w in words:
             print(f"{w['text']}: {w['start']:.2f}s - {w['end']:.2f}s")
+
+        # Chinese
+        words = align_words("speech.wav", "你好世界", language="Chinese")
     """
     from voxkitchen.operators.annotate.forced_align import (
         ForcedAlignConfig,
@@ -668,7 +670,6 @@ def align_words(
 
     path = Path(audio_path)
     cut = _make_cut(path)
-    # Add text as a supervision so the operator can find it
     from voxkitchen.schema.supervision import Supervision
 
     cut = cut.model_copy(
@@ -685,7 +686,7 @@ def align_words(
         }
     )
     ctx = _make_ctx()
-    config = ForcedAlignConfig(model_type=model_type, language=language)
+    config = ForcedAlignConfig(language=language)
     op = ForcedAlignOperator(config, ctx)
     op.setup()
     try:

@@ -1,37 +1,34 @@
-"""Forced alignment operator using ctc-forced-aligner.
+"""Forced alignment operator using Qwen3-ForcedAligner.
 
-Aligns existing text (from a prior ASR stage) to audio at word level.
-Results are stored in ``cut.custom["word_alignments"]`` as a list of
-``{"text": str, "start": float, "end": float}`` dicts.
+Aligns existing text (from a prior ASR stage) to audio at word/character
+level. Results are stored in ``cut.custom["word_alignments"]`` as a list
+of ``{"text": str, "start": float, "end": float}`` dicts.
 
 Cuts without text supervisions are passed through unchanged.
 
-The underlying model is Meta's MMS (Massively Multilingual Speech),
-trained on 1,130 languages. It uses a Latin-alphabet character set,
-so it works best with Latin-script languages (English, French, German,
-Spanish, etc.). For non-Latin scripts (Chinese, Arabic, etc.), the text
-would need uroman transliteration first (not yet supported).
+Supports 11 languages: Chinese, English, Cantonese, French, German,
+Italian, Japanese, Korean, Portuguese, Russian, Spanish.
 """
 
 from __future__ import annotations
 
 import logging
-import tempfile
-from pathlib import Path
 from typing import Any
+
+import numpy as np
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
-from voxkitchen.utils.audio import load_audio_for_cut, save_audio
+from voxkitchen.utils.audio import load_audio_for_cut
 
 logger = logging.getLogger(__name__)
 
 
 class ForcedAlignConfig(OperatorConfig):
-    model_type: str = "MMS_FA"  # torchaudio pipeline: MMS_FA, WAV2VEC2_ASR_BASE_960H, etc.
-    language: str = "eng"  # ISO 639-3 code, used for text normalization
+    model: str = "Qwen/Qwen3-ForcedAligner-0.6B"
+    language: str = "Chinese"  # Chinese, English, French, German, etc.
 
 
 @register_operator
@@ -43,14 +40,24 @@ class ForcedAlignOperator(Operator):
     reads_audio_bytes = True
     required_extras = ["align"]
 
-    _model: Any
-    _tmpdir: str
+    _aligner: Any
 
     def setup(self) -> None:
-        self._model = None  # lazy-loaded on first use
-        self._tmpdir = tempfile.mkdtemp(prefix="vkit-align-")
+        import torch
+        from qwen_asr import Qwen3ForcedAligner
+
+        assert isinstance(self.config, ForcedAlignConfig)
+        device = self.ctx.device if hasattr(self.ctx, "device") else "cpu"
+        # Use float32 on CPU, bfloat16 on GPU
+        dtype = torch.bfloat16 if "cuda" in device else torch.float32
+        self._aligner = Qwen3ForcedAligner.from_pretrained(
+            self.config.model,
+            dtype=dtype,
+            device_map=device,
+        )
 
     def process(self, cuts: CutSet) -> CutSet:
+        assert isinstance(self.config, ForcedAlignConfig)
         out_cuts: list[Cut] = []
         for cut in cuts:
             text = self._get_text(cut)
@@ -61,7 +68,7 @@ class ForcedAlignOperator(Operator):
                 alignments = self._align(cut, text)
                 custom = dict(cut.custom) if cut.custom else {}
                 custom["word_alignments"] = alignments
-                custom["forced_align_model"] = self.config.model_type
+                custom["forced_align_model"] = self.config.model
                 out_cuts.append(cut.model_copy(update={"custom": custom}))
             except Exception:
                 logger.warning("forced alignment failed for cut %s", cut.id, exc_info=True)
@@ -76,49 +83,25 @@ class ForcedAlignOperator(Operator):
         return None
 
     def _align(self, cut: Cut, text: str) -> list[dict[str, Any]]:
-        from ctc_forced_aligner import get_word_stamps, text_normalize
-
         audio, sr = load_audio_for_cut(cut)
 
-        # Normalize text: lowercase, remove punctuation, clean up for alignment
-        assert isinstance(self.config, ForcedAlignConfig)
-        normalized = text_normalize(text, iso_code=self.config.language)
-        if not normalized.strip():
-            logger.warning("text is empty after normalization for cut %s", cut.id)
-            return []
-
-        # get_word_stamps needs file paths, write temp files
-        audio_path = Path(self._tmpdir) / f"{cut.id}.wav"
-        save_audio(audio_path, audio, sr)
-
-        text_path = Path(self._tmpdir) / f"{cut.id}.txt"
-        text_path.write_text(normalized, encoding="utf-8")
-
-        assert isinstance(self.config, ForcedAlignConfig)
-        word_timestamps, self._model, _ = get_word_stamps(
-            str(audio_path),
-            str(text_path),
-            model=self._model,
-            model_type=self.config.model_type,
+        results = self._aligner.align(
+            audio=(audio, sr),
+            text=text,
+            language=self.config.language,
         )
 
-        # Clean up temp files
-        audio_path.unlink(missing_ok=True)
-        text_path.unlink(missing_ok=True)
-
         word_alignments = []
-        for w in word_timestamps:
-            word_alignments.append(
-                {
-                    "text": w.get("word", w.get("text", "")),
-                    "start": round(w.get("start", 0.0), 3),
-                    "end": round(w.get("end", 0.0), 3),
-                }
-            )
+        if results and len(results) > 0:
+            for segment in results[0]:
+                word_alignments.append(
+                    {
+                        "text": segment.text,
+                        "start": round(segment.start_time, 3),
+                        "end": round(segment.end_time, 3),
+                    }
+                )
         return word_alignments
 
     def teardown(self) -> None:
-        self._model = None
-        import shutil
-
-        shutil.rmtree(self._tmpdir, ignore_errors=True)
+        self._aligner = None

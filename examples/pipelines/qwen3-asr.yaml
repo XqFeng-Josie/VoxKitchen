@@ -1,0 +1,39 @@
+# Qwen3 ASR: state-of-the-art multilingual transcription.
+# Supports 30 languages + 22 Chinese dialects.
+# Optionally returns word-level timestamps via ForcedAligner.
+#
+# Usage: vkit run examples/pipelines/qwen3-asr.yaml
+# Requires: pip install voxkitchen[audio,align]
+
+version: "0.1"
+name: qwen3-asr
+description: "Transcribe with Qwen3-ASR (multilingual, optional timestamps)"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  - name: vad
+    op: silero_vad
+    args: { threshold: 0.5 }
+
+  # Qwen3-ASR with word-level timestamps.
+  # Set return_timestamps: false to skip alignment (faster).
+  # language: null for auto-detect, or specify "Chinese", "English", etc.
+  - name: asr
+    op: qwen3_asr
+    args:
+      model: Qwen/Qwen3-ASR-0.6B      # or Qwen/Qwen3-ASR-1.7B (more accurate)
+      language: null                    # auto-detect
+      return_timestamps: true           # word-level timestamps via ForcedAligner
+      max_new_tokens: 512
+
+  - name: pack
+    op: pack_jsonl

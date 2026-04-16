@@ -1,13 +1,12 @@
 # Forced alignment: ASR first, then align words to audio.
-# Uses Meta's MMS model (1,130 languages, Latin-alphabet based).
-# Best for Latin-script languages (en, fr, de, es, etc.).
+# Uses Qwen3-ForcedAligner (11 languages: zh, en, fr, de, ja, ko, etc.)
 #
 # Usage: vkit run examples/pipelines/forced-align.yaml
 # Requires: pip install voxkitchen[asr,align]
 
 version: "0.1"
 name: forced-align
-description: "Word-level forced alignment via CTC"
+description: "Word-level forced alignment via Qwen3-ForcedAligner"
 work_dir: ./work/${name}
 
 ingest:
@@ -29,12 +28,11 @@ stages:
 
   # Align ASR text to audio at word level.
   # Results stored in cut.custom["word_alignments"] as:
-  #   [{"text": "hello", "start": 0.1, "end": 0.4}, ...]
+  #   [{"text": "hello", "start": 0.12, "end": 0.58}, ...]
   - name: align
     op: forced_align
     args:
-      model_type: MMS_FA      # Meta's Massively Multilingual Speech alignment
-      language: eng            # ISO 639-3 code, for text normalization
+      language: English       # Chinese, English, French, German, Japanese, Korean, etc.
 
   - name: pack
     op: pack_jsonl
