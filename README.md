@@ -1,8 +1,12 @@
-# VoxKitchen
+<p align="center">
+  <img src="voxkitchen_logo.svg" width="400" alt="VoxKitchen logo">
+</p>
 
-[![CI](https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml/badge.svg)](https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
+<p align="center">
+  <a href="https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml"><img src="https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
+</p>
 
 Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
 
