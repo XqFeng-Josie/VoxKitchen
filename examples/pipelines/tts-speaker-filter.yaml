@@ -1,0 +1,43 @@
+# Filter audio by speaker similarity to a reference.
+#
+# First extract a reference embedding:
+#   python -c "
+#   from voxkitchen.tools import extract_speaker_embedding
+#   import numpy as np
+#   emb = extract_speaker_embedding('reference_speaker.wav')
+#   np.save('reference.npy', emb)"
+#
+# Then run: vkit run examples/pipelines/tts-speaker-filter.yaml
+# Requires: pip install voxkitchen[audio,speaker]
+
+version: "0.1"
+name: tts-speaker-filter
+description: "Filter audio by speaker similarity to a reference"
+work_dir: ./work/${name}
+
+ingest:
+  source: dir
+  args:
+    root: ./data
+
+stages:
+  - name: resample
+    op: resample
+    args: { target_sr: 16000, target_channels: 1 }
+
+  - name: embed
+    op: speaker_embed
+    args: { method: wespeaker }
+
+  - name: similarity
+    op: speaker_similarity
+    args:
+      reference_path: ./reference.npy
+
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions: ["metrics.speaker_similarity > 0.6"]
+
+  - name: pack
+    op: pack_jsonl

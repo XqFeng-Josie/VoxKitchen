@@ -696,3 +696,88 @@ def align_words(
     out_cut = next(iter(result))
     alignments: list[dict[str, object]] = out_cut.custom.get("word_alignments", [])
     return alignments
+
+
+# ---------------------------------------------------------------------------
+# Speaker Similarity
+# ---------------------------------------------------------------------------
+
+
+def compute_speaker_similarity(
+    audio_path: str | Path,
+    reference_path: str | Path,
+    *,
+    method: str = "wespeaker",
+) -> float:
+    """Compute speaker similarity between an audio file and a reference.
+
+    Args:
+        reference_path: Path to a .npy file with the reference speaker embedding.
+
+    Returns:
+        Cosine similarity (0-1). Higher = more similar.
+
+    Example::
+
+        sim = compute_speaker_similarity("test.wav", "reference.npy")
+        print(f"Similarity: {sim:.3f}")
+    """
+    emb = extract_speaker_embedding(str(audio_path), method=method)
+
+    import numpy as np
+
+    ref = np.load(str(reference_path)).flatten().astype(np.float32)
+    emb_arr = np.array(emb, dtype=np.float32)
+
+    ref_norm = float(np.linalg.norm(ref))
+    emb_norm = float(np.linalg.norm(emb_arr))
+    if ref_norm == 0 or emb_norm == 0:
+        return 0.0
+    sim = float(np.dot(ref / ref_norm, emb_arr / emb_norm))
+    return max(0.0, min(1.0, sim))
+
+
+# ---------------------------------------------------------------------------
+# Codec Tokenization
+# ---------------------------------------------------------------------------
+
+
+def tokenize_audio(
+    audio_path: str | Path,
+    *,
+    backend: str = "encodec",
+    bandwidth: float = 6.0,
+) -> list[list[int]]:
+    """Encode audio into discrete codec tokens.
+
+    Args:
+        backend: "encodec" or "dac".
+        bandwidth: Target bandwidth in kbps (encodec only).
+
+    Returns:
+        List of token sequences, one per codebook layer.
+
+    Example::
+
+        tokens = tokenize_audio("speech.wav", backend="encodec")
+        print(f"Codebooks: {len(tokens)}, tokens/codebook: {len(tokens[0])}")
+    """
+    from voxkitchen.operators.annotate.codec_tokenize import (
+        CodecTokenizeConfig,
+        CodecTokenizeOperator,
+    )
+
+    path = Path(audio_path)
+    cut = _make_cut(path)
+    ctx = _make_ctx()
+    config = CodecTokenizeConfig(backend=backend, bandwidth=bandwidth)
+    op = CodecTokenizeOperator(config, ctx)
+    op.setup()
+    try:
+        result = op.process(CutSet([cut]))
+    finally:
+        op.teardown()
+
+    out_cut = next(iter(result))
+    tokens: list[list[int]] = out_cut.custom.get("codec_tokens", [])
+    return tokens

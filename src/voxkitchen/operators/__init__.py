@@ -31,10 +31,12 @@ except ImportError:
     pass  # torch not installed
 
 # --- quality (core + optional) ---
+from voxkitchen.operators.quality import cer_wer as _qual_cer_wer  # noqa: F401
 from voxkitchen.operators.quality import clipping_detect as _qual_clip  # noqa: F401
 from voxkitchen.operators.quality import duration_filter as _qual_duration  # noqa: F401
 from voxkitchen.operators.quality import quality_score_filter as _qual_filter  # noqa: F401
 from voxkitchen.operators.quality import snr_estimate as _qual_snr  # noqa: F401
+from voxkitchen.operators.quality import speaker_similarity as _qual_spksim  # noqa: F401
 
 try:
     from voxkitchen.operators.quality import bandwidth_estimate as _qual_bw  # noqa: F401
@@ -108,6 +110,10 @@ try:
     from voxkitchen.operators.annotate import qwen3_asr as _annotate_qwen3  # noqa: F401
 except ImportError:
     pass  # qwen-asr not installed
+try:
+    from voxkitchen.operators.annotate import codec_tokenize as _annotate_codec  # noqa: F401
+except ImportError:
+    pass  # encodec / dac not installed
 
 # --- augment (optional: torch/torchaudio for speed_perturb) ---
 try:

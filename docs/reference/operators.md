@@ -1,6 +1,6 @@
 # Operator Reference
 
-VoxKitchen ships with **43 built-in operators** across 7 categories.
+VoxKitchen ships with **46 built-in operators** across 7 categories.
 
 !!! tip
     Run `vkit operators` to see this list in your terminal, or `vkit operators show <name>` for details.
@@ -10,8 +10,8 @@ VoxKitchen ships with **43 built-in operators** across 7 categories.
 - [Audio Processing](#basic) (4 operators)
 - [Segmentation](#segment) (4 operators)
 - [Data Augmentation](#augment) (4 operators)
-- [Annotation](#annotate) (15 operators)
-- [Quality & Filtering](#quality) (9 operators)
+- [Annotation](#annotate) (16 operators)
+- [Quality & Filtering](#quality) (11 operators)
 - [Output / Packing](#pack) (6 operators)
 - [Utility](#noop) (1 operators)
 
@@ -317,6 +317,31 @@ creates child Cuts for each speech region.  No new audio is written.
 ---
 
 ## Annotation { #annotate }
+
+### `codec_tokenize`
+
+**Encode audio into discrete codec tokens (EnCodec / DAC).**
+
+- **Device:** gpu
+- **Install:** `pip install voxkitchen[codec]`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `backend` | str | `encodec` |  |
+| `bandwidth` | float | `6.0` |  |
+| `model` | str | `encodec_24khz` |  |
+
+```yaml
+- name: my_codec_tokenize
+  op: codec_tokenize
+  args:
+    backend: encodec
+    bandwidth: 6.0
+    model: encodec_24khz
+```
+
+---
 
 ### `emotion_recognize`
 
@@ -808,6 +833,29 @@ frequency where energy drops sharply (ratio method). Writes:
 
 ---
 
+### `cer_wer`
+
+**Compute CER and WER between ASR output and reference text.**
+
+- **Device:** cpu
+- **Install:** `pip install voxkitchen[core]`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `hypothesis_field` | str | `text` |  |
+| `reference_field` | str | `reference_text` |  |
+
+```yaml
+- name: my_cer_wer
+  op: cer_wer
+  args:
+    hypothesis_field: text
+    reference_field: reference_text
+```
+
+---
+
 ### `clipping_detect`
 
 **Detect audio clipping and store the ratio of clipped samples.**
@@ -962,6 +1010,29 @@ No audio is written; only the metrics dict is updated.
 ```yaml
 - name: my_snr_estimate
   op: snr_estimate
+```
+
+---
+
+### `speaker_similarity`
+
+**Score speaker similarity against a reference embedding (cosine).**
+
+- **Device:** cpu
+- **Install:** `pip install voxkitchen[core]`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `reference_path` | str | required |  |
+| `embedding_key` | str | `speaker_embedding` |  |
+
+```yaml
+- name: my_speaker_similarity
+  op: speaker_similarity
+  args:
+    reference_path: <str>
+    embedding_key: speaker_embedding
 ```
 
 ---

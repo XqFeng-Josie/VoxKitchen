@@ -55,6 +55,7 @@ gender = ["inaSpeechSegmenter>=0.2"]
 speaker = ["wespeaker @ git+https://github.com/wenet-e2e/wespeaker.git"]
 enhance = ["deepfilternet>=0.5"]
 align = ["qwen-asr>=0.0.6"]
+codec = ["encodec>=0.1", "descript-audio-codec>=1.0"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 all = [
@@ -122,7 +123,7 @@ warn_unused_ignores = false  # optional deps may or may not be installed
 files = ["src/voxkitchen", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*", "tqdm.*"]
+module = ["soundfile.*", "yaml.*", "ffmpeg.*", "pyloudnorm.*", "torch.*", "torchaudio.*", "scipy.*", "librosa.*", "webrtcvad.*", "simhash.*", "datasets.*", "webdataset.*", "pyarrow.*", "faster_whisper.*", "pyannote.*", "speechbrain.*", "whisperx.*", "jinja2.*", "plotly.*", "gradio.*", "funasr.*", "wenet.*", "inaSpeechSegmenter.*", "wespeaker.*", "qwen_asr.*", "df.*", "ctc_forced_aligner.*", "tqdm.*", "encodec.*", "dac.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

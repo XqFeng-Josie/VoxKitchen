@@ -144,15 +144,15 @@ stages:
 
 ## Operators
 
-43 built-in operators across 7 categories:
+46 built-in operators across 7 categories:
 
 | Category | Operators |
 |----------|-----------|
 | **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize`, `identity` |
 | **Segmentation** | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
 | **Augmentation** | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
-| **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize` |
-| **Quality** | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter` |
+| **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `codec_tokenize` |
+| **Quality** | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
 | **Pack** | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
 ```bash
