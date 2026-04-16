@@ -1,10 +1,16 @@
-"""Built-in pipeline templates for common speech processing scenarios."""
+"""Built-in pipeline templates for common speech processing scenarios.
+
+Template YAML files live alongside other example pipelines in
+``examples/pipelines/`` at the project root.  This keeps all pipeline
+configs in one place instead of scattering them across the source tree.
+"""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-TEMPLATES_DIR = Path(__file__).parent
+# Resolve: src/voxkitchen/templates/ -> ../../.. -> project root -> examples/pipelines/
+TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent.parent / "examples" / "pipelines"
 
 TEMPLATES: dict[str, dict[str, str]] = {
     "tts": {
