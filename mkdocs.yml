@@ -12,8 +12,20 @@ nav:
   - Getting Started: getting-started.md
   - Concepts:
     - Data Protocol: concepts/data-protocol.md
+  - Tutorials:
+    - TTS Data Preparation: tutorials/tts-data-prep.md
+    - ASR Training Data: tutorials/asr-training-data.md
+    - Data Cleaning: tutorials/data-cleaning.md
+    - Speaker Analysis: tutorials/speaker-analysis.md
+  - Reference:
+    - Operators: reference/operators.md
+    - Recipes & Download: reference/recipes.md
+    - CLI Commands: reference/cli.md
+    - Python Tools API: reference/tools-api.md
+    - Pipeline YAML: reference/pipeline-yaml.md
 
 markdown_extensions:
   - admonition
+  - attr_list
   - pymdownx.highlight
   - pymdownx.superfences
