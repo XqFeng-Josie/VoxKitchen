@@ -1,0 +1,1653 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>System Architecture - VoxKitchen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#system-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="VoxKitchen" class="md-header__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VoxKitchen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              System Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="VoxKitchen" class="md-nav__button md-logo" aria-label="VoxKitchen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    VoxKitchen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/voxkitchen/voxkitchen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tts-data-prep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Data Preparation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/asr-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASR Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/data-cleaning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Cleaning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/speaker-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes & Download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/tools-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Tools API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/pipeline-yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layered-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layered Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-model-schema-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Model (Schema Layer)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Model (Schema Layer)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recording" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supervision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cut
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CutSet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-catalog-51-operators-8-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator Catalog (51 operators, 8 categories)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml-spec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YAML Spec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#work-directory-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Work Directory Layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resume-checkpointing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resume &amp; Checkpointing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#garbage-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Garbage Collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ingest-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingest Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ingest Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Recipes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-tools-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Tools API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="system-architecture">System Architecture</h1>
+<blockquote>
+<p>Last updated: 2026-04-15 | Operators: 51 | Categories: 8</p>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p>VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run <code>vkit run</code>, and get training-ready datasets with full provenance tracking.</p>
+<p><strong>Core metaphor:</strong> pipeline.yaml is a recipe, operators are cooking steps, ingest recipes are ingredient prep, <code>pack</code> is plating.</p>
+<p><strong>Target users:</strong> Speech researchers (ASR, TTS, speaker recognition, speech LLMs).</p>
+<p><strong>Key guarantees:</strong> Reproducible, resumable, inspectable pipelines. Every stage checkpoints to disk; crashes resume from the last completed stage.</p>
+<hr />
+<h2 id="layered-architecture">Layered Architecture</h2>
+<div class="highlight"><pre><span></span><code>CLI Layer           (cli/)           User-facing commands
+    |
+Pipeline Layer      (pipeline/)      Orchestration, execution, GC
+    |
+Operator Layer      (operators/)     51 built-in transformations
+    |
+Schema Layer        (schema/)        Pydantic v2 data models
+</code></pre></div>
+<p><strong>Dependency rule:</strong> Each layer depends only on layers below it. <code>operators/</code> imports from <code>schema/</code> only; <code>RunContext</code> is imported under <code>TYPE_CHECKING</code> to avoid circular deps.</p>
+<hr />
+<h2 id="data-model-schema-layer">Data Model (Schema Layer)</h2>
+<p>All types are Pydantic v2 <code>BaseModel</code> subclasses with <code>extra="forbid"</code>.</p>
+<h3 id="recording">Recording</h3>
+<p>Physical audio resource. Immutable after creation.</p>
+<div class="highlight"><pre><span></span><code>Recording
+  id: str
+  sources: list[AudioSource]       # type: file|url|command
+  sampling_rate: int
+  num_samples: int
+  duration: float
+  num_channels: int
+  checksum: str | None
+  custom: dict[str, Any]
+</code></pre></div>
+<h3 id="supervision">Supervision</h3>
+<p>Time-aligned annotation over a Recording. Fields are progressively filled: VAD creates supervisions without <code>text</code>; ASR adds <code>text</code> later.</p>
+<div class="highlight"><pre><span></span><code>Supervision
+  id, recording_id, start, duration    # required
+  text, language, speaker, gender      # optional (filled by operators)
+  channel, age_range, custom           # optional
+</code></pre></div>
+<h3 id="cut">Cut</h3>
+<p>The unit flowing through pipelines. References a <code>[start, start+duration)</code> slice of a Recording plus overlapping Supervisions. <strong>Immutable</strong> -- operators produce new Cuts, never mutate existing ones.</p>
+<div class="highlight"><pre><span></span><code>Cut
+  id, recording_id, start, duration    # identity
+  recording: Recording | None         # embedded for audio operators
+  supervisions: list[Supervision]
+  metrics: dict[str, float]            # snr, cer, utmos, ...
+  custom: dict[str, Any]               # embeddings, tokens, ...
+  provenance: Provenance               # lineage tracking
+</code></pre></div>
+<h3 id="cutset">CutSet</h3>
+<p>Collection of Cuts. Serialized as gzip-compressed JSONL (<code>.jsonl.gz</code>). First line is a header with schema version.</p>
+<p>Operations: <code>filter()</code>, <code>map()</code>, <code>split(n)</code>, <code>merge()</code>, lazy iteration.</p>
+<h3 id="provenance">Provenance</h3>
+<p>Every Cut records how it was produced:</p>
+<div class="highlight"><pre><span></span><code>Provenance
+  source_cut_id: str | None       # parent Cut (None for ingested)
+  generated_by: str                # e.g. &quot;silero_vad&quot;
+  stage_name: str                  # e.g. &quot;02_vad&quot;
+  created_at: datetime
+  pipeline_run_id: str
+</code></pre></div>
+<p>Enables <code>vkit inspect trace &lt;cut-id&gt;</code> to reconstruct the full lineage chain.</p>
+<hr />
+<h2 id="operator-system">Operator System</h2>
+<h3 id="base-contract">Base Contract</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Operator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>                         <span class="c1"># unique registry key</span>
+    <span class="n">config_cls</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">OperatorConfig</span><span class="p">]]</span>   <span class="c1"># Pydantic config model</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="s2">&quot;gpu&quot;</span><span class="p">]]</span>      <span class="c1"># execution target</span>
+    <span class="n">produces_audio</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>               <span class="c1"># creates new WAV files?</span>
+    <span class="n">reads_audio_bytes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>            <span class="c1"># needs raw audio samples?</span>
+    <span class="n">required_extras</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>         <span class="c1"># pip extras needed</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>       <span class="c1"># load models (once per worker)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># transform</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>    <span class="c1"># release resources</span>
+</code></pre></div>
+<h3 id="registration">Registration</h3>
+<p>Built-in operators: <code>@register_operator</code> decorator + import in <code>operators/__init__.py</code>.
+Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (lazy discovery on first access).</p>
+<p>Optional deps wrapped in <code>try/except ImportError</code> -- missing packages don't crash the core.</p>
+<h3 id="operator-catalog-51-operators-8-categories">Operator Catalog (51 operators, 8 categories)</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+<th>Operators</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Audio</strong></td>
+<td>5</td>
+<td><code>resample</code>, <code>ffmpeg_convert</code>, <code>channel_merge</code>, <code>loudness_normalize</code>, <code>identity</code></td>
+</tr>
+<tr>
+<td><strong>Segmentation</strong></td>
+<td>4</td>
+<td><code>silero_vad</code>, <code>webrtc_vad</code>, <code>fixed_segment</code>, <code>silence_split</code></td>
+</tr>
+<tr>
+<td><strong>Augmentation</strong></td>
+<td>4</td>
+<td><code>speed_perturb</code>, <code>volume_perturb</code>, <code>noise_augment</code>, <code>reverb_augment</code></td>
+</tr>
+<tr>
+<td><strong>Synthesize</strong></td>
+<td>4</td>
+<td><code>tts_kokoro</code>, <code>tts_chattts</code>, <code>tts_cosyvoice</code>, <code>tts_fish_speech</code></td>
+</tr>
+<tr>
+<td><strong>Annotation</strong></td>
+<td>17</td>
+<td><code>faster_whisper_asr</code>, <code>whisper_openai_asr</code>, <code>whisperx_asr</code>, <code>paraformer_asr</code>, <code>sensevoice_asr</code>, <code>wenet_asr</code>, <code>qwen3_asr</code>, <code>pyannote_diarize</code>, <code>speechbrain_langid</code>, <code>whisper_langid</code>, <code>gender_classify</code>, <code>speaker_embed</code>, <code>speech_enhance</code>, <code>forced_align</code>, <code>emotion_recognize</code>, <code>codec_tokenize</code>, <code>mel_extract</code></td>
+</tr>
+<tr>
+<td><strong>Quality</strong></td>
+<td>11</td>
+<td><code>snr_estimate</code>, <code>dnsmos_score</code>, <code>utmos_score</code>, <code>pitch_stats</code>, <code>clipping_detect</code>, <code>bandwidth_estimate</code>, <code>duration_filter</code>, <code>audio_fingerprint_dedup</code>, <code>quality_score_filter</code>, <code>speaker_similarity</code>, <code>cer_wer</code></td>
+</tr>
+<tr>
+<td><strong>Pack</strong></td>
+<td>6</td>
+<td><code>pack_manifest</code>, <code>pack_jsonl</code>, <code>pack_huggingface</code>, <code>pack_webdataset</code>, <code>pack_parquet</code>, <code>pack_kaldi</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="operator-patterns">Operator Patterns</h3>
+<p><strong>Analysis operator</strong> (e.g., <code>snr_estimate</code>): reads audio, writes to <code>metrics</code>. <code>produces_audio=False, reads_audio_bytes=True</code>.</p>
+<p><strong>Audio-producing operator</strong> (e.g., <code>resample</code>, <code>speech_enhance</code>): reads audio, writes new WAV to <code>derived/</code>, creates new Recording + Cut. <code>produces_audio=True, reads_audio_bytes=True</code>.</p>
+<p><strong>Text-only operator</strong> (e.g., <code>cer_wer</code>): reads from <code>supervision.text</code> or <code>custom</code>. No audio access. <code>reads_audio_bytes=False</code>.</p>
+<p><strong>TTS synthesis operator</strong> (e.g., <code>tts_kokoro</code>): reads text from <code>supervision.text</code>, generates audio in <code>derived/</code>. <code>produces_audio=True, reads_audio_bytes=False</code>.</p>
+<hr />
+<h2 id="pipeline-engine">Pipeline Engine</h2>
+<h3 id="yaml-spec">YAML Spec</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-pipeline</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span><span class="w">     </span><span class="c1"># variable interpolation</span>
+<span class="nt">num_gpus</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">num_cpu_workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w">                   </span><span class="c1"># auto-detect</span>
+<span class="nt">gc_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aggressive</span><span class="w">                     </span><span class="c1"># aggressive | keep</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dir | manifest | recipe</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> root</span><span class="p">:</span><span class="w"> </span><span class="nv">./data</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> target_sr</span><span class="p">:</span><span class="w"> </span><span class="nv">16000</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>Supports <code>${name}</code>, <code>${run_id}</code>, <code>${env:VAR}</code> interpolation in all string values.</p>
+<h3 id="execution-flow">Execution Flow</h3>
+<div class="highlight"><pre><span></span><code>vkit run pipeline.yaml
+  |
+  v
+[Loader] YAML -&gt; PipelineSpec (Pydantic validation + interpolation)
+  |
+  v
+[Runner] Resume check -&gt; find last completed stage
+  |
+  v
+[Ingest] DirScan | Manifest | Recipe -&gt; initial CutSet
+  |
+  v
+[Stage Loop]
+  For each stage:
+    1. Instantiate operator + config
+    2. Select executor (CPU pool or GPU pool)
+    3. Shard CutSet across workers
+    4. Workers: setup() -&gt; process() -&gt; teardown()
+    5. Write cuts.jsonl.gz + _SUCCESS marker
+    6. Run GC on expired derived audio
+  |
+  v
+[Finalize] Generate report, empty trash
+</code></pre></div>
+<h3 id="work-directory-layout">Work Directory Layout</h3>
+<div class="highlight"><pre><span></span><code>work_dir/
+  run.yaml                    # spec snapshot
+  00_resample/
+    cuts.jsonl.gz             # output manifest
+    _SUCCESS                  # completion marker
+    _errors.jsonl             # per-cut errors (if any)
+    _stats.json               # timing, throughput
+    derived/                  # new audio files (if produces_audio)
+  01_vad/
+    cuts.jsonl.gz
+    _SUCCESS
+    ...
+  derived_trash/              # GC&#39;d audio (emptied on success)
+</code></pre></div>
+<h3 id="executors">Executors</h3>
+<p><strong>CpuPoolExecutor:</strong> <code>multiprocessing.Pool</code> with spawn context. Shards CutSet, runs operator per shard. Config passed as JSON (not pickled) for cross-process safety.</p>
+<p><strong>GpuPoolExecutor:</strong> Spawns N subprocesses, each pinned to one GPU via <code>CUDA_VISIBLE_DEVICES=i</code> before torch import. Operator sees <code>cuda:0</code>.</p>
+<p><strong>Error handling:</strong> If a shard fails, retries cut-by-cut. Bad cuts logged to <code>_errors.jsonl</code>, pipeline continues.</p>
+<h3 id="resume-checkpointing">Resume &amp; Checkpointing</h3>
+<p>A stage is complete iff both <code>cuts.jsonl.gz</code> and <code>_SUCCESS</code> exist. <code>_SUCCESS</code> is written atomically after the manifest is fully flushed.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                    </span><span class="c1"># full run</span>
+vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>vad<span class="w">  </span><span class="c1"># resume from stage</span>
+</code></pre></div>
+<h3 id="garbage-collection">Garbage Collection</h3>
+<p>Static analysis builds a GC plan: for each <code>produces_audio=True</code> stage, find its last downstream consumer (<code>reads_audio_bytes=True</code>). After that consumer completes, move the producer's <code>derived/</code> to trash. Trash emptied only on successful pipeline completion.</p>
+<p><code>gc_mode: keep</code> or <code>--keep-intermediates</code> disables GC.</p>
+<hr />
+<h2 id="ingest-sources">Ingest Sources</h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Input</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dir</code></td>
+<td>Directory of audio files</td>
+<td>Raw audio processing</td>
+</tr>
+<tr>
+<td><code>manifest</code></td>
+<td>Existing <code>cuts.jsonl.gz</code></td>
+<td>Resume / chain pipelines</td>
+</tr>
+<tr>
+<td><code>recipe</code></td>
+<td>Named dataset parser</td>
+<td>Standard datasets</td>
+</tr>
+</tbody>
+</table>
+<h3 id="built-in-recipes">Built-in Recipes</h3>
+<ul>
+<li><code>librispeech</code> -- LibriSpeech ASR corpus</li>
+<li><code>aishell</code> -- AISHELL-1 Mandarin speech</li>
+<li><code>commonvoice</code> -- Mozilla Common Voice</li>
+<li><code>fleurs</code> -- Google FLEURS multilingual</li>
+</ul>
+<p>Each recipe implements <code>download()</code> and <code>prepare(root, subsets, ctx) -&gt; CutSet</code>.</p>
+<hr />
+<h2 id="cli-commands">CLI Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vkit init &lt;path&gt; [-t template]</code></td>
+<td>Scaffold project</td>
+</tr>
+<tr>
+<td><code>vkit run &lt;yaml&gt;</code></td>
+<td>Execute pipeline</td>
+</tr>
+<tr>
+<td><code>vkit validate &lt;yaml&gt;</code></td>
+<td>Validate without executing</td>
+</tr>
+<tr>
+<td><code>vkit download &lt;recipe&gt;</code></td>
+<td>Download dataset</td>
+</tr>
+<tr>
+<td><code>vkit ingest</code></td>
+<td>Standalone ingest</td>
+</tr>
+<tr>
+<td><code>vkit inspect run &lt;dir&gt;</code></td>
+<td>Stage summary</td>
+</tr>
+<tr>
+<td><code>vkit inspect cuts &lt;path&gt;</code></td>
+<td>Cut statistics</td>
+</tr>
+<tr>
+<td><code>vkit inspect trace &lt;id&gt;</code></td>
+<td>Provenance chain</td>
+</tr>
+<tr>
+<td><code>vkit inspect errors &lt;dir&gt;</code></td>
+<td>Error report</td>
+</tr>
+<tr>
+<td><code>vkit operators</code></td>
+<td>List operators</td>
+</tr>
+<tr>
+<td><code>vkit operators show &lt;name&gt;</code></td>
+<td>Operator detail</td>
+</tr>
+<tr>
+<td><code>vkit recipes</code></td>
+<td>List recipes</td>
+</tr>
+<tr>
+<td><code>vkit viz &lt;path&gt;</code></td>
+<td>Gradio explorer</td>
+</tr>
+</tbody>
+</table>
+<p>Templates: <code>tts</code>, <code>asr</code>, <code>cleaning</code>, <code>speaker</code> (stored in <code>examples/pipelines/</code>).</p>
+<hr />
+<h2 id="python-tools-api">Python Tools API</h2>
+<p>For one-off tasks without writing YAML:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">transcribe</span><span class="p">,</span> <span class="n">detect_speech</span><span class="p">,</span> <span class="n">estimate_snr</span><span class="p">,</span>
+    <span class="n">extract_speaker_embedding</span><span class="p">,</span> <span class="n">enhance_speech</span><span class="p">,</span>
+    <span class="n">align_words</span><span class="p">,</span> <span class="n">synthesize</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">transcribe</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;large-v3&quot;</span><span class="p">)</span>
+<span class="n">detect_speech</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;silero&quot;</span><span class="p">)</span>
+<span class="n">estimate_snr</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">)</span>
+<span class="n">extract_speaker_embedding</span><span class="p">(</span><span class="s2">&quot;speaker.wav&quot;</span><span class="p">)</span>
+<span class="n">enhance_speech</span><span class="p">(</span><span class="s2">&quot;noisy.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;clean.wav&quot;</span><span class="p">)</span>
+<span class="n">align_words</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">,</span> <span class="s2">&quot;output.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Each function creates a temporary Cut + RunContext, runs the corresponding operator, and returns the result.</p>
+<hr />
+<h2 id="dependency-management">Dependency Management</h2>
+<p><strong>Core</strong> (always installed): pydantic, pyyaml, typer, rich, soundfile, numpy, ffmpeg-python, pyloudnorm</p>
+<p><strong>Optional extras</strong> (install what you need):</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Packages</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>audio</code></td>
+<td>torch, torchaudio</td>
+<td>Resample, VAD</td>
+</tr>
+<tr>
+<td><code>asr</code></td>
+<td>faster-whisper</td>
+<td>ASR transcription</td>
+</tr>
+<tr>
+<td><code>segment</code></td>
+<td>webrtcvad, librosa</td>
+<td>Speech segmentation</td>
+</tr>
+<tr>
+<td><code>speaker</code></td>
+<td>wespeaker</td>
+<td>Speaker embeddings</td>
+</tr>
+<tr>
+<td><code>diarize</code></td>
+<td>pyannote.audio</td>
+<td>Speaker diarization</td>
+</tr>
+<tr>
+<td><code>enhance</code></td>
+<td>deepfilternet</td>
+<td>Speech denoising</td>
+</tr>
+<tr>
+<td><code>align</code></td>
+<td>qwen-asr</td>
+<td>Forced alignment</td>
+</tr>
+<tr>
+<td><code>codec</code></td>
+<td>encodec, dac</td>
+<td>Neural codec tokens</td>
+</tr>
+<tr>
+<td><code>tts-kokoro</code></td>
+<td>kokoro, misaki</td>
+<td>Kokoro TTS (CPU)</td>
+</tr>
+<tr>
+<td><code>tts-chattts</code></td>
+<td>ChatTTS</td>
+<td>ChatTTS (GPU)</td>
+</tr>
+<tr>
+<td><code>tts-cosyvoice</code></td>
+<td>modelscope</td>
+<td>CosyVoice2 (GPU)</td>
+</tr>
+<tr>
+<td><code>tts-fish-speech</code></td>
+<td>fish-speech</td>
+<td>Fish-Speech (GPU)</td>
+</tr>
+<tr>
+<td><code>viz</code></td>
+<td>jinja2, plotly</td>
+<td>HTML report</td>
+</tr>
+<tr>
+<td><code>viz-panel</code></td>
+<td>gradio</td>
+<td>Interactive panel</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="project-structure">Project Structure</h2>
+<div class="highlight"><pre><span></span><code>src/voxkitchen/
+  cli/                  # Typer CLI app
+  operators/            # 51 operators across 8 categories
+    basic/              #   resample, ffmpeg_convert, ...
+    segment/            #   silero_vad, webrtc_vad, ...
+    augment/            #   speed_perturb, noise_augment, ...
+    synthesize/         #   tts_kokoro, tts_chattts, ...
+    annotate/           #   faster_whisper_asr, speaker_embed, ...
+    quality/            #   snr_estimate, cer_wer, ...
+    pack/               #   pack_jsonl, pack_huggingface, ...
+    noop/               #   identity
+  pipeline/             # Runner, executors, checkpoint, GC
+  schema/               # Cut, CutSet, Recording, Supervision, Provenance
+  ingest/               # DirScan, Manifest, Recipe sources
+    recipes/            #   librispeech, aishell, commonvoice, fleurs
+  viz/                  # HTML report + Gradio panel
+  templates/            # vkit init template registry
+  plugins/              # Entry-point discovery
+  utils/                # Audio I/O, time, download helpers
+  tools.py              # Standalone tool functions
+
+examples/pipelines/     # 20+ example YAML pipelines
+tests/unit/             # 297+ unit tests
+tests/integration/      # End-to-end pipeline tests
+</code></pre></div>
+<hr />
+<h2 id="design-principles">Design Principles</h2>
+<ol>
+<li><strong>Immutability</strong> -- Operators create new Cuts, never mutate existing ones</li>
+<li><strong>Resumability</strong> -- All state on disk; <code>_SUCCESS</code> markers enable crash recovery</li>
+<li><strong>Error tolerance</strong> -- Bad Cuts logged and skipped, pipeline continues</li>
+<li><strong>Minimal core</strong> -- Heavy deps (torch, transformers) are optional extras</li>
+<li><strong>Provenance</strong> -- Every Cut tracks its lineage</li>
+<li><strong>Declarative first</strong> -- YAML is the primary interface; Python API is the escape hatch</li>
+<li><strong>Simplicity over efficiency</strong> -- Resolve conflicts in favor of simplicity</li>
+</ol>
+<hr />
+<h2 id="roadmap">Roadmap</h2>
+<h3 id="completed">Completed</h3>
+<ul>
+<li>Core framework (schema, pipeline engine, CLI)</li>
+<li>51 operators across 8 categories</li>
+<li>4 ingest recipes (LibriSpeech, AISHELL, CommonVoice, FLEURS)</li>
+<li>Visualization (Rich CLI, HTML report, Gradio panel)</li>
+<li>Plugin system (entry_points)</li>
+<li>TTS synthesis (Kokoro, ChatTTS, CosyVoice2, Fish-Speech)</li>
+</ul>
+<h3 id="planned">Planned</h3>
+<ul>
+<li><strong>Distributed execution</strong> -- Ray/Dask backend for multi-node pipelines</li>
+<li><strong>Cloud storage</strong> -- S3/GCS as audio source and output target</li>
+<li><strong>Dataset versioning</strong> -- DVC integration for manifest version control</li>
+<li><strong>Additional recipes</strong> -- GigaSpeech, WenetSpeech, MLS, VoxCeleb</li>
+<li><strong>Streaming pipelines</strong> -- Process audio streams without full materialization</li>
+<li><strong>Training integration</strong> -- Direct export to training frameworks (NeMo, ESPnet, WeNet)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
