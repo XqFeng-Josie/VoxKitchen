@@ -6,7 +6,6 @@ from pathlib import Path
 
 import numpy as np
 import soundfile as sf
-
 from voxkitchen.pipeline.loader import load_pipeline_spec
 from voxkitchen.pipeline.runner import run_pipeline
 from voxkitchen.schema.io import read_cuts

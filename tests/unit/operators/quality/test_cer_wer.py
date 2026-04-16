@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.operators.quality.cer_wer import (
     CerWerConfig,
     CerWerOperator,

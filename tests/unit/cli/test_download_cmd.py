@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from typer.testing import CliRunner
-
 from voxkitchen.cli.main import app
 
 runner = CliRunner()

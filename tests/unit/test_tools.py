@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.tools import estimate_snr, normalize_loudness, resample_audio
 
 

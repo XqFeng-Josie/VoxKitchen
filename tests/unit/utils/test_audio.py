@@ -6,7 +6,6 @@ from pathlib import Path
 
 import numpy as np
 import soundfile as sf
-
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.schema.recording import AudioSource, Recording

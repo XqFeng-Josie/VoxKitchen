@@ -7,7 +7,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 from voxkitchen.operators.quality.speaker_similarity import (
     SpeakerSimilarityConfig,
     SpeakerSimilarityOperator,

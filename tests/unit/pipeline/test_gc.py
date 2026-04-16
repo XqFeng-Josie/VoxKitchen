@@ -6,7 +6,6 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import _REGISTRY, register_operator
 from voxkitchen.pipeline.checkpoint import stage_dir_name

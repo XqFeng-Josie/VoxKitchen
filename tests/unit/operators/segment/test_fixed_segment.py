@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 import pytest
-
 from voxkitchen.operators.registry import get_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet

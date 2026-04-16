@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Generator
 
 import pytest
-
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import (
     _REGISTRY,

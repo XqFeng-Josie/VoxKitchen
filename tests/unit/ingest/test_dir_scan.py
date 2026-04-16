@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.ingest.dir_scan import DirScanConfig, DirScanIngestSource
 from voxkitchen.pipeline.context import RunContext
 

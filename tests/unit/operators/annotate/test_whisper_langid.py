@@ -23,19 +23,19 @@ import pytest  # noqa: E402
 if not _has_backend:
     pytest.skip("neither openai-whisper nor faster-whisper available", allow_module_level=True)
 
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import datetime, timezone  # noqa: E402
+from pathlib import Path  # noqa: E402
 
-from voxkitchen.operators.annotate.whisper_langid import (
+from voxkitchen.operators.annotate.whisper_langid import (  # noqa: E402
     WhisperLangidConfig,
     WhisperLangidOperator,
 )
-from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
-from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.cutset import CutSet
-from voxkitchen.schema.provenance import Provenance
-from voxkitchen.utils.audio import recording_from_file
+from voxkitchen.operators.registry import get_operator  # noqa: E402
+from voxkitchen.pipeline.context import RunContext  # noqa: E402
+from voxkitchen.schema.cut import Cut  # noqa: E402
+from voxkitchen.schema.cutset import CutSet  # noqa: E402
+from voxkitchen.schema.provenance import Provenance  # noqa: E402
+from voxkitchen.utils.audio import recording_from_file  # noqa: E402
 
 
 def _ctx(tmp_path: Path) -> RunContext:

@@ -7,7 +7,6 @@ from unittest.mock import MagicMock
 
 import pytest
 from pydantic import ValidationError
-
 from voxkitchen.ingest import get_ingest_source
 from voxkitchen.ingest.recipe_source import RecipeConfig, RecipeIngestSource
 from voxkitchen.ingest.recipes import _RECIPES, register_recipe

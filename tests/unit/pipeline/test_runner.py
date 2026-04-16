@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.pipeline.loader import load_pipeline_spec
 from voxkitchen.pipeline.runner import StageFailedError, run_pipeline
 from voxkitchen.schema.cut import Cut

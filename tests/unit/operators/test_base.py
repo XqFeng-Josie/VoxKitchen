@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 from pydantic import ValidationError
-
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.schema.cutset import CutSet
 

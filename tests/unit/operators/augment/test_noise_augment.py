@@ -8,7 +8,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 import soundfile as sf
-
 from voxkitchen.operators.augment.noise_augment import (
     NoiseAugmentConfig,
     NoiseAugmentOperator,

@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.pipeline.loader import PipelineLoadError, load_pipeline_spec
 
 

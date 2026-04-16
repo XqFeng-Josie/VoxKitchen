@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 
 import pytest
 from pydantic import ValidationError
-
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.schema.recording import AudioSource, Recording

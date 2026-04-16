@@ -13,7 +13,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
-
 from voxkitchen.operators.quality.utmos_score import (
     UtmosScoreConfig,
     UtmosScoreOperator,

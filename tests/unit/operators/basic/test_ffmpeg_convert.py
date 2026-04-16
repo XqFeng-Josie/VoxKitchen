@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 import soundfile as sf
-
 from voxkitchen.operators.basic.ffmpeg_convert import FfmpegConvertConfig, FfmpegConvertOperator
 from voxkitchen.operators.registry import get_operator
 from voxkitchen.pipeline.context import RunContext

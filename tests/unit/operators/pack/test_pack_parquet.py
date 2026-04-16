@@ -70,7 +70,6 @@ def test_pack_parquet_writes_file(tmp_path: Path) -> None:
 
 def test_pack_parquet_has_columns(tmp_path: Path) -> None:
     import pyarrow.parquet as pq
-
     from voxkitchen.operators.pack.pack_parquet import PackParquetConfig, PackParquetOperator
     from voxkitchen.pipeline.context import RunContext
 

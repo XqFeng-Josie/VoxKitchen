@@ -6,7 +6,6 @@ from pathlib import Path
 
 import yaml
 from typer.testing import CliRunner
-
 from voxkitchen.cli.main import app
 
 

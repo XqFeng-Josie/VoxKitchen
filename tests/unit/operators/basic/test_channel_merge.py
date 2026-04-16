@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import soundfile as sf
-
 from voxkitchen.operators.basic.channel_merge import ChannelMergeConfig, ChannelMergeOperator
 from voxkitchen.operators.registry import get_operator
 from voxkitchen.pipeline.context import RunContext

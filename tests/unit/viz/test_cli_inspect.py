@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from typer.testing import CliRunner
-
 from voxkitchen.cli.main import app
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.io import SCHEMA_VERSION, HeaderRecord, write_cuts
