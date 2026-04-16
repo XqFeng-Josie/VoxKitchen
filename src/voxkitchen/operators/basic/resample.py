@@ -24,6 +24,8 @@ class ResampleConfig(OperatorConfig):
 
 @register_operator
 class ResampleOperator(Operator):
+    """Resample audio to a target sample rate and channel count."""
+
     name = "resample"
     config_cls = ResampleConfig
     device = "cpu"

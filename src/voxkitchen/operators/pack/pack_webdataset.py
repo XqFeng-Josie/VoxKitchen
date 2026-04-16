@@ -26,6 +26,8 @@ class PackWebDatasetConfig(OperatorConfig):
 
 @register_operator
 class PackWebDatasetOperator(Operator):
+    """Export CutSet as WebDataset tar shards with embedded audio."""
+
     name = "pack_webdataset"
     config_cls = PackWebDatasetConfig
     device = "cpu"

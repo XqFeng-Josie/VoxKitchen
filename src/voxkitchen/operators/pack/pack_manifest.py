@@ -19,6 +19,8 @@ class PackManifestConfig(OperatorConfig):
 
 @register_operator
 class PackManifestOperator(Operator):
+    """Write a flat manifest (cuts.jsonl.gz) with no audio export."""
+
     name = "pack_manifest"
     config_cls = PackManifestConfig
     device = "cpu"

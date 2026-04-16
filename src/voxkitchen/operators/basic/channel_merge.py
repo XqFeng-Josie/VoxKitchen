@@ -23,6 +23,8 @@ class ChannelMergeConfig(OperatorConfig):
 
 @register_operator
 class ChannelMergeOperator(Operator):
+    """Merge multi-channel audio into mono or a specified number of channels."""
+
     name = "channel_merge"
     config_cls = ChannelMergeConfig
     device = "cpu"

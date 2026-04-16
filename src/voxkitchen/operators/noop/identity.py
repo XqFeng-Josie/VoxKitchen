@@ -19,6 +19,8 @@ class IdentityConfig(OperatorConfig):
 
 @register_operator
 class IdentityOperator(Operator):
+    """Pass cuts through unchanged (no-op, useful for testing)."""
+
     name = "identity"
     config_cls = IdentityConfig
     device = "cpu"

@@ -35,6 +35,8 @@ class ReverbAugmentConfig(OperatorConfig):
 
 @register_operator
 class ReverbAugmentOperator(Operator):
+    """Add room reverb by convolving with Room Impulse Response files."""
+
     name = "reverb_augment"
     config_cls = ReverbAugmentConfig
     device = "cpu"

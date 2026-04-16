@@ -22,6 +22,8 @@ class PackHuggingFaceConfig(OperatorConfig):
 
 @register_operator
 class PackHuggingFaceOperator(Operator):
+    """Export CutSet as a HuggingFace Dataset with audio column."""
+
     name = "pack_huggingface"
     config_cls = PackHuggingFaceConfig
     device = "cpu"

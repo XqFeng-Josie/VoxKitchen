@@ -28,6 +28,8 @@ class SpeakerEmbedConfig(OperatorConfig):
 
 @register_operator
 class SpeakerEmbedOperator(Operator):
+    """Extract speaker embedding vectors using WeSpeaker or SpeechBrain."""
+
     name = "speaker_embed"
     config_cls = SpeakerEmbedConfig
     device = "gpu"

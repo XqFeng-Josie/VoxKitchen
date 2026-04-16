@@ -33,6 +33,8 @@ class ForcedAlignConfig(OperatorConfig):
 
 @register_operator
 class ForcedAlignOperator(Operator):
+    """Align text to audio at word level using Qwen3-ForcedAligner (11 languages)."""
+
     name = "forced_align"
     config_cls = ForcedAlignConfig
     device = "gpu"

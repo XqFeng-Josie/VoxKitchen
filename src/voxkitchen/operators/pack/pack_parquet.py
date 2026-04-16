@@ -23,6 +23,8 @@ class PackParquetConfig(OperatorConfig):
 
 @register_operator
 class PackParquetOperator(Operator):
+    """Export CutSet as Apache Parquet with audio file references."""
+
     name = "pack_parquet"
     config_cls = PackParquetConfig
     device = "cpu"

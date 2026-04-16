@@ -29,6 +29,8 @@ class SpeechEnhanceConfig(OperatorConfig):
 
 @register_operator
 class SpeechEnhanceOperator(Operator):
+    """Remove background noise using DeepFilterNet neural denoiser."""
+
     name = "speech_enhance"
     config_cls = SpeechEnhanceConfig
     device = "cpu"

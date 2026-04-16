@@ -27,6 +27,8 @@ class VolumePerturbConfig(OperatorConfig):
 
 @register_operator
 class VolumePerturbOperator(Operator):
+    """Apply random volume gain within a dB range."""
+
     name = "volume_perturb"
     config_cls = VolumePerturbConfig
     device = "cpu"

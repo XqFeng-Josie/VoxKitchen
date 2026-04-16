@@ -23,6 +23,8 @@ class PackKaldiConfig(OperatorConfig):
 
 @register_operator
 class PackKaldiOperator(Operator):
+    """Export CutSet in Kaldi format (wav.scp, text, utt2spk, spk2utt)."""
+
     name = "pack_kaldi"
     config_cls = PackKaldiConfig
     device = "cpu"

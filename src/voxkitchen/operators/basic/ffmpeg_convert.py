@@ -22,6 +22,8 @@ class FfmpegConvertConfig(OperatorConfig):
 
 @register_operator
 class FfmpegConvertOperator(Operator):
+    """Convert audio format using ffmpeg (e.g. opus to wav, flac to mp3)."""
+
     name = "ffmpeg_convert"
     config_cls = FfmpegConvertConfig
     device = "cpu"

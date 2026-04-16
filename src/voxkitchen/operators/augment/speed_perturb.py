@@ -37,6 +37,8 @@ class SpeedPerturbConfig(OperatorConfig):
 
 @register_operator
 class SpeedPerturbOperator(Operator):
+    """Apply speed perturbation (tempo + pitch change) via resampling."""
+
     name = "speed_perturb"
     config_cls = SpeedPerturbConfig
     device = "cpu"

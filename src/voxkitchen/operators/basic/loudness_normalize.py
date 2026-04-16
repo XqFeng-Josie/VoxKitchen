@@ -23,6 +23,8 @@ class LoudnessNormalizeConfig(OperatorConfig):
 
 @register_operator
 class LoudnessNormalizeOperator(Operator):
+    """Normalize audio loudness to a target LUFS level (EBU R 128)."""
+
     name = "loudness_normalize"
     config_cls = LoudnessNormalizeConfig
     device = "cpu"

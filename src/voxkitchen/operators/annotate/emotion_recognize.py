@@ -37,6 +37,8 @@ class EmotionRecognizeConfig(OperatorConfig):
 
 @register_operator
 class EmotionRecognizeOperator(Operator):
+    """Recognize speech emotions using emotion2vec (9 classes: angry, happy, sad, ...)."""
+
     name = "emotion_recognize"
     config_cls = EmotionRecognizeConfig
     device = "gpu"

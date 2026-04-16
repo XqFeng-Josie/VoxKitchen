@@ -33,6 +33,8 @@ class NoiseAugmentConfig(OperatorConfig):
 
 @register_operator
 class NoiseAugmentOperator(Operator):
+    """Mix audio with random noise files at a random SNR."""
+
     name = "noise_augment"
     config_cls = NoiseAugmentConfig
     device = "cpu"
