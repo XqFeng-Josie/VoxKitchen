@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class ForcedAlignConfig(OperatorConfig):
     model_type: str = "MMS_FA"  # torchaudio pipeline: MMS_FA, WAV2VEC2_ASR_BASE_960H, etc.
+    language: str = "eng"  # ISO 639-3 code, used for text normalization
 
 
 @register_operator
@@ -69,16 +70,23 @@ class ForcedAlignOperator(Operator):
         return None
 
     def _align(self, cut: Cut, text: str) -> list[dict[str, Any]]:
-        from ctc_forced_aligner import get_word_stamps
+        from ctc_forced_aligner import get_word_stamps, text_normalize
 
         audio, sr = load_audio_for_cut(cut)
+
+        # Normalize text: lowercase, remove punctuation, clean up for alignment
+        assert isinstance(self.config, ForcedAlignConfig)
+        normalized = text_normalize(text, iso_code=self.config.language)
+        if not normalized.strip():
+            logger.warning("text is empty after normalization for cut %s", cut.id)
+            return []
 
         # get_word_stamps needs file paths, write temp files
         audio_path = Path(self._tmpdir) / f"{cut.id}.wav"
         save_audio(audio_path, audio, sr)
 
         text_path = Path(self._tmpdir) / f"{cut.id}.txt"
-        text_path.write_text(text, encoding="utf-8")
+        text_path.write_text(normalized, encoding="utf-8")
 
         assert isinstance(self.config, ForcedAlignConfig)
         word_timestamps, self._model, _ = get_word_stamps(

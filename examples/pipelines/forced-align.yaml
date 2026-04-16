@@ -31,6 +31,7 @@ stages:
     op: forced_align
     args:
       model_type: MMS_FA      # Meta's Massively Multilingual Speech alignment
+      language: eng            # ISO 639-3 code, for text normalization
 
   - name: pack
     op: pack_jsonl

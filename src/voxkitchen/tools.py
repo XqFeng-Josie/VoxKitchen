@@ -640,6 +640,7 @@ def align_words(
     text: str,
     *,
     model_type: str = "MMS_FA",
+    language: str = "eng",
 ) -> list[dict[str, object]]:
     """Align text to audio at word level using CTC forced alignment.
 
@@ -648,6 +649,8 @@ def align_words(
         model_type: torchaudio alignment pipeline. Default "MMS_FA" (Meta's
             Massively Multilingual Speech). Other options:
             "WAV2VEC2_ASR_BASE_960H", "HUBERT_ASR_LARGE", etc.
+        language: ISO 639-3 language code (default "eng"). Used for text
+            normalization (lowercasing, punctuation removal).
 
     Returns:
         List of word alignments, each a dict with "text", "start", "end".
@@ -682,7 +685,7 @@ def align_words(
         }
     )
     ctx = _make_ctx()
-    config = ForcedAlignConfig(model_type=model_type)
+    config = ForcedAlignConfig(model_type=model_type, language=language)
     op = ForcedAlignOperator(config, ctx)
     op.setup()
     try:
