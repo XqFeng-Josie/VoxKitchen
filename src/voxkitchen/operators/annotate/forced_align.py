@@ -10,20 +10,21 @@ Cuts without text supervisions are passed through unchanged.
 from __future__ import annotations
 
 import logging
+import tempfile
+from pathlib import Path
 from typing import Any
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
-from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.audio import load_audio_for_cut, save_audio
 
 logger = logging.getLogger(__name__)
 
 
 class ForcedAlignConfig(OperatorConfig):
-    model: str = "MahmoudAshraf/mms-300m-1130-forced-aligner"
-    language: str = "eng"  # ISO 639-3 code
+    model_type: str = "MMS_FA"  # torchaudio pipeline: MMS_FA, WAV2VEC2_ASR_BASE_960H, etc.
 
 
 @register_operator
@@ -36,20 +37,11 @@ class ForcedAlignOperator(Operator):
     required_extras = ["align"]
 
     _model: Any
-    _tokenizer: Any
-    _device: str
+    _tmpdir: str
 
     def setup(self) -> None:
-        import torch
-        from ctc_forced_aligner import load_alignment_model
-
-        assert isinstance(self.config, ForcedAlignConfig)
-        device = self.ctx.device if hasattr(self.ctx, "device") else "cpu"
-        self._device = device
-        self._model, self._tokenizer = load_alignment_model(
-            device=device,
-            dtype=torch.float32,
-        )
+        self._model = None  # lazy-loaded on first use
+        self._tmpdir = tempfile.mkdtemp(prefix="vkit-align-")
 
     def process(self, cuts: CutSet) -> CutSet:
         out_cuts: list[Cut] = []
@@ -62,7 +54,7 @@ class ForcedAlignOperator(Operator):
                 alignments = self._align(cut, text)
                 custom = dict(cut.custom) if cut.custom else {}
                 custom["word_alignments"] = alignments
-                custom["forced_align_model"] = self.config.model
+                custom["forced_align_model"] = self.config.model_type
                 out_cuts.append(cut.model_copy(update={"custom": custom}))
             except Exception:
                 logger.warning("forced alignment failed for cut %s", cut.id, exc_info=True)
@@ -77,41 +69,42 @@ class ForcedAlignOperator(Operator):
         return None
 
     def _align(self, cut: Cut, text: str) -> list[dict[str, Any]]:
-        import torch
-        from ctc_forced_aligner import (
-            generate_emissions,
-            get_alignments,
-            get_spans,
-            postprocess_results,
-        )
+        from ctc_forced_aligner import get_word_stamps
 
         audio, sr = load_audio_for_cut(cut)
 
-        waveform = torch.from_numpy(audio).to(self._device)
-        if waveform.ndim == 1:
-            waveform = waveform.unsqueeze(0)
+        # get_word_stamps needs file paths, write temp files
+        audio_path = Path(self._tmpdir) / f"{cut.id}.wav"
+        save_audio(audio_path, audio, sr)
 
-        emissions, stride = generate_emissions(self._model, waveform, batch_size=1)
+        text_path = Path(self._tmpdir) / f"{cut.id}.txt"
+        text_path.write_text(text, encoding="utf-8")
 
-        tokens = self._tokenizer(text, return_tensors="pt")
-        token_ids = tokens["input_ids"].squeeze().tolist()
+        assert isinstance(self.config, ForcedAlignConfig)
+        word_timestamps, self._model, _ = get_word_stamps(
+            str(audio_path),
+            str(text_path),
+            model=self._model,
+            model_type=self.config.model_type,
+        )
 
-        blank_id = self._tokenizer.pad_token_id or 0
-        aligned_tokens, _ = get_alignments(emissions, token_ids, blank_id)
-        spans = get_spans(aligned_tokens, blank_id)
-        results = postprocess_results(spans, stride, self._tokenizer, waveform)
+        # Clean up temp files
+        audio_path.unlink(missing_ok=True)
+        text_path.unlink(missing_ok=True)
 
         word_alignments = []
-        for segment in results:
+        for w in word_timestamps:
             word_alignments.append(
                 {
-                    "text": segment.get("text", segment.get("word", "")),
-                    "start": round(segment.get("start", 0.0), 3),
-                    "end": round(segment.get("end", 0.0), 3),
+                    "text": w.get("word", w.get("text", "")),
+                    "start": round(w.get("start", 0.0), 3),
+                    "end": round(w.get("end", 0.0), 3),
                 }
             )
         return word_alignments
 
     def teardown(self) -> None:
         self._model = None
-        self._tokenizer = None
+        import shutil
+
+        shutil.rmtree(self._tmpdir, ignore_errors=True)

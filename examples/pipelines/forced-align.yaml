@@ -30,7 +30,7 @@ stages:
   - name: align
     op: forced_align
     args:
-      language: eng           # ISO 639-3 code
+      model_type: MMS_FA      # Meta's Massively Multilingual Speech alignment
 
   - name: pack
     op: pack_jsonl
