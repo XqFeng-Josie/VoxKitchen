@@ -40,9 +40,9 @@ class SpeechEnhanceOperator(Operator):
     _df_state: Any
 
     def setup(self) -> None:
-        from df.enhance import init_df_model
+        from df.enhance import init_df
 
-        self._model, self._df_state, _ = init_df_model()
+        self._model, self._df_state, _ = init_df()
 
     def process(self, cuts: CutSet) -> CutSet:
         import torch
