@@ -129,6 +129,12 @@ except ImportError:
     pass  # scipy not installed
 from voxkitchen.operators.augment import volume_perturb as _aug_volume  # noqa: F401
 
+# --- synthesize (optional: kokoro, chattts, cosyvoice, fish-speech) ---
+try:
+    from voxkitchen.operators.synthesize import tts_kokoro as _synth_kokoro  # noqa: F401
+except ImportError:
+    pass  # kokoro not installed
+
 # --- pack (optional: datasets, webdataset, pyarrow) ---
 from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
 
