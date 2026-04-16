@@ -1,0 +1,29 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like?
+      description: Describe the feature or improvement.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What problem does this solve? How would you use it?
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - New operator
+        - New dataset recipe
+        - CLI improvement
+        - Pipeline engine
+        - Documentation
+        - Other

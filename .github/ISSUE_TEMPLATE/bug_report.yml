@@ -1,0 +1,50 @@
+name: Bug Report
+description: Report a bug in VoxKitchen
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: YAML pipeline or Python code that triggers the bug.
+      render: yaml
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output / logs
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: VoxKitchen version
+      placeholder: "0.2.0"
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.11"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - macOS
+        - Windows
