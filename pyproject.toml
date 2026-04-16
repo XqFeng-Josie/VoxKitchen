@@ -76,6 +76,9 @@ vkit = "voxkitchen.cli.main:app"
 [project.urls]
 Repository = "https://github.com/voxkitchen/voxkitchen"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "0.0.0.dev0"
