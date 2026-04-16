@@ -1,6 +1,6 @@
 # Operator Reference
 
-VoxKitchen ships with **46 built-in operators** across 7 categories.
+VoxKitchen ships with **47 built-in operators** across 7 categories.
 
 !!! tip
     Run `vkit operators` to see this list in your terminal, or `vkit operators show <name>` for details.
@@ -10,7 +10,7 @@ VoxKitchen ships with **46 built-in operators** across 7 categories.
 - [Audio Processing](#basic) (4 operators)
 - [Segmentation](#segment) (4 operators)
 - [Data Augmentation](#augment) (4 operators)
-- [Annotation](#annotate) (16 operators)
+- [Annotation](#annotate) (17 operators)
 - [Quality & Filtering](#quality) (11 operators)
 - [Output / Packing](#pack) (6 operators)
 - [Utility](#noop) (1 operators)
@@ -463,6 +463,39 @@ inaSpeechSegmenter`` (uses TensorFlow).
     method: f0
     f0_threshold: 165.0
     speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
+```
+
+---
+
+### `mel_extract`
+
+**Extract mel spectrogram and save as .npy file per cut.**
+
+- **Device:** cpu
+- **Install:** `pip install voxkitchen[core]`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `n_fft` | int | `1024` |  |
+| `hop_length` | int | `256` |  |
+| `n_mels` | int | `80` |  |
+| `fmin` | float | `0.0` |  |
+| `fmax` | float | None | `8000.0` |  |
+| `ref_db` | float | `20.0` |  |
+| `output_dir` | str | None | `None` |  |
+
+```yaml
+- name: my_mel_extract
+  op: mel_extract
+  args:
+    n_fft: 1024
+    hop_length: 256
+    n_mels: 80
+    fmin: 0.0
+    fmax: 8000.0
+    ref_db: 20.0
+    output_dir: None
 ```
 
 ---
