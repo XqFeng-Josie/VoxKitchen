@@ -134,6 +134,10 @@ try:
     from voxkitchen.operators.synthesize import tts_kokoro as _synth_kokoro  # noqa: F401
 except ImportError:
     pass  # kokoro not installed
+try:
+    from voxkitchen.operators.synthesize import tts_chattts as _synth_chattts  # noqa: F401
+except ImportError:
+    pass  # ChatTTS not installed
 
 # --- pack (optional: datasets, webdataset, pyarrow) ---
 from voxkitchen.operators.pack import pack_manifest as _pack_manifest  # noqa: F401
