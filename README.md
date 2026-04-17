@@ -12,157 +12,24 @@ Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`,
 
 > **Status:** Pre-alpha. API is unstable.
 
-## Requirements
-
-- Python 3.10+
-- ffmpeg (for audio format conversion)
-- GPU is **optional** — most operators run on CPU. GPU accelerates ASR, VAD, and diarization.
-
-<details>
-<summary>GPU setup (only if you have NVIDIA GPU)</summary>
-
-Install PyTorch matching your CUDA driver version:
+## Quickstart
 
 ```bash
-nvidia-smi | head -3                # check CUDA version
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124  # example for CUDA 12.4
-```
-
-> Do NOT use bare `pip install torch` — it may install a CUDA build incompatible with your driver.
-
-</details>
-
-## Install
-
-```bash
-# Create virtual environment
-conda create -n voxkitchen python=3.11 -y
-conda activate voxkitchen
-
-# Install core (ffmpeg_convert, resample, snr_estimate, etc.)
 pip install -e .
-
-# Install extras as needed:
-#
-#   ASR engines
-pip install -e ".[asr]"           # faster-whisper (CTranslate2, GPU recommended)
-pip install -e ".[whisper]"       # OpenAI whisper (pure PyTorch, macOS-safe)
-pip install -e ".[funasr]"        # Paraformer, SenseVoice (FunASR)
-pip install -e ".[wenet]"         # WeNet ASR
-#
-#   Audio analysis
-pip install -e ".[audio]"         # torch + torchaudio
-pip install -e ".[segment]"       # webrtcvad, librosa, torchaudio (VAD, silence split)
-pip install -e ".[pitch]"         # PyWorld pitch analysis
-pip install -e ".[dnsmos]"        # DNSMOS P.835/P.808 + UTMOS quality scores
-pip install -e ".[quality]"       # simhash (audio deduplication)
-#
-#   Speaker & language
-pip install -e ".[diarize]"       # pyannote speaker diarization (needs HF_TOKEN, see below)
-pip install -e ".[classify]"      # SpeechBrain language ID
-pip install -e ".[gender]"        # inaSpeechSegmenter gender detection
-pip install -e ".[speaker]"       # WeSpeaker speaker embeddings (installs from GitHub)
-#
-#   Audio codec
-pip install -e ".[codec]"         # Encodec + DAC neural audio codec tokenization
-#
-#   Enhancement & alignment
-pip install -e ".[enhance]"       # DeepFilterNet speech denoising
-pip install -e ".[align]"         # Qwen3 ASR + forced alignment (30 langs + Chinese)
-#
-#   TTS synthesis
-pip install -e ".[tts-kokoro]"      # Kokoro TTS (lightweight, CPU-capable)
-pip install -e ".[tts-chattts]"     # ChatTTS (conversational style, GPU)
-pip install -e ".[tts-cosyvoice]"   # CosyVoice2 (voice cloning, GPU)
-pip install -e ".[tts-fish-speech]" # Fish-Speech (voice cloning, GPU)
-#
-#   Output & visualization
-pip install -e ".[pack]"          # HuggingFace datasets, WebDataset, Parquet
-pip install -e ".[viz]"           # HTML report (Jinja2 + Plotly)
-pip install -e ".[viz-panel]"     # Gradio interactive panel
-
-# Or pick what you need
-pip install -e ".[asr,whisper,pitch,dnsmos,segment,diarize]"
-
-# Or install everything at once
-pip install -e ".[all]"
-```
-
-### Docker
-
-All 51 operators pre-installed, no system dependency issues:
-
-```bash
-# Build locally (or pull pre-built, see below)
-docker build -t voxkitchen .
-
-# Quick demo with built-in sample audio
-docker run --rm voxkitchen run examples/pipelines/demo-no-asr.yaml
-
-# Run your own pipeline
-docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
-
-# GPU support (requires nvidia-docker)
-docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
-
-# Operators that need API tokens (e.g. pyannote_diarize):
-# Option 1: pass env var
-docker run --rm -e HF_TOKEN=hf_xxx -v /data:/data voxkitchen run pipeline.yaml
-# Option 2: mount .env file
-docker run --rm -v $(pwd)/.env:/app/.env -v /data:/data voxkitchen run pipeline.yaml
-
-# List operators
-docker run --rm voxkitchen operators
-
-# Interactive shell
-docker run --rm -it --entrypoint bash voxkitchen
-```
-
-<!-- TODO: pre-built image available at:
-```bash
-docker pull ghcr.io/voxkitchen/voxkitchen:latest
-```
--->
-
-### Configuration
-
-Some operators require API tokens. Copy `.env.example` to `.env`:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Required by | How to get |
-|----------|-------------|------------|
-| `HF_TOKEN` | `pyannote_diarize` | [HuggingFace](https://huggingface.co/settings/tokens) — also accept the [pyannote model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) |
-
-### Troubleshooting
-
-| Symptom | Solution |
-|---------|----------|
-| `torch.cuda.is_available()` returns False | PyTorch CUDA mismatch — install matching version: `pip install torch --index-url .../cuXXX` |
-| `faster_whisper_asr` deadlocks on macOS | Use `whisper_openai_asr` instead (pure PyTorch, no CTranslate2) |
-| `pyannote_diarize` returns 403 | Accept the [model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) on HuggingFace |
-| `silero_vad` hangs on first run | Network issue — pre-download: `python -c "import torch; torch.hub.load('snakers4/silero-vad', 'silero_vad')"` |
-
-## 30-second quickstart
-
-```bash
-# Scaffold a project
 vkit init my-project && cd my-project
-
-# Run the pipeline
 vkit run pipeline.yaml
+```
 
-# Inspect results
-vkit inspect run work/
-vkit inspect cuts work/01_pack/cuts.jsonl.gz
-open work/report.html
+Or with Docker (all 51 operators pre-installed, no dependency issues):
+
+```bash
+docker build -t voxkitchen .
+docker run --rm voxkitchen run examples/pipelines/demo-no-asr.yaml
 ```
 
 ## How it works
 
-A pipeline is a YAML file: **ingest** raw audio, pass it through **stages** (operators), each stage transforms the data:
+A pipeline is a YAML file: **ingest** raw audio, pass it through **stages**, each stage transforms the data:
 
 ```yaml
 version: "0.1"
@@ -191,84 +58,177 @@ stages:
     args: { output_dir: ./output/hf_dataset }
 ```
 
+```bash
+vkit run pipeline.yaml
+vkit inspect run work/          # stage summary
+vkit inspect cuts work/05_pack/cuts.jsonl.gz   # data statistics
+```
+
+## Install
+
+### Docker (recommended)
+
+```bash
+docker build -t voxkitchen .
+
+# Process your data
+docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
+
+# GPU support
+docker run --rm --gpus all -v /data:/data voxkitchen run pipeline.yaml
+
+# Interactive shell
+docker run --rm -it --entrypoint bash voxkitchen
+```
+
+<!-- TODO: pre-built image available at:
+```bash
+docker pull ghcr.io/voxkitchen/voxkitchen:latest
+```
+-->
+
+### pip
+
+```bash
+conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
+
+# Core (21 operators: resample, ffmpeg_convert, snr_estimate, pack_jsonl, etc.)
+pip install -e .
+
+# Add what you need
+pip install -e ".[asr,segment,pitch,dnsmos,pack]"
+
+# Or everything
+pip install -e ".[all]"
+```
+
+<details>
+<summary>All extras groups</summary>
+
+| Group | Operators enabled | Dependencies |
+|-------|-------------------|--------------|
+| `audio` | `speed_perturb` | torch, torchaudio |
+| `segment` | `silero_vad`, `webrtc_vad`, `silence_split` | webrtcvad, librosa, torchaudio |
+| `asr` | `faster_whisper_asr`, `whisperx_asr` | faster-whisper |
+| `whisper` | `whisper_openai_asr`, `whisper_langid` | openai-whisper |
+| `funasr` | `paraformer_asr`, `sensevoice_asr`, `emotion_recognize` | funasr |
+| `wenet` | `wenet_asr` | wenet (GitHub) |
+| `pitch` | `pitch_stats` | pyworld |
+| `dnsmos` | `dnsmos_score`, `utmos_score` | speechmos |
+| `quality` | `audio_fingerprint_dedup` | simhash |
+| `diarize` | `pyannote_diarize` | pyannote.audio (needs `HF_TOKEN`) |
+| `classify` | `speechbrain_langid` | speechbrain |
+| `gender` | `gender_classify` (ina method) | inaSpeechSegmenter |
+| `speaker` | `speaker_embed` | wespeaker (GitHub) |
+| `enhance` | `speech_enhance` | deepfilternet |
+| `align` | `forced_align`, `qwen3_asr` | qwen-asr |
+| `codec` | `codec_tokenize` | encodec, descript-audio-codec |
+| `tts-kokoro` | `tts_kokoro` | kokoro, misaki |
+| `tts-chattts` | `tts_chattts` | ChatTTS |
+| `tts-cosyvoice` | `tts_cosyvoice` | modelscope |
+| `tts-fish-speech` | `tts_fish_speech` | fish-speech (GitHub) |
+| `pack` | `pack_huggingface`, `pack_webdataset`, `pack_parquet` | datasets, webdataset, pyarrow |
+| `viz` | HTML report | jinja2, plotly |
+| `viz-panel` | Gradio panel | gradio |
+
+</details>
+
+<details>
+<summary>GPU setup</summary>
+
+Install PyTorch matching your CUDA driver **before** installing extras:
+
+```bash
+nvidia-smi | head -3                # check CUDA version
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124
+```
+
+> Do NOT use bare `pip install torch` — it may install a CUDA build incompatible with your driver.
+
+</details>
+
+### Configuration
+
+Some operators require API tokens:
+
+```bash
+cp .env.example .env   # then edit .env
+```
+
+| Variable | Required by | How to get |
+|----------|-------------|------------|
+| `HF_TOKEN` | `pyannote_diarize` | [HuggingFace tokens](https://huggingface.co/settings/tokens) + accept the [pyannote model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) |
+
+For Docker, pass via `-e HF_TOKEN=hf_xxx` or mount `-v $(pwd)/.env:/app/.env`.
+
 ## Operators
 
 51 built-in operators across 8 categories:
 
-| Category | Operators |
-|----------|-----------|
-| **Audio** | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize`, `identity` |
-| **Segmentation** | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
-| **Augmentation** | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
-| **Synthesize** | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` |
-| **Annotation** | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `codec_tokenize`, `mel_extract` |
-| **Quality** | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
-| **Pack** | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
+| Category | Count | Operators |
+|----------|-------|-----------|
+| **Audio** | 5 | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize`, `identity` |
+| **Segmentation** | 4 | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
+| **Augmentation** | 4 | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
+| **Annotation** | 17 | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `codec_tokenize`, `mel_extract` |
+| **Quality** | 11 | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
+| **Synthesize** | 4 | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` |
+| **Pack** | 6 | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
 ```bash
-# List all operators
-vkit operators
-
-# Show config fields + YAML example for any operator
-vkit operators show silero_vad
+vkit operators                  # list all
+vkit operators show silero_vad  # config fields + YAML example
 ```
 
-## CLI commands
+## CLI
 
 ```
-vkit init <path>              Scaffold a new project
-vkit init <path> -t tts       Use a template (tts, asr, cleaning, speaker)
-vkit init --list-templates    Show available templates
-vkit run <yaml>               Execute a pipeline
-vkit run <yaml> --dry-run     Validate without executing
-vkit validate <yaml>          Check YAML syntax
-vkit download <recipe> --root <dir>       Download a dataset
-vkit ingest --source dir ...  Build CutSet without a pipeline
-vkit inspect cuts <path>      CutSet statistics
-vkit inspect run <work_dir>   Pipeline stage summary
-vkit inspect trace <id> --in <work_dir>   Trace a cut's provenance
-vkit inspect errors <work_dir>            Show per-cut errors
-vkit operators                List all operators
-vkit operators show <name>    Operator detail + config
-vkit recipes                  List available dataset recipes
-vkit viz <path>               Gradio interactive explorer
+vkit init <path>                    Scaffold a new project
+vkit init <path> -t tts             Use a template (tts, asr, cleaning, speaker)
+vkit run <yaml>                     Execute a pipeline
+vkit run <yaml> --dry-run           Validate without executing
+vkit validate <yaml>                Check YAML syntax
+vkit download <recipe> --root <dir> Download a dataset
+vkit operators                      List all operators
+vkit operators show <name>          Operator detail + config
+vkit recipes                        List available dataset recipes
+vkit inspect cuts <path>            CutSet statistics
+vkit inspect run <work_dir>         Pipeline run summary
+vkit viz <path>                     Gradio interactive explorer
 ```
 
-## Python tools API
+## Python API
 
-For quick tasks without writing a YAML pipeline:
+For quick tasks without a YAML pipeline:
+
+```python
+from voxkitchen.tools import audio_info, transcribe, detect_speech, estimate_snr
+
+audio_info("speech.wav")       # AudioInfo(sample_rate=16000, duration=3.2, ...)
+transcribe("speech.wav")       # [Segment(start=0.0, end=3.2, text="Hello world")]
+detect_speech("speech.wav")    # [SpeechSegment(start=0.5, end=2.8)]
+estimate_snr("speech.wav")     # 18.3
+```
+
+<details>
+<summary>More examples</summary>
 
 ```python
 from voxkitchen.tools import (
-    audio_info, transcribe, detect_speech, estimate_snr,
-    extract_speaker_embedding, enhance_speech, align_words,
+    extract_speaker_embedding, enhance_speech, align_words, synthesize,
 )
 
-audio_info("speech.wav")
-# AudioInfo(sample_rate=16000, duration=3.2, num_channels=1, format='WAV')
-
-transcribe("speech.wav", model="tiny")
-# [Segment(start=0.0, end=3.2, text="Hello world")]
-
-detect_speech("speech.wav", method="silero")
-# [SpeechSegment(start=0.5, end=2.8)]
-
-estimate_snr("speech.wav")
-# 18.3
-
 # Speaker embedding (requires: pip install voxkitchen[speaker])
-emb = extract_speaker_embedding("speaker.wav")
-# [0.12, -0.34, 0.56, ...]  (512-d vector)
+emb = extract_speaker_embedding("speaker.wav")   # 512-d vector
 
 # Speech enhancement (requires: pip install voxkitchen[enhance])
-enhance_speech("noisy.wav", "clean.wav", aggressiveness=0.5)
+enhance_speech("noisy.wav", "clean.wav")
 
 # Forced alignment (requires: pip install voxkitchen[align])
 align_words("speech.wav", "hello world")
 # [{"text": "hello", "start": 0.12, "end": 0.58}, ...]
 
 # TTS synthesis (requires: pip install voxkitchen[tts-kokoro])
-from voxkitchen.tools import synthesize
 synthesize("Hello world!", "output.wav", engine="kokoro")
 
 # Voice cloning (requires: pip install voxkitchen[tts-cosyvoice])
@@ -276,17 +236,31 @@ synthesize("你好", "clone.wav", engine="cosyvoice",
            reference_audio="ref.wav", reference_text="参考文本")
 ```
 
+</details>
+
 ## Key features
 
-- **Resumable** — each stage checkpoints with `_SUCCESS` marker; crashes resume from last good stage
-- **Error tolerant** — bad cuts are logged to `_errors.jsonl` and skipped, pipeline continues
-- **GC** — intermediate derived audio is cleaned up automatically (`--keep-intermediates` to disable)
-- **Provenance** — every Cut tracks which operator produced it from which parent
+- **Resumable** — each stage checkpoints; crashes resume from last good stage
+- **Error tolerant** — bad cuts logged to `_errors.jsonl` and skipped
+- **GC** — intermediate audio cleaned up automatically
+- **Provenance** — every Cut tracks which operator produced it
 - **Extensible** — register custom operators via Python entry_points
 
 ## Examples
 
 See [`examples/pipelines/`](examples/pipelines/) for ready-to-run YAML files.
+
+<details>
+<summary>Troubleshooting</summary>
+
+| Symptom | Solution |
+|---------|----------|
+| `torch.cuda.is_available()` returns False | PyTorch CUDA mismatch — reinstall matching version |
+| `faster_whisper_asr` deadlocks on macOS | Use `whisper_openai_asr` instead |
+| `pyannote_diarize` returns 403 | Accept the [model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) on HuggingFace |
+| `silero_vad` hangs on first run | Pre-download: `python -c "import torch; torch.hub.load('snakers4/silero-vad', 'silero_vad')"` |
+
+</details>
 
 ## License
 
