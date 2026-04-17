@@ -1,16 +1,19 @@
 # ============================================================
-# VoxKitchen GPU image — CUDA 12.4 + all 51 operators
+# VoxKitchen GPU image — CUDA 12.4 + all operators + models
+#
+# All models pre-downloaded. Users just pull and run.
 #
 # Build:
 #   docker build -t voxkitchen:gpu .
+#   docker build --build-arg HF_TOKEN=hf_xxx -t voxkitchen:gpu .
 #
 # Usage:
-#   docker run --rm --gpus all voxkitchen:gpu run examples/pipelines/demo-no-asr.yaml
 #   docker run --rm --gpus all -v /data:/data voxkitchen:gpu run pipeline.yaml
-#   docker run --rm -it --entrypoint bash voxkitchen:gpu
 # ============================================================
 
 FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
+
+ARG HF_TOKEN=""
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
@@ -58,7 +61,7 @@ RUN pip install "wenet @ git+https://github.com/wenet-e2e/wenet.git" 2>&1 \
 RUN pip install "fish-speech @ git+https://github.com/fishaudio/fish-speech.git" 2>&1 \
     || echo "WARN: fish-speech install failed, skipping"
 
-# Enhance (needs system FFmpeg dev libs)
+# Enhance
 RUN pip install "deepfilternet>=0.5" 2>&1 \
     || echo "WARN: deepfilternet install failed, skipping"
 
@@ -68,6 +71,9 @@ RUN pip install pytest pytest-cov scipy
 # ---- copy full source & install ----
 COPY . .
 RUN pip install -e . --no-deps
+
+# ---- pre-download all models ----
+RUN HF_TOKEN=${HF_TOKEN} python scripts/warmup_models.py
 
 ENTRYPOINT ["vkit"]
 CMD ["--help"]

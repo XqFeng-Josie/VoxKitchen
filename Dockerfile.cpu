@@ -1,16 +1,19 @@
 # ============================================================
-# VoxKitchen CPU image — lightweight, no CUDA (~3 GB vs ~8 GB)
+# VoxKitchen CPU image — lightweight + all operators + models
+#
+# All models pre-downloaded. Users just pull and run.
 #
 # Build:
 #   docker build -f Dockerfile.cpu -t voxkitchen:cpu .
+#   docker build -f Dockerfile.cpu --build-arg HF_TOKEN=hf_xxx -t voxkitchen:cpu .
 #
 # Usage:
-#   docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
 #   docker run --rm -v /data:/data voxkitchen:cpu run pipeline.yaml
-#   docker run --rm -it --entrypoint bash voxkitchen:cpu
 # ============================================================
 
 FROM python:3.11-slim
+
+ARG HF_TOKEN=""
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
@@ -33,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# ---- PyTorch CPU (much smaller than CUDA build) ----
+# ---- PyTorch CPU ----
 RUN pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 # ---- pip deps (layer-cached) ----
@@ -61,7 +64,7 @@ RUN pip install "wenet @ git+https://github.com/wenet-e2e/wenet.git" 2>&1 \
 RUN pip install "fish-speech @ git+https://github.com/fishaudio/fish-speech.git" 2>&1 \
     || echo "WARN: fish-speech install failed, skipping"
 
-# Enhance (needs system FFmpeg dev libs)
+# Enhance
 RUN pip install "deepfilternet>=0.5" 2>&1 \
     || echo "WARN: deepfilternet install failed, skipping"
 
@@ -71,6 +74,9 @@ RUN pip install pytest pytest-cov scipy
 # ---- copy full source & install ----
 COPY . .
 RUN pip install -e . --no-deps
+
+# ---- pre-download all models (skip large GPU-only models) ----
+RUN HF_TOKEN=${HF_TOKEN} python scripts/warmup_models.py --skip-gpu
 
 ENTRYPOINT ["vkit"]
 CMD ["--help"]

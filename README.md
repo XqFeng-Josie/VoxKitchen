@@ -68,41 +68,46 @@ vkit inspect cuts work/05_pack/cuts.jsonl.gz   # data statistics
 
 ### Docker (recommended)
 
-Two images, both include all 51 operators and system deps:
+Two pre-built images, all 51 operators + models pre-downloaded, pull and run:
 
-| Image | Base | Size | Use when |
-|-------|------|------|----------|
-| `voxkitchen:gpu` | PyTorch + CUDA 12.4 | ~8 GB | ASR, diarization, TTS — anything GPU-accelerated |
-| `voxkitchen:cpu` | Python 3.11 slim | ~3 GB | Quality filtering, format conversion, packing |
+| Image | Use when | Models |
+|-------|----------|--------|
+| `voxkitchen:gpu` | ASR, TTS, diarization — anything GPU | All models (~20 GB) |
+| `voxkitchen:cpu` | Quality filtering, packing, lightweight | Core models, skip large TTS (~8 GB) |
 
-```bash
-# GPU image (default Dockerfile)
-docker build -t voxkitchen:gpu .
-
-# CPU image
-docker build -f Dockerfile.cpu -t voxkitchen:cpu .
-```
-
-```bash
-# Run with GPU
-docker run --rm --gpus all -v /data:/data voxkitchen:gpu run pipeline.yaml
-
-# Run CPU-only
-docker run --rm -v /data:/data voxkitchen:cpu run pipeline.yaml
-
-# Quick demo (built-in sample audio)
-docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
-
-# Interactive shell
-docker run --rm -it --entrypoint bash voxkitchen:gpu
-```
-
-<!-- TODO: pre-built images:
+<!-- TODO: uncomment when registry is ready
 ```bash
 docker pull ghcr.io/voxkitchen/voxkitchen:gpu
 docker pull ghcr.io/voxkitchen/voxkitchen:cpu
 ```
 -->
+
+```bash
+# GPU
+docker run --rm --gpus all -v /data:/data voxkitchen:gpu run pipeline.yaml
+
+# CPU
+docker run --rm -v /data:/data voxkitchen:cpu run pipeline.yaml
+
+# Quick demo (built-in sample audio, no data needed)
+docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
+```
+
+<details>
+<summary>Build from source</summary>
+
+```bash
+# GPU image (all models pre-downloaded during build)
+docker build -t voxkitchen:gpu .
+
+# CPU image
+docker build -f Dockerfile.cpu -t voxkitchen:cpu .
+
+# Include pyannote diarization model (needs HuggingFace token)
+docker build --build-arg HF_TOKEN=hf_xxx -t voxkitchen:gpu .
+```
+
+</details>
 
 ### pip
 
