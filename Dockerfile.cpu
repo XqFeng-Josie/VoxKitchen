@@ -1,16 +1,16 @@
 # ============================================================
-# VoxKitchen GPU image — CUDA 12.4 + all 51 operators
+# VoxKitchen CPU image — lightweight, no CUDA (~3 GB vs ~8 GB)
 #
 # Build:
-#   docker build -t voxkitchen:gpu .
+#   docker build -f Dockerfile.cpu -t voxkitchen:cpu .
 #
 # Usage:
-#   docker run --rm --gpus all voxkitchen:gpu run examples/pipelines/demo-no-asr.yaml
-#   docker run --rm --gpus all -v /data:/data voxkitchen:gpu run pipeline.yaml
-#   docker run --rm -it --entrypoint bash voxkitchen:gpu
+#   docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
+#   docker run --rm -v /data:/data voxkitchen:cpu run pipeline.yaml
+#   docker run --rm -it --entrypoint bash voxkitchen:cpu
 # ============================================================
 
-FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
+FROM python:3.11-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
@@ -32,6 +32,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+# ---- PyTorch CPU (much smaller than CUDA build) ----
+RUN pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 # ---- pip deps (layer-cached) ----
 COPY pyproject.toml README.md LICENSE ./

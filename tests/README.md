@@ -29,23 +29,24 @@ pytest -v -m "not slow and not gpu"
 
 ## Docker (Recommended)
 
-Docker provides a clean environment with all 51 operators and system deps pre-installed.
+Two images available — both include all 51 operators and system deps.
 
 ```bash
-# Build (first time ~10-15 min, cached after)
-docker build -t voxkitchen .
+# Build
+docker build -t voxkitchen:gpu .                       # GPU (CUDA 12.4)
+docker build -f Dockerfile.cpu -t voxkitchen:cpu .      # CPU-only
 
 # All CPU tests (including slow model downloads)
-docker run --rm --entrypoint pytest voxkitchen tests/unit/operators/ -v -m "not gpu"
+docker run --rm --entrypoint pytest voxkitchen:cpu tests/unit/operators/ -v -m "not gpu"
 
 # Fast tests only
-docker run --rm --entrypoint pytest voxkitchen tests/unit/operators/ -v -m "not slow and not gpu"
+docker run --rm --entrypoint pytest voxkitchen:cpu tests/unit/operators/ -v -m "not slow and not gpu"
 
 # GPU tests
-docker run --rm --gpus all --entrypoint pytest voxkitchen tests/unit/operators/ -v
+docker run --rm --gpus all --entrypoint pytest voxkitchen:gpu tests/unit/operators/ -v
 
 # Interactive shell
-docker run --rm -it --entrypoint bash voxkitchen
+docker run --rm -it --entrypoint bash voxkitchen:gpu
 ```
 
 ## Local Setup

@@ -20,11 +20,11 @@ vkit init my-project && cd my-project
 vkit run pipeline.yaml
 ```
 
-Or with Docker (all 51 operators pre-installed, no dependency issues):
+Or with Docker (all 51 operators pre-installed, zero setup):
 
 ```bash
-docker build -t voxkitchen .
-docker run --rm voxkitchen run examples/pipelines/demo-no-asr.yaml
+docker build -f Dockerfile.cpu -t voxkitchen:cpu .
+docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
 ```
 
 ## How it works
@@ -68,22 +68,39 @@ vkit inspect cuts work/05_pack/cuts.jsonl.gz   # data statistics
 
 ### Docker (recommended)
 
+Two images, both include all 51 operators and system deps:
+
+| Image | Base | Size | Use when |
+|-------|------|------|----------|
+| `voxkitchen:gpu` | PyTorch + CUDA 12.4 | ~8 GB | ASR, diarization, TTS — anything GPU-accelerated |
+| `voxkitchen:cpu` | Python 3.11 slim | ~3 GB | Quality filtering, format conversion, packing |
+
 ```bash
-docker build -t voxkitchen .
+# GPU image (default Dockerfile)
+docker build -t voxkitchen:gpu .
 
-# Process your data
-docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
-
-# GPU support
-docker run --rm --gpus all -v /data:/data voxkitchen run pipeline.yaml
-
-# Interactive shell
-docker run --rm -it --entrypoint bash voxkitchen
+# CPU image
+docker build -f Dockerfile.cpu -t voxkitchen:cpu .
 ```
 
-<!-- TODO: pre-built image available at:
 ```bash
-docker pull ghcr.io/voxkitchen/voxkitchen:latest
+# Run with GPU
+docker run --rm --gpus all -v /data:/data voxkitchen:gpu run pipeline.yaml
+
+# Run CPU-only
+docker run --rm -v /data:/data voxkitchen:cpu run pipeline.yaml
+
+# Quick demo (built-in sample audio)
+docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
+
+# Interactive shell
+docker run --rm -it --entrypoint bash voxkitchen:gpu
+```
+
+<!-- TODO: pre-built images:
+```bash
+docker pull ghcr.io/voxkitchen/voxkitchen:gpu
+docker pull ghcr.io/voxkitchen/voxkitchen:cpu
 ```
 -->
 
@@ -133,19 +150,9 @@ pip install -e ".[all]"
 
 </details>
 
-<details>
-<summary>GPU setup</summary>
-
-Install PyTorch matching your CUDA driver **before** installing extras:
-
-```bash
-nvidia-smi | head -3                # check CUDA version
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124
-```
-
-> Do NOT use bare `pip install torch` — it may install a CUDA build incompatible with your driver.
-
-</details>
+> **GPU with pip:** install PyTorch matching your CUDA version **before** extras:
+> `pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124`.
+> Or just use Docker — it handles this automatically.
 
 ### Configuration
 
