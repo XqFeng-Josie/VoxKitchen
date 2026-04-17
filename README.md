@@ -105,6 +105,12 @@ docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 # GPU support (requires nvidia-docker)
 docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 
+# Operators that need API tokens (e.g. pyannote_diarize):
+# Option 1: pass env var
+docker run --rm -e HF_TOKEN=hf_xxx -v /data:/data voxkitchen run pipeline.yaml
+# Option 2: mount .env file
+docker run --rm -v $(pwd)/.env:/app/.env -v /data:/data voxkitchen run pipeline.yaml
+
 # List operators
 docker run --rm voxkitchen operators
 
