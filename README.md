@@ -96,7 +96,10 @@ All 51 operators pre-installed, no system dependency issues:
 # Build locally (or pull pre-built, see below)
 docker build -t voxkitchen .
 
-# Run a pipeline
+# Quick demo with built-in sample audio
+docker run --rm voxkitchen run examples/pipelines/demo-no-asr.yaml
+
+# Run your own pipeline
 docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 
 # GPU support (requires nvidia-docker)

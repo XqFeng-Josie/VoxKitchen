@@ -7,14 +7,14 @@
 # Build:
 #   docker build -t voxkitchen .
 #
-# Run a pipeline:
+# Quick demo:
+#   docker run --rm voxkitchen run examples/pipelines/demo-no-asr.yaml
+#
+# Run your own pipeline:
 #   docker run --rm -v /data/raw_audio:/data voxkitchen run pipeline.yaml
 #
 # Run with GPU:
 #   docker run --rm --gpus all -v /data/raw_audio:/data voxkitchen run pipeline.yaml
-#
-# Run tests:
-#   docker run --rm --entrypoint pytest voxkitchen tests/unit/operators/ -v -m "not gpu"
 #
 # Interactive shell:
 #   docker run --rm -it --entrypoint bash voxkitchen
@@ -50,10 +50,20 @@ RUN mkdir -p voxkitchen && \
     echo '__version__ = "0.0.0.dev0"' > voxkitchen/_version.py && \
     echo '' > voxkitchen/__init__.py
 
-# PyPI-based extras
-RUN pip install -e ".[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,funasr,classify,gender,codec,align,tts-kokoro,tts-chattts,tts-cosyvoice,viz,viz-panel]" \
-        pytest pytest-cov scipy 2>&1 \
-    || echo "WARN: some extras failed, continuing..."
+# Core deps MUST succeed — no fallback
+RUN pip install -e .
+
+# Optional PyPI-based extras — install individually so one failure
+# does not block the rest
+RUN for extra in audio segment quality pack asr whisper pitch dnsmos \
+        funasr classify gender codec align \
+        tts-kokoro tts-chattts tts-cosyvoice viz viz-panel; do \
+        pip install -e ".[$extra]" 2>&1 \
+        || echo "WARN: [$extra] install failed, skipping"; \
+    done
+
+# Test deps
+RUN pip install pytest pytest-cov scipy
 
 # Git-based deps — separate layers for caching
 RUN pip install "wespeaker @ git+https://github.com/wenet-e2e/wespeaker.git" 2>&1 \
