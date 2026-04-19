@@ -1,0 +1,8 @@
+# Shared-dep pins for the asr env (GPU; funasr + faster-whisper + pyannote 3.x).
+torch==2.4.1
+torchaudio==2.4.1
+numpy>=1.24,<2.0
+# pyannote 3.x only needs >=0.13; cap upper bound so future 1.x API changes don't bite.
+huggingface_hub>=0.23,<1.0
+# faster-whisper needs ctranslate2 4.x; funasr would otherwise pull 3.x.
+ctranslate2>=4.4,<5.0

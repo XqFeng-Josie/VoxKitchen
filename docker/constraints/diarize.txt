@@ -1,0 +1,8 @@
+# Shared-dep pins for the diarize env (pyannote 3.x only).
+# Same stack as asr env (torch 2.4 / numpy<2) but without funasr,
+# faster-whisper, qwen3 — just core + pyannote.
+torch==2.4.1
+torchaudio==2.4.1
+numpy>=1.24,<2.0
+# pyannote 3.x needs >=0.13, cap upper bound for API stability.
+huggingface_hub>=0.23,<1.0

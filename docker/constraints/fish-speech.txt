@@ -1,0 +1,11 @@
+# Shared-dep pins for the fish-speech env.
+#
+# Isolated from core / asr / tts because fish-speech upstream pins
+# torch==2.8.0 and implicitly requires numpy>=2.1 — incompatible with
+# the torch 2.4 + numpy 1.x stack the other envs run on.
+#
+# We pin to fish-speech's declared torch version so later installs can't
+# drift. Everything else is left for uv to resolve.
+torch==2.8.0
+torchaudio==2.8.0
+numpy>=2.1,<3

@@ -4,6 +4,7 @@ __pycache__/
 build/
 dist/
 .git/
+.github/
 .venv/
 venv/
 .mypy_cache/
@@ -14,7 +15,10 @@ htmlcov/
 work/
 work_dir/
 demo/
+# src/ is a stray parallel checkout in this repo; keep it out of builds.
+src/
 .env
+.env.*
 .DS_Store
 .idea/
 .vscode/
