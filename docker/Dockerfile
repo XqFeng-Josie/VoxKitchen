@@ -143,6 +143,13 @@ RUN /opt/voxkitchen/envs/core/bin/vkit doctor --expect core
 # World-readable for non-root runtime; see latest-target comment.
 RUN chmod -R a+rX /opt/voxkitchen
 
+LABEL org.opencontainers.image.source="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.url="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.documentation="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="VoxKitchen slim" \
+      org.opencontainers.image.description="core env only — VAD, quality, packing, speaker embed, enhancement (CPU)"
+
 ENV PATH=/opt/voxkitchen/envs/core/bin:$PATH \
     VKIT_ENV=core
 ENTRYPOINT ["vkit"]
@@ -305,6 +312,12 @@ RUN /opt/voxkitchen/envs/core/bin/python -m voxkitchen.runtime.merge_schemas \
 RUN /opt/voxkitchen/envs/core/bin/vkit doctor --expect core
 RUN /opt/voxkitchen/envs/asr/bin/vkit  doctor --expect asr
 RUN chmod -R a+rX /opt/voxkitchen && chmod -R a+rwX /opt/voxkitchen/model_cache
+LABEL org.opencontainers.image.source="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.url="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.documentation="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="VoxKitchen asr" \
+      org.opencontainers.image.description="core + ASR (faster-whisper, funasr, qwen3, forced alignment)"
 ENV PATH=/opt/voxkitchen/envs/core/bin:$PATH \
     VKIT_ENV=core
 ENTRYPOINT ["vkit"]
@@ -320,6 +333,12 @@ RUN /opt/voxkitchen/envs/core/bin/python -m voxkitchen.runtime.merge_schemas \
 RUN /opt/voxkitchen/envs/core/bin/vkit doctor --expect core
 RUN /opt/voxkitchen/envs/diarize/bin/vkit doctor --expect diarize
 RUN chmod -R a+rX /opt/voxkitchen && chmod -R a+rwX /opt/voxkitchen/model_cache
+LABEL org.opencontainers.image.source="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.url="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.documentation="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="VoxKitchen diarize" \
+      org.opencontainers.image.description="core + pyannote speaker diarization"
 ENV PATH=/opt/voxkitchen/envs/core/bin:$PATH \
     VKIT_ENV=core
 ENTRYPOINT ["vkit"]
@@ -335,6 +354,12 @@ RUN /opt/voxkitchen/envs/core/bin/python -m voxkitchen.runtime.merge_schemas \
 RUN /opt/voxkitchen/envs/core/bin/vkit doctor --expect core
 RUN /opt/voxkitchen/envs/tts/bin/vkit  doctor --expect tts
 RUN chmod -R a+rX /opt/voxkitchen && chmod -R a+rwX /opt/voxkitchen/model_cache
+LABEL org.opencontainers.image.source="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.url="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.documentation="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="VoxKitchen tts" \
+      org.opencontainers.image.description="core + TTS engines (kokoro, ChatTTS, CosyVoice)"
 ENV PATH=/opt/voxkitchen/envs/core/bin:$PATH \
     VKIT_ENV=core
 ENTRYPOINT ["vkit"]
@@ -350,6 +375,12 @@ RUN /opt/voxkitchen/envs/core/bin/python -m voxkitchen.runtime.merge_schemas \
 RUN /opt/voxkitchen/envs/core/bin/vkit doctor --expect core
 RUN /opt/voxkitchen/envs/fish-speech/bin/vkit doctor --expect fish-speech
 RUN chmod -R a+rX /opt/voxkitchen && chmod -R a+rwX /opt/voxkitchen/model_cache
+LABEL org.opencontainers.image.source="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.url="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.documentation="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="VoxKitchen fish-speech" \
+      org.opencontainers.image.description="core + fish-speech (isolated torch 2.8 stack)"
 ENV PATH=/opt/voxkitchen/envs/core/bin:$PATH \
     VKIT_ENV=core
 ENTRYPOINT ["vkit"]
@@ -399,6 +430,13 @@ RUN /opt/voxkitchen/envs/tts/bin/vkit  doctor --expect tts
 RUN /opt/voxkitchen/envs/fish-speech/bin/vkit doctor --expect fish-speech
 
 RUN chmod -R a+rX /opt/voxkitchen && chmod -R a+rwX /opt/voxkitchen/model_cache
+
+LABEL org.opencontainers.image.source="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.url="https://github.com/XqFeng-Josie/VoxKitchen" \
+      org.opencontainers.image.documentation="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="VoxKitchen latest" \
+      org.opencontainers.image.description="all five envs merged (core / asr / diarize / tts / fish-speech) — for cross-cluster pipelines"
 
 ENV PATH=/opt/voxkitchen/envs/core/bin:$PATH \
     VKIT_ENV=core
