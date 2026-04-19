@@ -102,14 +102,14 @@ vkit doctor                                    # per-env operator availability
 
 ### Docker tag matrix
 
-| Tag | Contains | GPU | Size |
-|-----|----------|-----|------|
-| `voxkitchen:slim`        | core env only (VAD, quality, pack, speaker embed, enhancement) | no  | ~3 GB |
-| `voxkitchen:asr`         | core + ASR family (faster-whisper, funasr, qwen3, forced alignment) | yes | ~10 GB |
-| `voxkitchen:diarize`     | core + pyannote speaker diarization | yes | ~5 GB |
-| `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice | yes | ~10 GB |
-| `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack) | yes | ~6 GB |
-| `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines) | yes | ~25 GB |
+| Tag | Contains | GPU | Size&nbsp;&nbsp;&nbsp;&nbsp; |
+|---|---|---|---|
+| `voxkitchen:slim`        | core only (CPU)                         | no  | ~3&nbsp;GB  |
+| `voxkitchen:asr`         | core + ASR (whisper/funasr/qwen3/align) | yes | ~10&nbsp;GB |
+| `voxkitchen:diarize`     | core + pyannote diarize                 | yes | ~5&nbsp;GB  |
+| `voxkitchen:tts`         | core + TTS (kokoro/ChatTTS/CosyVoice)   | yes | ~10&nbsp;GB |
+| `voxkitchen:fish-speech` | core + fish-speech (torch 2.8)          | yes | ~6&nbsp;GB  |
+| `voxkitchen:latest`      | all 5 envs merged (cross-cluster)       | yes | ~25&nbsp;GB |
 
 `voxkitchen:latest` contains five isolated Python environments in one
 image. VoxKitchen already checkpoints each pipeline stage to disk, so
