@@ -46,6 +46,14 @@ Initial public release.
   bug (mutable default). The operator registers but runtime fails.
 - `utmos_score`: speechmos' `utmos` submodule is absent in the current
   PyPI wheel. Operator registers; runtime fails.
+- The `:latest` Docker image is larger than the sum of the five env
+  images (~103 GB vs ~170 GB summed — layer sharing helps, but
+  `latest` still carries ~40 GB of duplicated `core` model_cache).
+  Each env stage starts FROM core-env and we then `COPY --from=<env>
+  /opt/voxkitchen/model_cache` in the `latest` stage — bringing core's
+  models along each time. Targeted fix: have the `latest` stage re-run
+  warmup instead of copying caches wholesale. Users who don't need
+  cross-cluster pipelines should use the per-env tags for now.
 
 ### License
 

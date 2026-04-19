@@ -132,12 +132,19 @@ vkit docker shell [--tag TAG]       Interactive bash inside an image
 
 | Tag | Contains | GPU | Size&nbsp;&nbsp;&nbsp;&nbsp; |
 |---|---|---|---|
-| `voxkitchen:slim`        | core env only (VAD, quality, pack, speaker embed, enhancement)      | no  | ~3&nbsp;GB  |
-| `voxkitchen:asr`         | core + ASR family (faster-whisper, funasr, qwen3, forced alignment) | yes | ~10&nbsp;GB |
-| `voxkitchen:diarize`     | core + pyannote speaker diarization                                 | yes | ~5&nbsp;GB  |
-| `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice                                 | yes | ~10&nbsp;GB |
-| `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack)                       | yes | ~6&nbsp;GB  |
-| `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines)                      | yes | ~25&nbsp;GB |
+| `voxkitchen:slim`        | core env only (VAD, quality, pack, speaker embed, enhancement)      | no  | ~13&nbsp;GB  |
+| `voxkitchen:asr`         | core + ASR family (faster-whisper, funasr, qwen3, forced alignment) | yes | ~48&nbsp;GB  |
+| `voxkitchen:diarize`     | core + pyannote speaker diarization                                 | yes | ~32&nbsp;GB  |
+| `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice                                 | yes | ~44&nbsp;GB  |
+| `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack)                       | yes | ~38&nbsp;GB  |
+| `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines)                      | yes | ~103&nbsp;GB |
+
+> Sizes include pre-downloaded model weights — kokoro, CosyVoice,
+> fish-speech, paraformer, qwen3, and pyannote each contribute 1-7 GB.
+> The `:latest` image is larger than the sum of the five env-specific
+> images because of an architecture wart (shared `core` model_cache is
+> duplicated when envs are merged); see known limitations in
+> [CHANGELOG](CHANGELOG.md).
 
 `voxkitchen:latest` contains five isolated Python environments in one
 image. VoxKitchen already checkpoints each pipeline stage to disk, so
