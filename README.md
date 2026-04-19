@@ -12,25 +12,68 @@ Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`,
 
 > **Status:** Pre-alpha. API is unstable.
 
-## Quickstart
+## Install
+
+Two install paths. Both give you the same `vkit` CLI.
+
+### Docker — runs any pipeline
+
+Every operator works regardless of combination. Models are pre-baked
+into the image. **This is the path to use if you don't want to think
+about dependencies.**
 
 ```bash
-pip install -e .
-vkit init my-project && cd my-project
+docker pull ghcr.io/xqfeng-josie/voxkitchen:slim   # CPU, ~3 GB
+# or :asr / :diarize / :tts / :fish-speech / :latest — see tag matrix below
+```
+
+### pip — fast local iteration, narrow pipelines, library embedding
+
+Works for pipelines whose operators share one **dependency cluster**
+(e.g. all core, or core + ASR, or core + TTS). Also how you embed
+`voxkitchen.tools.transcribe(...)` into your own Python code.
+
+```bash
+conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
+pip install -e ".[asr,pack]"   # pick only the extras your pipeline uses
+```
+
+**Known limitation**: `pip install voxkitchen[all]` will fail at the pip
+resolver — pyannote 4, funasr, and fish-speech demand mutually exclusive
+torch/numpy versions. For cross-cluster pipelines use Docker, which
+ships all the clusters as isolated envs in one image.
+
+## Quickstart
+
+### With Docker
+
+```bash
+scripts/vkit-docker.sh run examples/pipelines/demo-no-asr.yaml
+scripts/vkit-docker.sh doctor                      # per-env health report
+VKIT_TAG=asr scripts/vkit-docker.sh run my.yaml    # switch image
+```
+
+The wrapper pins the container UID to your host UID (so output files
+are yours, not root's), mounts `./work` and `./data`, loads `./.env`
+(for `HF_TOKEN` etc.), and attaches the GPU if `nvidia-smi` is present.
+Raw `docker run` form is in [Install reference](#install-reference)
+below.
+
+### With pip
+
+```bash
+vkit init my-project -t asr   # scaffold a starter ASR pipeline
+cd my-project
 vkit run pipeline.yaml
 ```
 
-Or with Docker (models pre-downloaded, zero setup):
-
-```bash
-docker pull ghcr.io/xqfeng-josie/voxkitchen:slim
-docker run --rm ghcr.io/xqfeng-josie/voxkitchen:slim \
-    run examples/pipelines/demo-no-asr.yaml
-```
+Templates: `tts`, `asr`, `cleaning`, `speaker`. Or write your own —
+every pipeline is a YAML file (next section shows the structure).
 
 ## How it works
 
-A pipeline is a YAML file: **ingest** raw audio, pass it through **stages**, each stage transforms the data:
+A pipeline is a YAML file: **ingest** raw audio, pass it through
+**stages**, each stage transforms the data.
 
 ```yaml
 version: "0.1"
@@ -59,19 +102,17 @@ stages:
     args: { output_dir: ./output/hf_dataset }
 ```
 
+After a run:
+
 ```bash
-vkit run pipeline.yaml
-vkit inspect run work/          # stage summary
+vkit inspect run work/                         # stage summary
 vkit inspect cuts work/05_pack/cuts.jsonl.gz   # data statistics
+vkit doctor                                    # per-env operator availability
 ```
 
-## Install
+## Install reference
 
-### Docker (recommended)
-
-One Dockerfile, six tags. Each tag is a target in
-[`docker/Dockerfile`](docker/Dockerfile) — pick the smallest one that
-covers what you need.
+### Docker tag matrix
 
 | Tag | Contains | GPU | Size |
 |-----|----------|-----|------|
@@ -80,102 +121,33 @@ covers what you need.
 | `voxkitchen:diarize`     | core + pyannote speaker diarization | yes | ~5 GB |
 | `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice | yes | ~10 GB |
 | `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack) | yes | ~6 GB |
-| `voxkitchen:latest`      | everything — all 4 GPU envs + core | yes | ~25 GB |
+| `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines) | yes | ~25 GB |
 
-```bash
-# Slim — CPU, lightweight data processing
-docker pull ghcr.io/xqfeng-josie/voxkitchen:slim
-docker run --rm \
-    --user $(id -u):$(id -g) -e HOME=/tmp \
-    -v $(pwd)/work:/app/work \
-    -v $(pwd)/data:/data \
-    ghcr.io/xqfeng-josie/voxkitchen:slim run pipeline.yaml
+`voxkitchen:latest` contains five isolated Python environments in one
+image. VoxKitchen already checkpoints each stage to disk, so the runner
+dispatches stages across envs via subprocess — users write ordinary
+pipelines and the multi-env is invisible. See
+[`docs/architecture/multi-env.md`](docs/architecture/multi-env.md) for
+the full design.
 
-# Latest — everything. Needs NVIDIA GPU + nvidia-container-toolkit.
-docker pull ghcr.io/xqfeng-josie/voxkitchen:latest
-docker run --rm --gpus all \
-    --user $(id -u):$(id -g) -e HOME=/tmp \
-    -v $(pwd)/work:/app/work \
-    -v $(pwd)/data:/data \
-    ghcr.io/xqfeng-josie/voxkitchen:latest run pipeline.yaml
+### pip extras — which combine cleanly
 
-# Check what's installed and healthy
-docker run --rm ghcr.io/xqfeng-josie/voxkitchen:latest doctor
-```
+Install any subset whose groups map to a **single cluster**:
 
-> **Why `--user $(id -u):$(id -g)` and `-e HOME=/tmp`?**
-> Without `--user`, Docker writes output as root and you can't delete it
-> without sudo. Pinning the container UID to your host UID fixes ownership.
-> `HOME=/tmp` gives non-root processes a writable home — model caches
-> live under `/opt/voxkitchen/model_cache/` (world-readable) so `HOME` is
-> only used for occasional transient files. Bundle these flags into a
-> shell alias, or use the [`scripts/vkit-docker.sh`](scripts/vkit-docker.sh)
-> wrapper that already handles them.
+| Cluster | Safe to combine in one `pip install` |
+|---|---|
+| Core | `audio`, `segment`, `quality`, `pack`, `pitch`, `dnsmos`, `classify`, `enhance`, `codec`, `speaker`, `viz`, `viz-panel` |
+| ASR | core + `asr`, `whisper`, `funasr`, `align`, `wenet` |
+| Diarize | core + `diarize` |
+| TTS | core + `tts-kokoro`, `tts-chattts`, `tts-cosyvoice` |
+| Fish-Speech | `tts-fish-speech` (**do not mix with anything else** — needs torch 2.8) |
 
-`vkit doctor` reports per-env operator availability (core / asr / diarize /
-tts / fish-speech) and the status of the model cache. Use it whenever
-`run` complains an operator is missing.
+Mixing across clusters (`diarize + funasr`, `tts-cosyvoice + tts-fish-speech`,
+etc.) is the case where pip fails and Docker wins. The authoritative
+mapping is [`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py).
 
 <details>
-<summary>Oh no, I already have root-owned files in <code>work/</code></summary>
-
-Use Docker itself to chown them back — no sudo needed:
-
-```bash
-docker run --rm -v $(pwd)/work:/work alpine \
-    chown -R $(id -u):$(id -g) /work
-```
-</details>
-
-**How it works**: `voxkitchen:latest` contains five isolated Python
-environments (`core`, `asr`, `diarize`, `tts`, `fish-speech`) in one
-image. VoxKitchen already checkpoints each pipeline stage to disk, so
-stages can run in different envs via subprocess dispatch — the runner
-picks the right env per stage automatically. This sidesteps the hard
-dep conflicts (pyannote vs funasr vs ChatTTS vs fish-speech's torch 2.8)
-that make a single-env "everything" build impossible.
-
-See [`docs/architecture/multi-env.md`](docs/architecture/multi-env.md)
-for the full design and [`docs/docker-build.md`](docs/docker-build.md)
-for building locally.
-
-<details>
-<summary>Building locally (air-gapped hosts, custom CUDA, arm64)</summary>
-
-```bash
-# Convenience wrapper: reads HF_TOKEN from ./.env so gated models
-# (pyannote, etc.) are baked into the image at build time instead of
-# downloading on first use.
-scripts/vkit-build.sh           # → voxkitchen:latest (GPU, ~23 GB)
-scripts/vkit-build.sh slim      # → voxkitchen:slim   (CPU, ~3 GB)
-
-# Or go raw:
-docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .
-docker build --target latest -f docker/Dockerfile \
-    --build-arg HF_TOKEN=hf_xxx -t voxkitchen:latest .
-```
-
-Full build docs: [`docs/docker-build.md`](docs/docker-build.md).
-
-</details>
-
-### pip
-
-```bash
-conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
-
-# Core (21 operators: resample, ffmpeg_convert, snr_estimate, pack_jsonl, etc.)
-pip install -e .
-
-# Add what you need
-pip install -e ".[asr,segment,pitch,dnsmos,pack]"
-
-# Or everything
-pip install -e ".[all]"
-```
-
-<details>
-<summary>All extras groups</summary>
+<summary>All extras groups (operators and deps per group)</summary>
 
 | Group | Operators enabled | Dependencies |
 |-------|-------------------|--------------|
@@ -186,7 +158,7 @@ pip install -e ".[all]"
 | `funasr` | `paraformer_asr`, `sensevoice_asr`, `emotion_recognize` | funasr |
 | `wenet` | `wenet_asr` | wenet (GitHub) |
 | `pitch` | `pitch_stats` | pyworld |
-| `dnsmos` | `dnsmos_score`, `utmos_score` | speechmos |
+| `dnsmos` | `dnsmos_score`, `utmos_score` | speechmos, onnxruntime |
 | `quality` | `audio_fingerprint_dedup` | simhash |
 | `diarize` | `pyannote_diarize` | pyannote.audio (needs `HF_TOKEN`) |
 | `classify` | `speechbrain_langid` | speechbrain |
@@ -198,18 +170,66 @@ pip install -e ".[all]"
 | `tts-kokoro` | `tts_kokoro` | kokoro, misaki |
 | `tts-chattts` | `tts_chattts` | ChatTTS |
 | `tts-cosyvoice` | `tts_cosyvoice` | modelscope |
-| `tts-fish-speech` | `tts_fish_speech` (operator is currently parked, tracks fish-speech 1.x API — see CHANGELOG Known limitations) | fish-speech (GitHub) |
+| `tts-fish-speech` | `tts_fish_speech` (operator currently parked; tracks fish-speech 1.x API) | fish-speech (GitHub) |
 | `pack` | `pack_huggingface`, `pack_webdataset`, `pack_parquet` | datasets, webdataset, pyarrow |
 | `viz` | HTML report | jinja2, plotly |
 | `viz-panel` | Gradio panel | gradio |
 
+GPU note for pip: install PyTorch for your CUDA version **first**, then
+extras:
+```bash
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124
+pip install -e ".[asr,pitch]"
+```
+
 </details>
 
-> **GPU with pip:** install PyTorch matching your CUDA version **before** extras:
-> `pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124`.
-> Or just use Docker — it handles this automatically.
+<details>
+<summary>Docker without the wrapper — for CI, k8s, or image-only usage</summary>
 
-### Configuration
+If you pulled the image without cloning this repo (e.g. a CI job against
+a registry tag), you need to spell out what the wrapper was doing:
+
+```bash
+docker run --rm --gpus all \
+    --user $(id -u):$(id -g) -e HOME=/tmp \
+    --env-file .env \
+    -v $(pwd)/work:/app/work \
+    -v $(pwd)/data:/data \
+    ghcr.io/xqfeng-josie/voxkitchen:latest run pipeline.yaml
+```
+
+`--user $(id -u):$(id -g)` + `-e HOME=/tmp` so container-written files
+end up with your UID. Without it, `./work` fills with root-owned files
+you can't delete without sudo. Recovery in that case:
+
+```bash
+docker run --rm -v $(pwd)/work:/work alpine \
+    chown -R $(id -u):$(id -g) /work
+```
+
+</details>
+
+<details>
+<summary>Building Docker images locally (air-gapped hosts, custom CUDA, arm64)</summary>
+
+```bash
+# Convenience wrapper: reads HF_TOKEN from ./.env so gated models
+# (pyannote etc.) are baked into the image at build time.
+scripts/vkit-build.sh             # → voxkitchen:latest (~25 GB)
+scripts/vkit-build.sh slim        # → voxkitchen:slim   (~3 GB)
+
+# Or raw:
+docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .
+docker build --target latest -f docker/Dockerfile \
+    --build-arg HF_TOKEN=hf_xxx -t voxkitchen:latest .
+```
+
+Full build docs: [`docs/docker-build.md`](docs/docker-build.md).
+
+</details>
+
+## Configuration
 
 Some operators require API tokens:
 
@@ -260,9 +280,11 @@ vkit doctor                         Report operator availability + model cache
 vkit viz <path>                     Gradio interactive explorer
 ```
 
-## Python API
+## Python tools API
 
-For quick tasks without a YAML pipeline:
+For quick tasks without a YAML pipeline, or to embed VoxKitchen
+functions in your own Python code. Needs [pip install](#pip--fast-local-iteration-narrow-pipelines-library-embedding)
+with the specific extras each call uses:
 
 ```python
 from voxkitchen.tools import audio_info, transcribe, detect_speech, estimate_snr
