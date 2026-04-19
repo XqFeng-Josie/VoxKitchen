@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
-"""Pre-download models for a specific VoxKitchen image group.
+"""Pre-download models for a specific VoxKitchen build group.
 
-Each published Docker image (``core`` / ``asr`` / ``tts``) warms a different
-subset of models so users don't pay a cold-cache download the first time
-they run an operator.
+Each Dockerfile env stage calls this once with ``--group <env>`` so
+users don't pay a cold-cache download at first runtime invocation.
+Supported groups: ``core``, ``asr``, ``diarize``, ``tts``, ``fish-speech``.
 
 Usage during image build::
 
     python scripts/warmup_models.py --group core
-    python scripts/warmup_models.py --group asr
+    python scripts/warmup_models.py --group asr          # needs HF_TOKEN for pyannote
+    python scripts/warmup_models.py --group diarize       # pyannote-only (gated)
     python scripts/warmup_models.py --group tts
+    python scripts/warmup_models.py --group fish-speech
 
-The ``HF_TOKEN`` env var is read for gated models (currently: pyannote in
-the ``asr`` group). If not set, gated models are skipped — the image still
+The ``HF_TOKEN`` env var is read for gated models (pyannote in
+``diarize`` — and, when it's part of the asr image in non-split builds,
+also ``asr``). If unset, gated models are skipped — the image still
 builds, and users can supply the token at ``docker run`` time via
 ``-e HF_TOKEN=hf_xxx``.
 
 Each download is wrapped in try/except: one failure does not abort the
-build. A summary is written to ``/app/warmup_status.json`` so ``vkit doctor``
-can report which models are actually cached at runtime.
+build. A per-group summary is written to
+``/opt/voxkitchen/warmup_<group>.json`` so ``vkit doctor`` can surface
+which models are actually cached at runtime.
 """
 
 from __future__ import annotations

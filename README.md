@@ -45,21 +45,24 @@ ships all the clusters as isolated envs in one image.
 
 ## Quickstart
 
+The same `vkit` CLI works both locally and against a Docker image —
+prefix with `docker` to run inside a container:
+
 ### With Docker
 
 ```bash
-scripts/vkit-docker.sh run examples/pipelines/demo-no-asr.yaml
-scripts/vkit-docker.sh doctor                      # per-env health report
-VKIT_TAG=asr scripts/vkit-docker.sh run my.yaml    # switch image
+vkit docker run examples/pipelines/demo-no-asr.yaml   # run in container
+vkit docker doctor                                     # per-env health report
+vkit docker run --tag asr my.yaml                      # switch image tag
+vkit docker build latest                               # build image locally
 ```
 
-The wrapper pins the container UID to your host UID (so output files
-are yours, not root's), mounts `./work` and `./data`, loads `./.env`
-(for `HF_TOKEN` etc.), and attaches the GPU if `nvidia-smi` is present.
-Raw `docker run` form is in [Install reference](#install-reference)
-below.
+`vkit docker` auto-handles the non-trivial flags — non-root `--user`,
+`./work` and `./data` mounts, `./.env` loading, GPU autodetection.
+Raw `docker run` form (for CI / non-pip users) is in
+[Install reference](#install-reference) below.
 
-### With pip
+### With pip (local)
 
 ```bash
 vkit init my-project -t asr   # scaffold a starter ASR pipeline
@@ -124,9 +127,9 @@ vkit doctor                                    # per-env operator availability
 | `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines) | yes | ~25 GB |
 
 `voxkitchen:latest` contains five isolated Python environments in one
-image. VoxKitchen already checkpoints each stage to disk, so the runner
-dispatches stages across envs via subprocess — users write ordinary
-pipelines and the multi-env is invisible. See
+image. VoxKitchen already checkpoints each pipeline stage to disk, so
+the runner dispatches stages across envs via subprocess — users write
+ordinary pipelines and the multi-env is invisible. See
 [`docs/architecture/multi-env.md`](docs/architecture/multi-env.md) for
 the full design.
 
@@ -214,15 +217,18 @@ docker run --rm -v $(pwd)/work:/work alpine \
 <summary>Building Docker images locally (air-gapped hosts, custom CUDA, arm64)</summary>
 
 ```bash
-# Convenience wrapper: reads HF_TOKEN from ./.env so gated models
-# (pyannote etc.) are baked into the image at build time.
-scripts/vkit-build.sh             # → voxkitchen:latest (~25 GB)
-scripts/vkit-build.sh slim        # → voxkitchen:slim   (~3 GB)
+# Via vkit CLI (reads HF_TOKEN from ./.env automatically):
+vkit docker build latest         # → voxkitchen:latest (~25 GB)
+vkit docker build slim           # → voxkitchen:slim   (~3 GB)
 
 # Or raw:
 docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .
 docker build --target latest -f docker/Dockerfile \
     --build-arg HF_TOKEN=hf_xxx -t voxkitchen:latest .
+
+# Or via the shell wrappers (same effect, no pip install needed):
+scripts/vkit-build.sh latest
+scripts/vkit-build.sh slim
 ```
 
 Full build docs: [`docs/docker-build.md`](docs/docker-build.md).

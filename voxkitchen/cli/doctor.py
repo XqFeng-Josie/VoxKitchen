@@ -70,7 +70,11 @@ EXPECTED_OPERATORS: dict[str, set[str]] = {
         "quality_score_filter",
         "speaker_similarity",
         "cer_wer",
-        # Annotation (lightweight / CPU-friendly)
+        # Annotation (lightweight / CPU-friendly).
+        # gender_classify registers here with method=f0 (pitch, no model)
+        # or method=speechbrain (uses [classify] extras, installed). The
+        # inaSpeechSegmenter backend is NOT available — the [gender]
+        # extras group is excluded because it pulls tensorflow[and-cuda].
         "mel_extract",
         "gender_classify",
         "speaker_embed",
@@ -127,21 +131,23 @@ EXPECTED_OPERATORS["tts"] = EXPECTED_OPERATORS["core"] | {
 # still builds, the model is downloaded, and the operator source is kept
 # intact — a follow-up PR will rewrite the operator against the new API.
 # See TODO in voxkitchen/operators/synthesize/tts_fish_speech.py.
+#
+# **Consequence**: `vkit doctor --expect fish-speech` always passes (empty
+# set → always a subset). That's intentional: the env's presence in the
+# image is the real contract right now, not operator availability. Once
+# the operator is rewritten, add "tts_fish_speech" back here.
 EXPECTED_OPERATORS["fish-speech"] = set()
 
 
 def _detect_image_kind() -> str | None:
-    """Figure out which image / env we're running in.
+    """Figure out which env this process is running in by reading ``VKIT_ENV``.
 
-    Checks ``VKIT_ENV`` (set by the multi-env Dockerfile) first, then
-    falls back to the legacy ``VKIT_IMAGE_KIND`` for backward compat.
-    Returns ``None`` if neither is set to a known value.
+    The multi-env Dockerfile sets ``VKIT_ENV=<env>`` in each venv. If
+    absent or unrecognized, returns ``None`` (caller falls back to
+    single-env behavior / dev mode).
     """
-    for var in ("VKIT_ENV", "VKIT_IMAGE_KIND"):
-        kind = os.environ.get(var, "").strip().lower()
-        if kind in EXPECTED_OPERATORS:
-            return kind
-    return None
+    kind = os.environ.get("VKIT_ENV", "").strip().lower()
+    return kind if kind in EXPECTED_OPERATORS else None
 
 
 def _collect_available() -> set[str]:

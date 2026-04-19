@@ -80,6 +80,9 @@ EXTRA_TO_ENV: Final[dict[str, str]] = {
     # method=speechbrain (uses 'classify' extras → core).
 }
 
+# Must stay in sync with the env-stage names in ``docker/Dockerfile`` and
+# with ``EXPECTED_OPERATORS`` in ``voxkitchen/cli/doctor.py``. Adding a
+# new env means updating all three in one PR.
 KNOWN_ENVS: Final[frozenset[str]] = frozenset(
     {"core", "asr", "diarize", "tts", "fish-speech"}
 )

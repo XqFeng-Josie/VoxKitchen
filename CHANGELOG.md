@@ -28,12 +28,21 @@ funasr vs ChatTTS vs fish-speech each want incompatible torch/numpy pins).
   dispatch, schemas, dump_schemas, merge_schemas).
 - New `vkit doctor` command — aggregates per-env operator availability
   and model-cache status across all envs in the image.
+- New `vkit docker` subcommand group — run VoxKitchen inside a Docker
+  image without remembering `docker run` flags. Mirrors the local CLI
+  symmetrically:
+    - `vkit docker run <pipeline>` — execute a pipeline in a container
+    - `vkit docker doctor` — health report
+    - `vkit docker build [target]` — build image (reads HF_TOKEN from `.env`)
+    - `vkit docker pull` — pull an image tag
+    - `vkit docker shell` — interactive bash for debugging
 - `vkit validate` now falls back to JSON-schema validation against
   `op_schemas.json` when an operator's class is not importable in the
   parent env (multi-env image parent env cannot import every operator).
-- Helper scripts: `scripts/vkit-build.sh` (reads `.env`, picks target),
-  `scripts/vkit-docker.sh` (pins `--user`, auto-mounts `./work` and
-  `./data`, auto-loads `.env`, GPU autodetection).
+- Helper shell scripts (for users without pip-install): `scripts/vkit-build.sh`
+  (reads `.env`, picks target), `scripts/vkit-docker.sh` (pins `--user`,
+  auto-mounts `./work` and `./data`, auto-loads `.env`, GPU
+  autodetection). pip-installed users should prefer `vkit docker ...`.
 - Pre-downloaded models land under `/opt/voxkitchen/model_cache/` (world-
   readable) so non-root runtime users can read every cached weight; the
   cache subtree is world-writable so runtime downloads land there too.
@@ -57,7 +66,12 @@ funasr vs ChatTTS vs fish-speech each want incompatible torch/numpy pins).
   per-env constraints files under `docker/constraints/`.
 - The 3-image interim Docker layout (`Dockerfile` + `Dockerfile.cpu`,
   per-image `docker/Dockerfile.{core,asr,tts}`) is retired in favor of
-  the single multi-env `docker/Dockerfile`.
+  the single multi-env `docker/Dockerfile`. **Migration**: users running
+  the old `voxkitchen:cpu` or `voxkitchen:gpu` images should pull one of
+  the new tags (`voxkitchen:slim` replaces the old `:cpu`;
+  `voxkitchen:latest` replaces the old `:gpu` with more envs). Old
+  locally-built images are safe to `docker rmi` once the new ones are
+  built.
 
 ### Known limitations
 - `tts_fish_speech` operator still targets fish-speech 1.x API; upstream

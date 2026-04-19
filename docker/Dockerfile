@@ -1,17 +1,23 @@
 # syntax=docker/dockerfile:1.6
 # ============================================================
-# VoxKitchen: one image, multiple Python envs.
+# VoxKitchen: one Dockerfile, six build targets, five isolated envs.
 #
-# Two build targets:
-#   --target slim    core env only   (~3 GB, CPU, no ASR/TTS)
-#   --target latest  core + asr + tts (~18 GB, GPU, everything)
+# Targets (use --target <name>):
+#   slim          core env only               ~3 GB   CPU
+#   asr           core + asr                  ~10 GB  GPU
+#   diarize       core + pyannote             ~5 GB   GPU
+#   tts           core + kokoro/chattts/cv    ~10 GB  GPU
+#   fish-speech   core + fish-speech (t2.8)   ~6 GB   GPU
+#   latest        all five envs merged        ~25 GB  GPU
 #
-# Usage:
-#   docker build --target slim   -t voxkitchen:slim   -f docker/Dockerfile .
-#   docker build --target latest -t voxkitchen:latest -f docker/Dockerfile .
+# Examples:
+#   docker build --target slim    -t voxkitchen:slim    -f docker/Dockerfile .
+#   docker build --target latest  -t voxkitchen:latest  -f docker/Dockerfile .
+#   docker build --target latest --build-arg HF_TOKEN=hf_xxx \
+#       -t voxkitchen:latest -f docker/Dockerfile .    # bakes pyannote in
 #
-# With pyannote diarization baked in (needs HuggingFace token):
-#   docker build --target latest --build-arg HF_TOKEN=hf_xxx -t voxkitchen:latest -f docker/Dockerfile .
+# Or via the vkit CLI wrapper (reads HF_TOKEN from ./.env automatically):
+#   vkit docker build latest
 #
 # See docs/architecture/multi-env.md for the design.
 # ============================================================

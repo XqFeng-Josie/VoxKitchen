@@ -1,17 +1,19 @@
 # Building VoxKitchen Docker images
 
 Most users should `docker pull` the pre-built images from
-`ghcr.io/xqfeng-josie/voxkitchen:{slim,latest}`. Build locally when:
+`ghcr.io/xqfeng-josie/voxkitchen:{slim,asr,diarize,tts,fish-speech,latest}`
+(or use `vkit docker pull`). Build locally when:
 
 - Air-gapped / internal registries that cannot reach GHCR
 - Apple Silicon / non-`linux/amd64` hosts until we ship multi-arch images
-- Custom CUDA versions (the published `:latest` image pins CUDA 12.4)
+- Custom CUDA versions (the published images pin CUDA 12.4)
 - Adding private operators or baking in your own models
 - Security audits that require a reproducible build from source
 
 ## Targets
 
-The single [`docker/Dockerfile`](../docker/Dockerfile) has two BuildKit targets:
+The single [`docker/Dockerfile`](../docker/Dockerfile) exposes six
+BuildKit targets:
 
 | Target | What it contains | Base | Size | GPU |
 |--------|------------------|------|------|-----|
@@ -51,11 +53,12 @@ deps that fight the ASR stack on `transformers` / `ctranslate2` versions.
 
 VoxKitchen already checkpoints every pipeline stage to `cuts.jsonl.gz` on disk.
 Stages don't share in-memory state, so they can run in different Python
-interpreters if the parent runner routes them. The `latest` image ships three
-venvs at `/opt/voxkitchen/envs/{core,asr,tts}/` and a mapping from operator
-name to env at `/opt/voxkitchen/op_env_map.json`. The pipeline runner in the
-`core` venv reads that map and spawns `stage_runner` in the target venv for
-cross-env stages. Stages communicate only via the existing on-disk checkpoints.
+interpreters if the parent runner routes them. The `latest` image ships five
+venvs at `/opt/voxkitchen/envs/{core,asr,diarize,tts,fish-speech}/` and a
+mapping from operator name to env at `/opt/voxkitchen/op_env_map.json`. The
+pipeline runner in the `core` venv reads that map and spawns `stage_runner`
+in the target venv for cross-env stages. Stages communicate only via the
+existing on-disk checkpoints.
 
 Full design: [`docs/architecture/multi-env.md`](architecture/multi-env.md).
 
@@ -102,9 +105,10 @@ docker run --rm voxkitchen:latest doctor          # per-env table
 docker run --rm voxkitchen:latest doctor --json   # machine-readable
 ```
 
-`doctor` in the `latest` image auto-detects the three envs and runs each one's
-self-check in a subprocess, producing one row per env plus a detail list of
-any missing operators. In `slim`, it shows the single-env report.
+`doctor` in the `latest` image auto-detects the five envs and runs each
+one's self-check in a subprocess, producing one row per env plus a detail
+list of any missing operators. In `slim` (or any single-env target) it
+shows the single-env report.
 
 During image build we also write `/opt/voxkitchen/warmup_<env>.json` for each
 env; `doctor` reads these to report model-cache status.

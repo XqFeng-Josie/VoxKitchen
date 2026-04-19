@@ -220,10 +220,14 @@ without surprising builds.
 
 ## Dockerfile
 
-One `Dockerfile` with BuildKit `target`s:
+One `Dockerfile` with six BuildKit targets:
 
-- `target=latest`: all three envs, all models, ~18 GB
-- `target=slim`: core env only, no GPU torch, no ASR/TTS models, ~3 GB
+- `target=slim`:        core env only, torch-cpu, ~3 GB
+- `target=asr`:         core + asr env,          ~10 GB
+- `target=diarize`:     core + diarize env (pyannote only), ~5 GB
+- `target=tts`:         core + tts env,          ~10 GB
+- `target=fish-speech`: core + fish-speech env (isolated torch 2.8), ~6 GB
+- `target=latest`:      all five envs merged,    ~25 GB
 
 ```
 FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime AS base
