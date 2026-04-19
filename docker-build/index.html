@@ -879,16 +879,18 @@
 
 <h1 id="building-voxkitchen-docker-images">Building VoxKitchen Docker images</h1>
 <p>Most users should <code>docker pull</code> the pre-built images from
-<code>ghcr.io/xqfeng-josie/voxkitchen:{slim,latest}</code>. Build locally when:</p>
+<code>ghcr.io/xqfeng-josie/voxkitchen:{slim,asr,diarize,tts,fish-speech,latest}</code>
+(or use <code>vkit docker pull</code>). Build locally when:</p>
 <ul>
 <li>Air-gapped / internal registries that cannot reach GHCR</li>
 <li>Apple Silicon / non-<code>linux/amd64</code> hosts until we ship multi-arch images</li>
-<li>Custom CUDA versions (the published <code>:latest</code> image pins CUDA 12.4)</li>
+<li>Custom CUDA versions (the published images pin CUDA 12.4)</li>
 <li>Adding private operators or baking in your own models</li>
 <li>Security audits that require a reproducible build from source</li>
 </ul>
 <h2 id="targets">Targets</h2>
-<p>The single <a href="../docker/Dockerfile"><code>docker/Dockerfile</code></a> has two BuildKit targets:</p>
+<p>The single <a href="../docker/Dockerfile"><code>docker/Dockerfile</code></a> exposes six
+BuildKit targets:</p>
 <table>
 <thead>
 <tr>
@@ -969,11 +971,12 @@ wants <code>torch&gt;=2.8 + numpy&gt;=2.1</code>, <code>funasr + modelscope</cod
 deps that fight the ASR stack on <code>transformers</code> / <code>ctranslate2</code> versions.</p>
 <p>VoxKitchen already checkpoints every pipeline stage to <code>cuts.jsonl.gz</code> on disk.
 Stages don't share in-memory state, so they can run in different Python
-interpreters if the parent runner routes them. The <code>latest</code> image ships three
-venvs at <code>/opt/voxkitchen/envs/{core,asr,tts}/</code> and a mapping from operator
-name to env at <code>/opt/voxkitchen/op_env_map.json</code>. The pipeline runner in the
-<code>core</code> venv reads that map and spawns <code>stage_runner</code> in the target venv for
-cross-env stages. Stages communicate only via the existing on-disk checkpoints.</p>
+interpreters if the parent runner routes them. The <code>latest</code> image ships five
+venvs at <code>/opt/voxkitchen/envs/{core,asr,diarize,tts,fish-speech}/</code> and a
+mapping from operator name to env at <code>/opt/voxkitchen/op_env_map.json</code>. The
+pipeline runner in the <code>core</code> venv reads that map and spawns <code>stage_runner</code>
+in the target venv for cross-env stages. Stages communicate only via the
+existing on-disk checkpoints.</p>
 <p>Full design: <a href="../architecture/multi-env/"><code>docs/architecture/multi-env.md</code></a>.</p>
 <h2 id="build-commands">Build commands</h2>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>slim<span class="w">   </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>-t<span class="w"> </span>voxkitchen:slim<span class="w">   </span>.
@@ -1001,9 +1004,10 @@ remains retrievable in the image layer history.</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>voxkitchen:latest<span class="w"> </span>doctor<span class="w">          </span><span class="c1"># per-env table</span>
 docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>voxkitchen:latest<span class="w"> </span>doctor<span class="w"> </span>--json<span class="w">   </span><span class="c1"># machine-readable</span>
 </code></pre></div>
-<p><code>doctor</code> in the <code>latest</code> image auto-detects the three envs and runs each one's
-self-check in a subprocess, producing one row per env plus a detail list of
-any missing operators. In <code>slim</code>, it shows the single-env report.</p>
+<p><code>doctor</code> in the <code>latest</code> image auto-detects the five envs and runs each
+one's self-check in a subprocess, producing one row per env plus a detail
+list of any missing operators. In <code>slim</code> (or any single-env target) it
+shows the single-env report.</p>
 <p>During image build we also write <code>/opt/voxkitchen/warmup_&lt;env&gt;.json</code> for each
 env; <code>doctor</code> reads these to report model-cache status.</p>
 <h2 id="cuda-version-mismatch">CUDA version mismatch</h2>

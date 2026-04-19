@@ -1170,10 +1170,14 @@ can pin to exactly what its extras agree on:</p>
 <p>CI regenerates lockfiles on a schedule (weekly) and opens a PR — keeps them fresh
 without surprising builds.</p>
 <h2 id="dockerfile">Dockerfile</h2>
-<p>One <code>Dockerfile</code> with BuildKit <code>target</code>s:</p>
+<p>One <code>Dockerfile</code> with six BuildKit targets:</p>
 <ul>
-<li><code>target=latest</code>: all three envs, all models, ~18 GB</li>
-<li><code>target=slim</code>: core env only, no GPU torch, no ASR/TTS models, ~3 GB</li>
+<li><code>target=slim</code>:        core env only, torch-cpu, ~3 GB</li>
+<li><code>target=asr</code>:         core + asr env,          ~10 GB</li>
+<li><code>target=diarize</code>:     core + diarize env (pyannote only), ~5 GB</li>
+<li><code>target=tts</code>:         core + tts env,          ~10 GB</li>
+<li><code>target=fish-speech</code>: core + fish-speech env (isolated torch 2.8), ~6 GB</li>
+<li><code>target=latest</code>:      all five envs merged,    ~25 GB</li>
 </ul>
 <div class="highlight"><pre><span></span><code>FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime AS base
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
