@@ -40,28 +40,11 @@ fails at the resolver for exactly this reason; the multi-env Docker image
 ships every cluster as an isolated venv in one image, so the pipeline runner
 dispatches each stage to the env that can run it.
 
-## Quickstart
-
-```bash
-vkit init my-project -t asr && cd my-project     # scaffold a starter pipeline
-
-vkit run pipeline.yaml                            # execute locally
-vkit docker run pipeline.yaml                     # execute in Docker (same YAML)
-
-vkit doctor                                       # local env health
-vkit docker doctor                                # per-env report inside image
-```
-
-The `docker` subcommand is just a prefix — everything after it is the
-same as local. `vkit docker` auto-handles `--user`, `./work` and
-`./data` mounts, `./.env` loading, GPU autodetection; if you'd rather
-spell `docker run ...` yourself, see
-[Install reference](#install-reference).
-
 ## How it works
 
 A pipeline is a YAML file: **ingest** raw audio, pass it through
-**stages**, each stage transforms the data.
+**stages** — each stage is an operator that transforms a CutSet — and
+write the result out.
 
 ```yaml
 version: "0.1"
@@ -90,12 +73,57 @@ stages:
     args: { output_dir: ./output/hf_dataset }
 ```
 
-After a run:
+One CLI, two execution modes — add `docker` before any command to run
+it inside a container instead of your local Python env:
 
 ```bash
-vkit inspect run work/                         # stage summary
-vkit inspect cuts work/05_pack/cuts.jsonl.gz   # data statistics
-vkit doctor                                    # per-env operator availability
+vkit init my-project -t asr && cd my-project
+
+vkit run pipeline.yaml                # execute locally
+vkit docker run pipeline.yaml         # execute in Docker (same YAML)
+
+vkit doctor                           # local env health
+vkit docker doctor                    # per-env report inside image
+```
+
+`vkit docker` auto-handles `--user`, `./work` + `./data` mounts,
+`./.env` loading, and GPU autodetection. Raw `docker run` form (for
+CI / image-only users) is in [Install reference](#install-reference).
+
+### Commands
+
+**Scaffolding & validation**
+```
+vkit init <path>                    Scaffold a new project
+vkit init <path> -t <template>      Use a template (tts, asr, cleaning, speaker)
+vkit validate <yaml>                Check YAML syntax and operator args
+```
+
+**Execution**
+```
+vkit run <yaml>                     Execute a pipeline
+vkit run <yaml> --dry-run           Resolve the plan without executing
+vkit run <yaml> --resume-from STG   Resume from a specific stage
+vkit download <recipe> --root DIR   Download a dataset
+```
+
+**Inspection**
+```
+vkit operators                      List all registered operators
+vkit operators show <name>          Operator config fields + YAML example
+vkit recipes                        List available dataset recipes
+vkit inspect cuts <path>            CutSet statistics (duration, sr, ...)
+vkit inspect run <work_dir>         Pipeline run summary per stage
+vkit doctor                         Per-env operator health + model cache
+vkit viz <path>                     Launch Gradio explorer for a CutSet
+```
+
+**Docker backend** — prefix any command above with `docker` to run it
+in a container, plus these image-management helpers:
+```
+vkit docker build [target]          Build an image (reads HF_TOKEN from .env)
+vkit docker pull [--tag TAG]        Pull a published image
+vkit docker shell [--tag TAG]       Interactive bash inside an image
 ```
 
 ## Install reference
@@ -104,12 +132,12 @@ vkit doctor                                    # per-env operator availability
 
 | Tag | Contains | GPU | Size&nbsp;&nbsp;&nbsp;&nbsp; |
 |---|---|---|---|
-| `voxkitchen:slim`        | core only (CPU)                         | no  | ~3&nbsp;GB  |
-| `voxkitchen:asr`         | core + ASR (whisper/funasr/qwen3/align) | yes | ~10&nbsp;GB |
-| `voxkitchen:diarize`     | core + pyannote diarize                 | yes | ~5&nbsp;GB  |
-| `voxkitchen:tts`         | core + TTS (kokoro/ChatTTS/CosyVoice)   | yes | ~10&nbsp;GB |
-| `voxkitchen:fish-speech` | core + fish-speech (torch 2.8)          | yes | ~6&nbsp;GB  |
-| `voxkitchen:latest`      | all 5 envs merged (cross-cluster)       | yes | ~25&nbsp;GB |
+| `voxkitchen:slim`        | core env only (VAD, quality, pack, speaker embed, enhancement)      | no  | ~3&nbsp;GB  |
+| `voxkitchen:asr`         | core + ASR family (faster-whisper, funasr, qwen3, forced alignment) | yes | ~10&nbsp;GB |
+| `voxkitchen:diarize`     | core + pyannote speaker diarization                                 | yes | ~5&nbsp;GB  |
+| `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice                                 | yes | ~10&nbsp;GB |
+| `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack)                       | yes | ~6&nbsp;GB  |
+| `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines)                      | yes | ~25&nbsp;GB |
 
 `voxkitchen:latest` contains five isolated Python environments in one
 image. VoxKitchen already checkpoints each pipeline stage to disk, so
@@ -173,10 +201,11 @@ pip install -e ".[asr,pitch]"
 </details>
 
 <details>
-<summary>Docker without the wrapper — for CI, k8s, or image-only usage</summary>
+<summary>Raw <code>docker run</code> — without the <code>vkit docker</code> wrapper</summary>
 
-If you pulled the image without cloning this repo (e.g. a CI job against
-a registry tag), you need to spell out what the wrapper was doing:
+For CI jobs, k8s workloads, or anyone who pulled an image without
+installing `vkit`. You need to spell out the flags `vkit docker run`
+sets for you:
 
 ```bash
 docker run --rm --gpus all \
@@ -237,7 +266,7 @@ under the hood). For raw `docker run`, pass `--env-file .env` yourself.
 
 ## Operators
 
-51 built-in operators across 8 categories:
+51 built-in operators across 7 categories:
 
 | Category | Count | Operators |
 |----------|-------|-----------|
@@ -254,29 +283,10 @@ vkit operators                  # list all
 vkit operators show silero_vad  # config fields + YAML example
 ```
 
-## CLI
-
-```
-vkit init <path>                    Scaffold a new project
-vkit init <path> -t tts             Use a template (tts, asr, cleaning, speaker)
-vkit run <yaml>                     Execute a pipeline
-vkit run <yaml> --dry-run           Validate without executing
-vkit validate <yaml>                Check YAML syntax
-vkit download <recipe> --root <dir> Download a dataset
-vkit operators                      List all operators
-vkit operators show <name>          Operator detail + config
-vkit recipes                        List available dataset recipes
-vkit inspect cuts <path>            CutSet statistics
-vkit inspect run <work_dir>         Pipeline run summary
-vkit doctor                         Report operator availability + model cache
-vkit viz <path>                     Gradio interactive explorer
-```
-
 ## Python tools API
 
 For quick tasks without a YAML pipeline, or to embed VoxKitchen
-functions in your own Python code. Needs [pip install](#pip--fast-local-iteration-narrow-pipelines-library-embedding)
-with the specific extras each call uses:
+functions in your own Python code. Needs [pip install](#install) with the specific extras each call uses:
 
 ```python
 from voxkitchen.tools import audio_info, transcribe, detect_speech, estimate_snr
