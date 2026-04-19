@@ -14,64 +14,48 @@ Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`,
 
 ## Install
 
-Two install paths. Both give you the same `vkit` CLI.
-
-### Docker — runs any pipeline
-
-Every operator works regardless of combination. Models are pre-baked
-into the image. **This is the path to use if you don't want to think
-about dependencies.**
+VoxKitchen has one CLI (`vkit`) with two execution modes: **local**
+(runs inside your current Python env) and **container** (runs inside a
+Docker image). Most users use both — pip install to get the CLI,
+then pull Docker images for pipelines that don't fit your local env.
 
 ```bash
-docker pull ghcr.io/xqfeng-josie/voxkitchen:slim   # CPU, ~3 GB
-# or :asr / :diarize / :tts / :fish-speech / :latest — see tag matrix below
-```
-
-### pip — fast local iteration, narrow pipelines, library embedding
-
-Works for pipelines whose operators share one **dependency cluster**
-(e.g. all core, or core + ASR, or core + TTS). Also how you embed
-`voxkitchen.tools.transcribe(...)` into your own Python code.
-
-```bash
+# 1. Install vkit (always). Pick the extras groups you'll run locally.
 conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
-pip install -e ".[asr,pack]"   # pick only the extras your pipeline uses
+pip install -e ".[asr,pack]"
+
+# 2. (Optional) Pull a Docker image for pipelines that exceed local extras.
+vkit docker pull --tag slim      # CPU, ~3 GB
+vkit docker pull --tag latest    # everything, ~25 GB — see tag matrix below
 ```
 
-**Known limitation**: `pip install voxkitchen[all]` will fail at the pip
-resolver — pyannote 4, funasr, and fish-speech demand mutually exclusive
-torch/numpy versions. For cross-cluster pipelines use Docker, which
-ships all the clusters as isolated envs in one image.
+**When pip alone is enough**: your pipeline's operators all live in one
+dependency cluster (e.g. only core, or core + ASR). Check
+[`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py)'s
+`EXTRA_TO_ENV` — extras in the same env-value are mutually compatible.
+
+**When you need Docker**: your pipeline crosses dep clusters (pyannote
++ funasr, CosyVoice + fish-speech, etc.). `pip install
+voxkitchen[all]` fails at the resolver for this reason — that's exactly
+what the multi-env Docker image exists to solve.
 
 ## Quickstart
 
-The same `vkit` CLI works both locally and against a Docker image —
-prefix with `docker` to run inside a container:
-
-### With Docker
-
 ```bash
-vkit docker run examples/pipelines/demo-no-asr.yaml   # run in container
-vkit docker doctor                                     # per-env health report
-vkit docker run --tag asr my.yaml                      # switch image tag
-vkit docker build latest                               # build image locally
+vkit init my-project -t asr && cd my-project     # scaffold a starter pipeline
+
+vkit run pipeline.yaml                            # execute locally
+vkit docker run pipeline.yaml                     # execute in Docker (same YAML)
+
+vkit doctor                                       # local env health
+vkit docker doctor                                # per-env report inside image
 ```
 
-`vkit docker` auto-handles the non-trivial flags — non-root `--user`,
-`./work` and `./data` mounts, `./.env` loading, GPU autodetection.
-Raw `docker run` form (for CI / non-pip users) is in
-[Install reference](#install-reference) below.
-
-### With pip (local)
-
-```bash
-vkit init my-project -t asr   # scaffold a starter ASR pipeline
-cd my-project
-vkit run pipeline.yaml
-```
-
-Templates: `tts`, `asr`, `cleaning`, `speaker`. Or write your own —
-every pipeline is a YAML file (next section shows the structure).
+The `docker` subcommand is just a prefix — everything after it is the
+same as local. `vkit docker` auto-handles `--user`, `./work` and
+`./data` mounts, `./.env` loading, GPU autodetection; if you'd rather
+spell `docker run ...` yourself, see
+[Install reference](#install-reference).
 
 ## How it works
 
@@ -247,7 +231,8 @@ cp .env.example .env   # then edit .env
 |----------|-------------|------------|
 | `HF_TOKEN` | `pyannote_diarize` | [HuggingFace tokens](https://huggingface.co/settings/tokens) + accept the [pyannote model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) |
 
-For Docker, pass via `-e HF_TOKEN=hf_xxx` or mount `-v $(pwd)/.env:/app/.env`.
+`vkit docker run` picks up `./.env` automatically (`--env-file` flag
+under the hood). For raw `docker run`, pass `--env-file .env` yourself.
 
 ## Operators
 
