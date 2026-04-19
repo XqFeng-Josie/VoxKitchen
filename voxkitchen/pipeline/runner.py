@@ -29,7 +29,11 @@ from pathlib import Path
 import yaml
 
 from voxkitchen.ingest import get_ingest_source
-from voxkitchen.operators.registry import get_operator
+from voxkitchen.operators.registry import (
+    MissingExtrasError,
+    UnknownOperatorError,
+    get_operator,
+)
 from voxkitchen.pipeline.checkpoint import (
     find_last_completed_stage,
     is_stage_complete,
@@ -43,7 +47,9 @@ from voxkitchen.pipeline.executor import (
     GpuPoolExecutor,
 )
 from voxkitchen.pipeline.gc import compute_gc_plan, empty_trash, run_gc
-from voxkitchen.pipeline.spec import PipelineSpec
+from voxkitchen.pipeline.spec import PipelineSpec, StageSpec
+from voxkitchen.runtime.dispatch import StageDispatchFailure, dispatch_stage_to_env
+from voxkitchen.runtime.env_resolver import current_env, resolve_env
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.io import SCHEMA_VERSION, HeaderRecord
 
@@ -74,6 +80,109 @@ def _make_executor(device: str, ctx: RunContext) -> Executor:
     if device == "gpu" and not _gpu_available():
         logger.info("GPU not available, falling back to CPU executor")
     return CpuPoolExecutor(num_workers=max(1, ctx.num_cpu_workers))
+
+
+def _run_stage_in_process(
+    *,
+    stage: StageSpec,
+    cuts: CutSet,
+    ctx: RunContext,
+    run_id: str,
+) -> CutSet:
+    """Classic in-process execution: load op, validate, run executor, persist.
+
+    Writes the stage output manifest and `_stats.json`. The caller is
+    responsible for the `_SUCCESS` marker and GC.
+    """
+    stage_dir = ctx.stage_dir
+    n_input = len(cuts)
+    t_start = time.monotonic()
+    op_cls = get_operator(stage.op)
+    op_cfg = op_cls.config_cls.model_validate(stage.args)
+    executor = _make_executor(op_cls.device, ctx)
+    result = executor.run(op_cls, op_cfg, cuts, ctx)
+    wall_time = time.monotonic() - t_start
+
+    header = HeaderRecord(
+        schema_version=SCHEMA_VERSION,
+        created_at=datetime.now(tz=timezone.utc),
+        pipeline_run_id=run_id,
+        stage_name=stage.name,
+    )
+    result.to_jsonl_gz(stage_dir / "cuts.jsonl.gz", header)
+    _write_stage_stats(
+        stage_dir=stage_dir,
+        stage_name=stage.name,
+        operator=stage.op,
+        wall_time=wall_time,
+        cuts_in=n_input,
+        cuts_out=len(result),
+    )
+    return result
+
+
+def _run_stage_in_subprocess(
+    *,
+    stage: StageSpec,
+    cuts: CutSet,
+    ctx: RunContext,
+    target_env: str,
+    idx: int,
+    stage_names: list[str],
+    work_dir: Path,
+    run_id: str,
+) -> CutSet:
+    """Cross-env execution: write input to disk, spawn stage_runner, read output.
+
+    The subprocess itself writes ``cuts.jsonl.gz`` and ``_stats.json`` to
+    ``ctx.stage_dir``. We only need to (a) make sure the input is on disk,
+    (b) dispatch, (c) reload the output into memory for the next stage.
+
+    Ingest output does not land on disk automatically; when dispatching
+    stage 0 cross-env we materialize it at ``ctx.stage_dir/_input.jsonl.gz``.
+    Later stages use the previous stage's ``cuts.jsonl.gz`` directly —
+    that file is already persisted by whichever executor produced it.
+    """
+    stage_dir = ctx.stage_dir
+    output_path = stage_dir / "cuts.jsonl.gz"
+
+    # Locate (or create) the input manifest the subprocess should read.
+    if idx == 0:
+        input_path = stage_dir / "_input.jsonl.gz"
+    else:
+        prev_dir = work_dir / stage_dir_name(idx - 1, stage_names[idx - 1])
+        input_path = prev_dir / "cuts.jsonl.gz"
+
+    if not input_path.exists():
+        header = HeaderRecord(
+            schema_version=SCHEMA_VERSION,
+            created_at=datetime.now(tz=timezone.utc),
+            pipeline_run_id=run_id,
+            stage_name=f"_input:{stage.name}",
+        )
+        cuts.to_jsonl_gz(input_path, header)
+
+    try:
+        dispatch_stage_to_env(
+            target_env=target_env,
+            op_name=stage.op,
+            config_args=dict(stage.args),
+            input_path=input_path,
+            output_path=output_path,
+            ctx=ctx,
+        )
+    except StageDispatchFailure as exc:
+        raise StageFailedError(stage.name, exc) from exc
+
+    if not output_path.exists():
+        raise StageFailedError(
+            stage.name,
+            FileNotFoundError(
+                f"subprocess for {stage.op!r} in env {target_env!r} exited 0 "
+                f"but did not produce {output_path}"
+            ),
+        )
+    return CutSet.from_jsonl_gz(output_path)
 
 
 def _write_stage_stats(
@@ -188,21 +297,44 @@ def run_pipeline(
             continue
 
         n_input = len(current_cuts)
+        try:
+            target_env = resolve_env(stage.op)
+        except Exception as exc:
+            raise StageFailedError(stage.name, exc) from exc
+        here = current_env()
         logger.info(
-            "stage [%d/%d] %s  (%s, %d cuts in)",
+            "stage [%d/%d] %s  (%s, %d cuts in, env=%s%s)",
             idx + 1,
             len(spec.stages),
             stage.name,
             stage.op,
             n_input,
+            target_env,
+            "" if target_env == here else f" ← dispatched from {here}",
         )
 
         t_start = time.monotonic()
         try:
-            op_cls = get_operator(stage.op)
-            op_cfg = op_cls.config_cls.model_validate(stage.args)
-            executor = _make_executor(op_cls.device, stage_ctx)
-            current_cuts = executor.run(op_cls, op_cfg, current_cuts, stage_ctx)
+            if target_env == here:
+                current_cuts = _run_stage_in_process(
+                    stage=stage,
+                    cuts=current_cuts,
+                    ctx=stage_ctx,
+                    run_id=run_id,
+                )
+            else:
+                current_cuts = _run_stage_in_subprocess(
+                    stage=stage,
+                    cuts=current_cuts,
+                    ctx=stage_ctx,
+                    target_env=target_env,
+                    idx=idx,
+                    stage_names=stage_names,
+                    work_dir=work_dir,
+                    run_id=run_id,
+                )
+        except StageFailedError:
+            raise
         except Exception as exc:
             raise StageFailedError(stage.name, exc) from exc
         wall_time = time.monotonic() - t_start
@@ -215,24 +347,6 @@ def run_pipeline(
             len(current_cuts),
             wall_time,
         )
-
-        _write_stage_stats(
-            stage_dir=stage_dir,
-            stage_name=stage.name,
-            operator=stage.op,
-            wall_time=wall_time,
-            cuts_in=n_input,
-            cuts_out=len(current_cuts),
-        )
-
-        # Persist output + marker
-        header = HeaderRecord(
-            schema_version=SCHEMA_VERSION,
-            created_at=datetime.now(tz=timezone.utc),
-            pipeline_run_id=run_id,
-            stage_name=stage.name,
-        )
-        current_cuts.to_jsonl_gz(stage_dir / "cuts.jsonl.gz", header)
         write_success_marker(stage_dir)
 
         # GC after each stage

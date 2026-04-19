@@ -7,6 +7,7 @@ from pathlib import Path
 import typer
 from rich import print as rprint
 
+from voxkitchen.cli.doctor import doctor_app
 from voxkitchen.cli.inspect import inspect_app
 from voxkitchen.cli.operators_cmd import operators_app
 from voxkitchen.cli.recipes_cmd import recipes_app
@@ -21,6 +22,7 @@ app = typer.Typer(
 app.add_typer(inspect_app, name="inspect")
 app.add_typer(operators_app, name="operators")
 app.add_typer(recipes_app, name="recipes")
+app.add_typer(doctor_app, name="doctor")
 
 
 @app.command(help="Scaffold a new pipeline project directory.")

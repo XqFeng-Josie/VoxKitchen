@@ -33,9 +33,17 @@ dependencies = [
     "rich>=13",
     "soundfile>=0.12",
     "tqdm>=4.66",
-    "numpy>=1.24,<2.0",
+    # Upper bound intentionally absent: the fish-speech env runs on numpy
+    # >=2.1 (fish-speech upstream pins torch 2.8 which brings numpy 2.x).
+    # The core / asr / tts envs each pin numpy<2.0 via
+    # docker/constraints/*.txt so they stay on the validated 1.x stack.
+    "numpy>=1.24",
     "ffmpeg-python>=0.2",
     "pyloudnorm>=0.1",
+    # Needed by the parent env's `vkit validate` to check operator args
+    # against op_schemas.json when the operator class itself lives in
+    # another env and cannot be imported here.
+    "jsonschema>=4.17",
 ]
 
 [project.optional-dependencies]
@@ -46,10 +54,16 @@ pack = ["datasets>=2.16", "webdataset>=0.2", "pyarrow>=14"]
 asr = ["faster-whisper>=1.0"]
 whisper = ["openai-whisper>=20231117"]
 pitch = ["pyworld>=0.3"]
-dnsmos = ["speechmos>=0.0.1"]
+dnsmos = [
+    "speechmos>=0.0.1",
+    # speechmos's own wheel declares no dependencies, but dnsmos.run()
+    # imports onnxruntime internally. Add it here so the extras group is
+    # actually usable. Tested with onnxruntime 1.17+.
+    "onnxruntime>=1.17,<2",
+]
 funasr = ["funasr>=1.0"]
 wenet = ["wenet @ git+https://github.com/wenet-e2e/wenet.git"]
-diarize = ["pyannote.audio>=3.1,<4.0", "huggingface_hub<0.25"]  # pyannote 4.0 requires torch>=2.8
+diarize = ["pyannote.audio>=3.1,<4.0"]  # pyannote 4.0 requires torch>=2.8
 classify = ["speechbrain>=1.0"]
 gender = ["inaSpeechSegmenter>=0.2"]
 speaker = ["wespeaker @ git+https://github.com/wenet-e2e/wespeaker.git"]

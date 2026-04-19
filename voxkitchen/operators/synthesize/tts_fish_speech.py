@@ -1,14 +1,13 @@
 """Fish-Speech TTS operator: codec-LM text-to-speech with voice cloning.
 
-Fish-Speech uses a VQGAN + language model architecture for high-quality
-zero-shot voice cloning. Supports 13 languages.
+Supports 13 languages. Output sample rate 44100 Hz. Requires GPU
+(24 GB+ VRAM recommended).
 
-Model is auto-downloaded from HuggingFace on first use.
-Output sample rate is 44100Hz. Requires GPU (24GB+ VRAM recommended).
-
-NOTE: Fish-Speech's internal API may change between versions. This
-operator targets fish-speech v1.5+. If the import paths have changed,
-update the ``_setup_*`` and ``_infer`` methods.
+.. warning::
+   Targets fish-speech **1.x** API (``from fish_speech.inference import
+   TTSInference``). Upstream reshuffled to ``TTSInferenceEngine`` in 2.0.
+   Excluded from ``EXPECTED_OPERATORS["fish-speech"]``; a follow-up PR
+   will rewrite ``_load_model`` / ``_infer`` against the 2.0 API.
 """
 
 from __future__ import annotations
