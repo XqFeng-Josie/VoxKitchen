@@ -45,6 +45,18 @@ def _prepare_fake_sandbox(tmp_path: Path, op_name: str) -> tuple[Path, Path]:
     return envs_dir, map_path
 
 
+@pytest.fixture(autouse=True)
+def _reset_env_resolver_caches():
+    """env_resolver uses lru_cache for op_env_map / derived registry.
+    Tests here monkeypatch VKIT_OP_ENV_MAP and ENVS_DIR, so we must flush
+    the cache on BOTH sides of each test — otherwise a test that loads a
+    fake map pollutes every subsequent test in the same pytest process.
+    """
+    env_resolver.reset_caches()
+    yield
+    env_resolver.reset_caches()
+
+
 def test_cross_env_dispatch_happy_path(
     tmp_path: Path, sample_manifest_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

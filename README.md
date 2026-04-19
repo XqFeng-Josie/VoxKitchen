@@ -34,10 +34,11 @@ dependency cluster (e.g. only core, or core + ASR). Check
 [`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py)'s
 `EXTRA_TO_ENV` — extras in the same env-value are mutually compatible.
 
-**When you need Docker**: your pipeline crosses dep clusters (pyannote
-+ funasr, CosyVoice + fish-speech, etc.). `pip install
-voxkitchen[all]` fails at the resolver for this reason — that's exactly
-what the multi-env Docker image exists to solve.
+**When you need Docker**: your pipeline crosses dep clusters — e.g.
+pyannote with funasr, or CosyVoice with fish-speech. `pip install voxkitchen[all]`
+fails at the resolver for exactly this reason; the multi-env Docker image
+ships every cluster as an isolated venv in one image, so the pipeline runner
+dispatches each stage to the env that can run it.
 
 ## Quickstart
 

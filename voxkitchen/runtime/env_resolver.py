@@ -171,15 +171,30 @@ def _derive_from_registry() -> dict[str, str]:
 def resolve_env(op_name: str) -> str:
     """Return the env name that should run operator ``op_name``.
 
+    Docker / production mode: ``op_env_map.json`` is authoritative —
+    every operator we ship is listed there with its canonical env.
+
+    Dev mode (no ``op_env_map.json``, just a local pip install): there
+    is only one Python env — the one the user is running in — so every
+    registered operator resolves to :func:`current_env`. We don't route
+    through ``EXTRA_TO_ENV`` here because dispatching to ``asr`` /
+    ``tts`` / ... would try to ``exec`` a venv path
+    (``/opt/voxkitchen/envs/<env>/bin/python``) that only exists in the
+    Docker image.
+
     Raises :class:`EnvResolutionError` if the op is unknown in both the
     prebuilt map and the local registry.
     """
     prebuilt = _load_op_env_map()
     if prebuilt is not None and op_name in prebuilt:
         return prebuilt[op_name]
+
+    # Dev-mode fallback: op registers locally → run locally. Don't try
+    # to dispatch across envs, because there are no other envs.
     derived = _derive_from_registry()
     if op_name in derived:
-        return derived[op_name]
+        return current_env()
+
     raise EnvResolutionError(
         f"unknown operator {op_name!r} — not in op_env_map.json and not registered"
     )
