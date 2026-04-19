@@ -54,12 +54,15 @@ class FfmpegConvertOperator(Operator):
             inp.output(str(out_path)).overwrite_output().run(quiet=True)
 
             new_rec = recording_from_file(out_path, recording_id=out_name)
-            # Preserve original time offsets so downstream stages can report
-            # where this segment came from in the source recording.
+            # Track where this segment lives in the *original* source, not
+            # in whatever intermediate recording we're slicing right now.
+            # Chaining offsets (parent_origin_start + cut.start) keeps the
+            # value correct through to_wav → vad → extract and through
+            # deeper chains (e.g. trim → resample → vad → extract).
             custom = dict(cut.custom) if cut.custom else {}
-            if cut.start > 0 or "origin_start" not in custom:
-                custom.setdefault("origin_start", round(cut.start, 3))
-                custom.setdefault("origin_end", round(cut.start + cut.duration, 3))
+            parent_origin_start = float(custom.get("origin_start", 0.0))
+            custom["origin_start"] = round(parent_origin_start + cut.start, 3)
+            custom["origin_end"] = round(parent_origin_start + cut.start + cut.duration, 3)
             out_cuts.append(
                 Cut(
                     id=out_name,

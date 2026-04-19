@@ -54,10 +54,12 @@ class ResampleOperator(Operator):
                 out_path, recording_id=f"{cut.recording_id}_rs{target_sr}"
             )
 
+            # Track absolute position in the original source — see
+            # ffmpeg_convert.py for rationale.
             custom = dict(cut.custom) if cut.custom else {}
-            if cut.start > 0 or "origin_start" not in custom:
-                custom.setdefault("origin_start", round(cut.start, 3))
-                custom.setdefault("origin_end", round(cut.start + cut.duration, 3))
+            parent_origin_start = float(custom.get("origin_start", 0.0))
+            custom["origin_start"] = round(parent_origin_start + cut.start, 3)
+            custom["origin_end"] = round(parent_origin_start + cut.start + cut.duration, 3)
             out_cuts.append(
                 Cut(
                     id=f"{cut.id}__rs{target_sr}",
