@@ -20,11 +20,12 @@ vkit init my-project && cd my-project
 vkit run pipeline.yaml
 ```
 
-Or with Docker (all 51 operators pre-installed, zero setup):
+Or with Docker (models pre-downloaded, zero setup):
 
 ```bash
-docker build -f Dockerfile.cpu -t voxkitchen:cpu .
-docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
+docker pull ghcr.io/xqfeng-josie/voxkitchen:slim
+docker run --rm ghcr.io/xqfeng-josie/voxkitchen:slim \
+    run examples/pipelines/demo-no-asr.yaml
 ```
 
 ## How it works
@@ -68,44 +69,93 @@ vkit inspect cuts work/05_pack/cuts.jsonl.gz   # data statistics
 
 ### Docker (recommended)
 
-Two pre-built images, all 51 operators + models pre-downloaded, pull and run:
+One Dockerfile, six tags. Each tag is a target in
+[`docker/Dockerfile`](docker/Dockerfile) — pick the smallest one that
+covers what you need.
 
-| Image | Use when | Models |
-|-------|----------|--------|
-| `voxkitchen:gpu` | ASR, TTS, diarization — anything GPU | All models (~20 GB) |
-| `voxkitchen:cpu` | Quality filtering, packing, lightweight | Core models, skip large TTS (~8 GB) |
+| Tag | Contains | GPU | Size |
+|-----|----------|-----|------|
+| `voxkitchen:slim`        | core env only (VAD, quality, pack, speaker embed, enhancement) | no  | ~3 GB |
+| `voxkitchen:asr`         | core + ASR family (faster-whisper, funasr, qwen3, forced alignment) | yes | ~10 GB |
+| `voxkitchen:diarize`     | core + pyannote speaker diarization | yes | ~5 GB |
+| `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice | yes | ~10 GB |
+| `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack) | yes | ~6 GB |
+| `voxkitchen:latest`      | everything — all 4 GPU envs + core | yes | ~25 GB |
 
-<!-- TODO: uncomment when registry is ready
 ```bash
-docker pull ghcr.io/voxkitchen/voxkitchen:gpu
-docker pull ghcr.io/voxkitchen/voxkitchen:cpu
+# Slim — CPU, lightweight data processing
+docker pull ghcr.io/xqfeng-josie/voxkitchen:slim
+docker run --rm \
+    --user $(id -u):$(id -g) -e HOME=/tmp \
+    -v $(pwd)/work:/app/work \
+    -v $(pwd)/data:/data \
+    ghcr.io/xqfeng-josie/voxkitchen:slim run pipeline.yaml
+
+# Latest — everything. Needs NVIDIA GPU + nvidia-container-toolkit.
+docker pull ghcr.io/xqfeng-josie/voxkitchen:latest
+docker run --rm --gpus all \
+    --user $(id -u):$(id -g) -e HOME=/tmp \
+    -v $(pwd)/work:/app/work \
+    -v $(pwd)/data:/data \
+    ghcr.io/xqfeng-josie/voxkitchen:latest run pipeline.yaml
+
+# Check what's installed and healthy
+docker run --rm ghcr.io/xqfeng-josie/voxkitchen:latest doctor
 ```
--->
 
-```bash
-# GPU
-docker run --rm --gpus all -v /data:/data voxkitchen:gpu run pipeline.yaml
+> **Why `--user $(id -u):$(id -g)` and `-e HOME=/tmp`?**
+> Without `--user`, Docker writes output as root and you can't delete it
+> without sudo. Pinning the container UID to your host UID fixes ownership.
+> `HOME=/tmp` gives non-root processes a writable home — model caches
+> live under `/opt/voxkitchen/model_cache/` (world-readable) so `HOME` is
+> only used for occasional transient files. Bundle these flags into a
+> shell alias, or use the [`scripts/vkit-docker.sh`](scripts/vkit-docker.sh)
+> wrapper that already handles them.
 
-# CPU
-docker run --rm -v /data:/data voxkitchen:cpu run pipeline.yaml
-
-# Quick demo (built-in sample audio, no data needed)
-docker run --rm voxkitchen:cpu run examples/pipelines/demo-no-asr.yaml
-```
+`vkit doctor` reports per-env operator availability (core / asr / diarize /
+tts / fish-speech) and the status of the model cache. Use it whenever
+`run` complains an operator is missing.
 
 <details>
-<summary>Build from source</summary>
+<summary>Oh no, I already have root-owned files in <code>work/</code></summary>
+
+Use Docker itself to chown them back — no sudo needed:
 
 ```bash
-# GPU image (all models pre-downloaded during build)
-docker build -t voxkitchen:gpu .
-
-# CPU image
-docker build -f Dockerfile.cpu -t voxkitchen:cpu .
-
-# Include pyannote diarization model (needs HuggingFace token)
-docker build --build-arg HF_TOKEN=hf_xxx -t voxkitchen:gpu .
+docker run --rm -v $(pwd)/work:/work alpine \
+    chown -R $(id -u):$(id -g) /work
 ```
+</details>
+
+**How it works**: `voxkitchen:latest` contains five isolated Python
+environments (`core`, `asr`, `diarize`, `tts`, `fish-speech`) in one
+image. VoxKitchen already checkpoints each pipeline stage to disk, so
+stages can run in different envs via subprocess dispatch — the runner
+picks the right env per stage automatically. This sidesteps the hard
+dep conflicts (pyannote vs funasr vs ChatTTS vs fish-speech's torch 2.8)
+that make a single-env "everything" build impossible.
+
+See [`docs/architecture/multi-env.md`](docs/architecture/multi-env.md)
+for the full design and [`docs/docker-build.md`](docs/docker-build.md)
+for building locally.
+
+<details>
+<summary>Building locally (air-gapped hosts, custom CUDA, arm64)</summary>
+
+```bash
+# Convenience wrapper: reads HF_TOKEN from ./.env so gated models
+# (pyannote, etc.) are baked into the image at build time instead of
+# downloading on first use.
+scripts/vkit-build.sh           # → voxkitchen:latest (GPU, ~23 GB)
+scripts/vkit-build.sh slim      # → voxkitchen:slim   (CPU, ~3 GB)
+
+# Or go raw:
+docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .
+docker build --target latest -f docker/Dockerfile \
+    --build-arg HF_TOKEN=hf_xxx -t voxkitchen:latest .
+```
+
+Full build docs: [`docs/docker-build.md`](docs/docker-build.md).
 
 </details>
 
@@ -140,7 +190,7 @@ pip install -e ".[all]"
 | `quality` | `audio_fingerprint_dedup` | simhash |
 | `diarize` | `pyannote_diarize` | pyannote.audio (needs `HF_TOKEN`) |
 | `classify` | `speechbrain_langid` | speechbrain |
-| `gender` | `gender_classify` (ina method) | inaSpeechSegmenter |
+| `gender` | `gender_classify` (ina method — opt-in only; conflicts with ASR/TTS stacks) | inaSpeechSegmenter |
 | `speaker` | `speaker_embed` | wespeaker (GitHub) |
 | `enhance` | `speech_enhance` | deepfilternet |
 | `align` | `forced_align`, `qwen3_asr` | qwen-asr |
@@ -148,7 +198,7 @@ pip install -e ".[all]"
 | `tts-kokoro` | `tts_kokoro` | kokoro, misaki |
 | `tts-chattts` | `tts_chattts` | ChatTTS |
 | `tts-cosyvoice` | `tts_cosyvoice` | modelscope |
-| `tts-fish-speech` | `tts_fish_speech` | fish-speech (GitHub) |
+| `tts-fish-speech` | `tts_fish_speech` (operator is currently parked, tracks fish-speech 1.x API — see CHANGELOG Known limitations) | fish-speech (GitHub) |
 | `pack` | `pack_huggingface`, `pack_webdataset`, `pack_parquet` | datasets, webdataset, pyarrow |
 | `viz` | HTML report | jinja2, plotly |
 | `viz-panel` | Gradio panel | gradio |
@@ -206,6 +256,7 @@ vkit operators show <name>          Operator detail + config
 vkit recipes                        List available dataset recipes
 vkit inspect cuts <path>            CutSet statistics
 vkit inspect run <work_dir>         Pipeline run summary
+vkit doctor                         Report operator availability + model cache
 vkit viz <path>                     Gradio interactive explorer
 ```
 

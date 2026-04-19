@@ -98,15 +98,96 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
 
    For optional dependencies, wrap in `try/except ImportError`.
 
-4. **Write tests** in `tests/unit/operators/<category>/test_<name>.py`
+4. **Map the operator's `required_extras` to a Docker env**. If the
+   operator declares any `required_extras = [...]`, every listed extras
+   group must appear in `EXTRA_TO_ENV` in
+   [`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py).
+   The runner consults this table (plus `op_env_map.json` inside the
+   Docker image) to route stages to the right env. If two extras in an
+   operator map to different envs, the runner refuses to dispatch — split
+   the extras or pick one env.
 
-5. **Create an example** in `examples/pipelines/` (optional but appreciated)
+5. **Add to expected set** in
+   [`voxkitchen/cli/doctor.py`](voxkitchen/cli/doctor.py)'s
+   `EXPECTED_OPERATORS[<env>]` — this is what the `vkit doctor --expect <env>`
+   smoke test at the end of each Docker build stage checks. If your
+   operator is in the image, it must be in the expected set, or the
+   build-time smoke test will flag it as "extra" (harmless but noisy).
 
-6. **Regenerate operator docs**:
+6. **Write tests** in `tests/unit/operators/<category>/test_<name>.py`.
+
+7. **Create an example** in `examples/pipelines/` (optional but appreciated).
+
+8. **Regenerate operator docs**:
 
    ```bash
    python scripts/gen_operator_docs.py -o docs/reference/operators.md
    ```
+
+## Adding a New Docker Env
+
+Do this only when a new operator's dependencies genuinely cannot share a
+pip resolver with any existing env (e.g., it pins a different major
+version of torch or numpy). One-off dep conflicts inside an existing env
+are cheaper to resolve by pinning than by creating a new env.
+
+The canonical example is `:fish-speech`: fish-speech 2.0 pins `torch==2.8`,
+incompatible with the `:tts` env's `torch==2.4` (shared with ChatTTS,
+CosyVoice, kokoro). Isolating it keeps the other three TTS engines on a
+validated stack.
+
+Steps (mirrors the `:diarize` env split in the same PR):
+
+1. **Name the env and register it**:
+   - Add the name to `KNOWN_ENVS` in
+     [`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py).
+   - Map each of its extras in `EXTRA_TO_ENV` to the new env name.
+
+2. **Declare the expected operator set**:
+   - Add `EXPECTED_OPERATORS["<env>"] = EXPECTED_OPERATORS["core"] | {...}`
+     in [`voxkitchen/cli/doctor.py`](voxkitchen/cli/doctor.py).
+   - Include the new env in `_available_envs()` canonical order.
+
+3. **Add a per-env constraints file**:
+   - `docker/constraints/<env>.txt` — pin whatever shared deps (torch,
+     numpy, huggingface_hub, etc.) are specific to this env.
+
+4. **Extend warmup**:
+   - Add a `run_<env>()` function to `scripts/warmup_models.py` that
+     pre-downloads the env's models at image build time.
+   - Add the env name to the `--group` argparse choices.
+
+5. **Add a Dockerfile stage + target**:
+   ```dockerfile
+   FROM core-env AS <env>-env
+   RUN uv venv /opt/voxkitchen/envs/<env> --python 3.11
+   RUN uv pip install --python /opt/voxkitchen/envs/<env>/bin/python \
+       -c /app/docker/constraints/<env>.txt \
+       -e ".[...your extras...]"
+   RUN uv pip install --python /opt/voxkitchen/envs/<env>/bin/python -e . --no-deps
+   RUN /opt/voxkitchen/envs/<env>/bin/python scripts/warmup_models.py --group <env>
+   RUN /opt/voxkitchen/envs/<env>/bin/python -m voxkitchen.runtime.dump_schemas \
+       --env <env> --out /opt/voxkitchen/schemas_<env>.json
+
+   FROM <env>-env AS <env>
+   # merge core + <env> schemas, doctor smoke test, chmod, ENTRYPOINT
+   ```
+   Also extend the `latest` stage to `COPY --from=<env>-env` the new env
+   subtree + its schema + warmup status.
+
+6. **Update docs**:
+   - [`docs/architecture/multi-env.md`](docs/architecture/multi-env.md) —
+     add the new env to the layout diagram.
+   - [`docs/docker-build.md`](docs/docker-build.md) — add the new tag to
+     the target matrix.
+   - `README.md` — add the new tag to the short table.
+
+7. **Verify with integration tests**:
+   - The existing `test_cross_env_dispatch_happy_path` in
+     `tests/integration/test_multi_env_dispatch_e2e.py` uses a synthetic
+     sandbox env to verify the dispatch mechanism — no need to add env-
+     specific integration tests unless the env has unique dispatch
+     semantics.
 
 ## Adding a New Recipe
 
