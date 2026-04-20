@@ -156,16 +156,14 @@ stages:
     assert exc_info.value.stage_name == "will_fail"
 
 
-def test_stage_runner_binary_entry_point(
-    tmp_path: Path, sample_manifest_path: Path
-) -> None:
+def test_stage_runner_binary_entry_point(tmp_path: Path, sample_manifest_path: Path) -> None:
     """`python -m voxkitchen.runtime.stage_runner` runs a stage end-to-end
     when invoked directly — independent of the parent runner. This is the
     contract the Docker subprocess relies on."""
     import subprocess
+    from dataclasses import asdict
 
     from voxkitchen.pipeline.context import RunContext
-    from dataclasses import asdict
 
     output_path = tmp_path / "out.jsonl.gz"
     ctx = RunContext(

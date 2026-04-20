@@ -34,6 +34,7 @@ import json
 import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,12 +50,12 @@ def dump_current_env(env_name: str, out_path: Path) -> int:
     import voxkitchen.operators  # noqa: F401  (side effect: registration)
     from voxkitchen.operators.registry import get_operator, list_operators
 
-    operators: dict[str, dict] = {}
+    operators: dict[str, dict[str, Any]] = {}
     for name in sorted(list_operators()):
         op_cls = get_operator(name)
         try:
             schema = op_cls.config_cls.model_json_schema()
-        except Exception as exc:  # noqa: BLE001 — schema export is best-effort
+        except Exception as exc:
             logger.warning("could not derive JSON schema for %s: %s", name, exc)
             schema = {"error": repr(exc)}
         doc = (op_cls.__doc__ or "").strip().split("\n", 1)[0]

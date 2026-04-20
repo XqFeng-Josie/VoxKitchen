@@ -30,8 +30,6 @@ import yaml
 
 from voxkitchen.ingest import get_ingest_source
 from voxkitchen.operators.registry import (
-    MissingExtrasError,
-    UnknownOperatorError,
     get_operator,
 )
 from voxkitchen.pipeline.checkpoint import (

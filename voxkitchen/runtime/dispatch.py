@@ -19,7 +19,7 @@ import subprocess
 import sys
 from dataclasses import asdict
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from voxkitchen.runtime.env_resolver import env_python
 
@@ -51,10 +51,10 @@ def dispatch_stage_to_env(
     *,
     target_env: str,
     op_name: str,
-    config_args: dict,
+    config_args: dict[str, Any],
     input_path: Path,
     output_path: Path,
-    ctx: "RunContext",
+    ctx: RunContext,
 ) -> None:
     """Spawn ``voxkitchen.runtime.stage_runner`` in ``target_env``.
 
@@ -110,7 +110,7 @@ def dispatch_stage_to_env(
     env.setdefault("PYTHONUNBUFFERED", "1")
 
     logger.info("dispatch stage %s → env %s", op_name, target_env)
-    result = subprocess.run(  # noqa: S603 — command is assembled from trusted config
+    result = subprocess.run(
         cmd,
         env=env,
         stdin=subprocess.DEVNULL,

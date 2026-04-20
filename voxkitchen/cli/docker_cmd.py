@@ -154,7 +154,7 @@ def _extra_mounts(paths: list[Path]) -> list[str]:
 
 def _run_and_exit(cmd: list[str]) -> NoReturn:
     """Run ``cmd`` and propagate its exit code. stdout/stderr inherited."""
-    rc = subprocess.run(cmd, check=False).returncode  # noqa: S603
+    rc = subprocess.run(cmd, check=False).returncode
     raise typer.Exit(code=rc)
 
 
@@ -229,7 +229,9 @@ def doctor_cmd(
 
 @docker_app.command("build")
 def build_cmd(
-    target: str = typer.Argument(DEFAULT_TAG, help="Dockerfile target: slim|asr|diarize|tts|fish-speech|latest."),
+    target: str = typer.Argument(
+        DEFAULT_TAG, help="Dockerfile target: slim|asr|diarize|tts|fish-speech|latest."
+    ),
     tag: str | None = typer.Option(
         None, "--tag", help="Image tag to apply. Default: voxkitchen:<target>."
     ),

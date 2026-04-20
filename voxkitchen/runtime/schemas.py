@@ -41,7 +41,7 @@ def load_op_schemas() -> dict[str, dict[str, Any]] | None:
         if path.is_file():
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
-            except Exception as exc:  # noqa: BLE001 — advisory, fall back
+            except Exception as exc:
                 logger.warning("could not parse %s: %s", path, exc)
                 continue
             if not isinstance(data, dict):

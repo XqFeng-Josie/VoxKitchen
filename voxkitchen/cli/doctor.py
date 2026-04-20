@@ -27,6 +27,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any, cast
 
 import typer
 from rich.console import Console
@@ -161,7 +162,7 @@ def _collect_available() -> set[str]:
     return set(list_operators())
 
 
-def _load_warmup_status(image_kind: str | None = None) -> dict | None:
+def _load_warmup_status(image_kind: str | None = None) -> dict[str, Any] | None:
     """Read the per-model warmup report written during image build, if any.
 
     New layout: ``/opt/voxkitchen/warmup_<env>.json`` (written by
@@ -175,8 +176,8 @@ def _load_warmup_status(image_kind: str | None = None) -> dict | None:
     for candidate in candidates:
         if candidate.is_file():
             try:
-                return json.loads(candidate.read_text())
-            except Exception:  # noqa: BLE001 — report is advisory
+                return cast(dict[str, Any], json.loads(candidate.read_text()))
+            except Exception:
                 return None
     return None
 
@@ -190,7 +191,7 @@ def _available_envs() -> list[str]:
     return [e for e in order if e in found]
 
 
-def _collect_report_via_subprocess(env_name: str) -> dict:
+def _collect_report_via_subprocess(env_name: str) -> dict[str, Any]:
     """Run ``<env>/bin/vkit doctor --json --expect <env>`` and return the parsed JSON.
 
     Used by the cross-env aggregator. stderr is captured so the parent
@@ -213,7 +214,7 @@ def _collect_report_via_subprocess(env_name: str) -> dict:
         check=False,
     )
     try:
-        return json.loads(result.stdout)
+        return cast(dict[str, Any], json.loads(result.stdout))
     except json.JSONDecodeError:
         return {
             "image_kind": env_name,
@@ -296,7 +297,7 @@ def _emit_table(
     expected: set[str],
     missing: list[str],
     extra: list[str],
-    warmup: dict | None,
+    warmup: dict[str, Any] | None,
 ) -> None:
     header = "VoxKitchen doctor"
     if image_kind:
@@ -349,10 +350,12 @@ def _emit_table(
             for item in warmup.get("failed", []):
                 console.print(f"  [red]FAIL[/red] {item['name']}: {item['error']}")
     else:
-        console.print("\n[dim]No warmup_status.json found — models will download on first use.[/dim]")
+        console.print(
+            "\n[dim]No warmup_status.json found — models will download on first use.[/dim]"
+        )
 
 
-def _emit_multi_env_table(reports: list[dict]) -> None:
+def _emit_multi_env_table(reports: list[dict[str, Any]]) -> None:
     """Render the per-env summary table shown in multi-env Docker images."""
     console.print("\n[bold]VoxKitchen doctor — multi-env image[/bold]\n")
 
@@ -403,7 +406,7 @@ def _emit_json(
     available: set[str],
     expected: set[str],
     missing: list[str],
-    warmup: dict | None,
+    warmup: dict[str, Any] | None,
 ) -> None:
     payload = {
         "image_kind": image_kind,

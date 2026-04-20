@@ -35,6 +35,11 @@ import time
 import traceback
 from dataclasses import fields
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from voxkitchen.pipeline.context import RunContext
+    from voxkitchen.pipeline.executor import CpuPoolExecutor, GpuPoolExecutor
 
 logger = logging.getLogger("voxkitchen.stage_runner")
 
@@ -43,7 +48,7 @@ _CTX_INT_FIELDS = {"stage_index", "num_gpus", "num_cpu_workers"}
 _CTX_PATH_FIELDS = {"work_dir"}
 
 
-def _deserialize_ctx(ctx_json: str):
+def _deserialize_ctx(ctx_json: str) -> RunContext:
     """Rebuild a :class:`RunContext` from the JSON passed on the CLI.
 
     The caller serializes with ``dataclasses.asdict`` (paths turned to str).
@@ -58,7 +63,7 @@ def _deserialize_ctx(ctx_json: str):
     if unknown:
         raise ValueError(f"unknown RunContext fields: {sorted(unknown)}")
 
-    kwargs: dict = {}
+    kwargs: dict[str, Any] = {}
     for key, value in raw.items():
         if key in _CTX_PATH_FIELDS:
             kwargs[key] = Path(value)
@@ -100,7 +105,7 @@ def run_stage(
 
     try:
         config = op_cls.config_cls.model_validate_json(config_json)
-    except Exception as exc:  # noqa: BLE001 — pydantic validation failure
+    except Exception as exc:
         print(f"stage_runner: invalid config for {op_name!r}: {exc}", file=sys.stderr)
         return 1
 
@@ -110,6 +115,7 @@ def run_stage(
     # this stage_runner, just forked from it.
     from voxkitchen.pipeline.runner import _gpu_available  # reuse helper
 
+    executor: CpuPoolExecutor | GpuPoolExecutor
     if str(op_cls.device) == "gpu" and ctx.num_gpus > 0 and _gpu_available():
         executor = GpuPoolExecutor(num_gpus=ctx.num_gpus)
     else:
@@ -127,7 +133,7 @@ def run_stage(
     t_start = time.monotonic()
     try:
         cuts_out = executor.run(op_cls, config, cuts_in, ctx)
-    except Exception:  # noqa: BLE001 — operator bug, surface full traceback
+    except Exception:
         traceback.print_exc(file=sys.stderr)
         return 1
     wall_time = time.monotonic() - t_start
@@ -151,9 +157,7 @@ def run_stage(
         "throughput_cuts_per_sec": round(len(cuts_out) / wall_time, 2) if wall_time > 0 else 0.0,
         "env": _current_env_name(),
     }
-    (output_path.parent / "_stats.json").write_text(
-        json.dumps(stats, indent=2), encoding="utf-8"
-    )
+    (output_path.parent / "_stats.json").write_text(json.dumps(stats, indent=2), encoding="utf-8")
     return 0
 
 

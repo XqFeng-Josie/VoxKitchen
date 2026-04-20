@@ -37,6 +37,7 @@ import json
 import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,7 @@ def merge(
     ``required_extras`` field for the same operator signals a genuine bug
     (the code in different envs disagrees) and raises.
     """
-    schemas: dict[str, dict] = {}
+    schemas: dict[str, dict[str, Any]] = {}
     envs_seen: set[str] = set()
 
     for f in dump_files:

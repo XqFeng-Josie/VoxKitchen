@@ -92,9 +92,7 @@ def _write_fake_schemas(tmp_path: Path) -> Path:
     return schemas_path
 
 
-def test_validate_uses_schema_fallback_for_out_of_env_operator(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_validate_uses_schema_fallback_for_out_of_env_operator(tmp_path: Path, monkeypatch) -> None:
     schemas_path = _write_fake_schemas(tmp_path)
     monkeypatch.setenv("VKIT_OP_SCHEMAS", str(schemas_path))
     schemas_module.reset_cache()

@@ -76,7 +76,7 @@ class TtsCosyVoiceOperator(Operator):
                 logger.warning("cut %s has no text, skipping", cut.id)
                 continue
 
-            chunks: list[np.ndarray] = []
+            chunks: list[np.ndarray[Any, Any]] = []
             for chunk in self._infer(text):
                 speech = chunk["tts_speech"]
                 if isinstance(speech, torch.Tensor):

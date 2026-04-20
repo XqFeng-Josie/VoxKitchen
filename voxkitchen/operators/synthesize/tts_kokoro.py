@@ -63,7 +63,7 @@ class TtsKokoroOperator(Operator):
                 logger.warning("cut %s has no text, skipping", cut.id)
                 continue
 
-            audio_chunks: list[np.ndarray] = []
+            audio_chunks: list[np.ndarray[Any, Any]] = []
             for _gs, _ps, audio in self._pipeline(
                 text, voice=self.config.voice, speed=self.config.speed
             ):

@@ -10,7 +10,6 @@ validating flag assembly, not Docker itself.
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -39,7 +38,7 @@ def _captured_cmd(fake_docker) -> list[str]:
     """Helper: the docker argv that would have been executed."""
     with patch.object(docker_cmd, "_run_and_exit") as spy:
         # _run_and_exit normally raises typer.Exit; silence it for capture
-        def _capture(cmd: list[str]) -> None:  # noqa: ARG001
+        def _capture(cmd: list[str]) -> None:
             pass
 
         spy.side_effect = _capture
@@ -50,7 +49,7 @@ def _invoke(args: list[str]) -> tuple[int, list[str] | None]:
     """Invoke `vkit docker ...` and return (exit_code, captured_docker_argv)."""
     captured: list[list[str]] = []
 
-    def _capture(cmd: list[str]) -> None:  # noqa: ARG001
+    def _capture(cmd: list[str]) -> None:
         captured.append(cmd)
         raise SystemExit(0)
 
@@ -91,9 +90,7 @@ def test_run_with_custom_tag(fake_docker) -> None:
 
 
 def test_run_with_full_image_override(fake_docker) -> None:
-    _, cmd = _invoke(
-        ["docker", "run", "--image", "my.registry/voxkitchen:custom", "foo.yaml"]
-    )
+    _, cmd = _invoke(["docker", "run", "--image", "my.registry/voxkitchen:custom", "foo.yaml"])
     assert cmd is not None
     assert "my.registry/voxkitchen:custom" in cmd
     # and default isn't also present
@@ -237,7 +234,7 @@ def test_shell_is_interactive_bash(fake_docker) -> None:
 def test_run_aborts_if_docker_missing(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
 
-    def _no_docker(name: str) -> str | None:  # noqa: ARG001
+    def _no_docker(name: str) -> str | None:
         return None
 
     monkeypatch.setattr(docker_cmd.shutil, "which", _no_docker)
@@ -271,9 +268,7 @@ def test_read_hf_token_no_file(tmp_path) -> None:
 
 
 def test_read_hf_token_skips_comments(tmp_path) -> None:
-    (tmp_path / ".env").write_text(
-        "# HF_TOKEN=wrong\nHF_TOKEN=hf_right\n", encoding="utf-8"
-    )
+    (tmp_path / ".env").write_text("# HF_TOKEN=wrong\nHF_TOKEN=hf_right\n", encoding="utf-8")
     assert docker_cmd._read_hf_token_from_env(tmp_path / ".env") == "hf_right"
 
 

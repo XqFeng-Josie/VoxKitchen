@@ -32,7 +32,7 @@ def _validate_args_via_registry(op_name: str, args: dict[str, Any]) -> str | Non
         return "__not_registered__"
     try:
         op_cls.config_cls.model_validate(args)
-    except Exception as exc:  # noqa: BLE001 — pydantic ValidationError or similar
+    except Exception as exc:
         return f"invalid args — {exc}"
     return None
 

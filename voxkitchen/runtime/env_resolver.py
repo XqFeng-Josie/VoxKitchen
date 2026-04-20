@@ -83,9 +83,7 @@ EXTRA_TO_ENV: Final[dict[str, str]] = {
 # Must stay in sync with the env-stage names in ``docker/Dockerfile`` and
 # with ``EXPECTED_OPERATORS`` in ``voxkitchen/cli/doctor.py``. Adding a
 # new env means updating all three in one PR.
-KNOWN_ENVS: Final[frozenset[str]] = frozenset(
-    {"core", "asr", "diarize", "tts", "fish-speech"}
-)
+KNOWN_ENVS: Final[frozenset[str]] = frozenset({"core", "asr", "diarize", "tts", "fish-speech"})
 
 # Root under which each venv lives. Tests may monkeypatch this to point
 # at a temporary layout; production images always use the Docker path.
@@ -117,7 +115,7 @@ def _load_op_env_map() -> dict[str, str] | None:
         if p.is_file():
             try:
                 data = json.loads(p.read_text(encoding="utf-8"))
-            except Exception as exc:  # noqa: BLE001 — malformed map is advisory
+            except Exception as exc:
                 logger.warning("failed to parse %s: %s — falling back to registry", p, exc)
                 continue
             if not isinstance(data, dict):
@@ -138,10 +136,9 @@ def _derive_from_registry() -> dict[str, str]:
     """
     # Import lazily to avoid circular imports: env_resolver is imported
     # during pipeline setup; operators pull in the registry.
-    from voxkitchen.operators.registry import list_operators
-
     # Importing the package registers whatever this env can load.
     import voxkitchen.operators  # noqa: F401  (side effect)
+    from voxkitchen.operators.registry import list_operators
 
     mapping: dict[str, str] = {}
     for name in list_operators():

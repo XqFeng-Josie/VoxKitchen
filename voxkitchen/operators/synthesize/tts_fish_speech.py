@@ -123,7 +123,7 @@ class TtsFishSpeechOperator(Operator):
             )
         return CutSet(out_cuts)
 
-    def _infer(self, text: str) -> np.ndarray | None:
+    def _infer(self, text: str) -> np.ndarray[Any, Any] | None:
         """Run TTS inference for a single text string.
 
         Returns 1-D float32 numpy array of audio samples, or None on failure.
