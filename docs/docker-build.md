@@ -17,12 +17,12 @@ BuildKit targets:
 
 | Target | What it contains | Base | Size | GPU |
 |--------|------------------|------|------|-----|
-| `slim`        | `core` venv only                          | ~3 GB  | no  |
-| `asr`         | core + `asr` venv (faster-whisper / funasr / qwen3 / forced align) | ~10 GB | yes |
-| `diarize`     | core + `diarize` venv (pyannote only)     | ~5 GB  | yes |
-| `tts`         | core + `tts` venv (kokoro / ChatTTS / CosyVoice) | ~10 GB | yes |
-| `fish-speech` | core + `fish-speech` venv (torch 2.8 stack) | ~6 GB  | yes |
-| `latest`      | all 5 envs merged in one image            | ~25 GB | yes |
+| `slim`        | `core` venv only                          | ~13 GB  | no  |
+| `asr`         | core + `asr` venv (faster-whisper / funasr / qwen3 / forced align) | ~48 GB | yes |
+| `diarize`     | core + `diarize` venv (pyannote only)     | ~32 GB  | yes |
+| `tts`         | core + `tts` venv (kokoro / ChatTTS / CosyVoice) | ~44 GB | yes |
+| `fish-speech` | core + `fish-speech` venv (torch 2.8 stack) | ~38 GB  | yes |
+| `latest`      | all 5 envs merged in one image            | ~103 GB | yes |
 
 Base image for GPU targets: `pytorch/pytorch:2.4.1-cuda12.4`. Slim uses
 `torch==2.4.1+cpu` inside the same base image; the CUDA libs are unused

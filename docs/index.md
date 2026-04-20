@@ -45,6 +45,6 @@ vkit run pipeline.yaml --dry-run    # validate without executing
 
 ## Links
 
-- [Example pipelines](https://github.com/voxkitchen/voxkitchen/tree/main/examples/pipelines)
-- [GitHub](https://github.com/voxkitchen/voxkitchen)
-- [License](https://github.com/voxkitchen/voxkitchen/blob/main/LICENSE) (Apache 2.0)
+- [Example pipelines](https://github.com/XqFeng-Josie/VoxKitchen/tree/main/examples/pipelines)
+- [GitHub](https://github.com/XqFeng-Josie/VoxKitchen)
+- [License](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/LICENSE) (Apache 2.0)

@@ -1,6 +1,6 @@
 # System Architecture
 
-> Last updated: 2026-04-15 | Operators: 51 | Categories: 8
+> Operators: 51 across 7 categories.
 
 ## Overview
 
@@ -123,7 +123,7 @@ Third-party: `entry_points` group `voxkitchen.operators` (lazy discovery on firs
 
 Optional deps wrapped in `try/except ImportError` -- missing packages don't crash the core.
 
-### Operator Catalog (51 operators, 8 categories)
+### Operator Catalog (51 operators, 7 categories)
 
 | Category | Count | Operators |
 |----------|-------|-----------|
@@ -340,7 +340,7 @@ Each function creates a temporary Cut + RunContext, runs the corresponding opera
 ```
 voxkitchen/
   cli/                  # Typer CLI app
-  operators/            # 51 operators across 8 categories
+  operators/            # 51 operators across 7 categories
     basic/              #   resample, ffmpeg_convert, ...
     segment/            #   silero_vad, webrtc_vad, ...
     augment/            #   speed_perturb, noise_augment, ...
@@ -383,7 +383,7 @@ tests/integration/      # End-to-end pipeline tests
 ### Completed
 
 - Core framework (schema, pipeline engine, CLI)
-- 51 operators across 8 categories
+- 51 operators across 7 categories
 - 4 ingest recipes (LibriSpeech, AISHELL, CommonVoice, FLEURS)
 - Visualization (Rich CLI, HTML report, Gradio panel)
 - Plugin system (entry_points)

@@ -1,5 +1,11 @@
 # VoxKitchen 下一阶段开发路线图
 
+> **Historical document.** This was the plan leading up to v0.1.0 (templates,
+> docs site, public release, more recipes). For what actually shipped, see
+> [CHANGELOG.md](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CHANGELOG.md);
+> for what's next, see project issues. Kept for historical reference — do not
+> treat as current guidance. Not linked from the docs nav for the same reason.
+
 ## 阶段总览
 
 | 顺序 | 方向 | 目标 | 预估工作量 |
