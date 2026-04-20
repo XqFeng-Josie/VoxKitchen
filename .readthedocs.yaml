@@ -7,6 +7,21 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+  # Skip rebuilding when a push doesn't touch anything docs-related.
+  # Exit code 183 is RTD's documented "cancel build" signal.
+  # Tags always build (new versioned doc site section needed).
+  jobs:
+    post_checkout:
+      - |
+        if [ "$READTHEDOCS_VERSION_TYPE" = "tag" ]; then
+          echo "Tagged release — building."
+          exit 0
+        fi
+        if git rev-parse HEAD^ >/dev/null 2>&1 && \
+           git diff --quiet HEAD^ HEAD -- docs/ mkdocs.yml .readthedocs.yaml; then
+          echo "No doc-relevant changes since HEAD^ — skipping RTD build."
+          exit 183
+        fi
 
 mkdocs:
   configuration: mkdocs.yml
