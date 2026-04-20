@@ -325,6 +325,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-install-pip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local install (pip)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-install-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container install (Docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -864,6 +892,144 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building Docker Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/multi-env/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-env Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -905,6 +1071,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-install-pip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local install (pip)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-install-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container install (Docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1024,25 +1218,40 @@
 
 <h1 id="getting-started">Getting Started</h1>
 <h2 id="installation">Installation</h2>
+<p>VoxKitchen has one CLI (<code>vkit</code>) with two execution modes: <strong>local</strong> (runs
+inside your current Python env) and <strong>container</strong> (runs inside a Docker
+image). Most users use both — pip install to get the CLI, then pull
+Docker images for pipelines that exceed the local env's extras.</p>
+<h3 id="local-install-pip">Local install (pip)</h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Create virtual environment</span>
 conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>voxkitchen<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>-y
 conda<span class="w"> </span>activate<span class="w"> </span>voxkitchen
 
-<span class="c1"># Clone and install</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/voxkitchen/voxkitchen.git
-<span class="nb">cd</span><span class="w"> </span>voxkitchen
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<span class="c1"># Clone + install</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/XqFeng-Josie/VoxKitchen.git
+<span class="nb">cd</span><span class="w"> </span>VoxKitchen
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[audio,segment,quality,pack]&quot;</span><span class="w">   </span><span class="c1"># pick one dep cluster</span>
 
-<span class="c1"># Install extras as needed</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[audio]&quot;</span><span class="w">          </span><span class="c1"># torch + torchaudio (for VAD, augmentation)</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[asr]&quot;</span><span class="w">            </span><span class="c1"># faster-whisper ASR</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[align]&quot;</span><span class="w">          </span><span class="c1"># Qwen3 ASR + forced alignment</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[enhance]&quot;</span><span class="w">        </span><span class="c1"># DeepFilterNet denoising</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[speaker]&quot;</span><span class="w">        </span><span class="c1"># WeSpeaker speaker embeddings</span>
-
-<span class="c1"># Or install everything at once</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[all]&quot;</span>
+<span class="c1"># Add more extras from the same cluster as needed</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[audio,segment,quality,pack,asr,funasr,align]&quot;</span><span class="w">   </span><span class="c1"># ASR cluster</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[audio,segment,quality,pack,diarize]&quot;</span><span class="w">            </span><span class="c1"># diarization</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[audio,segment,quality,pack,tts-kokoro]&quot;</span><span class="w">         </span><span class="c1"># TTS</span>
 </code></pre></div>
+<blockquote>
+<p><strong>Don't install <code>.[all]</code></strong> — it crosses dep clusters (pyannote vs
+funasr vs fish-speech pin incompatible torch/numpy versions) and
+the pip resolver will fail. The authoritative extras → cluster
+mapping is
+<a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/voxkitchen/runtime/env_resolver.py"><code>voxkitchen/runtime/env_resolver.py</code></a>.</p>
+</blockquote>
+<h3 id="container-install-docker">Container install (Docker)</h3>
+<p>For pipelines that cross dep clusters (e.g. pyannote + funasr), use
+the published multi-env image:</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>pull<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w">          </span><span class="c1"># CPU-only, ~13 GB</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>pull<span class="w"> </span>--tag<span class="w"> </span>latest<span class="w">        </span><span class="c1"># all five envs, ~103 GB</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">        </span><span class="c1"># same YAML, same CLI</span>
+</code></pre></div>
+<p>Full tag matrix and size reference: <a href="../docker-build/">Docker build guide</a>.</p>
 <h2 id="your-first-pipeline">Your first pipeline</h2>
 <h3 id="option-a-use-a-template-recommended">Option A: Use a template (recommended)</h3>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w"> </span>--template<span class="w"> </span>tts<span class="w">    </span><span class="c1"># TTS data preparation</span>

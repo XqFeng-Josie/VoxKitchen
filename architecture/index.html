@@ -11,6 +11,10 @@
       
       
       
+        <link rel="prev" href="../docker-build/">
+      
+      
+        <link rel="next" href="multi-env/">
       
       
         
@@ -21,7 +25,7 @@
     
     
       
-        <title>System Architecture - VoxKitchen</title>
+        <title>Overview - VoxKitchen</title>
       
     
     
@@ -106,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              System Architecture
+              Overview
             
           </span>
         </div>
@@ -708,6 +712,553 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building Docker Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layered-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layered Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-model-schema-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Model (Schema Layer)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Model (Schema Layer)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recording" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supervision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cut
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CutSet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-catalog-51-operators-7-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator Catalog (51 operators, 7 categories)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml-spec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YAML Spec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execution-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#work-directory-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Work Directory Layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resume-checkpointing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resume &amp; Checkpointing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#garbage-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Garbage Collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ingest-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingest Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ingest Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Recipes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-tools-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Tools API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multi-env/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-env Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -870,10 +1421,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#operator-catalog-51-operators-8-categories" class="md-nav__link">
+  <a href="#operator-catalog-51-operators-7-categories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Operator Catalog (51 operators, 8 categories)
+        Operator Catalog (51 operators, 7 categories)
       
     </span>
   </a>
@@ -1123,7 +1674,7 @@
 
 <h1 id="system-architecture">System Architecture</h1>
 <blockquote>
-<p>Last updated: 2026-04-15 | Operators: 51 | Categories: 8</p>
+<p>Operators: 51 across 7 categories.</p>
 </blockquote>
 <h2 id="overview">Overview</h2>
 <p>VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run <code>vkit run</code>, and get training-ready datasets with full provenance tracking.</p>
@@ -1205,7 +1756,7 @@ Schema Layer        (schema/)        Pydantic v2 data models
 <p>Built-in operators: <code>@register_operator</code> decorator + import in <code>operators/__init__.py</code>.
 Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (lazy discovery on first access).</p>
 <p>Optional deps wrapped in <code>try/except ImportError</code> -- missing packages don't crash the core.</p>
-<h3 id="operator-catalog-51-operators-8-categories">Operator Catalog (51 operators, 8 categories)</h3>
+<h3 id="operator-catalog-51-operators-7-categories">Operator Catalog (51 operators, 7 categories)</h3>
 <table>
 <thead>
 <tr>
@@ -1540,7 +2091,7 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class=
 <h2 id="project-structure">Project Structure</h2>
 <div class="highlight"><pre><span></span><code>voxkitchen/
   cli/                  # Typer CLI app
-  operators/            # 51 operators across 8 categories
+  operators/            # 51 operators across 7 categories
     basic/              #   resample, ffmpeg_convert, ...
     segment/            #   silero_vad, webrtc_vad, ...
     augment/            #   speed_perturb, noise_augment, ...
@@ -1579,7 +2130,7 @@ tests/integration/      # End-to-end pipeline tests
 <h3 id="completed">Completed</h3>
 <ul>
 <li>Core framework (schema, pipeline engine, CLI)</li>
-<li>51 operators across 8 categories</li>
+<li>51 operators across 7 categories</li>
 <li>4 ingest recipes (LibriSpeech, AISHELL, CommonVoice, FLEURS)</li>
 <li>Visualization (Rich CLI, HTML report, Gradio panel)</li>
 <li>Plugin system (entry_points)</li>

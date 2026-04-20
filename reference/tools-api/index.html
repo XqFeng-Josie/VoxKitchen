@@ -823,6 +823,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tts-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTS Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -847,6 +858,144 @@
     
   
     Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker-build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building Docker Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/multi-env/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-env Docker
   
 
     
@@ -992,6 +1141,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tts-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTS Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1026,6 +1186,7 @@
     <span class="n">extract_speaker_embedding</span><span class="p">,</span>
     <span class="n">enhance_speech</span><span class="p">,</span>
     <span class="n">align_words</span><span class="p">,</span>
+    <span class="n">synthesize</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
 <h2 id="audio-info">Audio Info</h2>
@@ -1093,6 +1254,59 @@
 <span class="n">words</span> <span class="o">=</span> <span class="n">align_words</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;你好世界&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;Chinese&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>Requires: <code>pip install voxkitchen[align]</code></p>
+<h2 id="tts-synthesis">TTS Synthesis</h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Kokoro — lightweight (82M), CPU-capable, 8 languages</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span> <span class="s2">&quot;hello.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">)</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;你好，世界&quot;</span><span class="p">,</span> <span class="s2">&quot;zh.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;slow.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="c1"># ChatTTS — conversational, Chinese / English, GPU</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;你好世界&quot;</span><span class="p">,</span> <span class="s2">&quot;chat.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;chattts&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># CosyVoice2 — zero-shot voice cloning, GPU</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;你好&quot;</span><span class="p">,</span> <span class="s2">&quot;clone.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;cosyvoice&quot;</span><span class="p">,</span>
+           <span class="n">reference_audio</span><span class="o">=</span><span class="s2">&quot;ref.wav&quot;</span><span class="p">,</span> <span class="n">reference_text</span><span class="o">=</span><span class="s2">&quot;参考文本&quot;</span><span class="p">)</span>
+
+<span class="c1"># Fish-Speech — zero-shot voice cloning, GPU</span>
+<span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;clone.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;fish_speech&quot;</span><span class="p">,</span>
+           <span class="n">reference_audio</span><span class="o">=</span><span class="s2">&quot;ref.wav&quot;</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th><code>engine</code></th>
+<th>Extras group</th>
+<th style="text-align: center;">Device</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"kokoro"</code></td>
+<td><code>tts-kokoro</code></td>
+<td style="text-align: center;">CPU/GPU</td>
+<td>82M params, 8 langs (<code>a</code>/<code>b</code>/<code>j</code>/<code>z</code>/...), <code>speed</code> supported.</td>
+</tr>
+<tr>
+<td><code>"chattts"</code></td>
+<td><code>tts-chattts</code></td>
+<td style="text-align: center;">GPU</td>
+<td>Conversational ZH/EN, <code>seed</code> for speaker sampling.</td>
+</tr>
+<tr>
+<td><code>"cosyvoice"</code></td>
+<td><code>tts-cosyvoice</code></td>
+<td style="text-align: center;">GPU</td>
+<td>Voice cloning via <code>reference_audio</code> + <code>reference_text</code>.</td>
+</tr>
+<tr>
+<td><code>"fish_speech"</code></td>
+<td><code>tts-fish-speech</code></td>
+<td style="text-align: center;">GPU</td>
+<td>Voice cloning via <code>reference_audio</code> (operator currently parked; see CHANGELOG).</td>
+</tr>
+</tbody>
+</table>
 
 
 

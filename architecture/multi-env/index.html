@@ -11,6 +11,8 @@
       
       
       
+        <link rel="prev" href="../">
+      
       
       
         
@@ -21,7 +23,7 @@
     
     
       
-        <title>Multi-env architecture - VoxKitchen</title>
+        <title>Multi-env Docker - VoxKitchen</title>
       
     
     
@@ -106,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Multi-env architecture
+              Multi-env Docker
             
           </span>
         </div>
@@ -708,6 +710,425 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker-build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building Docker Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-env Docker
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-env Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core idea
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voxkitchenruntimeenv_resolverpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        voxkitchen/runtime/env_resolver.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#voxkitchenruntimestage_runnerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        voxkitchen/runtime/stage_runner.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#voxkitchenruntimedump_schemaspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        voxkitchen/runtime/dump_schemas.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#voxkitchenruntimemerge_schemaspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        voxkitchen/runtime/merge_schemas.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#voxkitchenpipelineexecutorpy-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        voxkitchen/pipeline/executor.py (changed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#voxkitchenpipelinerunnerpy-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        voxkitchen/pipeline/runner.py (changed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-construction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment construction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment construction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tool-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool: uv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-env-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-env constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lockfiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lockfiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dockerfile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risks-and-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risks and mitigations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phased-rollout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phased rollout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-not-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What does NOT change
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1172,12 +1593,12 @@ without surprising builds.</p>
 <h2 id="dockerfile">Dockerfile</h2>
 <p>One <code>Dockerfile</code> with six BuildKit targets:</p>
 <ul>
-<li><code>target=slim</code>:        core env only, torch-cpu, ~3 GB</li>
-<li><code>target=asr</code>:         core + asr env,          ~10 GB</li>
-<li><code>target=diarize</code>:     core + diarize env (pyannote only), ~5 GB</li>
-<li><code>target=tts</code>:         core + tts env,          ~10 GB</li>
-<li><code>target=fish-speech</code>: core + fish-speech env (isolated torch 2.8), ~6 GB</li>
-<li><code>target=latest</code>:      all five envs merged,    ~25 GB</li>
+<li><code>target=slim</code>:        core env only, torch-cpu, ~13 GB</li>
+<li><code>target=asr</code>:         core + asr env,          ~48 GB</li>
+<li><code>target=diarize</code>:     core + diarize env (pyannote only), ~32 GB</li>
+<li><code>target=tts</code>:         core + tts env,          ~44 GB</li>
+<li><code>target=fish-speech</code>: core + fish-speech env (isolated torch 2.8), ~38 GB</li>
+<li><code>target=latest</code>:      all five envs merged,    ~103 GB</li>
 </ul>
 <div class="highlight"><pre><span></span><code>FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime AS base
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
