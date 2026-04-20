@@ -2,26 +2,47 @@
 
 ## Installation
 
+VoxKitchen has one CLI (`vkit`) with two execution modes: **local** (runs
+inside your current Python env) and **container** (runs inside a Docker
+image). Most users use both — pip install to get the CLI, then pull
+Docker images for pipelines that exceed the local env's extras.
+
+### Local install (pip)
+
 ```bash
 # Create virtual environment
 conda create -n voxkitchen python=3.11 -y
 conda activate voxkitchen
 
-# Clone and install
-git clone https://github.com/voxkitchen/voxkitchen.git
-cd voxkitchen
-pip install -e .
+# Clone + install
+git clone https://github.com/XqFeng-Josie/VoxKitchen.git
+cd VoxKitchen
+pip install -e ".[audio,segment,quality,pack]"   # pick one dep cluster
 
-# Install extras as needed
-pip install -e ".[audio]"          # torch + torchaudio (for VAD, augmentation)
-pip install -e ".[asr]"            # faster-whisper ASR
-pip install -e ".[align]"          # Qwen3 ASR + forced alignment
-pip install -e ".[enhance]"        # DeepFilterNet denoising
-pip install -e ".[speaker]"        # WeSpeaker speaker embeddings
-
-# Or install everything at once
-pip install -e ".[all]"
+# Add more extras from the same cluster as needed
+pip install -e ".[audio,segment,quality,pack,asr,funasr,align]"   # ASR cluster
+pip install -e ".[audio,segment,quality,pack,diarize]"            # diarization
+pip install -e ".[audio,segment,quality,pack,tts-kokoro]"         # TTS
 ```
+
+> **Don't install `.[all]`** — it crosses dep clusters (pyannote vs
+> funasr vs fish-speech pin incompatible torch/numpy versions) and
+> the pip resolver will fail. The authoritative extras → cluster
+> mapping is
+> [`voxkitchen/runtime/env_resolver.py`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/voxkitchen/runtime/env_resolver.py).
+
+### Container install (Docker)
+
+For pipelines that cross dep clusters (e.g. pyannote + funasr), use
+the published multi-env image:
+
+```bash
+vkit docker pull --tag slim          # CPU-only, ~13 GB
+vkit docker pull --tag latest        # all five envs, ~103 GB
+vkit docker run pipeline.yaml        # same YAML, same CLI
+```
+
+Full tag matrix and size reference: [Docker build guide](docker-build.md).
 
 ## Your first pipeline
 

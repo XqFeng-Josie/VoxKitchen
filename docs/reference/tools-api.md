@@ -15,6 +15,7 @@ from voxkitchen.tools import (
     extract_speaker_embedding,
     enhance_speech,
     align_words,
+    synthesize,
 )
 ```
 
@@ -112,3 +113,30 @@ words = align_words("speech.wav", "你好世界", language="Chinese")
 ```
 
 Requires: `pip install voxkitchen[align]`
+
+## TTS Synthesis
+
+```python
+# Kokoro — lightweight (82M), CPU-capable, 8 languages
+synthesize("Hello world!", "hello.wav", engine="kokoro")
+synthesize("你好，世界", "zh.wav", engine="kokoro", language="z")
+synthesize("Hello", "slow.wav", engine="kokoro", speed=0.8)
+
+# ChatTTS — conversational, Chinese / English, GPU
+synthesize("你好世界", "chat.wav", engine="chattts", seed=42)
+
+# CosyVoice2 — zero-shot voice cloning, GPU
+synthesize("你好", "clone.wav", engine="cosyvoice",
+           reference_audio="ref.wav", reference_text="参考文本")
+
+# Fish-Speech — zero-shot voice cloning, GPU
+synthesize("Hello", "clone.wav", engine="fish_speech",
+           reference_audio="ref.wav")
+```
+
+| `engine` | Extras group | Device | Notes |
+|----------|--------------|:------:|-------|
+| `"kokoro"` | `tts-kokoro` | CPU/GPU | 82M params, 8 langs (`a`/`b`/`j`/`z`/...), `speed` supported. |
+| `"chattts"` | `tts-chattts` | GPU | Conversational ZH/EN, `seed` for speaker sampling. |
+| `"cosyvoice"` | `tts-cosyvoice` | GPU | Voice cloning via `reference_audio` + `reference_text`. |
+| `"fish_speech"` | `tts-fish-speech` | GPU | Voice cloning via `reference_audio` (operator currently parked; see CHANGELOG). |

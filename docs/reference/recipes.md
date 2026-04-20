@@ -74,4 +74,4 @@ stages:
 
 ## Adding Custom Recipes
 
-See the [Contributing Guide](../contributing.md) for how to add new dataset recipes.
+See the [Contributing Guide](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CONTRIBUTING.md#adding-a-new-recipe) for how to add new dataset recipes.
