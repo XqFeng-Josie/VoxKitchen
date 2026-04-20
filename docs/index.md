@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/voxkitchen_logo.svg" width="400" alt="VoxKitchen logo">
+</p>
+
 # VoxKitchen
 
 Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.

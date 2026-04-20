@@ -4,6 +4,8 @@ repo_url: https://github.com/XqFeng-Josie/VoxKitchen
 
 theme:
   name: material
+  logo: assets/voxkitchen_logo.svg
+  favicon: assets/voxkitchen_logo.svg
   palette:
     primary: blue
 
