@@ -51,17 +51,33 @@ jobs:
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
           df -h /
 
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg libsndfile1 sox
+
       - name: Install package
         env:
-          SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0.dev0"
+          SETUPTOOLS_SCM_PRETEND_VERSION_FOR_VOXKITCHEN: "0.0.0.dev0"
         run: |
           python -m pip install --upgrade pip
           pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install pytest pytest-cov scipy
-          pip install -e ".[segment,quality,pack,viz]"
+          # Install the core-cluster extras — all mutually compatible via
+          # the env_resolver EXTRA_TO_ENV mapping. This mirrors what the
+          # `:slim` Docker image installs, so CI coverage reflects slim's
+          # runtime capabilities.
+          pip install -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,viz]"
 
       - name: Pytest
-        run: pytest -v -m "not slow and not gpu" --cov=voxkitchen --cov-report=term-missing
+        # Skip pack_huggingface / pack_parquet tests that need datasets / pyarrow
+        # (not in the core cluster); skip viz tests that need plotly.
+        run: |
+          pytest -v -m "not slow and not gpu" \
+            --cov=voxkitchen --cov-report=term-missing \
+            --deselect tests/unit/operators/pack/test_pack_huggingface.py \
+            --deselect tests/unit/operators/pack/test_pack_parquet.py \
+            --deselect tests/unit/viz/test_report.py
 
   typecheck:
     runs-on: ubuntu-latest
@@ -77,9 +93,9 @@ jobs:
 
       - name: Install
         env:
-          SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0.dev0"
+          SETUPTOOLS_SCM_PRETEND_VERSION_FOR_VOXKITCHEN: "0.0.0.dev0"
         run: |
-          pip install mypy pydantic pyyaml typer rich soundfile tqdm numpy ffmpeg-python pyloudnorm
+          pip install mypy pydantic pyyaml typer rich soundfile tqdm numpy ffmpeg-python pyloudnorm jsonschema
           pip install -e . --no-deps
 
       - name: Mypy
