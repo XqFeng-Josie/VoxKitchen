@@ -99,26 +99,22 @@ is in [Install reference](#install-reference).
 
 **Scaffolding & validation**
 ```
-vkit init <path>                    Scaffold a new project
-vkit init <path> -t <template>      Use a template (tts, asr, cleaning, speaker)
+vkit init <path> [-t <template>]    Scaffold a project (templates: tts, asr, cleaning, speaker)
 vkit validate <yaml>                Check YAML syntax and operator args
 ```
 
 **Execution**
 ```
 vkit run <yaml>                     Execute a pipeline
-vkit run <yaml> --dry-run           Resolve the plan without executing
-vkit run <yaml> --resume-from STG   Resume from a specific stage
 vkit download <recipe> --root DIR   Download a dataset
 ```
 
 **Inspection**
 ```
-vkit operators                      List all registered operators
-vkit operators show <name>          Operator config fields + YAML example
+vkit operators [show <name>]        List operators, or show one's fields + YAML example
 vkit recipes                        List available dataset recipes
-vkit inspect cuts <path>            CutSet statistics (duration, sr, ...)
-vkit inspect run <work_dir>         Pipeline run summary per stage
+vkit inspect cuts <path>            CutSet statistics
+vkit inspect run <work_dir>         Per-stage pipeline run summary
 vkit doctor                         Per-env operator health + model cache
 vkit viz <path>                     Launch Gradio explorer for a CutSet
 ```
@@ -127,12 +123,14 @@ vkit viz <path>                     Launch Gradio explorer for a CutSet
 in a container. Every `vkit docker` subcommand accepts `--tag <name>`
 (default `latest`) or `--image <ref>` to pick which image to use:
 ```
-vkit docker run <yaml> [--tag TAG]        Execute a pipeline in a container
-vkit docker doctor [--tag TAG]            Per-env health report inside the image
-vkit docker build [target]                Build a local image (reads HF_TOKEN from .env)
-vkit docker pull [--tag TAG]              Pull a published image
-vkit docker shell [--tag TAG]             Interactive bash inside an image
+vkit docker run <yaml>              Execute a pipeline in a container
+vkit docker doctor                  Per-env health report inside the image
+vkit docker build [target]          Build a local image (reads HF_TOKEN from .env)
+vkit docker pull                    Pull a published image
+vkit docker shell                   Interactive bash inside an image
 ```
+
+Full flag reference: [`docs/reference/cli.md`](docs/reference/cli.md).
 
 ## Install reference
 
@@ -293,10 +291,7 @@ under the hood). For raw `docker run`, pass `--env-file .env` yourself.
 | **Synthesize** | 4 | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` |
 | **Pack** | 6 | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
-```bash
-vkit operators                  # list all
-vkit operators show silero_vad  # config fields + YAML example
-```
+Run `vkit operators show <name>` for an operator's config fields and a YAML snippet.
 
 ## Python tools API
 
