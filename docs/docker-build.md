@@ -12,7 +12,7 @@ Most users should `docker pull` the pre-built images from
 
 ## Targets
 
-The single [`docker/Dockerfile`](../docker/Dockerfile) exposes six
+The single [`docker/Dockerfile`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docker/Dockerfile) exposes six
 BuildKit targets:
 
 | Target | What it contains | Base | Size | GPU |
@@ -130,12 +130,12 @@ this here will not help if they re-pin downstream.
 
 1. Add the group to `pyproject.toml` under `[project.optional-dependencies]`.
 2. Decide which env should ship it. Update `EXTRA_TO_ENV` in
-   [`voxkitchen/runtime/env_resolver.py`](../voxkitchen/runtime/env_resolver.py)
+   [`voxkitchen/runtime/env_resolver.py`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/voxkitchen/runtime/env_resolver.py)
    — this is the source of truth for "which env runs ops with this extra".
 3. Add the extras name to the `pip install -e ".[...]"` line in the matching
    stage of `docker/Dockerfile` (core-env / asr-env / tts-env).
 4. Add the operators it enables to `EXPECTED_OPERATORS` in
-   [`voxkitchen/cli/doctor.py`](../voxkitchen/cli/doctor.py) under the same
+   [`voxkitchen/cli/doctor.py`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/voxkitchen/cli/doctor.py) under the same
    env key, so the build-time smoke test catches regressions.
 5. If the new extras introduces a shared dep that conflicts with existing
    pins, update `docker/constraints/{core,asr,tts}.txt` to a mutually
