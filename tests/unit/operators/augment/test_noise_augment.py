@@ -13,24 +13,10 @@ from voxkitchen.operators.augment.noise_augment import (
     NoiseAugmentOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="noise",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -74,9 +60,9 @@ def test_noise_augment_produces_audio() -> None:
 
 
 def test_noise_augment_output_count_matches_input(
-    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path
+    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path, make_run_context
 ) -> None:
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("noise")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = NoiseAugmentConfig(noise_dir=str(noise_dir), snr_range=[10.0, 20.0])
     op = NoiseAugmentOperator(config, ctx)
@@ -88,9 +74,9 @@ def test_noise_augment_output_count_matches_input(
 
 
 def test_noise_augment_preserves_sample_rate(
-    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path
+    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path, make_run_context
 ) -> None:
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("noise")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = NoiseAugmentConfig(noise_dir=str(noise_dir))
     op = NoiseAugmentOperator(config, ctx)
@@ -105,9 +91,9 @@ def test_noise_augment_preserves_sample_rate(
 
 
 def test_noise_augment_preserves_duration(
-    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path
+    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path, make_run_context
 ) -> None:
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("noise")
     original = _cut_from_path(mono_wav_16k)
     cs = CutSet([original])
     config = NoiseAugmentConfig(noise_dir=str(noise_dir))
@@ -121,9 +107,9 @@ def test_noise_augment_preserves_duration(
 
 
 def test_noise_augment_records_snr_in_custom(
-    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path
+    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path, make_run_context
 ) -> None:
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("noise")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = NoiseAugmentConfig(noise_dir=str(noise_dir), snr_range=[15.0, 15.0])
     op = NoiseAugmentOperator(config, ctx)
@@ -137,9 +123,9 @@ def test_noise_augment_records_snr_in_custom(
 
 
 def test_noise_augment_clips_to_valid_range(
-    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path
+    mono_wav_16k: Path, noise_dir: Path, tmp_path: Path, make_run_context
 ) -> None:
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("noise")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = NoiseAugmentConfig(noise_dir=str(noise_dir), snr_range=[-10.0, -10.0])
     op = NoiseAugmentOperator(config, ctx)

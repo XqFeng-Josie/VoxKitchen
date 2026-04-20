@@ -11,24 +11,10 @@ from voxkitchen.operators.pack.pack_jsonl import (
     PackJsonlOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="pack",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -58,9 +44,11 @@ def test_pack_jsonl_produces_no_audio() -> None:
     assert PackJsonlOperator.produces_audio is False
 
 
-def test_pack_jsonl_writes_output_file(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_pack_jsonl_writes_output_file(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """pack_jsonl writes a manifest.jsonl file with one line per cut."""
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("pack")
     cut = _cut_from_path(mono_wav_16k)
     cs = CutSet([cut])
 
@@ -79,9 +67,9 @@ def test_pack_jsonl_writes_output_file(mono_wav_16k: Path, tmp_path: Path) -> No
     assert row["duration"] > 0
 
 
-def test_pack_jsonl_returns_all_cuts(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_pack_jsonl_returns_all_cuts(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
     """pack_jsonl returns the same number of cuts it received."""
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("pack")
     cut = _cut_from_path(mono_wav_16k)
     cs = CutSet([cut])
 

@@ -3,18 +3,50 @@
 from __future__ import annotations
 
 import shutil
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import pytest
 import soundfile as sf
+from voxkitchen.pipeline.context import RunContext
 
 
 @pytest.fixture
 def fixed_datetime() -> datetime:
     """A deterministic UTC datetime for reproducible tests."""
     return datetime(2026, 4, 11, 10, 30, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture
+def make_run_context(tmp_path: Path) -> Callable[..., RunContext]:
+    """Factory for a CPU-only RunContext parented at ``tmp_path``.
+
+    Tests needing non-default process settings (``num_gpus``,
+    ``num_cpu_workers``, ``device``, a specific ``pipeline_run_id``)
+    should build their own ``RunContext`` — this factory intentionally
+    covers only the common "run one operator against a fixture" case.
+    """
+
+    def _factory(
+        stage_name: str = "test",
+        *,
+        stage_index: int = 1,
+        pipeline_run_id: str = "run-test",
+    ) -> RunContext:
+        return RunContext(
+            work_dir=tmp_path,
+            pipeline_run_id=pipeline_run_id,
+            stage_index=stage_index,
+            stage_name=stage_name,
+            num_gpus=0,
+            num_cpu_workers=1,
+            gc_mode="aggressive",
+            device="cpu",
+        )
+
+    return _factory
 
 
 @pytest.fixture

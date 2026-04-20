@@ -10,7 +10,6 @@ from voxkitchen.ingest.manifest_import import (
     ManifestIngestConfig,
     ManifestIngestSource,
 )
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.io import SCHEMA_VERSION, HeaderRecord
@@ -44,32 +43,23 @@ def _write_manifest(path: Path, cs: CutSet) -> None:
     cs.to_jsonl_gz(path, header)
 
 
-def _ctx(work_dir: Path) -> RunContext:
-    return RunContext(
-        work_dir=work_dir,
-        pipeline_run_id="run-a1b2c3",
-        stage_index=0,
-        stage_name="ingest",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
-
-
-def test_manifest_ingest_reads_all_cuts(tmp_path: Path) -> None:
+def test_manifest_ingest_reads_all_cuts(tmp_path: Path, make_run_context) -> None:
     src_path = tmp_path / "input.jsonl.gz"
     cs = CutSet([_cut(f"c{i}") for i in range(3)])
     _write_manifest(src_path, cs)
 
-    ingest = ManifestIngestSource(ManifestIngestConfig(path=str(src_path)), ctx=_ctx(tmp_path))
+    ingest = ManifestIngestSource(
+        ManifestIngestConfig(path=str(src_path)),
+        ctx=make_run_context("ingest", stage_index=0, pipeline_run_id="run-a1b2c3"),
+    )
     result = ingest.run()
     assert sorted(c.id for c in result) == ["c0", "c1", "c2"]
 
 
-def test_manifest_ingest_rejects_missing_file(tmp_path: Path) -> None:
+def test_manifest_ingest_rejects_missing_file(tmp_path: Path, make_run_context) -> None:
     ingest = ManifestIngestSource(
-        ManifestIngestConfig(path=str(tmp_path / "nope.jsonl.gz")), ctx=_ctx(tmp_path)
+        ManifestIngestConfig(path=str(tmp_path / "nope.jsonl.gz")),
+        ctx=make_run_context("ingest", stage_index=0, pipeline_run_id="run-a1b2c3"),
     )
     with pytest.raises(FileNotFoundError):
         ingest.run()

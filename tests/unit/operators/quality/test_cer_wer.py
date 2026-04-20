@@ -11,24 +11,10 @@ from voxkitchen.operators.quality.cer_wer import (
     CerWerOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.schema.supervision import Supervision
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="cer",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut(cid: str, hyp_text: str, ref_text: str) -> Cut:
@@ -61,8 +47,8 @@ def test_cer_wer_is_registered() -> None:
     assert get_operator("cer_wer") is CerWerOperator
 
 
-def test_cer_wer_identical_text(tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_cer_wer_identical_text(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("cer")
     cs = CutSet([_cut("c0", "hello world", "hello world")])
     config = CerWerConfig()
     op = CerWerOperator(config, ctx)
@@ -75,8 +61,8 @@ def test_cer_wer_identical_text(tmp_path: Path) -> None:
     assert out.metrics["wer"] == 0.0
 
 
-def test_cer_wer_completely_wrong(tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_cer_wer_completely_wrong(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("cer")
     cs = CutSet([_cut("c0", "xyz", "abc")])
     config = CerWerConfig()
     op = CerWerOperator(config, ctx)
@@ -89,8 +75,8 @@ def test_cer_wer_completely_wrong(tmp_path: Path) -> None:
     assert out.metrics["wer"] == pytest.approx(1.0, abs=0.01)
 
 
-def test_cer_wer_partial_match(tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_cer_wer_partial_match(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("cer")
     cs = CutSet([_cut("c0", "hello wrld", "hello world")])
     config = CerWerConfig()
     op = CerWerOperator(config, ctx)
@@ -103,7 +89,7 @@ def test_cer_wer_partial_match(tmp_path: Path) -> None:
     assert 0.0 < out.metrics["wer"] <= 1.0
 
 
-def test_cer_wer_no_reference_skips(tmp_path: Path) -> None:
+def test_cer_wer_no_reference_skips(tmp_path: Path, make_run_context) -> None:
     cut = Cut(
         id="c0",
         recording_id="rec-1",
@@ -126,7 +112,7 @@ def test_cer_wer_no_reference_skips(tmp_path: Path) -> None:
             pipeline_run_id="run-test",
         ),
     )
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("cer")
     cs = CutSet([cut])
     config = CerWerConfig()
     op = CerWerOperator(config, ctx)

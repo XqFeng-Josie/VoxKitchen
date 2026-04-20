@@ -12,24 +12,10 @@ from voxkitchen.operators.augment.volume_perturb import (
     VolumePerturbOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="volume",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -59,8 +45,10 @@ def test_volume_perturb_produces_audio() -> None:
     assert VolumePerturbOperator.produces_audio is True
 
 
-def test_volume_perturb_output_count_matches_input(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_volume_perturb_output_count_matches_input(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("volume")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = VolumePerturbConfig(min_gain_db=-3.0, max_gain_db=3.0)
     op = VolumePerturbOperator(config, ctx)
@@ -71,8 +59,10 @@ def test_volume_perturb_output_count_matches_input(mono_wav_16k: Path, tmp_path:
     assert len(result) == 1
 
 
-def test_volume_perturb_preserves_sample_rate(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_volume_perturb_preserves_sample_rate(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("volume")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = VolumePerturbConfig(min_gain_db=-6.0, max_gain_db=6.0)
     op = VolumePerturbOperator(config, ctx)
@@ -86,8 +76,10 @@ def test_volume_perturb_preserves_sample_rate(mono_wav_16k: Path, tmp_path: Path
     assert info.samplerate == 16000
 
 
-def test_volume_perturb_preserves_duration(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_volume_perturb_preserves_duration(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("volume")
     original = _cut_from_path(mono_wav_16k)
     cs = CutSet([original])
     config = VolumePerturbConfig(min_gain_db=-6.0, max_gain_db=6.0)
@@ -100,8 +92,10 @@ def test_volume_perturb_preserves_duration(mono_wav_16k: Path, tmp_path: Path) -
     assert out_cut.duration == original.duration
 
 
-def test_volume_perturb_clips_to_valid_range(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_volume_perturb_clips_to_valid_range(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("volume")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     # Very high gain to test clipping
     config = VolumePerturbConfig(min_gain_db=40.0, max_gain_db=40.0)
@@ -117,8 +111,10 @@ def test_volume_perturb_clips_to_valid_range(mono_wav_16k: Path, tmp_path: Path)
     assert np.all(audio <= 1.0)
 
 
-def test_volume_perturb_records_gain_in_custom(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_volume_perturb_records_gain_in_custom(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("volume")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = VolumePerturbConfig(min_gain_db=3.0, max_gain_db=3.0)
     op = VolumePerturbOperator(config, ctx)

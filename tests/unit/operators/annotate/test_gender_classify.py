@@ -17,24 +17,10 @@ from voxkitchen.operators.annotate.gender_classify import (
     GenderClassifyOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="gender",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -64,11 +50,13 @@ def test_gender_classify_produces_no_audio() -> None:
     assert GenderClassifyOperator.produces_audio is False
 
 
-def test_gender_classify_f0_adds_supervision(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_gender_classify_f0_adds_supervision(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """Running gender_classify with f0 method adds a supervision with gender."""
     cut = _cut_from_path(mono_wav_16k)
     config = GenderClassifyConfig(method="f0")
-    op = GenderClassifyOperator(config, ctx=_ctx(tmp_path))
+    op = GenderClassifyOperator(config, ctx=make_run_context("gender"))
     op.setup()
     result = list(op.process(CutSet([cut])))
     op.teardown()

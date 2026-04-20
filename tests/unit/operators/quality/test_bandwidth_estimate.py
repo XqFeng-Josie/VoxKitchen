@@ -17,24 +17,10 @@ from voxkitchen.operators.quality.bandwidth_estimate import (
     BandwidthEstimateOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="bandwidth",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -64,11 +50,13 @@ def test_bandwidth_estimate_produces_no_audio() -> None:
     assert BandwidthEstimateOperator.produces_audio is False
 
 
-def test_bandwidth_estimate_adds_metric(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_bandwidth_estimate_adds_metric(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """Running bandwidth_estimate on a 16kHz file adds bandwidth_khz metric."""
     cut = _cut_from_path(mono_wav_16k)
     config = BandwidthEstimateConfig()
-    op = BandwidthEstimateOperator(config, ctx=_ctx(tmp_path))
+    op = BandwidthEstimateOperator(config, ctx=make_run_context("bandwidth"))
     op.setup()
     result = list(op.process(CutSet([cut])))
     op.teardown()
@@ -79,12 +67,14 @@ def test_bandwidth_estimate_adds_metric(mono_wav_16k: Path, tmp_path: Path) -> N
     assert result[0].metrics["bandwidth_khz"] > 0.0
 
 
-def test_bandwidth_estimate_preserves_other_metrics(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_bandwidth_estimate_preserves_other_metrics(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """bandwidth_estimate merges into existing metrics without dropping them."""
     cut = _cut_from_path(mono_wav_16k)
     cut = cut.model_copy(update={"metrics": {"existing": 1.0}})
     config = BandwidthEstimateConfig()
-    op = BandwidthEstimateOperator(config, ctx=_ctx(tmp_path))
+    op = BandwidthEstimateOperator(config, ctx=make_run_context("bandwidth"))
     op.setup()
     result = list(op.process(CutSet([cut])))
     op.teardown()

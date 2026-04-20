@@ -10,24 +10,10 @@ import pytest
 import soundfile as sf
 from voxkitchen.operators.basic.ffmpeg_convert import FfmpegConvertConfig, FfmpegConvertOperator
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="convert",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -58,8 +44,8 @@ def test_ffmpeg_convert_produces_audio() -> None:
 
 
 @pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg not installed")
-def test_ffmpeg_convert_wav_to_flac(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_ffmpeg_convert_wav_to_flac(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("convert")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = FfmpegConvertConfig(target_format="flac")
     op = FfmpegConvertOperator(config, ctx)
@@ -78,8 +64,10 @@ def test_ffmpeg_convert_wav_to_flac(mono_wav_16k: Path, tmp_path: Path) -> None:
 
 
 @pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg not installed")
-def test_ffmpeg_convert_preserves_provenance(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_ffmpeg_convert_preserves_provenance(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("convert")
     original_cut = _cut_from_path(mono_wav_16k)
     cs = CutSet([original_cut])
     config = FfmpegConvertConfig(target_format="wav")
@@ -95,7 +83,7 @@ def test_ffmpeg_convert_preserves_provenance(mono_wav_16k: Path, tmp_path: Path)
 
 @pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg not installed")
 def test_ffmpeg_convert_origin_offsets_are_absolute_in_source(
-    mono_wav_16k: Path, tmp_path: Path
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
 ) -> None:
     """Regression for VAD → extract chain.
 
@@ -109,7 +97,7 @@ def test_ffmpeg_convert_origin_offsets_are_absolute_in_source(
     reflect the absolute position of the cut in the ORIGINAL source file,
     computed by chaining offsets through every materializing stage.
     """
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("convert")
     config = FfmpegConvertConfig(target_format="wav")
 
     # ---- Stage 1: to_wav on a full-file cut (cut.start=0). Origin bounds

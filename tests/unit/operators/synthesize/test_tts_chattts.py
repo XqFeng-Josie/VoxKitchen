@@ -18,24 +18,10 @@ from voxkitchen.operators.synthesize.tts_chattts import (
     TtsChatTTSConfig,
     TtsChatTTSOperator,
 )
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.schema.supervision import Supervision
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="tts",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _text_cut(cid: str, text: str) -> Cut:
@@ -81,8 +67,8 @@ def test_tts_chattts_config_defaults() -> None:
 
 
 @pytest.mark.slow
-def test_tts_chattts_synthesizes_audio(tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_tts_chattts_synthesizes_audio(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("tts")
     cs = CutSet([_text_cut("c0", "你好，这是一个测试。")])  # noqa: RUF001
     config = TtsChatTTSConfig(seed=42)
     op = TtsChatTTSOperator(config, ctx)
@@ -101,7 +87,7 @@ def test_tts_chattts_synthesizes_audio(tmp_path: Path) -> None:
 
 
 @pytest.mark.slow
-def test_tts_chattts_skips_cut_without_text(tmp_path: Path) -> None:
+def test_tts_chattts_skips_cut_without_text(tmp_path: Path, make_run_context) -> None:
     cut_no_text = Cut(
         id="c-empty",
         recording_id="text-empty",
@@ -116,7 +102,7 @@ def test_tts_chattts_skips_cut_without_text(tmp_path: Path) -> None:
             pipeline_run_id="run-test",
         ),
     )
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("tts")
     cs = CutSet([cut_no_text])
     config = TtsChatTTSConfig()
     op = TtsChatTTSOperator(config, ctx)
@@ -128,8 +114,8 @@ def test_tts_chattts_skips_cut_without_text(tmp_path: Path) -> None:
 
 
 @pytest.mark.slow
-def test_tts_chattts_reproducible_with_seed(tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_tts_chattts_reproducible_with_seed(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("tts")
     text = "测试可复现性。"
     config = TtsChatTTSConfig(seed=42)
 

@@ -10,24 +10,10 @@ from voxkitchen.operators.quality.clipping_detect import (
     ClippingDetectOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="clipping",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -57,11 +43,11 @@ def test_clipping_detect_produces_no_audio() -> None:
     assert ClippingDetectOperator.produces_audio is False
 
 
-def test_clipping_detect_adds_metric(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_clipping_detect_adds_metric(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
     """Running clipping_detect on a normal sine wave adds clipping_ratio metric."""
     cut = _cut_from_path(mono_wav_16k)
     config = ClippingDetectConfig()
-    op = ClippingDetectOperator(config, ctx=_ctx(tmp_path))
+    op = ClippingDetectOperator(config, ctx=make_run_context("clipping"))
     result = list(op.process(CutSet([cut])))
 
     assert len(result) == 1
@@ -71,12 +57,14 @@ def test_clipping_detect_adds_metric(mono_wav_16k: Path, tmp_path: Path) -> None
     assert result[0].metrics["clipping_ratio"] == 0.0
 
 
-def test_clipping_detect_preserves_other_metrics(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_clipping_detect_preserves_other_metrics(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """clipping_detect merges into existing metrics without dropping them."""
     cut = _cut_from_path(mono_wav_16k)
     cut = cut.model_copy(update={"metrics": {"existing": 1.0}})
     config = ClippingDetectConfig()
-    op = ClippingDetectOperator(config, ctx=_ctx(tmp_path))
+    op = ClippingDetectOperator(config, ctx=make_run_context("clipping"))
     result = list(op.process(CutSet([cut])))
 
     assert len(result) == 1

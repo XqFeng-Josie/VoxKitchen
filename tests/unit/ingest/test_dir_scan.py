@@ -6,35 +6,23 @@ from pathlib import Path
 
 import pytest
 from voxkitchen.ingest.dir_scan import DirScanConfig, DirScanIngestSource
-from voxkitchen.pipeline.context import RunContext
 
 
-def _ctx(work_dir: Path) -> RunContext:
-    return RunContext(
-        work_dir=work_dir,
-        pipeline_run_id="run-test",
-        stage_index=0,
-        stage_name="ingest",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
-
-
-def test_dir_scan_finds_all_audio_files(audio_dir: Path, tmp_path: Path) -> None:
+def test_dir_scan_finds_all_audio_files(audio_dir: Path, tmp_path: Path, make_run_context) -> None:
     ingest = DirScanIngestSource(
         DirScanConfig(root=str(audio_dir), recursive=True),
-        ctx=_ctx(tmp_path),
+        ctx=make_run_context("ingest", stage_index=0),
     )
     cuts = ingest.run()
     assert len(cuts) == 3
 
 
-def test_dir_scan_creates_cuts_with_embedded_recordings(audio_dir: Path, tmp_path: Path) -> None:
+def test_dir_scan_creates_cuts_with_embedded_recordings(
+    audio_dir: Path, tmp_path: Path, make_run_context
+) -> None:
     ingest = DirScanIngestSource(
         DirScanConfig(root=str(audio_dir), recursive=True),
-        ctx=_ctx(tmp_path),
+        ctx=make_run_context("ingest", stage_index=0),
     )
     cuts = ingest.run()
     for cut in cuts:
@@ -46,30 +34,30 @@ def test_dir_scan_creates_cuts_with_embedded_recordings(audio_dir: Path, tmp_pat
         assert cut.recording_id == cut.recording.id
 
 
-def test_dir_scan_non_recursive(audio_dir: Path, tmp_path: Path) -> None:
+def test_dir_scan_non_recursive(audio_dir: Path, tmp_path: Path, make_run_context) -> None:
     ingest = DirScanIngestSource(
         DirScanConfig(root=str(audio_dir), recursive=False),
-        ctx=_ctx(tmp_path),
+        ctx=make_run_context("ingest", stage_index=0),
     )
     cuts = ingest.run()
     assert len(cuts) == 2
 
 
-def test_dir_scan_rejects_nonexistent_directory(tmp_path: Path) -> None:
+def test_dir_scan_rejects_nonexistent_directory(tmp_path: Path, make_run_context) -> None:
     ingest = DirScanIngestSource(
         DirScanConfig(root=str(tmp_path / "nope")),
-        ctx=_ctx(tmp_path),
+        ctx=make_run_context("ingest", stage_index=0),
     )
     with pytest.raises(FileNotFoundError):
         ingest.run()
 
 
-def test_dir_scan_empty_directory(tmp_path: Path) -> None:
+def test_dir_scan_empty_directory(tmp_path: Path, make_run_context) -> None:
     empty = tmp_path / "empty_dir"
     empty.mkdir()
     ingest = DirScanIngestSource(
         DirScanConfig(root=str(empty)),
-        ctx=_ctx(tmp_path),
+        ctx=make_run_context("ingest", stage_index=0),
     )
     cuts = ingest.run()
     assert len(cuts) == 0

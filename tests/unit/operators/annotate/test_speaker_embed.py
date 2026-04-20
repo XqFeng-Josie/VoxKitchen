@@ -17,24 +17,10 @@ from voxkitchen.operators.annotate.speaker_embed import (
     SpeakerEmbedOperator,
 )
 from voxkitchen.operators.registry import get_operator
-from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.provenance import Provenance
 from voxkitchen.utils.audio import recording_from_file
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="speaker",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -61,8 +47,10 @@ def test_speaker_embed_is_registered() -> None:
 
 
 @pytest.mark.slow
-def test_speaker_embed_wespeaker_extracts_embedding(mono_wav_16k: Path, tmp_path: Path) -> None:
-    ctx = _ctx(tmp_path)
+def test_speaker_embed_wespeaker_extracts_embedding(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
+    ctx = make_run_context("speaker")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = SpeakerEmbedConfig(method="wespeaker")
     op = SpeakerEmbedOperator(config, ctx)

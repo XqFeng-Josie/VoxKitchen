@@ -31,24 +31,10 @@ from voxkitchen.operators.annotate.whisper_langid import (  # noqa: E402
     WhisperLangidOperator,
 )
 from voxkitchen.operators.registry import get_operator  # noqa: E402
-from voxkitchen.pipeline.context import RunContext  # noqa: E402
 from voxkitchen.schema.cut import Cut  # noqa: E402
 from voxkitchen.schema.cutset import CutSet  # noqa: E402
 from voxkitchen.schema.provenance import Provenance  # noqa: E402
 from voxkitchen.utils.audio import recording_from_file  # noqa: E402
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="langid",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -96,11 +82,13 @@ def test_whisper_langid_class_attrs() -> None:
 
 
 @pytest.mark.slow
-def test_whisper_langid_detects_language(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_whisper_langid_detects_language(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """Real tiny model: should return 1 cut with a supervision containing a non-empty language."""
     cut = _cut_from_path(mono_wav_16k)
     config = WhisperLangidConfig(model="tiny")
-    op = WhisperLangidOperator(config, ctx=_ctx(tmp_path))
+    op = WhisperLangidOperator(config, ctx=make_run_context("langid"))
     op.setup()
     result = list(op.process(CutSet([cut])))
     op.teardown()

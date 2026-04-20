@@ -16,24 +16,10 @@ from voxkitchen.operators.basic.loudness_normalize import (  # noqa: E402
     LoudnessNormalizeOperator,
 )
 from voxkitchen.operators.registry import get_operator  # noqa: E402
-from voxkitchen.pipeline.context import RunContext  # noqa: E402
 from voxkitchen.schema.cut import Cut  # noqa: E402
 from voxkitchen.schema.cutset import CutSet  # noqa: E402
 from voxkitchen.schema.provenance import Provenance  # noqa: E402
 from voxkitchen.utils.audio import recording_from_file  # noqa: E402
-
-
-def _ctx(tmp_path: Path) -> RunContext:
-    return RunContext(
-        work_dir=tmp_path,
-        pipeline_run_id="run-test",
-        stage_index=1,
-        stage_name="loudness_normalize",
-        num_gpus=0,
-        num_cpu_workers=1,
-        gc_mode="aggressive",
-        device="cpu",
-    )
 
 
 def _cut_from_path(audio_path: Path) -> Cut:
@@ -63,9 +49,11 @@ def test_loudness_normalize_produces_audio() -> None:
     assert LoudnessNormalizeOperator.produces_audio is True
 
 
-def test_loudness_normalize_adjusts_level(mono_wav_16k: Path, tmp_path: Path) -> None:
+def test_loudness_normalize_adjusts_level(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     target_lufs = -23.0
-    ctx = _ctx(tmp_path)
+    ctx = make_run_context("loudness_normalize")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = LoudnessNormalizeConfig(target_lufs=target_lufs)
     op = LoudnessNormalizeOperator(config, ctx)
