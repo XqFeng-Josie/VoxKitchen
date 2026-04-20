@@ -2,7 +2,7 @@
 
 Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
 
-**51 operators** across 8 categories: audio processing, segmentation, augmentation, TTS synthesis, annotation (ASR/diarization/alignment/emotion), quality metrics, and output packing.
+**51 operators** across 7 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, and output packing.
 
 ## Get Started
 

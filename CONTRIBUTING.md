@@ -6,8 +6,8 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 ```bash
 # Clone and install in development mode
-git clone https://github.com/voxkitchen/voxkitchen.git
-cd voxkitchen
+git clone https://github.com/XqFeng-Josie/VoxKitchen.git
+cd VoxKitchen
 conda create -n voxkitchen python=3.11 -y
 conda activate voxkitchen
 pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
@@ -42,6 +42,21 @@ mypy voxkitchen tests         # Type check
 
 Pre-commit hooks run these automatically on `git commit`.
 
+`[dev]` installs test tooling plus the **core-cluster** extras (the same
+set CI validates, mirroring the `:slim` Docker image). To work on an
+operator whose extras live outside that cluster (ASR, diarize, TTS),
+add those extras on top:
+
+```bash
+pip install -e ".[dev,asr,funasr]"      # ASR cluster
+pip install -e ".[dev,diarize]"          # Diarization
+pip install -e ".[dev,tts-kokoro]"       # TTS
+```
+
+`pip install -e ".[all]"` is intentionally unsupported — it crosses
+dep clusters and fails at the resolver. Pick one cluster or use
+`vkit docker` for cross-cluster pipelines.
+
 ## Commit Messages
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/):
@@ -65,7 +80,7 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
    voxkitchen/operators/<category>/<name>.py
    ```
 
-   Categories: `basic/`, `segment/`, `augment/`, `annotate/`, `quality/`, `pack/`
+   Categories: `basic/`, `segment/`, `augment/`, `annotate/`, `quality/`, `synthesize/`, `pack/`
 
 2. **Follow the pattern** — every operator has:
 

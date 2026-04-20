@@ -26,8 +26,8 @@ Initial public release.
 - **One CLI, two execution modes**: `vkit <cmd>` runs locally
   (pip install), `vkit docker <cmd>` runs in a container. Same flags,
   same YAML.
-- **Six Docker tags**: `slim` (~3 GB, CPU), `asr`, `diarize`, `tts`,
-  `fish-speech`, `latest` (all five envs, ~25 GB).
+- **Six Docker tags**: `slim` (~13 GB, CPU), `asr`, `diarize`, `tts`,
+  `fish-speech`, `latest` (all five envs, ~103 GB).
 - **Python tools API**: `voxkitchen.tools.transcribe()`,
   `detect_speech()`, `estimate_snr()`, `extract_speaker_embedding()`,
   `enhance_speech()`, `align_words()`, `synthesize()` — for embedding
@@ -38,22 +38,16 @@ Initial public release.
 
 ### Known limitations
 
-- `tts_fish_speech` operator targets fish-speech 1.x API; fish-speech 2.0
-  reshuffled its Python entry points. The `:fish-speech` image builds
-  and pre-downloads the model, but the operator is excluded from
-  `EXPECTED_OPERATORS["fish-speech"]` until a rewrite lands.
-- `speaker_embed` warmup fails on Python 3.11 due to an s3prl dataclass
-  bug (mutable default). The operator registers but runtime fails.
-- `utmos_score`: speechmos' `utmos` submodule is absent in the current
-  PyPI wheel. Operator registers; runtime fails.
-- The `:latest` Docker image is larger than the sum of the five env
-  images (~103 GB vs ~170 GB summed — layer sharing helps, but
-  `latest` still carries ~40 GB of duplicated `core` model_cache).
-  Each env stage starts FROM core-env and we then `COPY --from=<env>
-  /opt/voxkitchen/model_cache` in the `latest` stage — bringing core's
-  models along each time. Targeted fix: have the `latest` stage re-run
-  warmup instead of copying caches wholesale. Users who don't need
-  cross-cluster pipelines should use the per-env tags for now.
+- `tts_fish_speech`: operator targets fish-speech 1.x API; fish-speech 2.0
+  reshuffled the Python entry points. Image builds, model is cached,
+  operator is parked pending rewrite.
+- `speaker_embed`: warmup fails on Python 3.11 (s3prl dataclass
+  mutable-default bug). Operator registers but runtime fails.
+- `utmos_score`: the `utmos` submodule is missing from the current
+  speechmos PyPI wheel. Operator registers but runtime fails.
+- `:latest` image is ~103 GB — larger than optimal because each per-env
+  stage re-copies core's model_cache. Use per-env tags unless you need
+  cross-cluster pipelines.
 
 ### License
 

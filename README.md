@@ -25,8 +25,8 @@ conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
 pip install -e ".[asr,pack]"
 
 # 2. (Optional) Pull a Docker image for pipelines that exceed local extras.
-vkit docker pull --tag slim      # CPU, ~3 GB
-vkit docker pull --tag latest    # everything, ~25 GB — see tag matrix below
+vkit docker pull --tag slim      # CPU, ~13 GB
+vkit docker pull --tag latest    # everything, ~103 GB — see tag matrix below
 ```
 
 **When pip alone is enough**: your pipeline's operators all live in one
@@ -239,8 +239,8 @@ docker run --rm -v $(pwd)/work:/work alpine \
 
 ```bash
 # Via vkit CLI (reads HF_TOKEN from ./.env automatically):
-vkit docker build latest         # → voxkitchen:latest (~25 GB)
-vkit docker build slim           # → voxkitchen:slim   (~3 GB)
+vkit docker build latest         # → voxkitchen:latest (~103 GB)
+vkit docker build slim           # → voxkitchen:slim   (~13 GB)
 
 # Or raw:
 docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .

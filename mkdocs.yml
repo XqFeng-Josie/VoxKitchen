@@ -1,6 +1,6 @@
 site_name: VoxKitchen
 site_description: A researcher-friendly speech data processing toolkit
-repo_url: https://github.com/voxkitchen/voxkitchen
+repo_url: https://github.com/XqFeng-Josie/VoxKitchen
 
 theme:
   name: material

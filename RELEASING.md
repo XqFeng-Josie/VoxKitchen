@@ -83,21 +83,11 @@ to a commit that must already be on the remote.
 
 ### 5. Docker images
 
-Build and push each of the six targets, with two tags each (rolling
-`:<target>` and version-pinned `:<target>-<version>`):
-
-```bash
-for target in slim diarize fish-speech asr tts latest; do
-    docker build --target "$target" -f docker/Dockerfile -t "voxkitchen:$target" .
-    docker tag "voxkitchen:$target" "ghcr.io/xqfeng-josie/voxkitchen:$target"
-    docker tag "voxkitchen:$target" "ghcr.io/xqfeng-josie/voxkitchen:$target-0.2.0"
-    docker push "ghcr.io/xqfeng-josie/voxkitchen:$target"
-    docker push "ghcr.io/xqfeng-josie/voxkitchen:$target-0.2.0"
-done
-```
-
-Order is smallest → largest so errors (auth, disk, network) surface
-early on a cheap target.
+`scripts/release.sh` builds and pushes each of the six targets in
+smallest-to-largest order (so auth / disk / network failures surface
+early on a cheap target) and tags each with both the rolling
+`:<target>` and the pinned `:<target>-<version>`. See
+[`scripts/release.sh`](scripts/release.sh) for the exact loop.
 
 **Prerequisites**:
 

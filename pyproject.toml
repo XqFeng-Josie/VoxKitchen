@@ -79,8 +79,11 @@ viz-panel = ["gradio>=4.12"]
 all = [
     "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,gender,speaker,enhance,codec,align,tts-kokoro,tts-chattts,tts-cosyvoice,tts-fish-speech,viz,viz-panel]",
 ]
+# Test tooling + the core-cluster extras CI installs. This is the
+# single-cluster subset that resolves cleanly; for ASR/TTS/diarize
+# development, add the relevant cluster extras on top of [dev].
 dev = [
-    "voxkitchen[all]",
+    "voxkitchen[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,viz]",
     "pytest>=7.4",
     "pytest-cov>=4.1",
     "ruff>=0.4",
@@ -94,6 +97,7 @@ vkit = "voxkitchen.cli.main:app"
 
 [project.urls]
 Repository = "https://github.com/XqFeng-Josie/VoxKitchen"
+Documentation = "https://voxkitchen.readthedocs.io"
 Issues = "https://github.com/XqFeng-Josie/VoxKitchen/issues"
 Changelog = "https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CHANGELOG.md"
 
