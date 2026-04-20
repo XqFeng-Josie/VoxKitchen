@@ -12,7 +12,7 @@ from voxkitchen.utils.audio import load_audio_for_cut
 
 
 class SnrEstimateConfig(OperatorConfig):
-    pass
+    """No configurable parameters."""
 
 
 @register_operator

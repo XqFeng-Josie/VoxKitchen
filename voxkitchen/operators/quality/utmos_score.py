@@ -22,7 +22,7 @@ _UTMOS_SR = 16000
 
 
 class UtmosScoreConfig(OperatorConfig):
-    pass
+    """No configurable parameters."""
 
 
 @register_operator

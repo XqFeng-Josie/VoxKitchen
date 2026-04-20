@@ -309,6 +309,13 @@ def _emit_table(
             f"Available: {len(expected & available)}   "
             f"[red]Missing: {len(missing)}[/red]"
         )
+        if image_kind == "fish-speech":
+            console.print(
+                "[yellow]note:[/yellow] fish-speech env is present, but the "
+                "[bold]tts_fish_speech[/bold] operator is parked pending a "
+                "rewrite for the fish-speech 2.0 API. Runtime use will fail. "
+                "See CHANGELOG.md."
+            )
     else:
         console.print(
             f"Available operators: {len(available)} "
@@ -379,6 +386,13 @@ def _emit_multi_env_table(reports: list[dict]) -> None:
             extras, hint = _lookup_extras_hint(op)
             tail = f"  [dim]({extras})[/dim]" if extras else ""
             console.print(f"  [red]•[/red] {op}{tail}")
+
+    if any(r.get("image_kind") == "fish-speech" for r in reports):
+        console.print(
+            "\n[yellow]note:[/yellow] fish-speech env reports OK because its "
+            "expected-operator set is empty. The [bold]tts_fish_speech[/bold] "
+            "operator is parked pending a rewrite for the fish-speech 2.0 API."
+        )
 
     if total_missing == 0:
         console.print("\n[green]All envs healthy.[/green]")
