@@ -23,6 +23,10 @@ nav:
     - CLI Commands: reference/cli.md
     - Python Tools API: reference/tools-api.md
     - Pipeline YAML: reference/pipeline-yaml.md
+    - Building Docker Images: docker-build.md
+  - Architecture:
+    - Overview: architecture.md
+    - Multi-env Docker: architecture/multi-env.md
 
 markdown_extensions:
   - admonition
