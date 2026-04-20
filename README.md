@@ -20,9 +20,13 @@ Docker image). Most users use both — pip install to get the CLI,
 then pull Docker images for pipelines that don't fit your local env.
 
 ```bash
-# 1. Install vkit (always). Pick the extras groups you'll run locally.
+# 1. Install vkit (core CLI — no heavy deps).
 conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
-pip install -e ".[asr,pack]"
+pip install -e .
+
+# Add extras for the operators you'll run locally (see table below).
+# Example for the built-in demo (VAD + quality + pitch):
+pip install -e ".[segment,pitch]"
 
 # 2. (Optional) Pull a Docker image for pipelines that exceed local extras.
 vkit docker pull --tag slim      # CPU, ~13 GB
@@ -77,15 +81,18 @@ One CLI, two execution modes — add `docker` before any command to run
 it inside a container instead of your local Python env:
 
 ```bash
+# Try the built-in demo (no ASR — no model downloads, runs in seconds):
+vkit run examples/pipelines/demo-no-asr.yaml          # execute locally
+vkit docker run examples/pipelines/demo-no-asr.yaml   # execute in Docker
+
+# Or scaffold a new project, then run your own pipeline:
 vkit init my-project -t asr && cd my-project
+vkit run pipeline.yaml                                # execute locally
+vkit docker run --tag asr pipeline.yaml               # pick a specific tag
+vkit docker run --image my.reg/vox:custom pipeline.yaml
 
-vkit run pipeline.yaml                       # execute locally
-vkit docker run pipeline.yaml                # execute in Docker — :latest (default)
-vkit docker run --tag asr pipeline.yaml      # pick a specific tag
-vkit docker run --image my.reg/vox:custom pipeline.yaml   # full override
-
-vkit doctor                                  # local env health
-vkit docker doctor --tag slim                # per-env report inside image
+vkit doctor                                           # local env health
+vkit docker doctor --tag slim                         # per-env report inside image
 ```
 
 `vkit docker` auto-handles `--user`, `./work` + `./data` mounts,

@@ -1,6 +1,6 @@
 # Demo pipeline without ASR — runs on macOS without CTranslate2 issues.
 # Usage: vkit run examples/pipelines/demo-no-asr.yaml
-# Requires: pip install voxkitchen[pitch]  (optional: [dnsmos] for MOS scores)
+# Requires: pip install -e ".[segment,pitch]"  (optional: [dnsmos] for MOS scores)
 
 version: "0.1"
 name: demo-no-asr
