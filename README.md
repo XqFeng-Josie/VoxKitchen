@@ -335,6 +335,22 @@ synthesize("你好", "clone.wav", engine="cosyvoice",
 
 </details>
 
+## Claude Code skill
+
+VoxKitchen ships a built-in [Claude Code](https://claude.ai/code) skill so AI-assisted
+workflows work out of the box. Clone the repo and Claude Code picks it up automatically —
+no extra setup needed.
+
+The skill gives Claude deep knowledge of VoxKitchen: all 51 operators with their config
+fields, the full YAML schema, CLI flags, Docker tags, dependency cluster rules, and common
+pitfalls. In practice this means you can ask things like:
+
+- *"Write me a pipeline that resamples to 22 kHz, runs VAD, filters by SNR > 20 dB, transcribes with Qwen3-ASR, and packs as a HuggingFace dataset"*
+- *"Which operators do I need for speaker diarization and do any of them require a GPU?"*
+- *"My pipeline crashed halfway — how do I inspect what failed and resume it?"*
+
+Skill source: [`.claude/skills/voxkitchen/`](.claude/skills/voxkitchen/)
+
 ## Key features
 
 - **Resumable** — each stage checkpoints; crashes resume from last good stage
@@ -342,6 +358,7 @@ synthesize("你好", "clone.wav", engine="cosyvoice",
 - **GC** — intermediate audio cleaned up automatically
 - **Provenance** — every Cut tracks which operator produced it
 - **Extensible** — register custom operators via Python entry_points
+- **Claude Code skill** — built-in AI assistance, ships with the repo
 
 ## Examples
 
