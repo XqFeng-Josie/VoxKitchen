@@ -79,16 +79,21 @@ it inside a container instead of your local Python env:
 ```bash
 vkit init my-project -t asr && cd my-project
 
-vkit run pipeline.yaml                # execute locally
-vkit docker run pipeline.yaml         # execute in Docker (same YAML)
+vkit run pipeline.yaml                       # execute locally
+vkit docker run pipeline.yaml                # execute in Docker — :latest (default)
+vkit docker run --tag asr pipeline.yaml      # pick a specific tag
+vkit docker run --image my.reg/vox:custom pipeline.yaml   # full override
 
-vkit doctor                           # local env health
-vkit docker doctor                    # per-env report inside image
+vkit doctor                                  # local env health
+vkit docker doctor --tag slim                # per-env report inside image
 ```
 
 `vkit docker` auto-handles `--user`, `./work` + `./data` mounts,
-`./.env` loading, and GPU autodetection. Raw `docker run` form (for
-CI / image-only users) is in [Install reference](#install-reference).
+`./.env` loading, and GPU autodetection. Every subcommand takes
+`--tag <name>` (default `latest`, resolves to
+`ghcr.io/xqfeng-josie/voxkitchen:<name>`) or `--image <ref>` for a
+fully custom image. Raw `docker run` form (for CI / image-only users)
+is in [Install reference](#install-reference).
 
 ### Commands
 
@@ -119,11 +124,14 @@ vkit viz <path>                     Launch Gradio explorer for a CutSet
 ```
 
 **Docker backend** — prefix any command above with `docker` to run it
-in a container, plus these image-management helpers:
+in a container. Every `vkit docker` subcommand accepts `--tag <name>`
+(default `latest`) or `--image <ref>` to pick which image to use:
 ```
-vkit docker build [target]          Build an image (reads HF_TOKEN from .env)
-vkit docker pull [--tag TAG]        Pull a published image
-vkit docker shell [--tag TAG]       Interactive bash inside an image
+vkit docker run <yaml> [--tag TAG]        Execute a pipeline in a container
+vkit docker doctor [--tag TAG]            Per-env health report inside the image
+vkit docker build [target]                Build a local image (reads HF_TOKEN from .env)
+vkit docker pull [--tag TAG]              Pull a published image
+vkit docker shell [--tag TAG]             Interactive bash inside an image
 ```
 
 ## Install reference
