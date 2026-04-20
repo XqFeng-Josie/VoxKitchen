@@ -34,7 +34,8 @@ work/
 work_dir/
 *.jsonl.gz
 !tests/fixtures/**/*.jsonl.gz
-.claude/
+.claude/settings.local.json
+.claude/settings.json
 
 # Secrets
 .env
