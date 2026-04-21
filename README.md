@@ -78,21 +78,45 @@ stages:
 ```
 
 One CLI, two execution modes — add `docker` before any command to run
-it inside a container instead of your local Python env:
+it inside a container instead of your local Python env.
+
+**1 — Run the demo (Docker, recommended first run)**
+
+No extras to manage. The `latest` image ships every operator.
+Demo covers: VAD → SNR → DNSMOS → ASR → gender → filter → JSONL output.
 
 ```bash
-# Try the built-in demo (no ASR — no model downloads, runs in seconds):
-vkit run examples/pipelines/demo-no-asr.yaml          # execute locally
-vkit docker run examples/pipelines/demo-no-asr.yaml   # execute in Docker
+vkit docker pull --tag latest
+vkit docker run examples/pipelines/demo-full.yaml
+vkit inspect run ./work/demo-full    # per-stage summary + output cuts
+```
 
-# Or scaffold a new project, then run your own pipeline:
+**2 — Run locally**
+
+Install the extras for the operators your pipeline uses, then run:
+
+```bash
+# Extras for demo-full.yaml (VAD + DNSMOS + ASR — single cluster OK):
+pip install -e ".[segment,asr,dnsmos]"
+vkit run examples/pipelines/demo-full.yaml
+vkit doctor                          # check local operator health
+```
+
+Cross-cluster mixes (e.g. `diarize + funasr`) are where pip fails —
+use Docker for those. See the [extras table](#pip-extras--which-combine-cleanly).
+
+**3 — Scaffold your own project**
+
+Bring your own audio files. `vkit init` scaffolds a project with a
+template `pipeline.yaml`; edit `ingest.args.root` to point at your data.
+
+```bash
 vkit init my-project -t asr && cd my-project
-vkit run pipeline.yaml                                # execute locally
-vkit docker run --tag asr pipeline.yaml               # pick a specific tag
-vkit docker run --image my.reg/vox:custom pipeline.yaml
-
-vkit doctor                                           # local env health
-vkit docker doctor --tag slim                         # per-env report inside image
+# Edit pipeline.yaml: set ingest.args.root to your audio directory
+vkit run pipeline.yaml                           # run locally
+vkit docker run --tag asr pipeline.yaml          # run in Docker (ASR cluster)
+vkit docker run --image my.reg/vox:c pipeline.yaml   # custom image
+vkit docker doctor --tag asr                     # per-env health inside image
 ```
 
 `vkit docker` auto-handles `--user`, `./work` + `./data` mounts,

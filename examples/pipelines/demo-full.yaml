@@ -1,6 +1,12 @@
-# Full demo pipeline: opus → wav → VAD → extract → diarize → quality → ASR → langid → gender → filter → pack
-# Usage: vkit run examples/pipelines/demo-full.yaml
-# Requires: pip install voxkitchen[asr,whisper,pitch,dnsmos,diarize]
+# Full demo: opus → wav → VAD → SNR → DNSMOS → ASR → gender → filter → pack
+# Covers: VAD, quality metrics (SNR, DNSMOS), ASR transcription, gender classification.
+#
+# Recommended: run via Docker (no extras to manage, all operators included):
+#   vkit docker run examples/pipelines/demo-full.yaml
+#
+# Local run (operators span two clusters — check extras compatibility first):
+#   pip install -e ".[segment,asr,dnsmos]"
+#   vkit run examples/pipelines/demo-full.yaml
 
 version: "0.1"
 name: demo-full
@@ -28,24 +34,15 @@ stages:
       min_speech_duration_ms: 500
       min_silence_duration_ms: 300
 
-  # 3. Materialize each VAD segment as a separate wav file (keeps original sr)
+  # 3. Materialize each VAD segment as a separate wav file
   - name: extract
     op: ffmpeg_convert
     args:
       target_format: wav
 
-  # 4. Speaker diarization — assign speaker labels to each segment
-  - name: diarize
-    op: pyannote_diarize
-    args:
-      model: pyannote/speaker-diarization-3.1
-
-  # 5-8. Quality metrics (all write to cut.metrics, auto-exported by pack_jsonl)
+  # 4. Quality metrics
   - name: snr
     op: snr_estimate
-
-  - name: pitch
-    op: pitch_stats
 
   - name: clipping
     op: clipping_detect
@@ -53,28 +50,21 @@ stages:
   - name: dnsmos
     op: dnsmos_score
 
-  # 9. ASR transcription (use whisper_openai_asr on macOS, faster_whisper_asr on Linux GPU)
+  # 5. ASR transcription (tiny model — fast, good enough for demo)
   - name: asr
-    op: whisper_openai_asr
+    op: faster_whisper_asr
     args:
       model: tiny
-      fp16: false                 # set true on GPU
+      compute_type: int8       # runs on CPU; switch to float16 on GPU
 
-  # 10. Language detection
-  - name: langid
-    op: whisper_langid
-    args:
-      model: tiny
-      backend: openai
-
-  # 11. Gender classification
+  # 6. Gender classification (f0-based, no extra model download)
   - name: gender
     op: gender_classify
     args:
       method: f0
       f0_threshold: 165.0
 
-  # 12. Filter out bad segments
+  # 7. Filter out bad segments
   - name: filter
     op: quality_score_filter
     args:
@@ -84,6 +74,6 @@ stages:
         - "metrics.snr > 5"
         - "metrics.clipping_ratio < 0.01"
 
-  # 13. Write flat JSONL manifest (all metrics auto-exported)
+  # 8. Write JSONL manifest (all metrics auto-exported per cut)
   - name: pack
     op: pack_jsonl
