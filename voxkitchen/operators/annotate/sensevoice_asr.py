@@ -27,12 +27,11 @@ import re
 from typing import ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
-from voxkitchen.utils.language import normalize_language as _normalize_language
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
-
+from voxkitchen.utils.language import normalize_language as _normalize_language
 
 _SENSEVOICE_TAG_RE = re.compile(r"<\|([^|]*)\|>")
 
@@ -65,10 +64,10 @@ def _parse_sensevoice_output(raw_text: str) -> tuple[str, str | None, str | None
     text cleaning step when FunASR is available.
 
     Returns a 4-tuple:
-        clean_text  – transcript with all tags removed
-        language    – ISO code detected by the model (e.g. ``"zh"``), or None
-        emotion     – lowercase label (e.g. ``"happy"``), or None
-        audio_event – sound class (e.g. ``"Speech"`` / ``"BGM"``), or None
+        clean_text  - transcript with all tags removed
+        language    - canonical language name (e.g. ``"chinese"``), or None
+        emotion     - lowercase label (e.g. ``"happy"``), or None
+        audio_event - sound class (e.g. ``"Speech"`` / ``"BGM"``), or None
     """
     tags = _SENSEVOICE_TAG_RE.findall(raw_text)
 
@@ -107,7 +106,7 @@ def _strip_sensevoice_tags(text: str) -> str:
     try:
         from funasr.utils.postprocess_utils import rich_transcription_postprocess
 
-        return rich_transcription_postprocess(text)
+        return str(rich_transcription_postprocess(text))
     except Exception:
         return _SENSEVOICE_TAG_RE.sub("", text)
 
@@ -187,8 +186,11 @@ class SenseVoiceAsrOperator(Operator):
                             duration=cut.duration,
                             text=clean_text,
                             language=detected_lang
-                            or (_normalize_language(self.config.language)
-                                if self.config.language != "auto" else None),
+                            or (
+                                _normalize_language(self.config.language)
+                                if self.config.language != "auto"
+                                else None
+                            ),
                             custom=sup_custom,
                         )
                     )

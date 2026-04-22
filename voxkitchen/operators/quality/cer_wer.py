@@ -36,7 +36,7 @@ def normalize_text(text: str) -> str:
     """
     text = _TAG_RE.sub("", text)
     text = unicodedata.normalize("NFKC", text)
-    # Keep CJK ideographs (U+4E00–U+9FFF, CJK ext A/B) + ASCII alphanumerics
+    # Keep CJK ideographs (U+4E00-U+9FFF, CJK ext A/B) + ASCII alphanumerics
     text = re.sub(r"[^\w一-鿿㐀-䶿\U00020000-\U0002a6df]", "", text)
     text = re.sub(r"\s+", "", text)
     return text.lower()

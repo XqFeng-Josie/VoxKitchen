@@ -10,7 +10,6 @@ import pytest
 # ---------------------------------------------------------------------------
 # Pure-Python tests (no qwen-asr package required)
 # ---------------------------------------------------------------------------
-
 from voxkitchen.operators.annotate.qwen3_asr import _to_qwen3_language
 from voxkitchen.operators.registry import get_operator
 
@@ -56,8 +55,8 @@ requires_qwen = pytest.mark.skipif(not _QWEN_AVAILABLE, reason="qwen-asr not ava
 @pytest.mark.slow
 def test_qwen3_asr_transcribes(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
     from voxkitchen.operators.annotate.qwen3_asr import Qwen3AsrConfig, Qwen3AsrOperator
-    from voxkitchen.schema.cutset import CutSet
     from voxkitchen.schema.cut import Cut
+    from voxkitchen.schema.cutset import CutSet
     from voxkitchen.schema.provenance import Provenance
     from voxkitchen.utils.audio import recording_from_file
 

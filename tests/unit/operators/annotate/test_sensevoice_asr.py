@@ -10,13 +10,14 @@ import pytest
 # ---------------------------------------------------------------------------
 # Pure-Python tests (no funasr package required)
 # ---------------------------------------------------------------------------
-
 from voxkitchen.operators.annotate.sensevoice_asr import _strip_sensevoice_tags
 from voxkitchen.operators.registry import get_operator
 
 
 def test_strip_sensevoice_tags() -> None:
-    assert _strip_sensevoice_tags("<|zh|><|HAPPY|><|Speech|><|withitn|>参观海洋馆。") == "参观海洋馆。"
+    assert (
+        _strip_sensevoice_tags("<|zh|><|HAPPY|><|Speech|><|withitn|>参观海洋馆。") == "参观海洋馆。"
+    )
     assert _strip_sensevoice_tags("<|zh|><|NEUTRAL|><|BGM|><|withitn|>hello") == "hello"
     assert _strip_sensevoice_tags("no tags here") == "no tags here"
     assert _strip_sensevoice_tags("") == ""
@@ -75,7 +76,7 @@ except ImportError:
 requires_funasr = pytest.mark.skipif(not _FUNASR_AVAILABLE, reason="funasr not available")
 
 
-def _cut_from_path(audio_path: Path) -> "Cut":  # type: ignore[name-defined]  # noqa: F821
+def _cut_from_path(audio_path: Path) -> Cut:  # type: ignore[name-defined]  # noqa: F821
     from voxkitchen.schema.cut import Cut
     from voxkitchen.schema.provenance import Provenance
     from voxkitchen.utils.audio import recording_from_file
@@ -101,7 +102,10 @@ def _cut_from_path(audio_path: Path) -> "Cut":  # type: ignore[name-defined]  # 
 @requires_funasr
 @pytest.mark.slow
 def test_sensevoice_asr_transcribes(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
-    from voxkitchen.operators.annotate.sensevoice_asr import SenseVoiceAsrConfig, SenseVoiceAsrOperator
+    from voxkitchen.operators.annotate.sensevoice_asr import (
+        SenseVoiceAsrConfig,
+        SenseVoiceAsrOperator,
+    )
     from voxkitchen.schema.cutset import CutSet
 
     cut = _cut_from_path(mono_wav_16k)
@@ -115,11 +119,17 @@ def test_sensevoice_asr_transcribes(mono_wav_16k: Path, tmp_path: Path, make_run
 
 @requires_funasr
 @pytest.mark.slow
-def test_sensevoice_asr_output_has_no_tags(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
+def test_sensevoice_asr_output_has_no_tags(
+    mono_wav_16k: Path, tmp_path: Path, make_run_context
+) -> None:
     """Supervision text must not contain raw SenseVoice tags after processing."""
-    from voxkitchen.operators.annotate.sensevoice_asr import SenseVoiceAsrConfig, SenseVoiceAsrOperator
-    from voxkitchen.schema.cutset import CutSet
     import re
+
+    from voxkitchen.operators.annotate.sensevoice_asr import (
+        SenseVoiceAsrConfig,
+        SenseVoiceAsrOperator,
+    )
+    from voxkitchen.schema.cutset import CutSet
 
     cut = _cut_from_path(mono_wav_16k)
     config = SenseVoiceAsrConfig()
@@ -141,7 +151,10 @@ def test_sensevoice_asr_output_has_no_tags(mono_wav_16k: Path, tmp_path: Path, m
 def test_sensevoice_asr_auto_language_sets_none(
     mono_wav_16k: Path, tmp_path: Path, make_run_context
 ) -> None:
-    from voxkitchen.operators.annotate.sensevoice_asr import SenseVoiceAsrConfig, SenseVoiceAsrOperator
+    from voxkitchen.operators.annotate.sensevoice_asr import (
+        SenseVoiceAsrConfig,
+        SenseVoiceAsrOperator,
+    )
     from voxkitchen.schema.cutset import CutSet
 
     cut = _cut_from_path(mono_wav_16k)
