@@ -16,6 +16,7 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.language import normalize_language
 
 
 class WenetAsrConfig(OperatorConfig):
@@ -75,12 +76,12 @@ class WenetAsrOperator(Operator):
                 if text:
                     new_sups.append(
                         Supervision(
-                            id=f"{cut.id}__wenet_0",
+                            id=f"{cut.id}__{self.ctx.stage_name}_0",
                             recording_id=cut.recording_id,
                             start=cut.start,
                             duration=cut.duration,
                             text=text,
-                            language=self.config.language,
+                            language=normalize_language(self.config.language),
                         )
                     )
 

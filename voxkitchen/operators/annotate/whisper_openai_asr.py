@@ -15,6 +15,7 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.language import normalize_language
 
 
 class WhisperOpenaiAsrConfig(OperatorConfig):
@@ -79,11 +80,11 @@ class WhisperOpenaiAsrOperator(Operator):
             )
 
             new_sups: list[Supervision] = []
-            detected_lang = result.get("language", self.config.language or "")
+            detected_lang = normalize_language(result.get("language") or self.config.language)
             for seg in result.get("segments", []):
                 new_sups.append(
                     Supervision(
-                        id=f"{cut.id}__asr_{len(new_sups)}",
+                        id=f"{cut.id}__{self.ctx.stage_name}_{len(new_sups)}",
                         recording_id=cut.recording_id,
                         start=cut.start + seg["start"],
                         duration=seg["end"] - seg["start"],

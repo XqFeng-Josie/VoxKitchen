@@ -16,11 +16,22 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.language import normalize_language
+
+
+def _to_qwen3_language(lang: str | None) -> str | None:
+    """Convert a language input to the capitalized full name Qwen3-ASR expects.
+
+    Qwen3-ASR requires full English names (``"Chinese"``, ``"English"``, …).
+    Delegates normalisation to :func:`normalize_language`, then capitalizes.
+    """
+    canonical = normalize_language(lang)
+    return canonical.capitalize() if canonical else None
 
 
 class Qwen3AsrConfig(OperatorConfig):
     model: str = "Qwen/Qwen3-ASR-0.6B"  # or Qwen/Qwen3-ASR-1.7B
-    language: str | None = None  # None = auto-detect
+    language: str | None = None  # None = auto-detect; any code/name accepted
     return_timestamps: bool = False  # word-level timestamps via ForcedAligner
     aligner_model: str = "Qwen/Qwen3-ForcedAligner-0.6B"
     max_new_tokens: int = 512
@@ -74,7 +85,7 @@ class Qwen3AsrOperator(Operator):
 
             results = self._model.transcribe(
                 audio=(audio, sr),
-                language=self.config.language,
+                language=_to_qwen3_language(self.config.language),
                 return_time_stamps=self.config.return_timestamps,
             )
 
@@ -82,12 +93,13 @@ class Qwen3AsrOperator(Operator):
             if results and len(results) > 0:
                 result = results[0]
                 text = result.text.strip() if result.text else ""
-                language = result.language or self.config.language or ""
+                # Normalize detected language before storage
+                language = normalize_language(result.language or self.config.language)
 
                 if text:
                     new_sups.append(
                         Supervision(
-                            id=f"{cut.id}__qwen3_0",
+                            id=f"{cut.id}__{self.ctx.stage_name}_0",
                             recording_id=cut.recording_id,
                             start=cut.start,
                             duration=cut.duration,
@@ -96,7 +108,6 @@ class Qwen3AsrOperator(Operator):
                         )
                     )
 
-                # Store timestamps in custom if available
                 custom = dict(cut.custom) if cut.custom else {}
                 if (
                     self.config.return_timestamps

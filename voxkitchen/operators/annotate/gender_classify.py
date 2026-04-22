@@ -135,7 +135,7 @@ class GenderClassifyOperator(Operator):
                 gender = "m" if median_f0 < self.config.f0_threshold else "f"
 
             sup = Supervision(
-                id=f"{cut.id}__gender",
+                id=f"{cut.id}__{self.ctx.stage_name}",
                 recording_id=cut.recording_id,
                 start=cut.start,
                 duration=cut.duration,
@@ -171,7 +171,7 @@ class GenderClassifyOperator(Operator):
                 gender = "o"
 
             sup = Supervision(
-                id=f"{cut.id}__gender",
+                id=f"{cut.id}__{self.ctx.stage_name}",
                 recording_id=cut.recording_id,
                 start=cut.start,
                 duration=cut.duration,
@@ -212,7 +212,7 @@ class GenderClassifyOperator(Operator):
                 gender = "f"
 
             sup = Supervision(
-                id=f"{cut.id}__gender",
+                id=f"{cut.id}__{self.ctx.stage_name}",
                 recording_id=cut.recording_id,
                 start=cut.start,
                 duration=cut.duration,

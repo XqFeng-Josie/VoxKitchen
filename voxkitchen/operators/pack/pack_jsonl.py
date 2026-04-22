@@ -2,9 +2,15 @@
 
 Each line is a JSON object with fields:
   id, origin_id, start, end, duration, sample_rate,
-  text, snr, gender, speaker, language
+  text, gender, speaker, language   — first non-None across supervisions
+  supervisions                       — JSON array of all supervisions
+  <metric>                           — one field per cut.metrics entry
 
-Designed for easy consumption by downstream training scripts.
+``text`` / ``language`` / ``speaker`` are the first non-None values across all
+supervisions (backward-compatible shortcut for single-ASR pipelines).
+``supervisions`` is a JSON-encoded array containing every Supervision on the
+cut — use it to access per-model results when multiple ASR or LangID operators
+have run.
 """
 
 from __future__ import annotations
@@ -65,8 +71,6 @@ def _flatten_cut(cut: Cut) -> dict[str, object]:
     language = next((s.language for s in cut.supervisions if s.language), "")
     sample_rate = cut.recording.sampling_rate if cut.recording else 0
 
-    # origin_start / origin_end are set by ffmpeg_convert / resample when
-    # materializing VAD segments into individual files.
     custom = cut.custom or {}
     origin_start = custom.get("origin_start", round(cut.start, 3))
     origin_end = custom.get("origin_end", round(cut.start + cut.duration, 3))
@@ -82,8 +86,18 @@ def _flatten_cut(cut: Cut) -> dict[str, object]:
         "gender": gender,
         "speaker": speaker,
         "language": language,
+        "supervisions": [
+            {
+                "id": s.id,
+                "text": s.text,
+                "language": s.language,
+                "speaker": s.speaker,
+                "gender": s.gender,
+                "custom": s.custom,
+            }
+            for s in cut.supervisions
+        ],
     }
-    # Auto-export all metrics (snr, dnsmos_ovrl, pitch_mean, etc.)
     for k, v in cut.metrics.items():
         row[k] = round(v, 3) if isinstance(v, float) else v
     return row

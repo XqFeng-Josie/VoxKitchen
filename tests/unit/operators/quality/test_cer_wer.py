@@ -89,6 +89,42 @@ def test_cer_wer_partial_match(tmp_path: Path, make_run_context) -> None:
     assert 0.0 < out.metrics["wer"] <= 1.0
 
 
+def test_cer_wer_normalize_strips_sensevoice_tags(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("cer")
+    tagged = "<|zh|><|HAPPY|><|Speech|><|withitn|>参观海洋馆。"
+    cs = CutSet([_cut("c0", tagged, "参观海洋馆")])
+    config = CerWerConfig(normalize=True)
+    op = CerWerOperator(config, ctx)
+    op.setup()
+    result = op.process(cs)
+    op.teardown()
+    assert next(iter(result)).metrics["cer"] == 0.0
+
+
+def test_cer_wer_normalize_strips_paraformer_spaces(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("cer")
+    spaced = "参 观 海 洋 馆"
+    cs = CutSet([_cut("c0", spaced, "参观海洋馆")])
+    config = CerWerConfig(normalize=True)
+    op = CerWerOperator(config, ctx)
+    op.setup()
+    result = op.process(cs)
+    op.teardown()
+    assert next(iter(result)).metrics["cer"] == 0.0
+
+
+def test_cer_wer_normalize_false_preserves_raw(tmp_path: Path, make_run_context) -> None:
+    ctx = make_run_context("cer")
+    spaced = "参 观 海 洋 馆"
+    cs = CutSet([_cut("c0", spaced, "参观海洋馆")])
+    config = CerWerConfig(normalize=False)
+    op = CerWerOperator(config, ctx)
+    op.setup()
+    result = op.process(cs)
+    op.teardown()
+    assert next(iter(result)).metrics["cer"] > 0.0
+
+
 def test_cer_wer_no_reference_skips(tmp_path: Path, make_run_context) -> None:
     cut = Cut(
         id="c0",

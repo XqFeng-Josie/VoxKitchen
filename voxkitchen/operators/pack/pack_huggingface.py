@@ -1,11 +1,16 @@
 """Pack HuggingFace operator: write a HuggingFace Dataset with an audio column.
 
 Saves the dataset to disk at ``<output_dir>``.  Each sample has fields:
-  id, audio, text, speaker, duration.
+  id, audio, text, speaker, language, duration   — first non-None across supervisions
+  supervisions                                    — JSON string of all supervisions
+
+``supervisions`` is a JSON-encoded list so downstream code can access per-model
+results when multiple ASR or LangID operators have run.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import ClassVar
 
@@ -44,7 +49,22 @@ class PackHuggingFaceOperator(Operator):
                     "audio": audio_path,
                     "text": next((s.text for s in cut.supervisions if s.text), None),
                     "speaker": next((s.speaker for s in cut.supervisions if s.speaker), None),
+                    "language": next((s.language for s in cut.supervisions if s.language), None),
                     "duration": cut.duration,
+                    "supervisions": json.dumps(
+                        [
+                            {
+                                "id": s.id,
+                                "text": s.text,
+                                "language": s.language,
+                                "speaker": s.speaker,
+                                "gender": s.gender,
+                                "custom": s.custom,
+                            }
+                            for s in cut.supervisions
+                        ],
+                        ensure_ascii=False,
+                    ),
                 }
             )
 

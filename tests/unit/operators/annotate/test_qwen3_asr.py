@@ -7,25 +7,62 @@ from pathlib import Path
 
 import pytest
 
+# ---------------------------------------------------------------------------
+# Pure-Python tests (no qwen-asr package required)
+# ---------------------------------------------------------------------------
+
+from voxkitchen.operators.annotate.qwen3_asr import _to_qwen3_language
+from voxkitchen.operators.registry import get_operator
+
+
+def test_qwen3_language_to_model_format() -> None:
+    """_to_qwen3_language converts any input to capitalized full name for qwen_asr API."""
+    assert _to_qwen3_language("zh") == "Chinese"
+    assert _to_qwen3_language("zh-cn") == "Chinese"
+    assert _to_qwen3_language("yue") == "Cantonese"
+    assert _to_qwen3_language("en") == "English"
+    assert _to_qwen3_language("Chinese") == "Chinese"
+    assert _to_qwen3_language(None) is None
+    assert _to_qwen3_language("auto") is None  # unknown → None → not passed to model
+
+
+def test_qwen3_asr_is_registered() -> None:
+    from voxkitchen.operators.annotate.qwen3_asr import Qwen3AsrOperator
+
+    assert get_operator("qwen3_asr") is Qwen3AsrOperator
+
+
+def test_qwen3_asr_does_not_produce_audio() -> None:
+    from voxkitchen.operators.annotate.qwen3_asr import Qwen3AsrOperator
+
+    assert Qwen3AsrOperator.produces_audio is False
+
+
+# ---------------------------------------------------------------------------
+# Slow tests (require qwen-asr package and model download)
+# ---------------------------------------------------------------------------
+
 try:
     from qwen_asr import Qwen3ASRModel  # noqa: F401
+
+    _QWEN_AVAILABLE = True
 except ImportError:
-    pytest.skip("qwen-asr not available", allow_module_level=True)
+    _QWEN_AVAILABLE = False
 
-from voxkitchen.operators.annotate.qwen3_asr import (
-    Qwen3AsrConfig,
-    Qwen3AsrOperator,
-)
-from voxkitchen.operators.registry import get_operator
-from voxkitchen.schema.cut import Cut
-from voxkitchen.schema.cutset import CutSet
-from voxkitchen.schema.provenance import Provenance
-from voxkitchen.utils.audio import recording_from_file
+requires_qwen = pytest.mark.skipif(not _QWEN_AVAILABLE, reason="qwen-asr not available")
 
 
-def _cut_from_path(audio_path: Path) -> Cut:
-    rec = recording_from_file(audio_path)
-    return Cut(
+@requires_qwen
+@pytest.mark.slow
+def test_qwen3_asr_transcribes(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
+    from voxkitchen.operators.annotate.qwen3_asr import Qwen3AsrConfig, Qwen3AsrOperator
+    from voxkitchen.schema.cutset import CutSet
+    from voxkitchen.schema.cut import Cut
+    from voxkitchen.schema.provenance import Provenance
+    from voxkitchen.utils.audio import recording_from_file
+
+    rec = recording_from_file(mono_wav_16k)
+    cut = Cut(
         id=f"cut-{rec.id}",
         recording_id=rec.id,
         start=0.0,
@@ -40,27 +77,13 @@ def _cut_from_path(audio_path: Path) -> Cut:
             pipeline_run_id="run-test",
         ),
     )
-
-
-def test_qwen3_asr_is_registered() -> None:
-    assert get_operator("qwen3_asr") is Qwen3AsrOperator
-
-
-def test_qwen3_asr_does_not_produce_audio() -> None:
-    assert Qwen3AsrOperator.produces_audio is False
-
-
-@pytest.mark.slow
-def test_qwen3_asr_transcribes(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
     ctx = make_run_context("asr")
-    cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = Qwen3AsrConfig(model="Qwen/Qwen3-ASR-0.6B")
     op = Qwen3AsrOperator(config, ctx)
     op.setup()
-    result = op.process(cs)
+    result = op.process(CutSet([cut]))
     op.teardown()
 
     out_cut = next(iter(result))
-    # Should have at least one supervision with text
     texts = [s.text for s in out_cut.supervisions if s.text]
     assert len(texts) >= 0  # sine wave may not produce meaningful text

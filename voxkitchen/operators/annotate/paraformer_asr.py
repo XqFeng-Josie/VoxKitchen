@@ -17,6 +17,7 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.language import normalize_language
 
 
 class ParaformerAsrConfig(OperatorConfig):
@@ -89,12 +90,12 @@ class ParaformerAsrOperator(Operator):
 
                         new_sups.append(
                             Supervision(
-                                id=f"{cut.id}__paraformer_{len(new_sups)}",
+                                id=f"{cut.id}__{self.ctx.stage_name}_{len(new_sups)}",
                                 recording_id=cut.recording_id,
                                 start=seg_start,
                                 duration=seg_dur,
                                 text=text,
-                                language=self.config.language,
+                                language=normalize_language(self.config.language),
                             )
                         )
 

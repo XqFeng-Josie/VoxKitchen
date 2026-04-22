@@ -9,6 +9,7 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.language import normalize_language
 
 
 class SpeechBrainLangIdConfig(OperatorConfig):
@@ -55,13 +56,12 @@ class SpeechBrainLangIdOperator(Operator):
             _out_prob, _score, _index, text_lab = self._classifier.classify_batch(
                 tensor.unsqueeze(0)
             )
-            lang = text_lab[0]
             sup = Supervision(
-                id=f"{cut.id}__langid",
+                id=f"{cut.id}__{self.ctx.stage_name}",
                 recording_id=cut.recording_id,
                 start=cut.start,
                 duration=cut.duration,
-                language=lang,
+                language=normalize_language(text_lab[0]),
             )
             updated = cut.model_copy(update={"supervisions": [*cut.supervisions, sup]})
             out.append(updated)

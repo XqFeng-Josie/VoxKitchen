@@ -15,6 +15,7 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.schema.supervision import Supervision
 from voxkitchen.utils.audio import load_audio_for_cut
+from voxkitchen.utils.language import normalize_language
 
 
 class WhisperLangidConfig(OperatorConfig):
@@ -99,11 +100,11 @@ class WhisperLangidOperator(Operator):
             lang = self._detect(audio)
 
             sup = Supervision(
-                id=f"{cut.id}__langid",
+                id=f"{cut.id}__{self.ctx.stage_name}",
                 recording_id=cut.recording_id,
                 start=cut.start,
                 duration=cut.duration,
-                language=lang,
+                language=normalize_language(lang),
             )
             updated = cut.model_copy(update={"supervisions": [*cut.supervisions, sup]})
             out.append(updated)

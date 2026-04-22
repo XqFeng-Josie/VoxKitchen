@@ -100,7 +100,7 @@ class PyannoteDiarizeOperator(Operator):
             for turn, _, speaker_label in diarization.itertracks(yield_label=True):
                 new_sups.append(
                     Supervision(
-                        id=f"{cut.id}__diar_{len(new_sups)}",
+                        id=f"{cut.id}__{self.ctx.stage_name}_{len(new_sups)}",
                         recording_id=cut.recording_id,
                         start=cut.start + turn.start,
                         duration=turn.end - turn.start,
