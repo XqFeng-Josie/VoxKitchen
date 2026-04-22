@@ -1,0 +1,54 @@
+version: "0.1"
+name: multi-asr-demo
+description: "多模型 ASR 对比 Demo — 同一批音频依次经过 Paraformer → SenseVoice → Qwen3，
+  结果合并在同一个 cut 的 supervisions 里，pack_parquet 输出完整对比表。"
+work_dir: ./work/${name}
+num_gpus: 1
+gc_mode: keep   # 保留中间文件，方便逐 stage 检查
+
+ingest:
+  source: dir
+  args:
+    root: /data/xiaoqinfeng/code/VoxKitchen/1200小时童声语音数据
+    recursive: true
+
+stages:
+  # ── 预处理 ────────────────────────────────────────────────────────────────
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  # 只保留有标注的短句（source/ 里的长文件时长 >10s，用时长过滤掉）
+  - name: filter_labeled
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration > 1.0"
+        - "duration < 10.0"
+
+  # ── 三个 ASR 依次追加 supervision ────────────────────────────────────────
+  # 每个算子的输出 supervision.id 带有模型前缀，便于后续区分
+  - name: asr_paraformer
+    op: paraformer_asr
+    args:
+      model: iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch
+      language: zh
+
+  - name: asr_sensevoice
+    op: sensevoice_asr
+    args:
+      model: iic/SenseVoiceSmall
+      language: auto  # SenseVoice 自动检测语言，结果写入 supervision.language
+
+  - name: asr_qwen3
+    op: qwen3_asr
+    args:
+      model: Qwen/Qwen3-ASR-0.6B
+      language: zh    # 自动规范化为 Chinese（qwen3_asr 内部处理）
+
+  # ── 打包输出 ─────────────────────────────────────────────────────────────
+  # supervisions 字段包含三个模型的完整结果（text + emotion + audio_event + language）
+  - name: pack
+    op: pack_jsonl

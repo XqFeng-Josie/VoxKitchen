@@ -1,0 +1,35 @@
+version: "0.1"
+name: children-eval-sensevoice
+description: "有标注短音频 CER 评估 — SenseVoiceSmall"
+work_dir: ./work/${name}
+num_gpus: 1
+gc_mode: keep
+
+ingest:
+  source: dir
+  args:
+    root: /data/xiaoqinfeng/code/VoxKitchen/1200小时童声语音数据
+    recursive: true
+
+stages:
+  - name: resample
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
+
+  - name: filter_short
+    op: quality_score_filter
+    args:
+      conditions:
+        - "duration < 10.0"
+        - "duration > 1.0"
+
+  - name: asr
+    op: sensevoice_asr
+    args:
+      model: iic/SenseVoiceSmall
+      language: zh
+
+  - name: pack
+    op: pack_parquet
