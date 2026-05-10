@@ -720,10 +720,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#vkit-run" class="md-nav__link">
+  <a href="#vkit-run-container-entrypoint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        vkit run
+        vkit run (container entrypoint)
       
     </span>
   </a>
@@ -742,10 +742,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#vkit-download" class="md-nav__link">
+  <a href="#vkit-download-current-env-helper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        vkit download
+        vkit download (current-env helper)
       
     </span>
   </a>
@@ -835,6 +835,17 @@
     <span class="md-ellipsis">
       
         vkit docker doctor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vkit-docker-download-recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit docker download &lt;recipe&gt;
       
     </span>
   </a>
@@ -1155,10 +1166,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#vkit-run" class="md-nav__link">
+  <a href="#vkit-run-container-entrypoint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        vkit run
+        vkit run (container entrypoint)
       
     </span>
   </a>
@@ -1177,10 +1188,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#vkit-download" class="md-nav__link">
+  <a href="#vkit-download-current-env-helper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        vkit download
+        vkit download (current-env helper)
       
     </span>
   </a>
@@ -1270,6 +1281,17 @@
     <span class="md-ellipsis">
       
         vkit docker doctor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vkit-docker-download-recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit docker download &lt;recipe&gt;
       
     </span>
   </a>
@@ -1380,16 +1402,19 @@ vkit<span class="w"> </span>init<span class="w"> </span>--list-templates<span cl
 </tr>
 </tbody>
 </table>
-<h3 id="vkit-run"><code>vkit run</code></h3>
-<p>Execute a pipeline.</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                           </span><span class="c1"># Run full pipeline</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run<span class="w">                 </span><span class="c1"># Validate only (no execution)</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>vad<span class="w">         </span><span class="c1"># Resume from a stage</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--stop-at<span class="w"> </span>asr<span class="w">             </span><span class="c1"># Stop after a stage</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--keep-intermediates<span class="w">      </span><span class="c1"># Don&#39;t GC derived audio</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--num-gpus<span class="w"> </span><span class="m">2</span><span class="w">              </span><span class="c1"># Override GPU count</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--num-workers<span class="w"> </span><span class="m">8</span><span class="w">           </span><span class="c1"># Override CPU workers</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--work-dir<span class="w"> </span>/tmp/run1<span class="w">      </span><span class="c1"># Override work_dir</span>
+<h3 id="vkit-run-container-entrypoint"><code>vkit run</code> (container entrypoint)</h3>
+<p>Execute a pipeline in the current Python environment. This is the
+container entrypoint used by VoxKitchen images. Most host users should use
+<code>vkit docker run &lt;yaml&gt;</code>, which supplies the runtime image and Docker mounts.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Host usage; these flags are forwarded to the image entrypoint:</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                           </span><span class="c1"># Run full pipeline</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run<span class="w">                 </span><span class="c1"># Validate only</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>vad<span class="w">         </span><span class="c1"># Resume from a stage</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--stop-at<span class="w"> </span>asr<span class="w">             </span><span class="c1"># Stop after a stage</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--keep-intermediates<span class="w">      </span><span class="c1"># Keep derived audio</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--num-gpus<span class="w"> </span><span class="m">2</span><span class="w">              </span><span class="c1"># Override GPU count</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--num-workers<span class="w"> </span><span class="m">8</span><span class="w">           </span><span class="c1"># Override CPU workers</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--work-dir<span class="w"> </span>./work/run1<span class="w">    </span><span class="c1"># Override work_dir</span>
 </code></pre></div>
 <table>
 <thead>
@@ -1430,14 +1455,17 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class=
 </tbody>
 </table>
 <h3 id="vkit-validate"><code>vkit validate</code></h3>
-<p>Check YAML syntax, operator references, and per-operator arg schemas without executing.</p>
+<p>Check YAML syntax, operator references, per-operator arg schemas, and the
+recommended Docker image without executing.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>validate<span class="w"> </span>pipeline.yaml
 </code></pre></div>
-<h3 id="vkit-download"><code>vkit download</code></h3>
-<p>Download a dataset using its recipe.</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>download<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>/data/ls<span class="w"> </span>--subsets<span class="w"> </span>dev-clean,test-clean
-vkit<span class="w"> </span>download<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>/data/aishell
-vkit<span class="w"> </span>download<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>/data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn
+<h3 id="vkit-download-current-env-helper"><code>vkit download</code> (current-env helper)</h3>
+<p>Download a dataset using its recipe in the current environment. For the
+Docker-first user path, use <code>vkit docker download</code> so recipe-specific
+dependencies come from the image.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean,test-clean
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>./data/aishell
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>./data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn
 </code></pre></div>
 <table>
 <thead>
@@ -1458,11 +1486,13 @@ vkit<span class="w"> </span>download<span class="w"> </span>fleurs<span class="w
 </tbody>
 </table>
 <h3 id="vkit-ingest"><code>vkit ingest</code></h3>
-<p>Build a CutSet manifest from a data source — standalone, outside a pipeline. Most users let <code>vkit run</code> do this as stage 0; <code>vkit ingest</code> is useful for one-off manifest prep.</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>dir<span class="w">      </span>--root<span class="w"> </span>/data/audio<span class="w">    </span>--out<span class="w"> </span>cuts.jsonl.gz
-vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>recipe<span class="w">   </span>--recipe<span class="w"> </span>librispeech<span class="w">  </span>--root<span class="w"> </span>/data/ls<span class="w"> </span>--out<span class="w"> </span>cuts.jsonl.gz
+<p>Build a CutSet manifest from a data source — standalone, outside a pipeline.
+Most users let <code>vkit docker run</code> do this through the pipeline ingest block;
+<code>vkit ingest</code> is useful for one-off manifest prep.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>dir<span class="w">      </span>--root<span class="w"> </span>./data/audio<span class="w">       </span>--out<span class="w"> </span>cuts.jsonl.gz
+vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>recipe<span class="w">   </span>--recipe<span class="w"> </span>librispeech<span class="w">      </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--out<span class="w"> </span>cuts.jsonl.gz
 vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>manifest<span class="w"> </span>--path<span class="w"> </span>input.jsonl.gz<span class="w"> </span>--out<span class="w"> </span>merged.jsonl.gz
-vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>dir<span class="w">      </span>--root<span class="w"> </span>/data/audio<span class="w">    </span>--out<span class="w"> </span>cuts.jsonl.gz<span class="w"> </span>--no-recursive
+vkit<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>dir<span class="w">      </span>--root<span class="w"> </span>./data/audio<span class="w">       </span>--out<span class="w"> </span>cuts.jsonl.gz<span class="w"> </span>--no-recursive
 </code></pre></div>
 <table>
 <thead>
@@ -1554,10 +1584,10 @@ vkit<span class="w"> </span>inspect<span class="w"> </span>errors<span class="w"
 vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"> </span>silero_vad<span class="w">  </span><span class="c1"># Show config fields + YAML example for an operator</span>
 </code></pre></div>
 <h3 id="vkit-recipes"><code>vkit recipes</code></h3>
-<p>List dataset recipes (the entities behind <code>vkit download</code> and <code>ingest: source=recipe</code>).</p>
+<p>List dataset recipes (the entities behind <code>vkit docker download</code> and <code>ingest: source=recipe</code>).</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>recipes
 </code></pre></div>
-<p>Output is a table with name, download mechanism (<code>openslr</code>, <code>HuggingFace</code>, or <code>manual</code>), and one-line description. To actually download, use <code>vkit download &lt;name&gt; --root &lt;dir&gt;</code>; to reference inside a pipeline, use <code>ingest: { source: recipe, recipe: &lt;name&gt;, args: { root: &lt;dir&gt; } }</code>. Recipe-specific subset names are listed in <a href="../recipes/">Recipes &amp; Download</a>.</p>
+<p>Output is a table with name, download mechanism (<code>openslr</code>, <code>HuggingFace</code>, or <code>manual</code>), and one-line description. To actually download, use <code>vkit docker download --tag slim &lt;name&gt; --root ./data/&lt;name&gt;</code>; to reference inside a pipeline, use <code>ingest: { source: recipe, recipe: &lt;name&gt;, args: { root: &lt;dir&gt; } }</code>. Recipe-specific subset names are listed in <a href="../recipes/">Recipes &amp; Download</a>.</p>
 <h3 id="vkit-doctor"><code>vkit doctor</code></h3>
 <p>Report per-env operator availability and warmup-model status.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>doctor<span class="w">                          </span><span class="c1"># Single-env report (dev install or :slim image)</span>
@@ -1586,7 +1616,7 @@ vkit<span class="w"> </span>doctor<span class="w"> </span>--json<span class="w">
 <p>Inside the <code>voxkitchen:latest</code> multi-env image, <code>vkit doctor</code> with no <code>--expect</code> aggregates a table across every env under <code>/opt/voxkitchen/envs/</code>, re-invoking each env's own <code>vkit doctor --expect &lt;env&gt;</code>.</p>
 <h3 id="vkit-docker"><code>vkit docker</code></h3>
 <p>Run any of the commands above inside a published Docker image instead of the local Python env. Also has three image-management helpers (<code>build</code>, <code>pull</code>, <code>shell</code>).</p>
-<p><strong>Shared flags</strong> (every subcommand):</p>
+<p><strong>Image selection flags</strong> (<code>run</code>, <code>download</code>, <code>doctor</code>, <code>pull</code>, <code>shell</code>):</p>
 <table>
 <thead>
 <tr>
@@ -1598,7 +1628,7 @@ vkit<span class="w"> </span>doctor<span class="w"> </span>--json<span class="w">
 <tbody>
 <tr>
 <td><code>--tag NAME</code></td>
-<td><code>latest</code></td>
+<td><code>latest</code> (<code>download</code>: <code>slim</code>)</td>
 <td>Image tag. Resolves to <code>ghcr.io/xqfeng-josie/voxkitchen:NAME</code>.</td>
 </tr>
 <tr>
@@ -1613,6 +1643,7 @@ vkit<span class="w"> </span>doctor<span class="w"> </span>--json<span class="w">
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                          </span><span class="c1"># :latest</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w">                </span><span class="c1"># :asr</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--gpus<span class="w"> </span>none<span class="w">              </span><span class="c1"># CPU-only</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run<span class="w">                </span><span class="c1"># Validate inside image</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--env-file<span class="w"> </span>/tmp/.env<span class="w">     </span><span class="c1"># Alternate env file</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--mount<span class="w"> </span>/data/raw<span class="w">        </span><span class="c1"># Extra read-only bind mount</span>
 </code></pre></div>
@@ -1640,12 +1671,17 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <td>—</td>
 <td>Extra host path to bind read-only. Repeatable.</td>
 </tr>
+<tr>
+<td><code>--dry-run</code>, <code>--resume-from</code>, <code>--stop-at</code>, <code>--num-gpus</code>, <code>--num-workers</code>, <code>--work-dir</code>, <code>--keep-intermediates</code></td>
+<td>—</td>
+<td>Pipeline options forwarded to the image entrypoint.</td>
+</tr>
 </tbody>
 </table>
 <p>The wrapper automatically:</p>
 <ul>
 <li>Sets <code>--user $(id -u):$(id -g)</code> and <code>-e HOME=/tmp</code> so files in <code>./work</code> are owned by the host user.</li>
-<li>Binds <code>./work → /app/work</code> and <code>./data → /data</code> if they exist.</li>
+<li>Binds <code>./work → /app/work</code> and <code>./output → /app/output</code>; if <code>./data</code> exists, binds it to both <code>/app/data</code> for template-relative YAML and <code>/data</code> for absolute data roots.</li>
 <li>Binds the pipeline YAML at its absolute path when it points to a host file.</li>
 </ul>
 <h4 id="vkit-docker-doctor"><code>vkit docker doctor</code></h4>
@@ -1655,6 +1691,12 @@ vkit<span class="w"> </span>docker<span class="w"> </span>doctor<span class="w">
 vkit<span class="w"> </span>docker<span class="w"> </span>doctor<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>--expect<span class="w"> </span>asr<span class="w"> </span>--json<span class="w">      </span><span class="c1"># smoke test + JSON</span>
 </code></pre></div>
 <p>Accepts <code>--expect</code> and <code>--json</code> (same semantics as local <code>vkit doctor</code>). Default <code>--gpus</code> is <code>none</code> (doctor doesn't need GPU).</p>
+<h4 id="vkit-docker-download-recipe"><code>vkit docker download &lt;recipe&gt;</code></h4>
+<p>Download a dataset inside the container. The wrapper creates and mounts
+<code>./data</code>, so roots under <code>./data/...</code> are written back to the host.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>./data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn
+</code></pre></div>
 <h4 id="vkit-docker-build-target"><code>vkit docker build [target]</code></h4>
 <p>Build a local Docker image from <code>docker/Dockerfile</code> (wraps <code>docker build</code>).</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>build<span class="w">                 </span><span class="c1"># Default target: latest</span>
@@ -1707,7 +1749,8 @@ vkit<span class="w"> </span>docker<span class="w"> </span>shell<span class="w"> 
 <p>Launch an interactive Gradio panel to explore a CutSet.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>viz<span class="w"> </span>work/01_pack/cuts.jsonl.gz<span class="w"> </span>--port<span class="w"> </span><span class="m">7860</span>
 </code></pre></div>
-<p>Requires: <code>pip install voxkitchen[viz-panel]</code></p>
+<p><code>vkit viz</code> is an optional local developer UI; it is separate from the
+Docker-first pipeline execution path.</p>
 
 
 

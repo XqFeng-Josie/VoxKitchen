@@ -1137,14 +1137,14 @@
 </table>
 <h2 id="downloading-datasets">Downloading Datasets</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># LibriSpeech (English, from openslr.org)</span>
-vkit<span class="w"> </span>download<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>/data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
-vkit<span class="w"> </span>download<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>/data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>train-clean-100
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>train-clean-100
 
 <span class="c1"># AISHELL-1 (Chinese, from openslr.org)</span>
-vkit<span class="w"> </span>download<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>/data/aishell
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>./data/aishell
 
 <span class="c1"># FLEURS (multilingual, from HuggingFace)</span>
-vkit<span class="w"> </span>download<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>/data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn,fr_fr
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>./data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn,fr_fr
 </code></pre></div>
 <h3 id="librispeech-subsets">LibriSpeech Subsets</h3>
 <table>
@@ -1211,7 +1211,7 @@ vkit<span class="w"> </span>download<span class="w"> </span>fleurs<span class="w
 <span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recipe</span>
 <span class="w">  </span><span class="nt">recipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">librispeech</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/librispeech</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/librispeech</span>
 <span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">train-clean-100</span><span class="p p-Indicator">]</span>
 
 <span class="nt">stages</span><span class="p">:</span>

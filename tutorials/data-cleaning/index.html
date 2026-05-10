@@ -1199,11 +1199,11 @@
 <h1 id="data-cleaning">Data Cleaning</h1>
 <p>Clean up raw audio data: measure quality, remove duplicates, filter out bad files.</p>
 <h2 id="quick-start">Quick Start</h2>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>voxkitchen<span class="o">[</span>audio,segment,quality<span class="o">]</span>
-vkit<span class="w"> </span>init<span class="w"> </span>my-cleaning-project<span class="w"> </span>--template<span class="w"> </span>cleaning
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-cleaning-project<span class="w"> </span>--template<span class="w"> </span>cleaning
 <span class="nb">cd</span><span class="w"> </span>my-cleaning-project
 <span class="c1"># Put your raw audio files in ./data/</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>pipeline.yaml
 vkit<span class="w"> </span>inspect<span class="w"> </span>cuts<span class="w"> </span>work/*/05_filter/cuts.jsonl.gz
 </code></pre></div>
 <h2 id="what-the-pipeline-does">What the Pipeline Does</h2>

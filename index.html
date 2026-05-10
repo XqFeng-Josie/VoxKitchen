@@ -1063,8 +1063,8 @@
 </p>
 
 <h1 id="voxkitchen">VoxKitchen</h1>
-<p>Declarative speech data processing toolkit. Write a YAML recipe, run <code>vkit run</code>, get training-ready data.</p>
-<p><strong>51 operators</strong> across 7 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, and output packing.</p>
+<p>Declarative speech data processing toolkit. Write a YAML recipe, run it with <code>vkit docker</code>, get training-ready data.</p>
+<p><strong>51 operators</strong> across 8 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, utility, and output packing.</p>
 <h2 id="get-started">Get Started</h2>
 <ul>
 <li><a href="getting-started/">Getting Started</a> — install, first pipeline, inspect results</li>
@@ -1086,17 +1086,17 @@ vkit<span class="w"> </span>init<span class="w"> </span>my-project<span class="w
 <h2 id="reference">Reference</h2>
 <ul>
 <li><a href="reference/operators/">Operators</a> — all 51 operators with config and YAML examples</li>
-<li><a href="reference/recipes/">Recipes &amp; Download</a> — dataset recipes and <code>vkit download</code></li>
+<li><a href="reference/recipes/">Recipes &amp; Download</a> — dataset recipes and <code>vkit docker download</code></li>
 <li><a href="reference/cli/">CLI Commands</a> — complete CLI reference</li>
 <li><a href="reference/tools-api/">Python Tools API</a> — standalone functions for quick tasks</li>
 <li><a href="reference/pipeline-yaml/">Pipeline YAML</a> — YAML schema and execution model</li>
 </ul>
 <h2 id="quick-reference">Quick Reference</h2>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>operators<span class="w">                      </span><span class="c1"># list all operators</span>
-vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"> </span>&lt;name&gt;<span class="w">          </span><span class="c1"># config fields + YAML example</span>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>examples/pipelines/demo-no-asr.yaml<span class="w"> </span>--dry-run
 vkit<span class="w"> </span>init<span class="w"> </span>--list-templates<span class="w">          </span><span class="c1"># available project templates</span>
-vkit<span class="w"> </span>download<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>/data/ls<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run<span class="w">    </span><span class="c1"># validate without executing</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
+vkit<span class="w"> </span>docker<span class="w"> </span>doctor<span class="w"> </span>--tag<span class="w"> </span>latest
 </code></pre></div>
 <h2 id="links">Links</h2>
 <ul>

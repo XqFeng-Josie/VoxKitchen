@@ -991,10 +991,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#operator-catalog-51-operators-7-categories" class="md-nav__link">
+  <a href="#operator-catalog-51-operators-8-categories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Operator Catalog (51 operators, 7 categories)
+        Operator Catalog (51 operators, 8 categories)
       
     </span>
   </a>
@@ -1151,10 +1151,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependency-management" class="md-nav__link">
+  <a href="#runtime-images" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependency Management
+        Runtime Images
       
     </span>
   </a>
@@ -1421,10 +1421,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#operator-catalog-51-operators-7-categories" class="md-nav__link">
+  <a href="#operator-catalog-51-operators-8-categories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Operator Catalog (51 operators, 7 categories)
+        Operator Catalog (51 operators, 8 categories)
       
     </span>
   </a>
@@ -1581,10 +1581,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependency-management" class="md-nav__link">
+  <a href="#runtime-images" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependency Management
+        Runtime Images
       
     </span>
   </a>
@@ -1674,10 +1674,10 @@
 
 <h1 id="system-architecture">System Architecture</h1>
 <blockquote>
-<p>Operators: 51 across 7 categories.</p>
+<p>Operators: 51 across 8 categories.</p>
 </blockquote>
 <h2 id="overview">Overview</h2>
-<p>VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run <code>vkit run</code>, and get training-ready datasets with full provenance tracking.</p>
+<p>VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run <code>vkit docker run</code>, and get training-ready datasets with full provenance tracking.</p>
 <p><strong>Core metaphor:</strong> pipeline.yaml is a recipe, operators are cooking steps, ingest recipes are ingredient prep, <code>pack</code> is plating.</p>
 <p><strong>Target users:</strong> Speech researchers (ASR, TTS, speaker recognition, speech LLMs).</p>
 <p><strong>Key guarantees:</strong> Reproducible, resumable, inspectable pipelines. Every stage checkpoints to disk; crashes resume from the last completed stage.</p>
@@ -1756,7 +1756,7 @@ Schema Layer        (schema/)        Pydantic v2 data models
 <p>Built-in operators: <code>@register_operator</code> decorator + import in <code>operators/__init__.py</code>.
 Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (lazy discovery on first access).</p>
 <p>Optional deps wrapped in <code>try/except ImportError</code> -- missing packages don't crash the core.</p>
-<h3 id="operator-catalog-51-operators-7-categories">Operator Catalog (51 operators, 7 categories)</h3>
+<h3 id="operator-catalog-51-operators-8-categories">Operator Catalog (51 operators, 8 categories)</h3>
 <table>
 <thead>
 <tr>
@@ -1832,7 +1832,10 @@ Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (
 </code></pre></div>
 <p>Supports <code>${name}</code>, <code>${run_id}</code>, <code>${env:VAR}</code> interpolation in all string values.</p>
 <h3 id="execution-flow">Execution Flow</h3>
-<div class="highlight"><pre><span></span><code>vkit run pipeline.yaml
+<div class="highlight"><pre><span></span><code>vkit docker run pipeline.yaml
+  |
+  v
+[Docker wrapper] mounts data/work/output, selects image, calls image entrypoint
   |
   v
 [Loader] YAML -&gt; PipelineSpec (Pydantic validation + interpolation)
@@ -1877,8 +1880,8 @@ Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (
 <p><strong>Error handling:</strong> If a shard fails, retries cut-by-cut. Bad cuts logged to <code>_errors.jsonl</code>, pipeline continues.</p>
 <h3 id="resume-checkpointing">Resume &amp; Checkpointing</h3>
 <p>A stage is complete iff both <code>cuts.jsonl.gz</code> and <code>_SUCCESS</code> exist. <code>_SUCCESS</code> is written atomically after the manifest is fully flushed.</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                    </span><span class="c1"># full run</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>vad<span class="w">  </span><span class="c1"># resume from stage</span>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                    </span><span class="c1"># full run</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>vad<span class="w">  </span><span class="c1"># resume from stage</span>
 </code></pre></div>
 <h3 id="garbage-collection">Garbage Collection</h3>
 <p>Static analysis builds a GC plan: for each <code>produces_audio=True</code> stage, find its last downstream consumer (<code>reads_audio_bytes=True</code>). After that consumer completes, move the producer's <code>derived/</code> to trash. Trash emptied only on successful pipeline completion.</p>
@@ -1934,8 +1937,16 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class=
 <td>Scaffold project</td>
 </tr>
 <tr>
+<td><code>vkit docker run &lt;yaml&gt;</code></td>
+<td>Execute pipeline inside a prebuilt image</td>
+</tr>
+<tr>
+<td><code>vkit docker download &lt;recipe&gt;</code></td>
+<td>Download dataset inside a prebuilt image</td>
+</tr>
+<tr>
 <td><code>vkit run &lt;yaml&gt;</code></td>
-<td>Execute pipeline</td>
+<td>Current-env pipeline entrypoint used inside images</td>
 </tr>
 <tr>
 <td><code>vkit validate &lt;yaml&gt;</code></td>
@@ -1943,7 +1954,7 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class=
 </tr>
 <tr>
 <td><code>vkit download &lt;recipe&gt;</code></td>
-<td>Download dataset</td>
+<td>Current-env dataset download helper</td>
 </tr>
 <tr>
 <td><code>vkit ingest</code></td>
@@ -2003,9 +2014,10 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class=
 </code></pre></div>
 <p>Each function creates a temporary Cut + RunContext, runs the corresponding operator, and returns the result.</p>
 <hr />
-<h2 id="dependency-management">Dependency Management</h2>
-<p><strong>Core</strong> (always installed): pydantic, pyyaml, typer, rich, soundfile, numpy, ffmpeg-python, pyloudnorm</p>
-<p><strong>Optional extras</strong> (install what you need):</p>
+<h2 id="runtime-images">Runtime Images</h2>
+<p>User pipeline execution is Docker-based. The host <code>vkit</code> command is a
+lightweight launcher; operator dependencies live in prebuilt images.</p>
+<p>Image env groups:</p>
 <table>
 <thead>
 <tr>
@@ -2091,7 +2103,7 @@ vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class=
 <h2 id="project-structure">Project Structure</h2>
 <div class="highlight"><pre><span></span><code>voxkitchen/
   cli/                  # Typer CLI app
-  operators/            # 51 operators across 7 categories
+  operators/            # 51 operators across 8 categories
     basic/              #   resample, ffmpeg_convert, ...
     segment/            #   silero_vad, webrtc_vad, ...
     augment/            #   speed_perturb, noise_augment, ...
@@ -2120,7 +2132,7 @@ tests/integration/      # End-to-end pipeline tests
 <li><strong>Immutability</strong> -- Operators create new Cuts, never mutate existing ones</li>
 <li><strong>Resumability</strong> -- All state on disk; <code>_SUCCESS</code> markers enable crash recovery</li>
 <li><strong>Error tolerance</strong> -- Bad Cuts logged and skipped, pipeline continues</li>
-<li><strong>Minimal core</strong> -- Heavy deps (torch, transformers) are optional extras</li>
+<li><strong>Docker-first runtime</strong> -- Heavy deps (torch, transformers) live in images</li>
 <li><strong>Provenance</strong> -- Every Cut tracks its lineage</li>
 <li><strong>Declarative first</strong> -- YAML is the primary interface; Python API is the escape hatch</li>
 <li><strong>Simplicity over efficiency</strong> -- Resolve conflicts in favor of simplicity</li>
@@ -2130,7 +2142,7 @@ tests/integration/      # End-to-end pipeline tests
 <h3 id="completed">Completed</h3>
 <ul>
 <li>Core framework (schema, pipeline engine, CLI)</li>
-<li>51 operators across 7 categories</li>
+<li>51 operators across 8 categories</li>
 <li>4 ingest recipes (LibriSpeech, AISHELL, CommonVoice, FLEURS)</li>
 <li>Visualization (Rich CLI, HTML report, Gradio panel)</li>
 <li>Plugin system (entry_points)</li>

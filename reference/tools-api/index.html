@@ -1173,7 +1173,9 @@
 
 
 <h1 id="python-tools-api">Python Tools API</h1>
-<p>For quick tasks without writing a YAML pipeline, use the standalone functions in <code>voxkitchen.tools</code>.</p>
+<p>Developer reference for standalone helper functions in <code>voxkitchen.tools</code>.
+The supported user workflow for data processing remains YAML plus
+<code>vkit docker run</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">audio_info</span><span class="p">,</span>
     <span class="n">estimate_bandwidth</span><span class="p">,</span>
@@ -1240,11 +1242,11 @@
 <span class="n">emb</span> <span class="o">=</span> <span class="n">extract_speaker_embedding</span><span class="p">(</span><span class="s2">&quot;speaker.wav&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;speechbrain&quot;</span><span class="p">,</span>
                                  <span class="n">model</span><span class="o">=</span><span class="s2">&quot;speechbrain/spkrec-ecapa-voxceleb&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>Requires: <code>pip install voxkitchen[speaker]</code></p>
+<p>Runtime image for equivalent pipeline operators: <code>slim</code>.</p>
 <h2 id="speech-enhancement">Speech Enhancement</h2>
 <div class="highlight"><pre><span></span><code><span class="n">enhance_speech</span><span class="p">(</span><span class="s2">&quot;noisy.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;clean.wav&quot;</span><span class="p">,</span> <span class="n">aggressiveness</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </code></pre></div>
-<p>Requires: <code>pip install voxkitchen[enhance]</code></p>
+<p>Runtime image for equivalent pipeline operators: <code>slim</code>.</p>
 <h2 id="forced-alignment">Forced Alignment</h2>
 <div class="highlight"><pre><span></span><code><span class="n">words</span> <span class="o">=</span> <span class="n">align_words</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;English&quot;</span><span class="p">)</span>
 <span class="c1"># [{&quot;text&quot;: &quot;hello&quot;, &quot;start&quot;: 0.12, &quot;end&quot;: 0.58},</span>
@@ -1253,7 +1255,7 @@
 <span class="c1"># Chinese</span>
 <span class="n">words</span> <span class="o">=</span> <span class="n">align_words</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;你好世界&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;Chinese&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>Requires: <code>pip install voxkitchen[align]</code></p>
+<p>Runtime image for equivalent pipeline operators: <code>asr</code>.</p>
 <h2 id="tts-synthesis">TTS Synthesis</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Kokoro — lightweight (82M), CPU-capable, 8 languages</span>
 <span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span> <span class="s2">&quot;hello.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">)</span>
@@ -1275,7 +1277,7 @@
 <thead>
 <tr>
 <th><code>engine</code></th>
-<th>Extras group</th>
+<th>Docker tag</th>
 <th style="text-align: center;">Device</th>
 <th>Notes</th>
 </tr>
@@ -1283,25 +1285,25 @@
 <tbody>
 <tr>
 <td><code>"kokoro"</code></td>
-<td><code>tts-kokoro</code></td>
+<td><code>tts</code></td>
 <td style="text-align: center;">CPU/GPU</td>
 <td>82M params, 8 langs (<code>a</code>/<code>b</code>/<code>j</code>/<code>z</code>/...), <code>speed</code> supported.</td>
 </tr>
 <tr>
 <td><code>"chattts"</code></td>
-<td><code>tts-chattts</code></td>
+<td><code>tts</code></td>
 <td style="text-align: center;">GPU</td>
 <td>Conversational ZH/EN, <code>seed</code> for speaker sampling.</td>
 </tr>
 <tr>
 <td><code>"cosyvoice"</code></td>
-<td><code>tts-cosyvoice</code></td>
+<td><code>tts</code></td>
 <td style="text-align: center;">GPU</td>
 <td>Voice cloning via <code>reference_audio</code> + <code>reference_text</code>.</td>
 </tr>
 <tr>
 <td><code>"fish_speech"</code></td>
-<td><code>tts-fish-speech</code></td>
+<td><code>fish-speech</code></td>
 <td style="text-align: center;">GPU</td>
 <td>Voice cloning via <code>reference_audio</code> (operator currently parked; see CHANGELOG).</td>
 </tr>

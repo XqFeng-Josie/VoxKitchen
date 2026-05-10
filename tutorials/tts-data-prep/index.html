@@ -1243,11 +1243,11 @@
 <h1 id="tts-data-preparation">TTS Data Preparation</h1>
 <p>Prepare high-quality TTS training data from raw audio recordings.</p>
 <h2 id="quick-start">Quick Start</h2>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>voxkitchen<span class="o">[</span>audio,enhance,align<span class="o">]</span>
-vkit<span class="w"> </span>init<span class="w"> </span>my-tts-project<span class="w"> </span>--template<span class="w"> </span>tts
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-tts-project<span class="w"> </span>--template<span class="w"> </span>tts
 <span class="nb">cd</span><span class="w"> </span>my-tts-project
 <span class="c1"># Put your audio files in ./data/</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>latest<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>latest<span class="w"> </span>pipeline.yaml
 </code></pre></div>
 <h2 id="what-the-pipeline-does">What the Pipeline Does</h2>
 <table>

@@ -1296,11 +1296,11 @@
 <h2 id="pipeline-execution">Pipeline Execution</h2>
 <h3 id="resume">Resume</h3>
 <p>Pipelines checkpoint after each stage. If a run crashes, re-running resumes from the last completed stage:</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                          </span><span class="c1"># Auto-resume</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>asr<span class="w">        </span><span class="c1"># Force resume from specific stage</span>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                   </span><span class="c1"># Auto-resume</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--resume-from<span class="w"> </span>asr<span class="w"> </span><span class="c1"># Force resume from specific stage</span>
 </code></pre></div>
 <h3 id="partial-execution">Partial Execution</h3>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--stop-at<span class="w"> </span>vad<span class="w">            </span><span class="c1"># Stop after VAD stage</span>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w"> </span>--stop-at<span class="w"> </span>vad<span class="w">     </span><span class="c1"># Stop after VAD stage</span>
 </code></pre></div>
 <h3 id="garbage-collection">Garbage Collection</h3>
 <p>By default (<code>gc_mode: aggressive</code>), intermediate audio files are cleaned up after downstream stages finish. Use <code>--keep-intermediates</code> to preserve all derived audio.</p>

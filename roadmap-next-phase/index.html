@@ -1618,7 +1618,7 @@ vkit<span class="w"> </span>init<span class="w"> </span>--list-templates<span cl
 <span class="gu">### New Features</span>
 <span class="k">-</span><span class="w"> </span>Lazy CutSet for large-scale manifest processing
 <span class="k">-</span><span class="w"> </span>Per-stage execution statistics (_stats.json)
-<span class="k">-</span><span class="w"> </span><span class="sb">`vkit download`</span> command for dataset downloads
+<span class="k">-</span><span class="w"> </span><span class="sb">`vkit docker download`</span> command for dataset downloads
 <span class="k">-</span><span class="w"> </span>FLEURS recipe (102-language HuggingFace dataset)
 <span class="k">-</span><span class="w"> </span>Operator categories in <span class="sb">`vkit operators`</span> output
 <span class="k">-</span><span class="w"> </span>Python tools API: extract_speaker_embedding, enhance_speech, align_words
@@ -1707,19 +1707,19 @@ vkit<span class="w"> </span>init<span class="w"> </span>--list-templates<span cl
 </table>
 <h3 id="42-musan-recipe">4.2 MUSAN 噪声数据 Recipe（最高优先级）</h3>
 <p>MUSAN 是增强算子（noise_augment、reverb_augment）的配套数据。有了它，用户可以：</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>download<span class="w"> </span>musan<span class="w"> </span>--root<span class="w"> </span>/data/musan
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>musan<span class="w"> </span>--root<span class="w"> </span>./data/musan
 </code></pre></div>
 <p>然后在 pipeline 里直接用：</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add_noise</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">noise_augment</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">noise_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/musan/noise</span>
+<span class="w">    </span><span class="nt">noise_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/musan/noise</span>
 <span class="w">    </span><span class="nt">snr_range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">20</span><span class="p p-Indicator">]</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add_reverb</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reverb_augment</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">rir_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/musan/rir</span><span class="w">     </span><span class="c1"># 需要额外 RIR 数据</span>
+<span class="w">    </span><span class="nt">rir_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/musan/rir</span><span class="w">    </span><span class="c1"># 需要额外 RIR 数据</span>
 </code></pre></div>
 <h3 id="43-vkit-recipes">4.3 <code>vkit recipes</code> 命令</h3>
 <p>新增 CLI 命令，列出所有可用 recipe 及其下载状态：</p>
@@ -1782,7 +1782,7 @@ vkit<span class="w"> </span>init<span class="w"> </span>--list-templates<span cl
 <h2 id="_11">验收标准</h2>
 <p>项目可以公开发布时，应满足：</p>
 <ol>
-<li><strong>新用户 5 分钟跑通</strong>：<code>pip install voxkitchen[all]</code> → <code>vkit init --template tts</code> → <code>vkit run pipeline.yaml</code> → 得到结果</li>
+<li><strong>新用户 5 分钟跑通</strong>：<code>pipx install voxkitchen</code> → <code>vkit docker pull --tag slim</code> → <code>vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml</code> → 得到结果</li>
 <li><strong>文档自助</strong>：用户遇到问题能在文档站找到答案</li>
 <li><strong>贡献者友好</strong>：有人想加新算子，看 CONTRIBUTING.md + custom-operator 教程就能做</li>
 <li><strong>数据覆盖</strong>：中英文各有 2+ 个可直接下载的大规模数据集</li>

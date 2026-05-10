@@ -1199,15 +1199,15 @@
 <h1 id="speaker-analysis">Speaker Analysis</h1>
 <p>Analyze speaker distribution in audio data: identify speakers, extract embeddings, classify gender and language.</p>
 <h2 id="quick-start">Quick Start</h2>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>voxkitchen<span class="o">[</span>audio,diarize,speaker,classify<span class="o">]</span>
-vkit<span class="w"> </span>init<span class="w"> </span>my-speaker-project<span class="w"> </span>--template<span class="w"> </span>speaker
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-speaker-project<span class="w"> </span>--template<span class="w"> </span>speaker
 <span class="nb">cd</span><span class="w"> </span>my-speaker-project
 
 <span class="c1"># Set HuggingFace token (required for pyannote diarization)</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;HF_TOKEN=hf_your_token&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>.env
 
 <span class="c1"># Put your audio files in ./data/</span>
-vkit<span class="w"> </span>run<span class="w"> </span>pipeline.yaml
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>latest<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>latest<span class="w"> </span>pipeline.yaml
 </code></pre></div>
 <h2 id="what-the-pipeline-does">What the Pipeline Does</h2>
 <table>
