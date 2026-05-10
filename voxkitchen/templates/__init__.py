@@ -1,16 +1,11 @@
-"""Built-in pipeline templates for common speech processing scenarios.
-
-Template YAML files live alongside other example pipelines in
-``examples/pipelines/`` at the project root.  This keeps all pipeline
-configs in one place instead of scattering them across the source tree.
-"""
+"""Built-in pipeline templates for common speech processing scenarios."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-# Resolve: voxkitchen/templates/ -> ../.. -> project root -> examples/pipelines/
-TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent / "examples" / "pipelines"
+PACKAGE_TEMPLATES_DIR = Path(__file__).resolve().parent / "pipelines"
+REPO_EXAMPLES_DIR = Path(__file__).resolve().parent.parent.parent / "examples" / "pipelines"
 
 TEMPLATES: dict[str, dict[str, str]] = {
     "tts": {
@@ -38,5 +33,13 @@ def get_template_content(name: str) -> str:
     if info is None:
         available = ", ".join(sorted(TEMPLATES.keys()))
         raise KeyError(f"unknown template: {name!r}. Available: {available}")
-    path = TEMPLATES_DIR / info["file"]
-    return path.read_text(encoding="utf-8")
+
+    for base_dir in (PACKAGE_TEMPLATES_DIR, REPO_EXAMPLES_DIR):
+        path = base_dir / info["file"]
+        if path.is_file():
+            return path.read_text(encoding="utf-8")
+
+    raise FileNotFoundError(
+        f"template file {info['file']!r} was not found in installed package "
+        f"or repository examples"
+    )

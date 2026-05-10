@@ -12,15 +12,31 @@ schema exported at image-build time.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import typer
 from rich import print as rprint
 
+from voxkitchen.cli.hints import (
+    format_missing_operator_hint,
+    format_recommended_image_hint,
+    recommend_docker_tag,
+)
 from voxkitchen.operators.registry import UnknownOperatorError, get_operator
 from voxkitchen.pipeline.loader import PipelineLoadError, load_pipeline_spec
 from voxkitchen.runtime.schemas import load_op_schemas
+
+
+@dataclass(frozen=True)
+class StageValidation:
+    """Result of validating one pipeline stage's operator args."""
+
+    error: str | None
+    validator: str
+    device: str
+    required_extras: list[str]
 
 
 def _validate_args_via_registry(op_name: str, args: dict[str, Any]) -> str | None:
@@ -35,6 +51,15 @@ def _validate_args_via_registry(op_name: str, args: dict[str, Any]) -> str | Non
     except Exception as exc:
         return f"invalid args — {exc}"
     return None
+
+
+def _operator_info_via_registry(op_name: str) -> tuple[str, list[str]] | None:
+    """Return ``(device, required_extras)`` when the operator is importable here."""
+    try:
+        op_cls = get_operator(op_name)
+    except UnknownOperatorError:
+        return None
+    return (str(op_cls.device), list(op_cls.required_extras))
 
 
 def _validate_args_via_json_schema(
@@ -72,6 +97,52 @@ def _validate_args_via_json_schema(
     return None
 
 
+def validate_stage_args(
+    op_name: str,
+    args: dict[str, Any],
+    schemas: dict[str, dict[str, Any]] | None = None,
+) -> StageValidation:
+    """Validate one operator config, with schema fallback for out-of-env ops."""
+    err = _validate_args_via_registry(op_name, args)
+    info = _operator_info_via_registry(op_name)
+    if err is None:
+        device, extras = info if info is not None else ("?", [])
+        return StageValidation(None, "registry", device, extras)
+
+    if err != "__not_registered__":
+        device, extras = info if info is not None else ("?", [])
+        return StageValidation(err, "registry", device, extras)
+
+    if schemas is None:
+        hint = format_missing_operator_hint(op_name)
+        tail = f"; {hint}" if hint else ""
+        return StageValidation(
+            f"unknown operator {op_name!r} (no op_schemas.json available){tail}",
+            "registry",
+            "?",
+            [],
+        )
+
+    schema_info = schemas.get(op_name)
+    if schema_info is None:
+        hint = format_missing_operator_hint(op_name)
+        tail = f"; {hint}" if hint else ""
+        return StageValidation(
+            f"unknown operator {op_name!r} (not in registry, not in op_schemas.json){tail}",
+            "schema",
+            "?",
+            [],
+        )
+
+    fallback_err = _validate_args_via_json_schema(op_name, args, schemas)
+    return StageValidation(
+        fallback_err,
+        "schema",
+        str(schema_info.get("device", "?")),
+        [str(e) for e in schema_info.get("required_extras", [])],
+    )
+
+
 def validate_command(pipeline: Path) -> None:
     """Validate a pipeline YAML without executing it."""
     try:
@@ -83,27 +154,20 @@ def validate_command(pipeline: Path) -> None:
     schemas = load_op_schemas()
     errors: list[str] = []
 
+    results: list[StageValidation] = []
     for stage in spec.stages:
-        err = _validate_args_via_registry(stage.op, stage.args)
-        if err is None:
-            continue
-        if err != "__not_registered__":
-            errors.append(f"stage {stage.name!r}: {err}")
-            continue
-        # Fallback path
-        if schemas is None:
-            errors.append(
-                f"stage {stage.name!r}: unknown operator {stage.op!r} "
-                "(no op_schemas.json available)"
-            )
-            continue
-        fallback_err = _validate_args_via_json_schema(stage.op, stage.args, schemas)
-        if fallback_err is not None:
-            errors.append(f"stage {stage.name!r}: {fallback_err}")
+        result = validate_stage_args(stage.op, stage.args, schemas)
+        results.append(result)
+        if result.error is not None:
+            errors.append(f"stage {stage.name!r}: {result.error}")
 
     if errors:
         for e in errors:
             rprint(f"[red]error:[/red] {e}")
+        rprint(
+            "[dim]Tip: use `vkit docker run <yaml> --dry-run` to validate "
+            "inside the selected image, or `vkit docker doctor` to check it.[/dim]"
+        )
         raise typer.Exit(code=1)
 
     mode = "schema" if schemas is not None else "registry"
@@ -111,3 +175,5 @@ def validate_command(pipeline: Path) -> None:
         f"[green]valid[/green]: {spec.name} "
         f"({len(spec.stages)} stage(s), ingest={spec.ingest.source}, validator={mode})"
     )
+    tag = recommend_docker_tag([r.required_extras for r in results])
+    rprint(f"[dim]{format_recommended_image_hint(tag, str(pipeline))}[/dim]")

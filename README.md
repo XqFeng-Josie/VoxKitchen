@@ -8,404 +8,209 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
-Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
+Declarative speech data processing toolkit. Write a YAML recipe, run it with `vkit docker`, get training-ready data.
 
 > **Status:** Pre-alpha. API is unstable.
 
-## Install
+## Quick Start
 
-VoxKitchen has one CLI (`vkit`) with two execution modes: **local**
-(runs inside your current Python env) and **container** (runs inside a
-Docker image). Most users use both — pip install to get the CLI,
-then pull Docker images for pipelines that don't fit your local env.
+VoxKitchen runs user pipelines in prebuilt Docker images. The local `vkit`
+command is a lightweight launcher: it handles Docker flags, mounts, `.env`
+loading, GPU autodetection, and file ownership for you.
+
+Requirements:
+
+- Docker
+- Python 3.10+ for the lightweight `vkit` CLI
+
+Install the CLI:
 
 ```bash
-# 1. Install vkit (core CLI — no heavy deps).
-conda create -n voxkitchen python=3.11 -y && conda activate voxkitchen
-pip install -e .
-
-# Add extras for the operators you'll run locally (see table below).
-# Example for the built-in demo (VAD + quality + pitch):
-pip install -e ".[segment,pitch]"
-
-# 2. (Optional) Pull a Docker image for pipelines that exceed local extras.
-vkit docker pull --tag slim      # CPU, ~13 GB
-vkit docker pull --tag latest    # everything, ~103 GB — see tag matrix below
+pipx install voxkitchen
 ```
 
-**When pip alone is enough**: your pipeline's operators all live in one
-dependency cluster (e.g. only core, or core + ASR). Check
-[`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py)'s
-`EXTRA_TO_ENV` — extras in the same env-value are mutually compatible.
+Pull a prebuilt runtime image and run the demo:
 
-**When you need Docker**: your pipeline crosses dep clusters — e.g.
-pyannote with funasr, or CosyVoice with fish-speech. `pip install voxkitchen[all]`
-fails at the resolver for exactly this reason; the multi-env Docker image
-ships every cluster as an isolated venv in one image, so the pipeline runner
-dispatches each stage to the env that can run it.
+```bash
+vkit docker pull --tag slim
+vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml
+vkit inspect run ./work/demo-no-asr
+```
 
-## How it works
+`vkit docker run` writes run artifacts under `./work` and exported datasets
+under `./output` with your host user ID. It also mounts `./data`
+automatically when that directory exists.
 
-A pipeline is a YAML file: **ingest** raw audio, pass it through
-**stages** — each stage is an operator that transforms a CutSet — and
+## Create A Project
+
+Scaffold a project, put audio under `data/`, check the plan, then run it
+inside a prebuilt image:
+
+```bash
+vkit init my-project --template asr
+cd my-project
+
+# Put your audio files in ./data first.
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker run --tag asr pipeline.yaml
+vkit inspect run work/
+```
+
+Templates:
+
+| Template | Use case | Suggested image |
+|---|---|---|
+| `cleaning` | Quality metrics, dedup, filtering | `slim` |
+| `asr` | VAD, augmentation, ASR labeling, packing | `asr` |
+| `speaker` | VAD, diarization, speaker embedding, language/gender labels | `latest` |
+| `tts` | Denoise, segment, transcribe, align, pack | `latest` |
+
+List templates:
+
+```bash
+vkit init --list-templates
+```
+
+## How It Works
+
+A pipeline is a YAML file: ingest raw audio, pass it through stages, and
 write the result out.
 
 ```yaml
 version: "0.1"
 name: my-pipeline
-work_dir: ./work/${run_id}
+work_dir: ./work/${name}-${run_id}
+
 ingest:
   source: dir
   args:
-    root: /data/raw_audio
+    root: ./data
+    recursive: true
+
 stages:
   - name: resample
     op: resample
-    args: { target_sr: 16000 }
+    args: { target_sr: 16000, target_channels: 1 }
+
   - name: vad
     op: silero_vad
     args: { threshold: 0.5 }
+
   - name: asr
     op: faster_whisper_asr
     args: { model: large-v3, compute_type: float16 }
+
   - name: filter
     op: quality_score_filter
     args:
       conditions: ["duration > 1", "duration < 30", "metrics.snr > 10"]
+
   - name: pack
-    op: pack_huggingface
-    args: { output_dir: ./output/hf_dataset }
+    op: pack_jsonl
 ```
 
-One CLI, two execution modes — add `docker` before any command to run
-it inside a container instead of your local Python env.
+VoxKitchen checkpoints every stage under `work_dir`, so interrupted runs
+can resume from completed stages.
 
-**1 — Run the demo (Docker, recommended first run)**
+## Prebuilt Images
 
-No extras to manage. The `latest` image ships every operator.
-Demo covers: VAD → SNR → DNSMOS → ASR → gender → filter → JSONL output.
+Every `vkit docker` command accepts `--tag <name>`:
 
-```bash
-vkit docker pull --tag latest
-vkit docker run examples/pipelines/demo-full.yaml
-vkit inspect run ./work/demo-full    # per-stage summary + output cuts
-```
-
-**2 — Run locally**
-
-Install the extras for the operators your pipeline uses, then run:
-
-```bash
-# Extras for demo-full.yaml (VAD + DNSMOS + ASR — single cluster OK):
-pip install -e ".[segment,asr,dnsmos]"
-vkit run examples/pipelines/demo-full.yaml
-vkit doctor                          # check local operator health
-```
-
-Cross-cluster mixes (e.g. `diarize + funasr`) are where pip fails —
-use Docker for those. See the [extras table](#pip-extras--which-combine-cleanly).
-
-**3 — Scaffold your own project**
-
-Bring your own audio files. `vkit init` scaffolds a project with a
-template `pipeline.yaml`; edit `ingest.args.root` to point at your data.
-
-```bash
-vkit init my-project -t asr && cd my-project
-# Edit pipeline.yaml: set ingest.args.root to your audio directory
-vkit run pipeline.yaml                           # run locally
-vkit docker run --tag asr pipeline.yaml          # run in Docker (ASR cluster)
-vkit docker run --image my.reg/vox:c pipeline.yaml   # custom image
-vkit docker doctor --tag asr                     # per-env health inside image
-```
-
-`vkit docker` auto-handles `--user`, `./work` + `./data` mounts,
-`./.env` loading, and GPU autodetection. Every subcommand takes
-`--tag <name>` (default `latest`, resolves to
-`ghcr.io/xqfeng-josie/voxkitchen:<name>`) or `--image <ref>` for a
-fully custom image. Raw `docker run` form (for CI / image-only users)
-is in [Install reference](#install-reference).
-
-### Commands
-
-**Scaffolding & validation**
-```
-vkit init <path> [-t <template>]    Scaffold a project (templates: tts, asr, cleaning, speaker)
-vkit validate <yaml>                Check YAML syntax and operator args
-```
-
-**Execution**
-```
-vkit run <yaml>                     Execute a pipeline
-vkit download <recipe> --root DIR   Download a dataset
-```
-
-**Inspection**
-```
-vkit operators [show <name>]        List operators, or show one's fields + YAML example
-vkit recipes                        List available dataset recipes
-vkit inspect cuts <path>            CutSet statistics
-vkit inspect run <work_dir>         Per-stage pipeline run summary
-vkit doctor                         Per-env operator health + model cache
-vkit viz <path>                     Launch Gradio explorer for a CutSet
-```
-
-**Docker backend** — prefix any command above with `docker` to run it
-in a container. Every `vkit docker` subcommand accepts `--tag <name>`
-(default `latest`) or `--image <ref>` to pick which image to use:
-```
-vkit docker run <yaml>              Execute a pipeline in a container
-vkit docker doctor                  Per-env health report inside the image
-vkit docker build [target]          Build a local image (reads HF_TOKEN from .env)
-vkit docker pull                    Pull a published image
-vkit docker shell                   Interactive bash inside an image
-```
-
-Full flag reference: [`docs/reference/cli.md`](docs/reference/cli.md).
-
-## Install reference
-
-### Docker tag matrix
-
-| Tag | Contains | GPU | Size&nbsp;&nbsp;&nbsp;&nbsp; |
+| Tag | Use when | GPU | Approx. size |
 |---|---|---|---|
-| `voxkitchen:slim`        | core env only (VAD, quality, pack, speaker embed, enhancement)      | no  | ~13&nbsp;GB  |
-| `voxkitchen:asr`         | core + ASR family (faster-whisper, funasr, qwen3, forced alignment) | yes | ~48&nbsp;GB  |
-| `voxkitchen:diarize`     | core + pyannote speaker diarization                                 | yes | ~32&nbsp;GB  |
-| `voxkitchen:tts`         | core + kokoro / ChatTTS / CosyVoice                                 | yes | ~44&nbsp;GB  |
-| `voxkitchen:fish-speech` | core + fish-speech (isolated torch 2.8 stack)                       | yes | ~38&nbsp;GB  |
-| `voxkitchen:latest`      | all five envs merged (cross-cluster pipelines)                      | yes | ~103&nbsp;GB |
+| `slim` | CPU-friendly cleaning, VAD, quality, pack, enhancement | no | ~13 GB |
+| `asr` | Faster-Whisper, FunASR, Qwen3-ASR, forced alignment | yes | ~48 GB |
+| `diarize` | Pyannote speaker diarization | yes | ~32 GB |
+| `tts` | Kokoro, ChatTTS, CosyVoice | yes | ~44 GB |
+| `fish-speech` | Fish-Speech isolated runtime | yes | ~38 GB |
+| `latest` | Mixed pipelines across ASR, diarization, TTS, or Fish-Speech | yes | ~103 GB |
 
-> Sizes include pre-downloaded model weights — kokoro, CosyVoice,
-> fish-speech, paraformer, qwen3, and pyannote each contribute 1-7 GB.
-> The `:latest` image is larger than the sum of the five env-specific
-> images because of an architecture wart (shared `core` model_cache is
-> duplicated when envs are merged); see known limitations in
-> [CHANGELOG](CHANGELOG.md).
-
-`voxkitchen:latest` contains five isolated Python environments in one
-image. VoxKitchen already checkpoints each pipeline stage to disk, so
-the runner dispatches stages across envs via subprocess — users write
-ordinary pipelines and the multi-env is invisible. See
-[`docs/architecture/multi-env.md`](docs/architecture/multi-env.md) for
-the full design.
-
-### pip extras — which combine cleanly
-
-Install any subset whose groups map to a **single cluster**:
-
-| Cluster | Safe to combine in one `pip install` |
-|---|---|
-| Core | `audio`, `segment`, `quality`, `pack`, `pitch`, `dnsmos`, `classify`, `enhance`, `codec`, `speaker`, `viz`, `viz-panel` |
-| ASR | core + `asr`, `whisper`, `funasr`, `align`, `wenet` |
-| Diarize | core + `diarize` |
-| TTS | core + `tts-kokoro`, `tts-chattts`, `tts-cosyvoice` |
-| Fish-Speech | `tts-fish-speech` (**do not mix with anything else** — needs torch 2.8) |
-
-Mixing across clusters (`diarize + funasr`, `tts-cosyvoice + tts-fish-speech`,
-etc.) is the case where pip fails and Docker wins. The authoritative
-mapping is [`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py).
-
-<details>
-<summary>All extras groups (operators and deps per group)</summary>
-
-| Group | Operators enabled | Dependencies |
-|-------|-------------------|--------------|
-| `audio` | `speed_perturb` | torch, torchaudio |
-| `segment` | `silero_vad`, `webrtc_vad`, `silence_split` | webrtcvad, librosa, torchaudio |
-| `asr` | `faster_whisper_asr`, `whisperx_asr` | faster-whisper |
-| `whisper` | `whisper_openai_asr`, `whisper_langid` | openai-whisper |
-| `funasr` | `paraformer_asr`, `sensevoice_asr`, `emotion_recognize` | funasr |
-| `wenet` | `wenet_asr` | wenet (GitHub) |
-| `pitch` | `pitch_stats` | pyworld |
-| `dnsmos` | `dnsmos_score`, `utmos_score` | speechmos, onnxruntime |
-| `quality` | `audio_fingerprint_dedup` | simhash |
-| `diarize` | `pyannote_diarize` | pyannote.audio (needs `HF_TOKEN`) |
-| `classify` | `speechbrain_langid` | speechbrain |
-| `gender` | `gender_classify` (ina method — opt-in only; conflicts with ASR/TTS stacks) | inaSpeechSegmenter |
-| `speaker` | `speaker_embed` | wespeaker (GitHub) |
-| `enhance` | `speech_enhance` | deepfilternet |
-| `align` | `forced_align`, `qwen3_asr` | qwen-asr |
-| `codec` | `codec_tokenize` | encodec, descript-audio-codec |
-| `tts-kokoro` | `tts_kokoro` | kokoro, misaki |
-| `tts-chattts` | `tts_chattts` | ChatTTS |
-| `tts-cosyvoice` | `tts_cosyvoice` | modelscope |
-| `tts-fish-speech` | `tts_fish_speech` (operator currently parked; tracks fish-speech 1.x API) | fish-speech (GitHub) |
-| `pack` | `pack_huggingface`, `pack_webdataset`, `pack_parquet` | datasets, webdataset, pyarrow |
-| `viz` | HTML report | jinja2, plotly |
-| `viz-panel` | Gradio panel | gradio |
-
-GPU note for pip: install PyTorch for your CUDA version **first**, then
-extras:
-```bash
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124
-pip install -e ".[asr,pitch]"
-```
-
-</details>
-
-<details>
-<summary>Raw <code>docker run</code> — without the <code>vkit docker</code> wrapper</summary>
-
-For CI jobs, k8s workloads, or anyone who pulled an image without
-installing `vkit`. You need to spell out the flags `vkit docker run`
-sets for you:
+Examples:
 
 ```bash
-docker run --rm --gpus all \
-    --user $(id -u):$(id -g) -e HOME=/tmp \
-    --env-file .env \
-    -v $(pwd)/work:/app/work \
-    -v $(pwd)/data:/data \
-    ghcr.io/xqfeng-josie/voxkitchen:latest run pipeline.yaml
+vkit docker run --tag slim pipeline.yaml
+vkit docker run --tag asr pipeline.yaml
+vkit docker doctor --tag latest
 ```
 
-`--user $(id -u):$(id -g)` + `-e HOME=/tmp` so container-written files
-end up with your UID. Without it, `./work` fills with root-owned files
-you can't delete without sudo. Recovery in that case:
+Use `latest` when a pipeline mixes operators from multiple runtime
+families, such as diarization plus ASR or TTS plus ASR.
+
+Not sure which image a pipeline needs? Run:
 
 ```bash
-docker run --rm -v $(pwd)/work:/work alpine \
-    chown -R $(id -u):$(id -g) /work
+vkit validate pipeline.yaml
 ```
 
-</details>
-
-<details>
-<summary>Building Docker images locally (air-gapped hosts, custom CUDA, arm64)</summary>
-
-```bash
-# Via vkit CLI (reads HF_TOKEN from ./.env automatically):
-vkit docker build latest         # → voxkitchen:latest (~103 GB)
-vkit docker build slim           # → voxkitchen:slim   (~13 GB)
-
-# Or raw:
-docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .
-docker build --target latest -f docker/Dockerfile \
-    --build-arg HF_TOKEN=hf_xxx -t voxkitchen:latest .
-
-# Or via the shell wrappers (same effect, no pip install needed):
-scripts/vkit-build.sh latest
-scripts/vkit-build.sh slim
-```
-
-Full build docs: [`docs/docker-build.md`](docs/docker-build.md).
-
-</details>
+It prints the recommended `vkit docker pull --tag ...` and
+`vkit docker run --tag ...` commands for that YAML.
 
 ## Configuration
 
-Some operators require API tokens:
+Some operators require API tokens. Create `./.env`; `vkit docker run`
+passes it into the container automatically.
 
 ```bash
-cp .env.example .env   # then edit .env
+cp .env.example .env
 ```
 
-| Variable | Required by | How to get |
-|----------|-------------|------------|
-| `HF_TOKEN` | `pyannote_diarize` | [HuggingFace tokens](https://huggingface.co/settings/tokens) + accept the [pyannote model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) |
+| Variable | Required by | Notes |
+|---|---|---|
+| `HF_TOKEN` | `pyannote_diarize` | Accept the pyannote model agreement on HuggingFace first. |
 
-`vkit docker run` picks up `./.env` automatically (`--env-file` flag
-under the hood). For raw `docker run`, pass `--env-file .env` yourself.
+## Common Commands
+
+```bash
+vkit init <path> --template asr       # Scaffold a project
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker run --tag asr pipeline.yaml
+vkit inspect run work/                # Stage summary
+vkit inspect cuts <cuts.jsonl.gz>      # CutSet statistics
+vkit inspect errors work/              # Per-stage failed cuts
+vkit recipes                           # List dataset recipes
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
+vkit docker doctor --tag latest        # Check image health
+```
+
+Full CLI reference: [docs/reference/cli.md](docs/reference/cli.md).
 
 ## Operators
 
-51 built-in operators across 7 categories:
+51 built-in operators across audio processing, segmentation,
+augmentation, annotation, quality metrics, TTS synthesis, and output
+packing.
 
-| Category | Count | Operators |
-|----------|-------|-----------|
-| **Audio** | 5 | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize`, `identity` |
-| **Segmentation** | 4 | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
-| **Augmentation** | 4 | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
-| **Annotation** | 17 | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `codec_tokenize`, `mel_extract` |
-| **Quality** | 11 | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
-| **Synthesize** | 4 | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` |
-| **Pack** | 6 | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
+Full operator reference: [docs/reference/operators.md](docs/reference/operators.md).
 
-Run `vkit operators show <name>` for an operator's config fields and a YAML snippet.
+## Documentation
 
-## Python tools API
+- [Getting Started](docs/getting-started.md)
+- [Pipeline YAML](docs/reference/pipeline-yaml.md)
+- [Recipes & Download](docs/reference/recipes.md)
+- [CLI reference](docs/reference/cli.md)
+- [Operators reference](docs/reference/operators.md)
 
-For quick tasks without a YAML pipeline, or to embed VoxKitchen
-functions in your own Python code. Needs [pip install](#install) with the specific extras each call uses:
+Contributor setup and project internals are covered in
+[Contributing](CONTRIBUTING.md).
 
-```python
-from voxkitchen.tools import audio_info, transcribe, detect_speech, estimate_snr
+## Key Features
 
-audio_info("speech.wav")       # AudioInfo(sample_rate=16000, duration=3.2, ...)
-transcribe("speech.wav")       # [Segment(start=0.0, end=3.2, text="Hello world")]
-detect_speech("speech.wav")    # [SpeechSegment(start=0.5, end=2.8)]
-estimate_snr("speech.wav")     # 18.3
-```
-
-<details>
-<summary>More examples</summary>
-
-```python
-from voxkitchen.tools import (
-    extract_speaker_embedding, enhance_speech, align_words, synthesize,
-)
-
-# Speaker embedding (requires: pip install voxkitchen[speaker])
-emb = extract_speaker_embedding("speaker.wav")   # 512-d vector
-
-# Speech enhancement (requires: pip install voxkitchen[enhance])
-enhance_speech("noisy.wav", "clean.wav")
-
-# Forced alignment (requires: pip install voxkitchen[align])
-align_words("speech.wav", "hello world")
-# [{"text": "hello", "start": 0.12, "end": 0.58}, ...]
-
-# TTS synthesis (requires: pip install voxkitchen[tts-kokoro])
-synthesize("Hello world!", "output.wav", engine="kokoro")
-
-# Voice cloning (requires: pip install voxkitchen[tts-cosyvoice])
-synthesize("你好", "clone.wav", engine="cosyvoice",
-           reference_audio="ref.wav", reference_text="参考文本")
-```
-
-</details>
-
-## Claude Code skill
-
-VoxKitchen ships a built-in [Claude Code](https://claude.ai/code) skill so AI-assisted
-workflows work out of the box. Clone the repo and Claude Code picks it up automatically —
-no extra setup needed.
-
-The skill gives Claude deep knowledge of VoxKitchen: all 51 operators with their config
-fields, the full YAML schema, CLI flags, Docker tags, dependency cluster rules, and common
-pitfalls. In practice this means you can ask things like:
-
-- *"Write me a pipeline that resamples to 22 kHz, runs VAD, filters by SNR > 20 dB, transcribes with Qwen3-ASR, and packs as a HuggingFace dataset"*
-- *"Which operators do I need for speaker diarization and do any of them require a GPU?"*
-- *"My pipeline crashed halfway — how do I inspect what failed and resume it?"*
-
-Skill source: [`.claude/skills/voxkitchen/`](.claude/skills/voxkitchen/)
-
-## Key features
-
-- **Resumable** — each stage checkpoints; crashes resume from last good stage
-- **Error tolerant** — bad cuts logged to `_errors.jsonl` and skipped
-- **GC** — intermediate audio cleaned up automatically
-- **Provenance** — every Cut tracks which operator produced it
-- **Extensible** — register custom operators via Python entry_points
-- **Claude Code skill** — built-in AI assistance, ships with the repo
+- **Docker-first execution** — prebuilt runtimes avoid local dependency conflicts
+- **Resumable** — each stage checkpoints; crashes resume from the last good stage
+- **Inspectable** — per-stage summaries, cut statistics, errors, and provenance
+- **Error tolerant** — bad cuts are logged to `_errors.jsonl` and skipped
+- **Extensible** — custom operators can be registered through Python entry points
 
 ## Examples
 
 See [`examples/pipelines/`](examples/pipelines/) for ready-to-run YAML files.
 
-<details>
-<summary>Troubleshooting</summary>
+## Agent Skill
 
-| Symptom | Solution |
-|---------|----------|
-| `torch.cuda.is_available()` returns False | PyTorch CUDA mismatch — reinstall matching version |
-| `faster_whisper_asr` deadlocks on macOS | Use `whisper_openai_asr` instead |
-| `pyannote_diarize` returns 403 | Accept the [model agreement](https://huggingface.co/pyannote/speaker-diarization-3.1) on HuggingFace |
-| `silero_vad` hangs on first run | Pre-download: `python -c "import torch; torch.hub.load('snakers4/silero-vad', 'silero_vad')"` |
-
-</details>
+The repo includes an agent-neutral VoxKitchen skill at [skill/](skill/). Claude,
+Codex, and other `SKILL.md`-compatible agents can copy, symlink, or import that
+folder into their own skill search path. The skill follows the Docker-first
+`vkit` workflow in this README.
 
 ## License
 

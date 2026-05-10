@@ -352,7 +352,7 @@ nav:
 ### New Features
 - Lazy CutSet for large-scale manifest processing
 - Per-stage execution statistics (_stats.json)
-- `vkit download` command for dataset downloads
+- `vkit docker download` command for dataset downloads
 - FLEURS recipe (102-language HuggingFace dataset)
 - Operator categories in `vkit operators` output
 - Python tools API: extract_speaker_embedding, enhance_speech, align_words
@@ -398,7 +398,7 @@ nav:
 MUSAN 是增强算子（noise_augment、reverb_augment）的配套数据。有了它，用户可以：
 
 ```bash
-vkit download musan --root /data/musan
+vkit docker download --tag slim musan --root ./data/musan
 ```
 
 然后在 pipeline 里直接用：
@@ -407,13 +407,13 @@ vkit download musan --root /data/musan
 - name: add_noise
   op: noise_augment
   args:
-    noise_dir: /data/musan/noise
+    noise_dir: ./data/musan/noise
     snr_range: [5, 20]
 
 - name: add_reverb
   op: reverb_augment
   args:
-    rir_dir: /data/musan/rir     # 需要额外 RIR 数据
+    rir_dir: ./data/musan/rir    # 需要额外 RIR 数据
 ```
 
 ### 4.3 `vkit recipes` 命令
@@ -463,7 +463,7 @@ $ vkit recipes
 
 项目可以公开发布时，应满足：
 
-1. **新用户 5 分钟跑通**：`pip install voxkitchen[all]` → `vkit init --template tts` → `vkit run pipeline.yaml` → 得到结果
+1. **新用户 5 分钟跑通**：`pipx install voxkitchen` → `vkit docker pull --tag slim` → `vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml` → 得到结果
 2. **文档自助**：用户遇到问题能在文档站找到答案
 3. **贡献者友好**：有人想加新算子，看 CONTRIBUTING.md + custom-operator 教程就能做
 4. **数据覆盖**：中英文各有 2+ 个可直接下载的大规模数据集

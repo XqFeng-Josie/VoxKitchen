@@ -299,7 +299,7 @@ def warmup_pyannote(r: WarmupReport, hf_token: str | None) -> None:
     for repo in repos:
         try:
             snapshot_download(repo, token=hf_token)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             r.record_fail(f"pyannote_diarize:{repo}", e)
             return
     r.record_ok("pyannote_diarize")
@@ -378,7 +378,7 @@ def run_core(r: WarmupReport) -> None:
     warmup_encodec(r)
 
 
-def run_asr(r: WarmupReport, hf_token: str | None) -> None:  # noqa: ARG001
+def run_asr(r: WarmupReport, hf_token: str | None) -> None:
     # ASR image ships core extras too, so start from core.
     run_core(r)
     log.info("[asr] ASR")

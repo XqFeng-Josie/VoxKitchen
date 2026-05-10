@@ -7,14 +7,14 @@ download audio and transcriptions, then converts them into a CutSet.
 Usage::
 
     # Download
-    vkit download fleurs --root /data/fleurs --subsets en_us,zh_cn
+    vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_cn
 
     # In pipeline YAML
     ingest:
       source: recipe
       recipe: fleurs
       args:
-        root: /data/fleurs
+        root: ./data/fleurs
         subsets: [en_us]
 """
 

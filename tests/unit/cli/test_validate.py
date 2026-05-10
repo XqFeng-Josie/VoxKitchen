@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import voxkitchen.cli.validate as validate_module
 from typer.testing import CliRunner
 from voxkitchen.cli.main import app
 from voxkitchen.runtime import schemas as schemas_module
@@ -32,6 +33,8 @@ stages:
     result = runner.invoke(app, ["validate", str(yaml_path)])
     assert result.exit_code == 0
     assert "valid" in result.output.lower()
+    assert "recommended image: slim" in result.output
+    assert "vkit docker pull --tag slim" in result.output
 
 
 def test_validate_rejects_unknown_operator(tmp_path: Path) -> None:
@@ -57,6 +60,20 @@ def test_validate_rejects_malformed_yaml(tmp_path: Path) -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["validate", str(yaml_path)])
     assert result.exit_code == 1
+
+
+def test_validate_stage_args_hints_missing_operator_dependency(monkeypatch) -> None:
+    monkeypatch.setattr(
+        validate_module,
+        "_validate_args_via_registry",
+        lambda op_name, args: "__not_registered__",
+    )
+    monkeypatch.setattr(validate_module, "_operator_info_via_registry", lambda op_name: None)
+
+    result = validate_module.validate_stage_args("tts_kokoro", {}, schemas=None)
+
+    assert result.error is not None
+    assert "vkit docker run --tag tts" in result.error
 
 
 def _write_fake_schemas(tmp_path: Path) -> Path:
@@ -112,6 +129,8 @@ stages:
     result = runner.invoke(app, ["validate", str(yaml_path)])
     assert result.exit_code == 0, result.output
     assert "validator=schema" in result.output
+    assert "recommended image: asr" in result.output
+    assert "run:  vkit docker run --tag asr" in result.output
 
 
 def test_validate_schema_fallback_catches_bad_args(tmp_path: Path, monkeypatch) -> None:

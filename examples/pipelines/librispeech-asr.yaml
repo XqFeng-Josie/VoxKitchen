@@ -1,7 +1,9 @@
 # Full ASR pipeline: LibriSpeech → resample → VAD → ASR → quality filter → HuggingFace.
-# Usage: vkit run examples/pipelines/librispeech-asr.yaml
-# Requires: pip install voxkitchen[asr,segment]
-# Requires: GPU recommended (falls back to CPU but slow)
+# Usage:
+#   vkit docker download --tag slim librispeech --root ./data/librispeech --subsets train-clean-100,dev-clean
+#   vkit docker run --tag asr examples/pipelines/librispeech-asr.yaml --dry-run
+#   vkit docker run --tag asr examples/pipelines/librispeech-asr.yaml
+# GPU recommended (falls back to CPU but slow)
 
 version: "0.1"
 name: librispeech-asr
@@ -14,7 +16,7 @@ ingest:
   source: recipe       # use a built-in dataset recipe
   recipe: librispeech  # also available: commonvoice, aishell
   args:
-    root: /data/librispeech                  # path to extracted LibriSpeech
+    root: ./data/librispeech                 # path to extracted LibriSpeech
     subsets: [train-clean-100, dev-clean]     # which splits to process
 
 stages:

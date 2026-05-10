@@ -12,9 +12,9 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 - [Data Augmentation](#augment) (4 operators)
 - [Annotation](#annotate) (17 operators)
 - [Quality & Filtering](#quality) (11 operators)
+- [Synthesis](#synthesize) (4 operators)
 - [Output / Packing](#pack) (6 operators)
-- [Utility](#noop) (1 operators)
-- [Synthesize](#synthesize) (4 operators)
+- [Utility](#noop) (1 operator)
 
 ## Audio Processing { #basic }
 
@@ -23,7 +23,7 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 **Merge multi-channel audio into mono or a specified number of channels.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -44,7 +44,7 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 **Convert audio format using ffmpeg (e.g. opus to wav, flac to mp3).**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -67,7 +67,7 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 **Normalize audio loudness to a target LUFS level (EBU R 128).**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -88,7 +88,7 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 **Resample audio to a target sample rate and channel count.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -119,7 +119,7 @@ of ``child.recording`` from ``child.start`` for ``child.duration`` seconds
 yields the correct audio slice.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -144,7 +144,7 @@ yields the correct audio slice.
 Returns one child Cut per non-silent interval.  No new audio is written.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[segment]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -172,7 +172,7 @@ the model (~2 MB). Use ``webrtc_vad`` or ``silence_split`` if torch
 is not available.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[segment]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -203,7 +203,7 @@ consecutive speech frames, applies minimum-duration and padding, then
 creates child Cuts for each speech region.  No new audio is written.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[segment]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -232,7 +232,7 @@ creates child Cuts for each speech region.  No new audio is written.
 **Mix audio with random noise files at a random SNR.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -255,7 +255,7 @@ creates child Cuts for each speech region.  No new audio is written.
 **Add room reverb by convolving with Room Impulse Response files.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -278,7 +278,7 @@ creates child Cuts for each speech region.  No new audio is written.
 **Apply speed perturbation (tempo + pitch change) via resampling.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[audio]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -299,7 +299,7 @@ creates child Cuts for each speech region.  No new audio is written.
 **Apply random volume gain within a dB range.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -324,7 +324,7 @@ creates child Cuts for each speech region.  No new audio is written.
 **Encode audio into discrete codec tokens (EnCodec / DAC).**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[codec]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -349,7 +349,7 @@ creates child Cuts for each speech region.  No new audio is written.
 **Recognize speech emotions using emotion2vec (9 classes: angry, happy, sad, ...).**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[funasr]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -379,7 +379,7 @@ CTranslate2 may deadlock on macOS ARM64. Use ``whisper_openai_asr``
 on macOS instead.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[asr]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -408,7 +408,7 @@ on macOS instead.
 **Align text to audio at word level using Qwen3-ForcedAligner (11 languages).**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[align]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -444,11 +444,11 @@ with a true gender classifier for best results.
 
 - ``inaspeechsegmenter``: Use INA's speech segmenter which jointly
 detects speech/music/noise and classifies gender. Well-tested in
-broadcast media analysis (~90-95%). Requires ``pip install
-inaSpeechSegmenter`` (uses TensorFlow).
+broadcast media analysis (~90-95%). This backend is not included in
+the published Docker images because it pulls in TensorFlow.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -473,7 +473,7 @@ inaSpeechSegmenter`` (uses TensorFlow).
 **Extract mel spectrogram and save as .npy file per cut.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -510,7 +510,7 @@ making it suitable for long-form audio without pre-segmentation.
 Much faster than Whisper for Chinese.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[funasr]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -536,7 +536,7 @@ Requires accepting the pyannote model user agreement on HuggingFace and
 setting ``HF_TOKEN`` (or passing ``hf_token`` in the config).
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[diarize]`
+- **Runtime:** `vkit docker run --tag diarize <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -566,7 +566,7 @@ setting ``HF_TOKEN`` (or passing ``hf_token`` in the config).
 to also get word-level timestamps (uses ForcedAligner internally).
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[align]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -597,8 +597,13 @@ to also get word-level timestamps (uses ForcedAligner internally).
 SenseVoice supports Chinese, English, Japanese, Korean, and Cantonese.
 The ``SenseVoiceSmall`` model is fast and accurate for these languages.
 
+In addition to the transcript, each Supervision carries:
+- ``supervision.language`` — model-detected language code
+- ``supervision.custom["emotion"]`` — per-utterance emotion label
+- ``supervision.custom["audio_event"]`` — ``"Speech"`` / ``"BGM"`` / ``"noise"``
+
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[funasr]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -621,7 +626,7 @@ The ``SenseVoiceSmall`` model is fast and accurate for these languages.
 **Extract speaker embedding vectors using WeSpeaker or SpeechBrain.**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[speaker]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -646,7 +651,7 @@ The ``SenseVoiceSmall`` model is fast and accurate for these languages.
 **Remove background noise using DeepFilterNet neural denoiser.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[enhance]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -672,7 +677,7 @@ Uses the VoxLingua107 ECAPA-TDNN model by default. Runs on CPU with
 automatic fallback from CUDA.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[classify]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -696,7 +701,7 @@ WeNet supports streaming and non-streaming decoding. This operator
 uses non-streaming (offline) mode for best accuracy.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[wenet]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -728,7 +733,7 @@ Backend selection (``backend`` config):
 - ``faster-whisper``: use faster-whisper (faster on GPU)
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[whisper]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -757,7 +762,7 @@ This is the recommended ASR operator for macOS where CTranslate2-based
 operators (faster_whisper_asr) may deadlock.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[whisper]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -784,10 +789,10 @@ operators (faster_whisper_asr) may deadlock.
 **Transcribe audio with word-level alignment using whisperx.**
 
 If whisperx is not installed, falls back to faster-whisper at segment level
-(no word alignment). Either path requires the ``asr`` extras group.
+(no word alignment). Both paths are packaged in the ASR Docker runtime.
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[asr]`
+- **Runtime:** `vkit docker run --tag asr <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -820,7 +825,7 @@ with simhash.  Cuts whose hash is within ``similarity_threshold`` bits
 (hamming distance) of any previously seen hash are dropped as duplicates.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[segment,quality]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -849,7 +854,7 @@ frequency where energy drops sharply (ratio method). Writes:
 - ``metrics["bandwidth_khz"]``: effective bandwidth in kHz
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -871,14 +876,26 @@ frequency where energy drops sharply (ratio method). Writes:
 
 **Compute CER and WER between ASR output and reference text.**
 
+Reference text is read from ``cut.custom[reference_field]`` (default key:
+``"reference_text"``). Cuts without a reference are passed through unchanged.
+
+With ``normalize=True`` (default) both hypothesis and reference are
+normalized before comparison:
+- SenseVoice ``<|zh|><|HAPPY|>…`` tags are stripped
+- Paraformer's inter-character spaces are removed
+- Punctuation is discarded
+- Text is lowercased
+This makes CER directly comparable across different ASR backends.
+
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `hypothesis_field` | str | `text` |  |
 | `reference_field` | str | `reference_text` |  |
+| `normalize` | bool | `True` |  |
 
 ```yaml
 - name: my_cer_wer
@@ -886,6 +903,7 @@ frequency where energy drops sharply (ratio method). Writes:
   args:
     hypothesis_field: text
     reference_field: reference_text
+    normalize: True
 ```
 
 ---
@@ -903,7 +921,7 @@ absolute value exceeds ``ceiling`` (default 0.99). A ratio > 0.01
 indicates significant clipping.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -933,7 +951,7 @@ Higher is better. Typically ``dnsmos_ovrl > 3.0`` is considered
 acceptable for training data.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[dnsmos]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -956,7 +974,7 @@ acceptable for training data.
 This is an N-to-fewer operator: no audio is read or written.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -985,7 +1003,7 @@ More accurate than librosa.pyin for speech. Writes:
 A ``pitch_mean`` of 0 means no voiced frames were detected.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[pitch]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -1014,7 +1032,7 @@ where ``op`` is one of ``>``, ``>=``, ``<``, ``<=``, ``==``, ``!=``.
 All conditions are AND-ed together.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -1038,7 +1056,7 @@ This is a rough proxy (not WADA-SNR or model-based) sufficient for v0.1.
 No audio is written; only the metrics dict is updated.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 ```yaml
@@ -1053,7 +1071,7 @@ No audio is written; only the metrics dict is updated.
 **Score speaker similarity against a reference embedding (cosine).**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 | Parameter | Type | Default | Description |
@@ -1081,7 +1099,7 @@ Higher is better. Scores > 4.0 indicate natural-sounding speech.
 Useful for filtering synthetic/degraded audio from training data.
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[dnsmos]`
+- **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 
 ```yaml
@@ -1091,161 +1109,14 @@ Useful for filtering synthetic/degraded audio from training data.
 
 ---
 
-## Output / Packing { #pack }
-
-### `pack_huggingface`
-
-**Export CutSet as a HuggingFace Dataset with audio column.**
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[pack]`
-- **Produces audio:** Yes
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
-
-```yaml
-- name: my_pack_huggingface
-  op: pack_huggingface
-  args:
-    output_dir: None
-```
-
----
-
-### `pack_jsonl`
-
-**Write a flat JSONL manifest — one JSON object per line.**
-
-Fields: id, origin_id, start, end, duration, sample_rate,
-text, snr, gender (male/female/unknown), speaker, language.
-
-``start``/``end`` are the VAD segment boundaries in the original
-recording.  ``origin_id`` traces back to the source filename.
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
-- **Produces audio:** No
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `output_path` | str | None | `None` |  |
-
-```yaml
-- name: my_pack_jsonl
-  op: pack_jsonl
-  args:
-    output_path: None
-```
-
----
-
-### `pack_kaldi`
-
-**Export CutSet in Kaldi format (wav.scp, text, utt2spk, spk2utt).**
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
-- **Produces audio:** No
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
-
-```yaml
-- name: my_pack_kaldi
-  op: pack_kaldi
-  args:
-    output_dir: None
-```
-
----
-
-### `pack_manifest`
-
-**Write a flat manifest (cuts.jsonl.gz) with no audio export.**
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
-- **Produces audio:** No
-
-```yaml
-- name: my_pack_manifest
-  op: pack_manifest
-```
-
----
-
-### `pack_parquet`
-
-**Export CutSet as Apache Parquet with audio file references.**
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[pack]`
-- **Produces audio:** No
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
-
-```yaml
-- name: my_pack_parquet
-  op: pack_parquet
-  args:
-    output_dir: None
-```
-
----
-
-### `pack_webdataset`
-
-**Export CutSet as WebDataset tar shards with embedded audio.**
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[pack]`
-- **Produces audio:** Yes
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
-| `shard_size` | int | `1000` |  |
-
-```yaml
-- name: my_pack_webdataset
-  op: pack_webdataset
-  args:
-    output_dir: None
-    shard_size: 1000
-```
-
----
-
-## Utility { #noop }
-
-### `identity`
-
-**Pass cuts through unchanged (no-op, useful for testing).**
-
-- **Device:** cpu
-- **Install:** `pip install voxkitchen[core]`
-- **Produces audio:** No
-
-```yaml
-- name: my_identity
-  op: identity
-```
-
----
-
-## Synthesize { #synthesize }
+## Synthesis { #synthesize }
 
 ### `tts_chattts`
 
 **Synthesize conversational speech using ChatTTS.**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[tts-chattts]`
+- **Runtime:** `vkit docker run --tag tts <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -1272,7 +1143,7 @@ recording.  ``origin_id`` traces back to the source filename.
 **Synthesize speech using CosyVoice2 with optional voice cloning.**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[tts-cosyvoice]`
+- **Runtime:** `vkit docker run --tag tts <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -1301,7 +1172,7 @@ recording.  ``origin_id`` traces back to the source filename.
 **Synthesize speech using Fish-Speech codec language model.**
 
 - **Device:** gpu
-- **Install:** `pip install voxkitchen[tts-fish-speech]`
+- **Runtime:** `vkit docker run --tag fish-speech <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -1334,7 +1205,7 @@ recording.  ``origin_id`` traces back to the source filename.
 **Synthesize speech from text using Kokoro TTS.**
 
 - **Device:** cpu
-- **Install:** `pip install voxkitchen[tts-kokoro]`
+- **Runtime:** `vkit docker run --tag tts <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
@@ -1350,6 +1221,153 @@ recording.  ``origin_id`` traces back to the source filename.
     voice: af_heart
     lang_code: a
     speed: 1.0
+```
+
+---
+
+## Output / Packing { #pack }
+
+### `pack_huggingface`
+
+**Export CutSet as a HuggingFace Dataset with audio column.**
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** Yes
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `output_dir` | str | None | `None` |  |
+
+```yaml
+- name: my_pack_huggingface
+  op: pack_huggingface
+  args:
+    output_dir: None
+```
+
+---
+
+### `pack_jsonl`
+
+**Write a flat JSONL manifest — one JSON object per line.**
+
+Fields: id, origin_id, start, end, duration, sample_rate,
+text, snr, gender (male/female/unknown), speaker, language.
+
+``start``/``end`` are the VAD segment boundaries in the original
+recording.  ``origin_id`` traces back to the source filename.
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `output_path` | str | None | `None` |  |
+
+```yaml
+- name: my_pack_jsonl
+  op: pack_jsonl
+  args:
+    output_path: None
+```
+
+---
+
+### `pack_kaldi`
+
+**Export CutSet in Kaldi format (wav.scp, text, utt2spk, spk2utt).**
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `output_dir` | str | None | `None` |  |
+
+```yaml
+- name: my_pack_kaldi
+  op: pack_kaldi
+  args:
+    output_dir: None
+```
+
+---
+
+### `pack_manifest`
+
+**Write a flat manifest (cuts.jsonl.gz) with no audio export.**
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** No
+
+```yaml
+- name: my_pack_manifest
+  op: pack_manifest
+```
+
+---
+
+### `pack_parquet`
+
+**Export CutSet as Apache Parquet with audio file references.**
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** No
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `output_dir` | str | None | `None` |  |
+
+```yaml
+- name: my_pack_parquet
+  op: pack_parquet
+  args:
+    output_dir: None
+```
+
+---
+
+### `pack_webdataset`
+
+**Export CutSet as WebDataset tar shards with embedded audio.**
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** Yes
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `output_dir` | str | None | `None` |  |
+| `shard_size` | int | `1000` |  |
+
+```yaml
+- name: my_pack_webdataset
+  op: pack_webdataset
+  args:
+    output_dir: None
+    shard_size: 1000
+```
+
+---
+
+## Utility { #noop }
+
+### `identity`
+
+**Pass cuts through unchanged (no-op, useful for testing).**
+
+- **Device:** cpu
+- **Runtime:** `vkit docker run --tag slim <yaml>`
+- **Produces audio:** No
+
+```yaml
+- name: my_identity
+  op: identity
 ```
 
 ---

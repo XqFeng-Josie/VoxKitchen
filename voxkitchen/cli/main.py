@@ -48,7 +48,7 @@ def init(
         rprint("[dim]Usage: vkit init <path> [--template tts|asr|cleaning|speaker][/dim]")
         raise typer.Exit(code=1)
 
-    from voxkitchen.cli.init_cmd import init_project
+    from voxkitchen.cli.init_cmd import init_project, recommended_docker_tag
 
     try:
         init_project(path, template=template)
@@ -60,6 +60,12 @@ def init(
     if template:
         msg += f" (template: {template})"
     rprint(msg)
+    rprint("\n[bold]Next steps[/bold]")
+    rprint(f"  cd {path}")
+    rprint("  cp /path/to/audio/* data/")
+    tag = recommended_docker_tag(template)
+    rprint(f"  vkit docker run --tag {tag} pipeline.yaml --dry-run")
+    rprint(f"  vkit docker run --tag {tag} pipeline.yaml")
 
 
 @app.command(help="Build an initial CutSet from a data source.")
@@ -94,7 +100,12 @@ def validate(
     validate_command(pipeline)
 
 
-@app.command(help="Execute a pipeline.")
+@app.command(
+    help=(
+        "Execute a pipeline in the current environment. "
+        "Container entrypoint; host users should prefer `vkit docker run`."
+    )
+)
 def run(
     pipeline: Path = typer.Argument(..., help="Pipeline YAML path."),
     num_gpus: int | None = typer.Option(None, "--num-gpus", help="Override num_gpus."),
@@ -148,7 +159,10 @@ def viz(
 
         launch(str(path), port=port)
     except ImportError:
-        rprint("[red]error:[/red] Gradio not installed. Run: pip install voxkitchen\\[viz-panel]")
+        rprint(
+            "[red]error:[/red] Gradio panel dependencies are not installed "
+            "in this environment. Use `vkit inspect cuts` for CLI inspection."
+        )
         raise typer.Exit(code=1) from None
 
 

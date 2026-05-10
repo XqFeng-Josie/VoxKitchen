@@ -9,6 +9,8 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from voxkitchen.cli.hints import docker_tag_for_extras
+
 console = Console()
 
 operators_app = typer.Typer(
@@ -24,6 +26,7 @@ _CATEGORY_LABELS = {
     "augment": "Augmentation",
     "annotate": "Annotation",
     "quality": "Quality",
+    "synthesize": "Synthesis",
     "pack": "Pack",
     "noop": "Utility",
 }
@@ -35,6 +38,17 @@ def _get_category(op_cls: type) -> str:
     """Extract category from module path: voxkitchen.operators.<category>.<name>."""
     parts = op_cls.__module__.split(".")
     return parts[2] if len(parts) > 2 else "other"
+
+
+def _docker_runtime_hint(required_extras: list[str]) -> str:
+    if not required_extras:
+        return "vkit docker run --tag slim <yaml>"
+
+    tags = {docker_tag_for_extras(extra) for extra in required_extras}
+    tags.discard(None)
+    if len(tags) == 1:
+        return f"vkit docker run --tag {sorted(tags)[0]} <yaml>"
+    return "vkit docker run --tag latest <yaml>"
 
 
 @operators_app.callback()
@@ -97,11 +111,7 @@ def show(name: str = typer.Argument(..., help="Operator name.")) -> None:
     cat = _get_category(op_cls)
     label = _CATEGORY_LABELS.get(cat, cat.title())
     console.print(f"\n[bold]{op_cls.name}[/bold]  (device: {op_cls.device}, category: {label})")
-    if op_cls.required_extras:
-        extras = ",".join(op_cls.required_extras)
-        console.print(f"  install: pip install voxkitchen[{extras}]")
-    else:
-        console.print("  install: pip install voxkitchen")
+    console.print(f"  runtime: {_docker_runtime_hint(list(op_cls.required_extras))}")
     console.print()
 
     # Docstring — highlight warnings

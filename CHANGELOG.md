@@ -6,6 +6,44 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-10
+
+### Added
+
+- `vkit docker download` for Docker-first dataset downloads, with `slim`
+  as the default recipe runtime.
+- Docker image recommendations in `vkit validate <yaml>` and
+  `vkit run <yaml> --dry-run`, including copyable `pull` and `run`
+  commands.
+- Packaged pipeline templates in the wheel, so `vkit init --template ...`
+  works outside a source checkout.
+- Agent-neutral VoxKitchen skill under `skill/` for Claude, Codex, and other
+  `SKILL.md`-compatible agents.
+
+### Changed
+
+- Reoriented the user path around lightweight host `vkit` plus prebuilt Docker
+  runtimes. User docs, examples, tutorials, generated project READMEs, and
+  operator references now recommend `vkit docker ...` instead of local pip
+  extras for runtime execution.
+- `vkit run` is treated as the current-environment/container entrypoint and
+  warns when used directly on a host.
+- Quick start now uses the smaller `slim` demo path.
+- Operator and doctor hints now point to Docker runtime tags instead of pip
+  installation commands.
+
+### Fixed
+
+- `vkit docker run` now forwards pipeline execution flags such as `--dry-run`,
+  `--resume-from`, `--stop-at`, `--num-workers`, `--work-dir`, and
+  `--keep-intermediates`.
+- Docker wrapper mount behavior is more predictable: pipeline runs manage
+  `./work` and `./output`, dataset downloads manage `./data`, and doctor avoids
+  unnecessary user data/work/output mounts.
+- `vkit run --dry-run` can validate operators via exported schemas when the
+  current environment cannot import the operator directly.
+- Documentation paths are consistently `./data`, `./work`, and `./output`.
+
 ## [0.1.0] — 2026-04-19
 
 Initial public release.

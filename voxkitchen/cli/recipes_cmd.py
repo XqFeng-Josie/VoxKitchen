@@ -55,8 +55,11 @@ def list_recipes(ctx: typer.Context) -> None:
 
     console.print(t)
     console.print()
-    console.print("[dim]Download:[/dim] [bold]vkit download <recipe> --root <dir>[/bold]")
     console.print(
-        "[dim]Use in pipeline:[/dim] ingest: {{ source: recipe, recipe: <name>, args: {{ root: <dir> }} }}"
+        "[dim]Download:[/dim] [bold]vkit docker download --tag slim <recipe> --root ./data/<recipe>[/bold]"
+    )
+    console.print(
+        "[dim]Use in pipeline:[/dim] "
+        "ingest.source=recipe, recipe=<name>, args.root=./data/<recipe>"
     )
     console.print()

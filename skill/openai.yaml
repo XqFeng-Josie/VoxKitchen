@@ -1,0 +1,7 @@
+interface:
+  display_name: "VoxKitchen"
+  short_description: "Build Docker-first speech data pipelines"
+  default_prompt: "Use $voxkitchen to design and validate a Docker-first VoxKitchen pipeline."
+
+policy:
+  allow_implicit_invocation: true

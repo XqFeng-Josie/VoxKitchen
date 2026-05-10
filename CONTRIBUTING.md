@@ -4,6 +4,10 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 ## Development Setup
 
+The local development environment is for editing code, running unit tests,
+and building images. Pipeline execution should use `vkit docker run`, the
+same path users get.
+
 ```bash
 # Clone and install in development mode
 git clone https://github.com/XqFeng-Josie/VoxKitchen.git
@@ -42,20 +46,10 @@ mypy voxkitchen tests         # Type check
 
 Pre-commit hooks run these automatically on `git commit`.
 
-`[dev]` installs test tooling plus the **core-cluster** extras (the same
-set CI validates, mirroring the `:slim` Docker image). To work on an
-operator whose extras live outside that cluster (ASR, diarize, TTS),
-add those extras on top:
-
-```bash
-pip install -e ".[dev,asr,funasr]"      # ASR cluster
-pip install -e ".[dev,diarize]"          # Diarization
-pip install -e ".[dev,tts-kokoro]"       # TTS
-```
-
-`pip install -e ".[all]"` is intentionally unsupported — it crosses
-dep clusters and fails at the resolver. Pick one cluster or use
-`vkit docker` for cross-cluster pipelines.
+`[dev]` installs test tooling plus the core dependencies needed by the
+unit-test suite. Operator dependency clusters live in Docker images. Use
+`vkit docker run --tag <image> ...`, `vkit docker doctor`, and
+`vkit docker build <target>` when validating real pipeline behavior.
 
 ## Commit Messages
 

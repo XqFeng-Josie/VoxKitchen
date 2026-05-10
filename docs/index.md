@@ -4,9 +4,9 @@
 
 # VoxKitchen
 
-Declarative speech data processing toolkit. Write a YAML recipe, run `vkit run`, get training-ready data.
+Declarative speech data processing toolkit. Write a YAML recipe, run it with `vkit docker`, get training-ready data.
 
-**51 operators** across 7 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, and output packing.
+**51 operators** across 8 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, utility, and output packing.
 
 ## Get Started
 
@@ -32,7 +32,7 @@ vkit init my-project --template speaker   # Speaker analysis
 ## Reference
 
 - [Operators](reference/operators.md) — all 51 operators with config and YAML examples
-- [Recipes & Download](reference/recipes.md) — dataset recipes and `vkit download`
+- [Recipes & Download](reference/recipes.md) — dataset recipes and `vkit docker download`
 - [CLI Commands](reference/cli.md) — complete CLI reference
 - [Python Tools API](reference/tools-api.md) — standalone functions for quick tasks
 - [Pipeline YAML](reference/pipeline-yaml.md) — YAML schema and execution model
@@ -40,11 +40,11 @@ vkit init my-project --template speaker   # Speaker analysis
 ## Quick Reference
 
 ```bash
-vkit operators                      # list all operators
-vkit operators show <name>          # config fields + YAML example
+vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml --dry-run
 vkit init --list-templates          # available project templates
-vkit download librispeech --root /data/ls --subsets dev-clean
-vkit run pipeline.yaml --dry-run    # validate without executing
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker doctor --tag latest
 ```
 
 ## Links

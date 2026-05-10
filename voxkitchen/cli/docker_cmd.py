@@ -1,12 +1,13 @@
 """``vkit docker`` — run VoxKitchen inside a published Docker image.
 
-Mirrors the local CLI (``vkit run`` / ``vkit doctor`` / ...) but executes
-inside a container, so users don't have to remember the exact ``docker
-run`` flags the image expects (non-root ``--user``, `./work` and `./data`
-bind mounts, ``--env-file .env`` for ``HF_TOKEN``, GPU autodetection).
+Wraps VoxKitchen container entrypoints so users don't have to remember the
+exact ``docker run`` flags the image expects (non-root ``--user``, `./work`
+and `./data` bind mounts, ``--env-file .env`` for ``HF_TOKEN``, GPU
+autodetection).
 
 Commands:
   vkit docker run <pipeline>    Execute a pipeline inside the image.
+  vkit docker download <recipe> Download a dataset recipe inside the image.
   vkit docker doctor            Run per-env health report inside the image.
   vkit docker build [target]    Build a local image (wraps `docker build`).
   vkit docker pull              Pull an image tag from the registry.
@@ -43,6 +44,7 @@ from rich import print as rprint
 
 DEFAULT_IMAGE = "ghcr.io/xqfeng-josie/voxkitchen"
 DEFAULT_TAG = "latest"
+DEFAULT_DOWNLOAD_TAG = "slim"
 
 
 docker_app = typer.Typer(
@@ -62,8 +64,7 @@ def _require_docker() -> None:
     if shutil.which("docker") is None:
         rprint(
             "[red]error:[/red] `docker` not found on PATH. Install Docker "
-            "(https://docs.docker.com/get-docker/) or, for local execution, "
-            "use `vkit run` instead."
+            "(https://docs.docker.com/get-docker/) to run VoxKitchen pipelines."
         )
         raise typer.Exit(code=2)
 
@@ -100,14 +101,18 @@ def _env_file_flag(env_file: Path | None) -> list[str]:
     return []
 
 
-def _common_run_flags() -> list[str]:
+def _common_run_flags(
+    *, mount_work: bool = True, mount_data: bool = True, ensure_data: bool = False
+) -> list[str]:
     """Flags every ``docker run`` call gets: rm, user, home, default mounts.
 
-    Creates ``./work`` on the host before mounting so Docker doesn't
-    pre-create it as root.
+    Creates ``./work`` and, when requested, ``./data`` on the host before
+    mounting so Docker doesn't pre-create them as root.
     """
     cwd = Path.cwd()
-    (cwd / "work").mkdir(parents=True, exist_ok=True)
+    data_dir = cwd / "data"
+    if ensure_data:
+        data_dir.mkdir(parents=True, exist_ok=True)
 
     flags = [
         "--rm",
@@ -115,13 +120,28 @@ def _common_run_flags() -> list[str]:
         f"{os.getuid()}:{os.getgid()}",
         "-e",
         "HOME=/tmp",
-        "-v",
-        f"{cwd / 'work'}:/app/work",
     ]
-    data_dir = cwd / "data"
-    if data_dir.is_dir():
-        flags += ["-v", f"{data_dir}:/data"]
+    if mount_work:
+        (cwd / "work").mkdir(parents=True, exist_ok=True)
+        flags += [
+            "-v",
+            f"{cwd / 'work'}:/app/work",
+        ]
+    if mount_data and data_dir.is_dir():
+        flags += [
+            "-v",
+            f"{data_dir}:/app/data",
+            "-v",
+            f"{data_dir}:/data",
+        ]
     return flags
+
+
+def _output_mount_flags() -> list[str]:
+    """Mount ``./output`` for pipeline exports created outside ``work_dir``."""
+    output_dir = Path.cwd() / "output"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return ["-v", f"{output_dir}:/app/output"]
 
 
 def _pipeline_mount(pipeline_arg: str) -> tuple[list[str], str]:
@@ -175,6 +195,17 @@ def run_cmd(
     mount: list[Path] = typer.Option(
         [], "--mount", "-m", help="Extra bind mount (repeatable). Host path, mounted read-only."
     ),
+    num_gpus: int | None = typer.Option(None, "--num-gpus", help="Override pipeline GPU count."),
+    num_workers: int | None = typer.Option(
+        None, "--num-workers", help="Override pipeline CPU worker count."
+    ),
+    work_dir: str | None = typer.Option(None, "--work-dir", help="Override pipeline work_dir."),
+    resume_from: str | None = typer.Option(None, "--resume-from", help="Resume from this stage."),
+    stop_at: str | None = typer.Option(None, "--stop-at", help="Stop after this stage."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Validate only, do not execute."),
+    keep_intermediates: bool = typer.Option(
+        False, "--keep-intermediates", help="Keep derived audio from every stage."
+    ),
 ) -> None:
     """Run a pipeline inside the container."""
     _require_docker()
@@ -183,10 +214,20 @@ def run_cmd(
         raise typer.Exit(code=2)
 
     mount_flags, container_path = _pipeline_mount(pipeline)
+    run_args = _run_command_args(
+        num_gpus=num_gpus,
+        num_workers=num_workers,
+        work_dir=work_dir,
+        resume_from=resume_from,
+        stop_at=stop_at,
+        dry_run=dry_run,
+        keep_intermediates=keep_intermediates,
+    )
     cmd = [
         "docker",
         "run",
         *_common_run_flags(),
+        *_output_mount_flags(),
         *_gpu_flags(gpus),  # type: ignore[arg-type]
         *_env_file_flag(env_file),
         *mount_flags,
@@ -194,6 +235,68 @@ def run_cmd(
         _resolve_image(tag, image),
         "run",
         container_path,
+        *run_args,
+    ]
+    _run_and_exit(cmd)
+
+
+def _run_command_args(
+    *,
+    num_gpus: int | None,
+    num_workers: int | None,
+    work_dir: str | None,
+    resume_from: str | None,
+    stop_at: str | None,
+    dry_run: bool,
+    keep_intermediates: bool,
+) -> list[str]:
+    """Build arguments forwarded to ``vkit run`` inside the container."""
+    args: list[str] = []
+    if num_gpus is not None:
+        args += ["--num-gpus", str(num_gpus)]
+    if num_workers is not None:
+        args += ["--num-workers", str(num_workers)]
+    if work_dir is not None:
+        args += ["--work-dir", work_dir]
+    if resume_from is not None:
+        args += ["--resume-from", resume_from]
+    if stop_at is not None:
+        args += ["--stop-at", stop_at]
+    if dry_run:
+        args.append("--dry-run")
+    if keep_intermediates:
+        args.append("--keep-intermediates")
+    return args
+
+
+@docker_app.command("download")
+def download_cmd(
+    recipe: str = typer.Argument(..., help="Recipe name (e.g., librispeech, aishell, fleurs)."),
+    root: str = typer.Option(
+        ..., "--root", help="Directory to download into. Use ./data/... to persist on host."
+    ),
+    subsets: str | None = typer.Option(None, "--subsets", help="Comma-separated subset names."),
+    tag: str = typer.Option(
+        DEFAULT_DOWNLOAD_TAG, "--tag", help="Image tag. Defaults to slim for dataset recipes."
+    ),
+    image: str | None = typer.Option(None, "--image", help="Full image name override."),
+    env_file: Path | None = typer.Option(
+        None, "--env-file", help="Docker --env-file path. Default: ./.env if it exists."
+    ),
+) -> None:
+    """Download a dataset inside the container."""
+    _require_docker()
+    download_args = ["download", recipe, "--root", root]
+    if subsets:
+        download_args += ["--subsets", subsets]
+
+    cmd = [
+        "docker",
+        "run",
+        *_common_run_flags(mount_work=False, mount_data=True, ensure_data=True),
+        *_env_file_flag(env_file),
+        _resolve_image(tag, image),
+        *download_args,
     ]
     _run_and_exit(cmd)
 
@@ -219,7 +322,7 @@ def doctor_cmd(
     cmd = [
         "docker",
         "run",
-        *_common_run_flags(),
+        *_common_run_flags(mount_work=False, mount_data=False),
         *_gpu_flags(gpus),  # type: ignore[arg-type]
         _resolve_image(tag, image),
         *doctor_args,

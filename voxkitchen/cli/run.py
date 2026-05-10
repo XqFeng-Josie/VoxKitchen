@@ -2,20 +2,57 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import typer
 from rich import print as rprint
 from rich.table import Table
 
+from voxkitchen.pipeline.checkpoint import stage_dir_name
 from voxkitchen.pipeline.loader import PipelineLoadError, load_pipeline_spec
 from voxkitchen.pipeline.runner import StageFailedError, run_pipeline
 from voxkitchen.pipeline.spec import PipelineSpec
 
 
-def _print_dry_run(spec: PipelineSpec) -> bool:
+def _env_truthy(name: str) -> bool:
+    value = os.environ.get(name, "").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def _is_managed_runtime() -> bool:
+    """Return true inside VoxKitchen Docker runtimes.
+
+    ``vkit run`` is the execution entrypoint inside images. A local source
+    checkout can still use it for low-level debugging, but the supported host
+    workflow is ``vkit docker run``.
+    """
+    if _env_truthy("VKIT_ALLOW_LOCAL_RUN"):
+        return True
+    if os.environ.get("VKIT_ENV", "").strip():
+        return True
+    return (
+        Path("/opt/voxkitchen/op_env_map.json").is_file()
+        or Path("/opt/voxkitchen/envs").is_dir()
+    )
+
+
+def _warn_if_unmanaged_runtime() -> None:
+    if _is_managed_runtime():
+        return
+    rprint(
+        "[yellow]warning:[/yellow] `vkit run` executes in the current Python "
+        "environment and is intended for VoxKitchen Docker runtimes. "
+        "Use `vkit docker run <yaml>` for supported pipeline execution. "
+        "Set VKIT_ALLOW_LOCAL_RUN=1 to silence this warning."
+    )
+
+
+def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> bool:
     """Validate the pipeline and print a stage summary. Returns True if valid."""
-    from voxkitchen.operators.registry import get_operator
+    from voxkitchen.cli.hints import format_recommended_image_hint, recommend_docker_tag
+    from voxkitchen.cli.validate import validate_stage_args
+    from voxkitchen.runtime.schemas import load_op_schemas
 
     rprint(f"\n[bold]{spec.name}[/bold]  (dry-run)")
     rprint(f"  work_dir: {spec.work_dir}")
@@ -26,7 +63,13 @@ def _print_dry_run(spec: PipelineSpec) -> bool:
         rprint(f"  recipe={spec.ingest.recipe}", end="")
     rprint()
 
+    for warning in _dry_run_warnings(spec):
+        rprint(f"  [yellow]warning:[/yellow] {warning}")
+
+    schemas = load_op_schemas()
     errors: list[str] = []
+    schema_checked: list[str] = []
+    validation_results = []
     t = Table(title="Stages")
     t.add_column("#", justify="right")
     t.add_column("Name")
@@ -34,25 +77,82 @@ def _print_dry_run(spec: PipelineSpec) -> bool:
     t.add_column("Device")
     t.add_column("Args")
     for i, stage in enumerate(spec.stages):
-        try:
-            op_cls = get_operator(stage.op)
-            device: str = op_cls.device
-            # Validate args against the operator's config schema
-            op_cls.config_cls.model_validate(stage.args)
-        except Exception as exc:
-            device = "?"
-            errors.append(f"stage {i} ({stage.name}): {exc}")
+        result = validate_stage_args(stage.op, stage.args, schemas)
+        validation_results.append(result)
+        if result.error is not None:
+            errors.append(f"stage {i} ({stage.name}): {result.error}")
+        if result.validator == "schema" and result.device != "?":
+            schema_checked.append(stage.op)
         args_str = ", ".join(f"{k}={v}" for k, v in stage.args.items()) if stage.args else "-"
-        t.add_row(str(i), stage.name, stage.op, device, args_str)
+        t.add_row(str(i), stage.name, stage.op, result.device, args_str)
     rprint(t)
+
+    if schema_checked:
+        checked = ", ".join(sorted(set(schema_checked)))
+        rprint(f"[dim]Checked via op_schemas.json: {checked}[/dim]")
+
+    tag = recommend_docker_tag([r.required_extras for r in validation_results])
+    pipeline_hint = str(pipeline_path) if pipeline_path is not None else "<yaml>"
+    rprint(f"[dim]{format_recommended_image_hint(tag, pipeline_hint)}[/dim]")
 
     if errors:
         for err in errors:
             rprint(f"  [red]error:[/red] {err}")
+        rprint(
+            "[dim]Tip: run `vkit validate <yaml>` for schema-only checks, "
+            "or `vkit docker doctor` to inspect the Docker image.[/dim]"
+        )
         rprint(f"\n[red]validation failed ({len(errors)} error(s))[/red]")
         return False
     rprint("[green]validation passed[/green]")
     return True
+
+
+def _dry_run_warnings(spec: PipelineSpec) -> list[str]:
+    """Non-blocking checks that catch common first-run mistakes."""
+    args = spec.ingest.args
+    warnings: list[str] = []
+
+    if spec.ingest.source == "dir":
+        root = args.get("root")
+        if isinstance(root, str):
+            root_path = Path(root)
+            if not root_path.is_dir():
+                warnings.append(
+                    f"ingest root {root!r} was not found from this shell; "
+                    "create it, edit pipeline.yaml, or run with Docker mounts."
+                )
+            elif not _contains_audio_files(
+                root_path, recursive=bool(args.get("recursive", True))
+            ):
+                warnings.append(
+                    f"ingest root {root!r} contains no supported audio files; "
+                    "put audio under data/ or update ingest.args.root."
+                )
+    elif spec.ingest.source == "manifest":
+        path = args.get("path")
+        if isinstance(path, str) and not Path(path).is_file():
+            warnings.append(
+                f"manifest {path!r} was not found from this shell; "
+                "the real run will fail unless that path exists in the runtime env."
+            )
+    elif spec.ingest.source == "recipe":
+        root = args.get("root")
+        if isinstance(root, str) and not Path(root).exists():
+            warnings.append(
+                f"recipe root {root!r} was not found from this shell; "
+                "download the dataset first or adjust ingest.args.root."
+            )
+
+    return warnings
+
+
+def _contains_audio_files(root: Path, *, recursive: bool) -> bool:
+    """Return quickly after finding the first supported audio file."""
+    from voxkitchen.utils.audio import AUDIO_EXTENSIONS
+
+    paths = root.rglob("*") if recursive else root.iterdir()
+    return any(p.is_file() and p.suffix.lower() in AUDIO_EXTENSIONS for p in paths)
 
 
 def run_command(
@@ -67,6 +167,8 @@ def run_command(
 ) -> None:
     """Execute a pipeline."""
     import logging
+
+    _warn_if_unmanaged_runtime()
 
     logging.basicConfig(
         format="%(asctime)s  %(message)s",
@@ -89,7 +191,7 @@ def run_command(
         spec = spec.model_copy(update={"work_dir": work_dir})
 
     if dry_run:
-        valid = _print_dry_run(spec)
+        valid = _print_dry_run(spec, pipeline_path=pipeline)
         raise typer.Exit(code=0 if valid else 1)
 
     try:
@@ -103,4 +205,31 @@ def run_command(
         rprint(f"[red]stage failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
 
-    rprint("[green]pipeline complete[/green]")
+    _print_completion(spec, stop_at=stop_at)
+
+
+def _print_completion(spec: PipelineSpec, *, stop_at: str | None) -> None:
+    """Print the useful next paths after a successful run."""
+    work_dir = Path(spec.work_dir)
+    stage_names = [s.name for s in spec.stages]
+    final_stage = stop_at or stage_names[-1]
+    final_idx = stage_names.index(final_stage)
+    final_stage_dir = work_dir / stage_dir_name(final_idx, final_stage)
+    final_manifest = final_stage_dir / "cuts.jsonl.gz"
+    report = work_dir / "report.html"
+
+    if stop_at:
+        rprint(f"[green]stopped after stage[/green] {stop_at}")
+    else:
+        rprint("[green]pipeline complete[/green]")
+
+    rprint(f"  work_dir: {work_dir}")
+    if final_manifest.exists():
+        rprint(f"  final cuts: {final_manifest}")
+    if report.exists():
+        rprint(f"  report: {report}")
+
+    rprint("\n[bold]Next steps[/bold]")
+    rprint(f"  vkit inspect run {work_dir}")
+    if final_manifest.exists():
+        rprint(f"  vkit inspect cuts {final_manifest}")

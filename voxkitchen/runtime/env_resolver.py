@@ -16,9 +16,9 @@ or must be dispatched to a subprocess in a different env.
    b. ``/opt/voxkitchen/op_env_map.json`` — the map generated at Docker
       image build time by merging per-env schema dumps
    c. In-process fallback derived from registered operators'
-      ``required_extras`` plus :data:`EXTRA_TO_ENV`. This is the dev-mode
-      path: ``pip install -e .`` users have one env only, everything
-      resolves to it, and the subprocess path is never taken.
+      ``required_extras`` plus :data:`EXTRA_TO_ENV`. This is the source-tree
+      development path: one Python env is active, everything resolves to it,
+      and the subprocess path is never taken.
 
 3. The mapping is **deterministic and declarative**. Every extras group in
    ``pyproject.toml`` must appear in :data:`EXTRA_TO_ENV` — adding a new
@@ -129,10 +129,10 @@ def _load_op_env_map() -> dict[str, str] | None:
 def _derive_from_registry() -> dict[str, str]:
     """Build the op→env map from the in-process operator registry.
 
-    Used in dev mode (local ``pip install -e .``) where there's no prebuilt
-    map. An operator with no extras maps to ``"core"``. An operator whose
-    extras span multiple envs raises at lookup time; this should be caught
-    in :mod:`dump_schemas` at image build time.
+    Used in source-tree development where there's no prebuilt map. An
+    operator with no extras maps to ``"core"``. An operator whose extras span
+    multiple envs raises at lookup time; this should be caught in
+    :mod:`dump_schemas` at image build time.
     """
     # Import lazily to avoid circular imports: env_resolver is imported
     # during pipeline setup; operators pull in the registry.
@@ -171,8 +171,8 @@ def resolve_env(op_name: str) -> str:
     Docker / production mode: ``op_env_map.json`` is authoritative —
     every operator we ship is listed there with its canonical env.
 
-    Dev mode (no ``op_env_map.json``, just a local pip install): there
-    is only one Python env — the one the user is running in — so every
+    Dev mode (no ``op_env_map.json``): there is only one Python env — the
+    one the developer is running in — so every
     registered operator resolves to :func:`current_env`. We don't route
     through ``EXTRA_TO_ENV`` here because dispatching to ``asr`` /
     ``tts`` / ... would try to ``exec`` a venv path

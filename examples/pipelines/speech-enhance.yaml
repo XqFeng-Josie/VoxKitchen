@@ -1,6 +1,7 @@
 # Denoise speech audio using DeepFilterNet.
-# Usage: vkit run examples/pipelines/speech-enhance.yaml
-# Requires: pip install voxkitchen[enhance]
+# Usage:
+#   vkit docker run --tag slim examples/pipelines/speech-enhance.yaml --dry-run
+#   vkit docker run --tag slim examples/pipelines/speech-enhance.yaml
 
 version: "0.1"
 name: speech-enhance

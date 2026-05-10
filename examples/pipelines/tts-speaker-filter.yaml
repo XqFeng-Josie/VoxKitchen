@@ -7,8 +7,9 @@
 #   emb = extract_speaker_embedding('reference_speaker.wav')
 #   np.save('reference.npy', emb)"
 #
-# Then run: vkit run examples/pipelines/tts-speaker-filter.yaml
-# Requires: pip install voxkitchen[audio,speaker]
+# Then run:
+#   vkit docker run --tag slim examples/pipelines/tts-speaker-filter.yaml --dry-run
+#   vkit docker run --tag slim examples/pipelines/tts-speaker-filter.yaml
 
 version: "0.1"
 name: tts-speaker-filter

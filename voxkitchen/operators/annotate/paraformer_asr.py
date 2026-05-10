@@ -5,7 +5,7 @@ end-to-end ASR model from Alibaba DAMO Academy. It is significantly faster
 than autoregressive models (like Whisper) at comparable accuracy, especially
 for Chinese.
 
-Requires: ``pip install funasr``
+Runtime: ``vkit docker run --tag asr <yaml>``
 """
 
 from __future__ import annotations

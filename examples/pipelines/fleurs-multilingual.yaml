@@ -1,12 +1,11 @@
 # FLEURS multilingual dataset pipeline.
 #
 # Download first:
-#   vkit download fleurs --root /data/fleurs --subsets en_us,zh_cn
+#   vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_cn
 #
 # Then run:
-#   vkit run examples/pipelines/fleurs-multilingual.yaml
-#
-# Requires: pip install voxkitchen[asr,pack]
+#   vkit docker run --tag asr examples/pipelines/fleurs-multilingual.yaml --dry-run
+#   vkit docker run --tag asr examples/pipelines/fleurs-multilingual.yaml
 
 version: "0.1"
 name: fleurs-multilingual
@@ -17,7 +16,7 @@ ingest:
   source: recipe
   recipe: fleurs
   args:
-    root: /data/fleurs
+    root: ./data/fleurs
     subsets: [en_us]          # add more: zh_cn, fr_fr, de_de, ...
 
 stages:

@@ -75,6 +75,8 @@ def test_run_basic_defaults(fake_docker, tmp_path) -> None:
     uid_gid = cmd[cmd.index("--user") + 1]
     assert uid_gid == f"{os.getuid()}:{os.getgid()}"
     assert "-e" in cmd and "HOME=/tmp" in cmd
+    assert f"{tmp_path / 'work'}:/app/work" in cmd
+    assert f"{tmp_path / 'output'}:/app/output" in cmd
     # image defaulted
     assert f"{docker_cmd.DEFAULT_IMAGE}:{docker_cmd.DEFAULT_TAG}" in cmd
     # trailing vkit-command shape: ["run", "<pipeline>"]
@@ -142,6 +144,16 @@ def test_run_auto_mounts_existing_pipeline(fake_docker, tmp_path) -> None:
     assert cmd[-1] == str(yaml.resolve())
 
 
+def test_run_mounts_data_for_template_relative_paths(fake_docker, tmp_path) -> None:
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _, cmd = _invoke(["docker", "run", "pipeline.yaml"])
+    assert cmd is not None
+    assert f"{data_dir}:/app/data" in cmd
+    assert f"{data_dir}:/data" in cmd
+    assert (tmp_path / "output").is_dir()
+
+
 def test_run_auto_envfile_when_dotenv_present(fake_docker, tmp_path) -> None:
     (tmp_path / ".env").write_text("HF_TOKEN=hf_xxx\n", encoding="utf-8")
     _, cmd = _invoke(["docker", "run", "foo.yaml"])
@@ -165,17 +177,89 @@ def test_run_extra_mount(fake_docker, tmp_path) -> None:
     assert expected in cmd
 
 
+def test_run_forwards_vkit_run_flags(fake_docker) -> None:
+    _, cmd = _invoke(
+        [
+            "docker",
+            "run",
+            "foo.yaml",
+            "--dry-run",
+            "--resume-from",
+            "vad",
+            "--stop-at",
+            "asr",
+            "--num-workers",
+            "4",
+            "--keep-intermediates",
+        ]
+    )
+    assert cmd is not None
+    assert cmd[-10:] == [
+        "run",
+        "foo.yaml",
+        "--num-workers",
+        "4",
+        "--resume-from",
+        "vad",
+        "--stop-at",
+        "asr",
+        "--dry-run",
+        "--keep-intermediates",
+    ]
+
+
+# ---------------------------------------------------------------------------
+# download
+# ---------------------------------------------------------------------------
+
+
+def test_download_mounts_data_and_forwards_recipe_args(fake_docker, tmp_path) -> None:
+    _, cmd = _invoke(
+        [
+            "docker",
+            "download",
+            "fleurs",
+            "--root",
+            "./data/fleurs",
+            "--subsets",
+            "en_us,zh_cn",
+        ]
+    )
+    assert cmd is not None
+    data_dir = tmp_path / "data"
+    assert data_dir.is_dir()
+    assert not (tmp_path / "work").exists()
+    assert f"{data_dir}:/app/data" in cmd
+    assert f"{data_dir}:/data" in cmd
+    assert f"{docker_cmd.DEFAULT_IMAGE}:{docker_cmd.DEFAULT_DOWNLOAD_TAG}" in cmd
+    assert cmd[-6:] == [
+        "download",
+        "fleurs",
+        "--root",
+        "./data/fleurs",
+        "--subsets",
+        "en_us,zh_cn",
+    ]
+
+
 # ---------------------------------------------------------------------------
 # doctor / pull / shell / build
 # ---------------------------------------------------------------------------
 
 
-def test_doctor_passthrough_flags(fake_docker) -> None:
+def test_doctor_passthrough_flags(fake_docker, tmp_path) -> None:
+    (tmp_path / "data").mkdir()
     _, cmd = _invoke(["docker", "doctor", "--expect", "core", "--json"])
     assert cmd is not None
     # trailing command: vkit doctor --expect core --json
     tail = cmd[-4:]
     assert tail == ["doctor", "--expect", "core", "--json"]
+    joined = " ".join(cmd)
+    assert "/app/output" not in joined
+    assert "/app/data" not in joined
+    assert f"{tmp_path / 'data'}:/data" not in joined
+    assert not (tmp_path / "work").exists()
+    assert not (tmp_path / "output").exists()
 
 
 def test_pull(fake_docker) -> None:

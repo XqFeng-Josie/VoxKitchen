@@ -1,10 +1,10 @@
 # System Architecture
 
-> Operators: 51 across 7 categories.
+> Operators: 51 across 8 categories.
 
 ## Overview
 
-VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run `vkit run`, and get training-ready datasets with full provenance tracking.
+VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run `vkit docker run`, and get training-ready datasets with full provenance tracking.
 
 **Core metaphor:** pipeline.yaml is a recipe, operators are cooking steps, ingest recipes are ingredient prep, `pack` is plating.
 
@@ -123,7 +123,7 @@ Third-party: `entry_points` group `voxkitchen.operators` (lazy discovery on firs
 
 Optional deps wrapped in `try/except ImportError` -- missing packages don't crash the core.
 
-### Operator Catalog (51 operators, 7 categories)
+### Operator Catalog (51 operators, 8 categories)
 
 | Category | Count | Operators |
 |----------|-------|-----------|
@@ -177,7 +177,10 @@ Supports `${name}`, `${run_id}`, `${env:VAR}` interpolation in all string values
 ### Execution Flow
 
 ```
-vkit run pipeline.yaml
+vkit docker run pipeline.yaml
+  |
+  v
+[Docker wrapper] mounts data/work/output, selects image, calls image entrypoint
   |
   v
 [Loader] YAML -> PipelineSpec (Pydantic validation + interpolation)
@@ -233,8 +236,8 @@ work_dir/
 A stage is complete iff both `cuts.jsonl.gz` and `_SUCCESS` exist. `_SUCCESS` is written atomically after the manifest is fully flushed.
 
 ```bash
-vkit run pipeline.yaml                    # full run
-vkit run pipeline.yaml --resume-from vad  # resume from stage
+vkit docker run pipeline.yaml                    # full run
+vkit docker run pipeline.yaml --resume-from vad  # resume from stage
 ```
 
 ### Garbage Collection
@@ -269,9 +272,11 @@ Each recipe implements `download()` and `prepare(root, subsets, ctx) -> CutSet`.
 | Command | Purpose |
 |---------|---------|
 | `vkit init <path> [-t template]` | Scaffold project |
-| `vkit run <yaml>` | Execute pipeline |
+| `vkit docker run <yaml>` | Execute pipeline inside a prebuilt image |
+| `vkit docker download <recipe>` | Download dataset inside a prebuilt image |
+| `vkit run <yaml>` | Current-env pipeline entrypoint used inside images |
 | `vkit validate <yaml>` | Validate without executing |
-| `vkit download <recipe>` | Download dataset |
+| `vkit download <recipe>` | Current-env dataset download helper |
 | `vkit ingest` | Standalone ingest |
 | `vkit inspect run <dir>` | Stage summary |
 | `vkit inspect cuts <path>` | Cut statistics |
@@ -310,11 +315,12 @@ Each function creates a temporary Cut + RunContext, runs the corresponding opera
 
 ---
 
-## Dependency Management
+## Runtime Images
 
-**Core** (always installed): pydantic, pyyaml, typer, rich, soundfile, numpy, ffmpeg-python, pyloudnorm
+User pipeline execution is Docker-based. The host `vkit` command is a
+lightweight launcher; operator dependencies live in prebuilt images.
 
-**Optional extras** (install what you need):
+Image env groups:
 
 | Group | Packages | For |
 |-------|----------|-----|
@@ -340,7 +346,7 @@ Each function creates a temporary Cut + RunContext, runs the corresponding opera
 ```
 voxkitchen/
   cli/                  # Typer CLI app
-  operators/            # 51 operators across 7 categories
+  operators/            # 51 operators across 8 categories
     basic/              #   resample, ffmpeg_convert, ...
     segment/            #   silero_vad, webrtc_vad, ...
     augment/            #   speed_perturb, noise_augment, ...
@@ -371,7 +377,7 @@ tests/integration/      # End-to-end pipeline tests
 1. **Immutability** -- Operators create new Cuts, never mutate existing ones
 2. **Resumability** -- All state on disk; `_SUCCESS` markers enable crash recovery
 3. **Error tolerance** -- Bad Cuts logged and skipped, pipeline continues
-4. **Minimal core** -- Heavy deps (torch, transformers) are optional extras
+4. **Docker-first runtime** -- Heavy deps (torch, transformers) live in images
 5. **Provenance** -- Every Cut tracks its lineage
 6. **Declarative first** -- YAML is the primary interface; Python API is the escape hatch
 7. **Simplicity over efficiency** -- Resolve conflicts in favor of simplicity
@@ -383,7 +389,7 @@ tests/integration/      # End-to-end pipeline tests
 ### Completed
 
 - Core framework (schema, pipeline engine, CLI)
-- 51 operators across 7 categories
+- 51 operators across 8 categories
 - 4 ingest recipes (LibriSpeech, AISHELL, CommonVoice, FLEURS)
 - Visualization (Rich CLI, HTML report, Gradio panel)
 - Plugin system (entry_points)

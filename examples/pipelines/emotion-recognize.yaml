@@ -1,6 +1,7 @@
 # Emotion recognition: detect speech emotions using emotion2vec.
-# Usage: vkit run examples/pipelines/emotion-recognize.yaml
-# Requires: pip install voxkitchen[audio,funasr]
+# Usage:
+#   vkit docker run --tag asr examples/pipelines/emotion-recognize.yaml --dry-run
+#   vkit docker run --tag asr examples/pipelines/emotion-recognize.yaml
 
 version: "0.1"
 name: emotion-recognize

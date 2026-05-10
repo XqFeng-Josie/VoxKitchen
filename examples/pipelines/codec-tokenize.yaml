@@ -1,8 +1,9 @@
 # Encode audio into neural codec tokens for codec-LM TTS.
 # Used for VALL-E, CosyVoice, Fish-Speech, GPT-SoVITS training data.
 #
-# Usage: vkit run examples/pipelines/codec-tokenize.yaml
-# Requires: pip install voxkitchen[audio,codec]
+# Usage:
+#   vkit docker run --tag slim examples/pipelines/codec-tokenize.yaml --dry-run
+#   vkit docker run --tag slim examples/pipelines/codec-tokenize.yaml
 
 version: "0.1"
 name: codec-tokenize

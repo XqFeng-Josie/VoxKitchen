@@ -1,12 +1,9 @@
 # Full demo: opus → wav → VAD → SNR → DNSMOS → ASR → gender → filter → pack
 # Covers: VAD, quality metrics (SNR, DNSMOS), ASR transcription, gender classification.
 #
-# Recommended: run via Docker (no extras to manage, all operators included):
+# Recommended: run via Docker (no local model dependencies to manage):
+#   vkit docker run examples/pipelines/demo-full.yaml --dry-run
 #   vkit docker run examples/pipelines/demo-full.yaml
-#
-# Local run (operators span two clusters — check extras compatibility first):
-#   pip install -e ".[segment,asr,dnsmos]"
-#   vkit run examples/pipelines/demo-full.yaml
 
 version: "0.1"
 name: demo-full

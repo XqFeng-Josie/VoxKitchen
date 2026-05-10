@@ -58,8 +58,8 @@ class GenderClassifyOperator(Operator):
 
     - ``inaspeechsegmenter``: Use INA's speech segmenter which jointly
       detects speech/music/noise and classifies gender. Well-tested in
-      broadcast media analysis (~90-95%). Requires ``pip install
-      inaSpeechSegmenter`` (uses TensorFlow).
+      broadcast media analysis (~90-95%). This backend is not included in
+      the published Docker images because it pulls in TensorFlow.
     """
 
     name = "gender_classify"

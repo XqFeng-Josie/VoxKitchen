@@ -84,14 +84,14 @@ Available recipes: `librispeech`, `aishell`, `commonvoice`, `fleurs`
 Pipelines checkpoint after each stage. If a run crashes, re-running resumes from the last completed stage:
 
 ```bash
-vkit run pipeline.yaml                          # Auto-resume
-vkit run pipeline.yaml --resume-from asr        # Force resume from specific stage
+vkit docker run pipeline.yaml                   # Auto-resume
+vkit docker run pipeline.yaml --resume-from asr # Force resume from specific stage
 ```
 
 ### Partial Execution
 
 ```bash
-vkit run pipeline.yaml --stop-at vad            # Stop after VAD stage
+vkit docker run pipeline.yaml --stop-at vad     # Stop after VAD stage
 ```
 
 ### Garbage Collection

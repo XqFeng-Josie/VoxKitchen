@@ -25,7 +25,8 @@ classifiers = [
 ]
 
 # Core deps: schema + CLI + audio processing utilities.
-# Heavy deps (torch) are in the [audio] extras group.
+# Optional dependency groups below are for Docker image builds and developer
+# installs; the supported user execution path is `vkit docker ...`.
 dependencies = [
     "pydantic>=2.5,<3",
     "pyyaml>=6",
@@ -57,7 +58,7 @@ pitch = ["pyworld>=0.3"]
 dnsmos = [
     "speechmos>=0.0.1",
     # speechmos's own wheel declares no dependencies, but dnsmos.run()
-    # imports onnxruntime internally. Add it here so the extras group is
+    # imports onnxruntime internally. Add it here so the dependency group is
     # actually usable. Tested with onnxruntime 1.17+.
     "onnxruntime>=1.17,<2",
 ]
@@ -76,12 +77,9 @@ tts-cosyvoice = ["modelscope>=1.0"]
 tts-fish-speech = ["fish-speech @ git+https://github.com/fishaudio/fish-speech.git"]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
-all = [
-    "voxkitchen[audio,segment,quality,pack,asr,whisper,pitch,dnsmos,diarize,classify,gender,speaker,enhance,codec,align,tts-kokoro,tts-chattts,tts-cosyvoice,tts-fish-speech,viz,viz-panel]",
-]
-# Test tooling + the core-cluster extras CI installs. This is the
+# Test tooling + the core-cluster dependency groups CI installs. This is the
 # single-cluster subset that resolves cleanly; for ASR/TTS/diarize
-# development, add the relevant cluster extras on top of [dev].
+# development, add the relevant cluster groups on top of [dev].
 dev = [
     "voxkitchen[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,viz]",
     "pytest>=7.4",
@@ -111,6 +109,9 @@ raw-options = { fallback_version = "0.0.0.dev0", tag_regex = "^(?:v)?(?P<version
 
 [tool.hatch.build.targets.wheel]
 packages = ["voxkitchen"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"voxkitchen/templates/pipelines" = "voxkitchen/templates/pipelines"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "voxkitchen/_version.py"

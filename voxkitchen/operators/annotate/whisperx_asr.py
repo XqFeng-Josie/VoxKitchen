@@ -24,7 +24,7 @@ class WhisperxAsrOperator(Operator):
     """Transcribe audio with word-level alignment using whisperx.
 
     If whisperx is not installed, falls back to faster-whisper at segment level
-    (no word alignment). Either path requires the ``asr`` extras group.
+    (no word alignment). Both paths are packaged in the ASR Docker runtime.
     """
 
     name = "whisperx_asr"

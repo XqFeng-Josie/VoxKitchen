@@ -1,8 +1,9 @@
 # Forced alignment: ASR first, then align words to audio.
 # Uses Qwen3-ForcedAligner (11 languages: zh, en, fr, de, ja, ko, etc.)
 #
-# Usage: vkit run examples/pipelines/forced-align.yaml
-# Requires: pip install voxkitchen[asr,align]
+# Usage:
+#   vkit docker run --tag asr examples/pipelines/forced-align.yaml --dry-run
+#   vkit docker run --tag asr examples/pipelines/forced-align.yaml
 
 version: "0.1"
 name: forced-align

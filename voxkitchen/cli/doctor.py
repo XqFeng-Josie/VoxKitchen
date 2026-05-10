@@ -33,6 +33,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from voxkitchen.cli.hints import lookup_extras_hint
 from voxkitchen.runtime import env_resolver
 
 # Rich console on stderr so --json can emit pure JSON on stdout without pollution.
@@ -326,10 +327,10 @@ def _emit_table(
     if missing:
         t = Table(title="Missing operators")
         t.add_column("Operator", style="red")
-        t.add_column("Required extras")
+        t.add_column("Runtime group")
         t.add_column("Hint")
         for name in missing:
-            extras_str, hint = _lookup_extras_hint(name)
+            extras_str, hint = lookup_extras_hint(name)
             t.add_row(name, extras_str, hint)
         console.print(t)
 
@@ -386,7 +387,7 @@ def _emit_multi_env_table(reports: list[dict[str, Any]]) -> None:
         env = r.get("image_kind", "?")
         console.print(f"\n[bold red]{env}[/bold red] missing:")
         for op in r["missing"]:
-            extras, hint = _lookup_extras_hint(op)
+            extras, hint = lookup_extras_hint(op)
             tail = f"  [dim]({extras})[/dim]" if extras else ""
             console.print(f"  [red]•[/red] {op}{tail}")
 
@@ -417,46 +418,3 @@ def _emit_json(
     }
     sys.stdout.write(json.dumps(payload, indent=2))
     sys.stdout.write("\n")
-
-
-def _lookup_extras_hint(op_name: str) -> tuple[str, str]:
-    """Best-effort guess of the extras group for a not-yet-importable operator."""
-    # When an operator fails to import, it's not in the registry, so we
-    # can't read its ``required_extras`` class var. We keep a small static
-    # map for the missing-operator hint; it's only advisory.
-    hints: dict[str, str] = {
-        "faster_whisper_asr": "asr",
-        "whisperx_asr": "asr",
-        "whisper_openai_asr": "whisper",
-        "whisper_langid": "whisper",
-        "paraformer_asr": "funasr",
-        "sensevoice_asr": "funasr",
-        "emotion_recognize": "funasr",
-        "wenet_asr": "wenet",
-        "qwen3_asr": "align",
-        "forced_align": "align",
-        "pyannote_diarize": "diarize",
-        "speechbrain_langid": "classify",
-        "speaker_embed": "speaker",
-        "speech_enhance": "enhance",
-        "codec_tokenize": "codec",
-        "silero_vad": "segment",
-        "webrtc_vad": "segment",
-        "silence_split": "segment",
-        "speed_perturb": "audio",
-        "pitch_stats": "pitch",
-        "dnsmos_score": "dnsmos",
-        "utmos_score": "dnsmos",
-        "audio_fingerprint_dedup": "quality",
-        "pack_huggingface": "pack",
-        "pack_webdataset": "pack",
-        "pack_parquet": "pack",
-        "tts_kokoro": "tts-kokoro",
-        "tts_chattts": "tts-chattts",
-        "tts_cosyvoice": "tts-cosyvoice",
-        "tts_fish_speech": "tts-fish-speech",
-    }
-    extras = hints.get(op_name, "")
-    if not extras:
-        return ("", "")
-    return (extras, f"pip install voxkitchen[{extras}]")

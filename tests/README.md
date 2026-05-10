@@ -27,26 +27,23 @@ pytest tests/unit/operators/annotate/test_faster_whisper_asr.py -v
 pytest -v -m "not slow and not gpu"
 ```
 
-## Docker (Recommended)
+## Docker Runtime Smoke Checks
 
-Two images available — both include all 51 operators and system deps.
+Runtime images are built from `docker/Dockerfile`. Use Docker smoke checks
+to validate image health; run the pytest suite from the local dev
+environment below.
 
 ```bash
-# Build
-docker build -t voxkitchen:gpu .                       # GPU (CUDA 12.4)
-docker build -f Dockerfile.cpu -t voxkitchen:cpu .      # CPU-only
+# Build the small core image and run its doctor check
+vkit docker build slim
+vkit docker doctor --tag slim --expect core
 
-# All CPU tests (including slow model downloads)
-docker run --rm --entrypoint pytest voxkitchen:cpu tests/unit/operators/ -v -m "not gpu"
+# Build the full multi-env image and inspect all envs
+vkit docker build latest
+vkit docker doctor --tag latest
 
-# Fast tests only
-docker run --rm --entrypoint pytest voxkitchen:cpu tests/unit/operators/ -v -m "not slow and not gpu"
-
-# GPU tests
-docker run --rm --gpus all --entrypoint pytest voxkitchen:gpu tests/unit/operators/ -v
-
-# Interactive shell
-docker run --rm -it --entrypoint bash voxkitchen:gpu
+# Debug inside an image
+vkit docker shell --tag latest --gpus all
 ```
 
 ## Local Setup
@@ -64,7 +61,7 @@ sudo apt-get install -y pkg-config ffmpeg \
     libavfilter-dev libswscale-dev libswresample-dev \
     espeak-ng
 
-# Install all extras
+# Install local test tooling; real pipeline runs use Docker images.
 pip install -e ".[dev]"
 ```
 
@@ -83,7 +80,7 @@ pip install -e ".[dev]"
 | basic | 4 | 4 | core |
 | segment | 4 | 4 | `segment` |
 | augment | 4 | 4 | `audio` |
-| annotate | 18 | 18 | `asr`, `whisper`, `funasr`, `wenet`, `diarize`, `classify`, `speaker`, `enhance`, `align`, `codec` |
+| annotate | 17 | 17 | `asr`, `whisper`, `funasr`, `wenet`, `diarize`, `classify`, `speaker`, `enhance`, `align`, `codec` |
 | quality | 11 | 11 | `pitch`, `dnsmos`, `quality` |
 | pack | 6 | 6 | `pack` |
 | synthesize | 4 | 4 | `tts-kokoro`, `tts-chattts`, `tts-cosyvoice`, `tts-fish-speech` |

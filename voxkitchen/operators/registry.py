@@ -10,6 +10,7 @@ from __future__ import annotations
 import difflib
 
 from voxkitchen.operators.base import Operator
+from voxkitchen.runtime.env_resolver import EXTRA_TO_ENV
 
 _REGISTRY: dict[str, type[Operator]] = {}
 
@@ -31,9 +32,13 @@ class MissingExtrasError(ImportError):
         self.op_name = op_name
         self.extras = extras
         extras_str = ",".join(extras)
+        tags = {EXTRA_TO_ENV.get(extra, "latest") for extra in extras}
+        tag = next(iter(tags)) if len(tags) == 1 else "latest"
+        if tag == "core":
+            tag = "slim"
         super().__init__(
-            f"operator {op_name!r} requires extras not installed. "
-            f"Install with: pip install voxkitchen[{extras_str}]"
+            f"operator {op_name!r} requires runtime extras: {extras_str}. "
+            f"Run it in Docker with: vkit docker run --tag {tag} <yaml>"
         )
 
 

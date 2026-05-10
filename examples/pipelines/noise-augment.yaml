@@ -4,12 +4,10 @@
 # random signal-to-noise ratio. Useful for training robust ASR/TTS models.
 #
 # Usage:
-#   vkit run examples/pipelines/noise-augment.yaml
-#
-# Prerequisites:
-#   pip install voxkitchen
-#   Put clean audio in ./data/clean/
-#   Put noise files in ./data/noise/  (any .wav/.flac/.mp3)
+#   1. Put clean audio in ./data/clean/
+#   2. Put noise files in ./data/noise/  (any .wav/.flac/.mp3)
+#   3. vkit docker run --tag slim examples/pipelines/noise-augment.yaml --dry-run
+#   4. vkit docker run --tag slim examples/pipelines/noise-augment.yaml
 
 version: "0.1"
 name: noise-augment

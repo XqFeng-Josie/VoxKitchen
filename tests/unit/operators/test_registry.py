@@ -93,8 +93,8 @@ def test_list_operators_returns_sorted_names() -> None:
     assert list_operators() == ["alpha", "mike", "zulu"]
 
 
-def test_missing_extras_error_message_includes_pip_hint() -> None:
+def test_missing_extras_error_message_includes_docker_hint() -> None:
     err = MissingExtrasError("faster_whisper_asr", ["asr"])
     msg = str(err)
     assert "faster_whisper_asr" in msg
-    assert "pip install voxkitchen[asr]" in msg
+    assert "vkit docker run --tag asr" in msg

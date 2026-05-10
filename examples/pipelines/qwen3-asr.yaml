@@ -2,8 +2,9 @@
 # Supports 30 languages + 22 Chinese dialects.
 # Optionally returns word-level timestamps via ForcedAligner.
 #
-# Usage: vkit run examples/pipelines/qwen3-asr.yaml
-# Requires: pip install voxkitchen[audio,align]
+# Usage:
+#   vkit docker run --tag asr examples/pipelines/qwen3-asr.yaml --dry-run
+#   vkit docker run --tag asr examples/pipelines/qwen3-asr.yaml
 
 version: "0.1"
 name: qwen3-asr

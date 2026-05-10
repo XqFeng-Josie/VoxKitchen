@@ -4,7 +4,7 @@ WeNet (https://github.com/wenet-e2e/wenet) is a production-first end-to-end
 speech recognition toolkit. It provides pretrained models for Chinese and
 English with excellent accuracy and real-time performance.
 
-Requires: ``pip install wenet``
+Runtime: ``vkit docker run --tag asr <yaml>``
 """
 
 from __future__ import annotations

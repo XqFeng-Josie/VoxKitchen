@@ -5,11 +5,11 @@ Prepare augmented ASR training data with automatic transcription.
 ## Quick Start
 
 ```bash
-pip install voxkitchen[audio,asr]
 vkit init my-asr-project --template asr
 cd my-asr-project
 # Put your audio files in ./data/
-vkit run pipeline.yaml
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker run --tag asr pipeline.yaml
 ```
 
 ## What the Pipeline Does
@@ -43,7 +43,9 @@ Noise augmentation (`noise_augment`) is also effective but requires a noise data
       snr_range: [5, 20]
 ```
 
-Download MUSAN noise data: `vkit download musan --root ./data/musan`
+Put MUSAN or another noise dataset under `./data/noise/` before enabling
+this stage. The MUSAN recipe is tracked in the roadmap, but is not a built-in
+recipe yet.
 
 ### Why HuggingFace output?
 
@@ -78,7 +80,7 @@ ingest:
   source: recipe
   recipe: librispeech
   args:
-    root: /data/librispeech
+    root: ./data/librispeech
     subsets: [train-clean-100]
 ```
 

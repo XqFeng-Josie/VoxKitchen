@@ -27,6 +27,20 @@ def test_init_pipeline_yaml_is_valid_yaml(tmp_path: Path) -> None:
     assert data["name"] == "my-pipeline"
 
 
+def test_init_template_writes_packaged_pipeline(tmp_path: Path) -> None:
+    target = tmp_path / "cleaning-proj"
+    runner = CliRunner()
+    result = runner.invoke(app, ["init", str(target), "--template", "cleaning"])
+    assert result.exit_code == 0
+
+    data = yaml.safe_load((target / "pipeline.yaml").read_text())
+    assert data["name"] == "data-cleaning"
+    assert data["stages"][-1]["op"] == "pack_jsonl"
+    readme = (target / "README.md").read_text()
+    assert "vkit docker run --tag slim pipeline.yaml --dry-run" in readme
+    assert "vkit run pipeline.yaml" not in readme
+
+
 def test_init_rejects_non_empty_dir(tmp_path: Path) -> None:
     (tmp_path / "existing.txt").write_text("x")
     runner = CliRunner()

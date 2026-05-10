@@ -15,14 +15,14 @@ VoxKitchen recipes parse popular speech datasets into CutSets. Some recipes also
 
 ```bash
 # LibriSpeech (English, from openslr.org)
-vkit download librispeech --root /data/librispeech --subsets dev-clean
-vkit download librispeech --root /data/librispeech --subsets train-clean-100
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets train-clean-100
 
 # AISHELL-1 (Chinese, from openslr.org)
-vkit download aishell --root /data/aishell
+vkit docker download --tag slim aishell --root ./data/aishell
 
 # FLEURS (multilingual, from HuggingFace)
-vkit download fleurs --root /data/fleurs --subsets en_us,zh_cn,fr_fr
+vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_cn,fr_fr
 ```
 
 ### LibriSpeech Subsets
@@ -61,7 +61,7 @@ ingest:
   source: recipe
   recipe: librispeech
   args:
-    root: /data/librispeech
+    root: ./data/librispeech
     subsets: [train-clean-100]
 
 stages:

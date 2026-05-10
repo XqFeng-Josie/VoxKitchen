@@ -3,7 +3,7 @@
 Uses the ``speechmos`` package (same as DNSMOS) which provides UTMOS
 via a PyTorch model. Good for evaluating TTS/voice conversion output.
 
-Install: ``pip install speechmos``
+Runtime: ``vkit docker run --tag slim <yaml>``
 """
 
 from __future__ import annotations

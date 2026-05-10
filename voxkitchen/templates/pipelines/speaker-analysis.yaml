@@ -1,14 +1,14 @@
 # Speaker Analysis Pipeline
-# Analyze speakers in audio data: segment → diarize → embed → classify.
+# Analyze speakers in audio data: segment -> diarize -> embed -> classify.
 #
-# Flow: resample → VAD → speaker diarization → speaker embedding →
-#       gender classification → language detection → pack
+# Flow: resample -> VAD -> speaker diarization -> speaker embedding ->
+#       gender classification -> language detection -> pack
 #
 # Usage:
 #   1. Put your audio files in ./data/
 #   2. Set HF_TOKEN in .env (required for pyannote diarization)
-#   3. vkit docker run --tag latest examples/pipelines/speaker-analysis.yaml --dry-run
-#   4. vkit docker run --tag latest examples/pipelines/speaker-analysis.yaml
+#   3. vkit docker run --tag latest pipeline.yaml --dry-run
+#   4. vkit docker run --tag latest pipeline.yaml
 #   5. Results in work/ directory
 
 version: "0.1"

@@ -64,6 +64,9 @@ dispatches.
 ## Data flow
 
 ```
+  vkit docker run pipeline.yaml
+        │
+        ▼  (container entrypoint)
   vkit run pipeline.yaml
         │
         ▼  (core env, parent process)
@@ -106,8 +109,9 @@ Lookup order:
 2. `/opt/voxkitchen/op_env_map.json` (docker) →
 3. In-process fallback: walk registered operators, derive from `required_extras`
 
-The fallback matters for local `pip install -e .` dev — there's only one env,
-everything maps to it, and the subprocess path is never taken.
+The fallback matters for source-tree development and unit tests where there
+is no prebuilt image map. It is not the supported user pipeline execution
+path.
 
 ### `voxkitchen/runtime/stage_runner.py`
 
@@ -323,7 +327,8 @@ Validate stays the same but uses `op_schemas.json` instead of importing operator
 ## What does NOT change
 
 - Operator authoring contract: subclass `Operator`, declare `name`, `config_cls`, `required_extras`.
-- YAML surface: `vkit run pipeline.yaml` still works identically.
+- YAML surface is unchanged. Host users run it with `vkit docker run`; the
+  image entrypoint still calls `vkit run` internally.
 - Checkpoint / resume semantics.
 - GC / trash behavior.
 - Tests: existing operator tests run in the env that has their deps. Parent-env smoke tests run in `core`.

@@ -4,7 +4,7 @@ Qwen3-ASR supports 30 languages + 22 Chinese dialects with excellent
 accuracy. Optionally integrates Qwen3-ForcedAligner for word-level
 timestamps in the same pass.
 
-Requires: ``pip install qwen-asr``
+Runtime: ``vkit docker run --tag asr <yaml>``
 """
 
 from __future__ import annotations

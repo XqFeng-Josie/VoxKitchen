@@ -13,7 +13,6 @@ import argparse
 import sys
 from typing import Any
 
-
 # Display-friendly category names and order
 CATEGORY_LABELS = {
     "basic": "Audio Processing",
@@ -21,6 +20,7 @@ CATEGORY_LABELS = {
     "augment": "Data Augmentation",
     "annotate": "Annotation",
     "quality": "Quality & Filtering",
+    "synthesize": "Synthesis",
     "pack": "Output / Packing",
     "noop": "Utility",
 }
@@ -46,6 +46,18 @@ def format_type(annotation: Any) -> str:
     if name:
         return name
     return str(annotation).replace("typing.", "")
+
+
+def docker_tag_for_required_extras(required_extras: list[str]) -> str:
+    from voxkitchen.cli.hints import docker_tag_for_extras
+
+    if not required_extras:
+        return "slim"
+    tags = {docker_tag_for_extras(extra) for extra in required_extras}
+    tags.discard(None)
+    if len(tags) == 1:
+        return next(iter(tags))
+    return "latest"
 
 
 def generate() -> str:
@@ -77,7 +89,8 @@ def generate() -> str:
     for cat in sorted_cats:
         label = CATEGORY_LABELS.get(cat, cat.title())
         count = len(groups[cat])
-        lines.append(f"- [{label}](#{cat}) ({count} operators)")
+        noun = "operator" if count == 1 else "operators"
+        lines.append(f"- [{label}](#{cat}) ({count} {noun})")
     lines.append("")
 
     # Each category
@@ -101,9 +114,11 @@ def generate() -> str:
                 lines.append("")
 
             # Metadata
-            extras = ",".join(op_cls.required_extras) if op_cls.required_extras else "core"
+            tag = docker_tag_for_required_extras(list(op_cls.required_extras))
             lines.append(f"- **Device:** {op_cls.device}")
-            lines.append(f"- **Install:** `pip install voxkitchen[{extras}]`")
+            lines.append(
+                f"- **Runtime:** `vkit docker run --tag {tag} <yaml>`"
+            )
             lines.append(f"- **Produces audio:** {'Yes' if op_cls.produces_audio else 'No'}")
             lines.append("")
 

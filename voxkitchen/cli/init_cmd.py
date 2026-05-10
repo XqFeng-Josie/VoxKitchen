@@ -39,11 +39,24 @@ A VoxKitchen pipeline project.
 ## Usage
 
 ```bash
-vkit validate pipeline.yaml
-vkit run pipeline.yaml
-vkit inspect run work/
+# Put audio files under data/ first.
+vkit docker run --tag {tag} pipeline.yaml --dry-run
+vkit docker run --tag {tag} pipeline.yaml
+
+# `vkit docker run` prints the exact work_dir for the run.
+vkit inspect run <work_dir>
+vkit inspect cuts <work_dir>/<final_stage>/cuts.jsonl.gz
 ```
 """
+
+
+def recommended_docker_tag(template: str | None) -> str:
+    """Return the recommended prebuilt Docker image tag for a scaffolded project."""
+    if template == "asr":
+        return "asr"
+    if template == "cleaning" or template is None:
+        return "slim"
+    return "latest"
 
 
 def list_templates() -> None:
@@ -86,4 +99,7 @@ def init_project(target: Path, template: str | None = None) -> None:
         pipeline_content = DEFAULT_PIPELINE
 
     (target / "pipeline.yaml").write_text(pipeline_content, encoding="utf-8")
-    (target / "README.md").write_text(README_TEMPLATE.format(name=target.name), encoding="utf-8")
+    tag = recommended_docker_tag(template)
+    (target / "README.md").write_text(
+        README_TEMPLATE.format(name=target.name, tag=tag), encoding="utf-8"
+    )

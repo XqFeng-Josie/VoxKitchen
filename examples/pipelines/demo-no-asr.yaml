@@ -1,6 +1,7 @@
 # Demo pipeline without ASR — runs on macOS without CTranslate2 issues.
-# Usage: vkit run examples/pipelines/demo-no-asr.yaml
-# Requires: pip install -e ".[segment,pitch]"  (optional: [dnsmos] for MOS scores)
+# Usage:
+#   vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml --dry-run
+#   vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml
 
 version: "0.1"
 name: demo-no-asr

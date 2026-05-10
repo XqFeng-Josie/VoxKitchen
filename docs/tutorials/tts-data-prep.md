@@ -5,11 +5,11 @@ Prepare high-quality TTS training data from raw audio recordings.
 ## Quick Start
 
 ```bash
-pip install voxkitchen[audio,enhance,align]
 vkit init my-tts-project --template tts
 cd my-tts-project
 # Put your audio files in ./data/
-vkit run pipeline.yaml
+vkit docker run --tag latest pipeline.yaml --dry-run
+vkit docker run --tag latest pipeline.yaml
 ```
 
 ## What the Pipeline Does

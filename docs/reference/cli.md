@@ -22,19 +22,22 @@ vkit init --list-templates                  # Show available templates
 | `--template`, `-t` | Project template (`tts`, `asr`, `cleaning`, `speaker`). |
 | `--list-templates` | Print templates and exit. |
 
-### `vkit run`
+### `vkit run` (container entrypoint)
 
-Execute a pipeline.
+Execute a pipeline in the current Python environment. This is the
+container entrypoint used by VoxKitchen images. Most host users should use
+`vkit docker run <yaml>`, which supplies the runtime image and Docker mounts.
 
 ```bash
-vkit run pipeline.yaml                           # Run full pipeline
-vkit run pipeline.yaml --dry-run                 # Validate only (no execution)
-vkit run pipeline.yaml --resume-from vad         # Resume from a stage
-vkit run pipeline.yaml --stop-at asr             # Stop after a stage
-vkit run pipeline.yaml --keep-intermediates      # Don't GC derived audio
-vkit run pipeline.yaml --num-gpus 2              # Override GPU count
-vkit run pipeline.yaml --num-workers 8           # Override CPU workers
-vkit run pipeline.yaml --work-dir /tmp/run1      # Override work_dir
+# Host usage; these flags are forwarded to the image entrypoint:
+vkit docker run pipeline.yaml                           # Run full pipeline
+vkit docker run pipeline.yaml --dry-run                 # Validate only
+vkit docker run pipeline.yaml --resume-from vad         # Resume from a stage
+vkit docker run pipeline.yaml --stop-at asr             # Stop after a stage
+vkit docker run pipeline.yaml --keep-intermediates      # Keep derived audio
+vkit docker run pipeline.yaml --num-gpus 2              # Override GPU count
+vkit docker run pipeline.yaml --num-workers 8           # Override CPU workers
+vkit docker run pipeline.yaml --work-dir ./work/run1    # Override work_dir
 ```
 
 | Flag | Meaning |
@@ -49,20 +52,23 @@ vkit run pipeline.yaml --work-dir /tmp/run1      # Override work_dir
 
 ### `vkit validate`
 
-Check YAML syntax, operator references, and per-operator arg schemas without executing.
+Check YAML syntax, operator references, per-operator arg schemas, and the
+recommended Docker image without executing.
 
 ```bash
 vkit validate pipeline.yaml
 ```
 
-### `vkit download`
+### `vkit download` (current-env helper)
 
-Download a dataset using its recipe.
+Download a dataset using its recipe in the current environment. For the
+Docker-first user path, use `vkit docker download` so recipe-specific
+dependencies come from the image.
 
 ```bash
-vkit download librispeech --root /data/ls --subsets dev-clean,test-clean
-vkit download aishell --root /data/aishell
-vkit download fleurs --root /data/fleurs --subsets en_us,zh_cn
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean,test-clean
+vkit docker download --tag slim aishell --root ./data/aishell
+vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_cn
 ```
 
 | Flag | Meaning |
@@ -72,13 +78,15 @@ vkit download fleurs --root /data/fleurs --subsets en_us,zh_cn
 
 ### `vkit ingest`
 
-Build a CutSet manifest from a data source — standalone, outside a pipeline. Most users let `vkit run` do this as stage 0; `vkit ingest` is useful for one-off manifest prep.
+Build a CutSet manifest from a data source — standalone, outside a pipeline.
+Most users let `vkit docker run` do this through the pipeline ingest block;
+`vkit ingest` is useful for one-off manifest prep.
 
 ```bash
-vkit ingest --source dir      --root /data/audio    --out cuts.jsonl.gz
-vkit ingest --source recipe   --recipe librispeech  --root /data/ls --out cuts.jsonl.gz
+vkit ingest --source dir      --root ./data/audio       --out cuts.jsonl.gz
+vkit ingest --source recipe   --recipe librispeech      --root ./data/librispeech --out cuts.jsonl.gz
 vkit ingest --source manifest --path input.jsonl.gz --out merged.jsonl.gz
-vkit ingest --source dir      --root /data/audio    --out cuts.jsonl.gz --no-recursive
+vkit ingest --source dir      --root ./data/audio       --out cuts.jsonl.gz --no-recursive
 ```
 
 | Flag | Source | Meaning |
@@ -120,13 +128,13 @@ vkit operators show silero_vad  # Show config fields + YAML example for an opera
 
 ### `vkit recipes`
 
-List dataset recipes (the entities behind `vkit download` and `ingest: source=recipe`).
+List dataset recipes (the entities behind `vkit docker download` and `ingest: source=recipe`).
 
 ```bash
 vkit recipes
 ```
 
-Output is a table with name, download mechanism (`openslr`, `HuggingFace`, or `manual`), and one-line description. To actually download, use `vkit download <name> --root <dir>`; to reference inside a pipeline, use `ingest: { source: recipe, recipe: <name>, args: { root: <dir> } }`. Recipe-specific subset names are listed in [Recipes & Download](recipes.md).
+Output is a table with name, download mechanism (`openslr`, `HuggingFace`, or `manual`), and one-line description. To actually download, use `vkit docker download --tag slim <name> --root ./data/<name>`; to reference inside a pipeline, use `ingest: { source: recipe, recipe: <name>, args: { root: <dir> } }`. Recipe-specific subset names are listed in [Recipes & Download](recipes.md).
 
 ### `vkit doctor`
 
@@ -150,11 +158,11 @@ Inside the `voxkitchen:latest` multi-env image, `vkit doctor` with no `--expect`
 
 Run any of the commands above inside a published Docker image instead of the local Python env. Also has three image-management helpers (`build`, `pull`, `shell`).
 
-**Shared flags** (every subcommand):
+**Image selection flags** (`run`, `download`, `doctor`, `pull`, `shell`):
 
 | Flag | Default | Meaning |
 |------|---------|---------|
-| `--tag NAME` | `latest` | Image tag. Resolves to `ghcr.io/xqfeng-josie/voxkitchen:NAME`. |
+| `--tag NAME` | `latest` (`download`: `slim`) | Image tag. Resolves to `ghcr.io/xqfeng-josie/voxkitchen:NAME`. |
 | `--image REF` | — | Full image reference; overrides `--tag`. |
 
 #### `vkit docker run <yaml>`
@@ -165,6 +173,7 @@ Execute a pipeline inside the container.
 vkit docker run pipeline.yaml                          # :latest
 vkit docker run pipeline.yaml --tag asr                # :asr
 vkit docker run pipeline.yaml --gpus none              # CPU-only
+vkit docker run pipeline.yaml --dry-run                # Validate inside image
 vkit docker run pipeline.yaml --env-file /tmp/.env     # Alternate env file
 vkit docker run pipeline.yaml --mount /data/raw        # Extra read-only bind mount
 ```
@@ -174,11 +183,12 @@ vkit docker run pipeline.yaml --mount /data/raw        # Extra read-only bind mo
 | `--gpus MODE` | `auto` | `auto` (attach all GPUs if `nvidia-smi` is on PATH), `all`, or `none`. |
 | `--env-file PATH` | `./.env` if present | `docker --env-file` path (used for `HF_TOKEN`). |
 | `--mount PATH`, `-m` | — | Extra host path to bind read-only. Repeatable. |
+| `--dry-run`, `--resume-from`, `--stop-at`, `--num-gpus`, `--num-workers`, `--work-dir`, `--keep-intermediates` | — | Pipeline options forwarded to the image entrypoint. |
 
 The wrapper automatically:
 
 - Sets `--user $(id -u):$(id -g)` and `-e HOME=/tmp` so files in `./work` are owned by the host user.
-- Binds `./work → /app/work` and `./data → /data` if they exist.
+- Binds `./work → /app/work` and `./output → /app/output`; if `./data` exists, binds it to both `/app/data` for template-relative YAML and `/data` for absolute data roots.
 - Binds the pipeline YAML at its absolute path when it points to a host file.
 
 #### `vkit docker doctor`
@@ -192,6 +202,16 @@ vkit docker doctor --tag asr --expect asr --json      # smoke test + JSON
 ```
 
 Accepts `--expect` and `--json` (same semantics as local `vkit doctor`). Default `--gpus` is `none` (doctor doesn't need GPU).
+
+#### `vkit docker download <recipe>`
+
+Download a dataset inside the container. The wrapper creates and mounts
+`./data`, so roots under `./data/...` are written back to the host.
+
+```bash
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
+vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_cn
+```
 
 #### `vkit docker build [target]`
 
@@ -244,4 +264,5 @@ Launch an interactive Gradio panel to explore a CutSet.
 vkit viz work/01_pack/cuts.jsonl.gz --port 7860
 ```
 
-Requires: `pip install voxkitchen[viz-panel]`
+`vkit viz` is an optional local developer UI; it is separate from the
+Docker-first pipeline execution path.

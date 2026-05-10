@@ -1,6 +1,8 @@
 # Scan a local directory, resample to 16kHz mono, normalize loudness, pack as Kaldi.
-# Usage: vkit run examples/pipelines/dir-resample-pack.yaml
-# Prerequisite: put .wav/.flac/.mp3 files in ./data/
+# Usage:
+#   1. Put .wav/.flac/.mp3 files in ./data/
+#   2. vkit docker run --tag slim examples/pipelines/dir-resample-pack.yaml --dry-run
+#   3. vkit docker run --tag slim examples/pipelines/dir-resample-pack.yaml
 
 version: "0.1"
 name: dir-resample-pack

@@ -1,6 +1,8 @@
 # Add room reverb to speech using RIR files.
-# Usage: vkit run examples/pipelines/reverb-augment.yaml
-# Put clean audio in ./data/clean/, RIR wav files in ./data/rir/
+# Usage:
+#   1. Put clean audio in ./data/clean/ and RIR wav files in ./data/rir/
+#   2. vkit docker run --tag slim examples/pipelines/reverb-augment.yaml --dry-run
+#   3. vkit docker run --tag slim examples/pipelines/reverb-augment.yaml
 
 version: "0.1"
 name: reverb-augment

@@ -5,11 +5,11 @@ Clean up raw audio data: measure quality, remove duplicates, filter out bad file
 ## Quick Start
 
 ```bash
-pip install voxkitchen[audio,segment,quality]
 vkit init my-cleaning-project --template cleaning
 cd my-cleaning-project
 # Put your raw audio files in ./data/
-vkit run pipeline.yaml
+vkit docker run --tag slim pipeline.yaml --dry-run
+vkit docker run --tag slim pipeline.yaml
 vkit inspect cuts work/*/05_filter/cuts.jsonl.gz
 ```
 

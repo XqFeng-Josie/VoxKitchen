@@ -5,7 +5,6 @@ Analyze speaker distribution in audio data: identify speakers, extract embedding
 ## Quick Start
 
 ```bash
-pip install voxkitchen[audio,diarize,speaker,classify]
 vkit init my-speaker-project --template speaker
 cd my-speaker-project
 
@@ -13,7 +12,8 @@ cd my-speaker-project
 echo "HF_TOKEN=hf_your_token" > .env
 
 # Put your audio files in ./data/
-vkit run pipeline.yaml
+vkit docker run --tag latest pipeline.yaml --dry-run
+vkit docker run --tag latest pipeline.yaml
 ```
 
 ## What the Pipeline Does

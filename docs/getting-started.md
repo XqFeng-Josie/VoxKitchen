@@ -1,160 +1,132 @@
 # Getting Started
 
-## Installation
+VoxKitchen's recommended user path is Docker-first: install the lightweight
+`vkit` launcher locally, then run pipelines inside prebuilt Docker images.
+You do not need to install model dependencies on your host machine.
 
-VoxKitchen has one CLI (`vkit`) with two execution modes: **local** (runs
-inside your current Python env) and **container** (runs inside a Docker
-image). Most users use both — pip install to get the CLI, then pull
-Docker images for pipelines that exceed the local env's extras.
+## Install The Launcher
 
-### Local install (pip)
+Requirements:
+
+- Docker
+- Python 3.10+ for the lightweight `vkit` CLI
 
 ```bash
-# Create virtual environment
-conda create -n voxkitchen python=3.11 -y
-conda activate voxkitchen
-
-# Clone + install
-git clone https://github.com/XqFeng-Josie/VoxKitchen.git
-cd VoxKitchen
-pip install -e ".[audio,segment,quality,pack]"   # pick one dep cluster
-
-# Add more extras from the same cluster as needed
-pip install -e ".[audio,segment,quality,pack,asr,funasr,align]"   # ASR cluster
-pip install -e ".[audio,segment,quality,pack,diarize]"            # diarization
-pip install -e ".[audio,segment,quality,pack,tts-kokoro]"         # TTS
+pipx install voxkitchen
 ```
 
-> **Don't install `.[all]`** — it crosses dep clusters (pyannote vs
-> funasr vs fish-speech pin incompatible torch/numpy versions) and
-> the pip resolver will fail. The authoritative extras → cluster
-> mapping is
-> [`voxkitchen/runtime/env_resolver.py`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/voxkitchen/runtime/env_resolver.py).
+## Pull A Runtime Image
 
-### Container install (Docker)
-
-For pipelines that cross dep clusters (e.g. pyannote + funasr), use
-the published multi-env image:
+Start with the `slim` image for the demo. For your own pipelines, pick the
+smallest image that contains the operators you use. Mixed pipelines may need
+`latest`.
 
 ```bash
-vkit docker pull --tag slim          # CPU-only, ~13 GB
-vkit docker pull --tag latest        # all five envs, ~103 GB
-vkit docker run pipeline.yaml        # same YAML, same CLI
+vkit docker pull --tag slim
 ```
 
-Full tag matrix and size reference: [Docker build guide](docker-build.md).
+| Tag | Use when |
+|---|---|
+| `slim` | CPU-friendly cleaning, VAD, quality metrics, packing |
+| `asr` | Faster-Whisper, FunASR, Qwen3-ASR, forced alignment |
+| `diarize` | Pyannote speaker diarization |
+| `tts` | Kokoro, ChatTTS, CosyVoice |
+| `latest` | Mixed pipelines across ASR, diarization, TTS, Fish-Speech, and core operators |
 
-## Your first pipeline
+Not sure which image your YAML needs? Run `vkit validate pipeline.yaml`; it
+prints the recommended `vkit docker pull --tag ...` and run command.
 
-### Option A: Use a template (recommended)
+Command flags and tag behavior are listed in the [CLI reference](reference/cli.md).
+
+## Run The Demo
+
+The published image includes example pipelines and demo audio. Start with
+the `slim` demo; use `latest` later for pipelines that mix ASR, diarization,
+and TTS operators.
 
 ```bash
-vkit init my-project --template tts    # TTS data preparation
+vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml --dry-run
+vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml
+vkit inspect run ./work/demo-no-asr
+```
+
+## Create Your First Project
+
+Use a template, put audio under `data/`, validate the plan, then run in
+Docker.
+
+```bash
+vkit init my-project --template asr
 cd my-project
+
+cp /path/to/your/audio/*.wav data/
+
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker run --tag asr pipeline.yaml
+vkit inspect run work/
 ```
 
 Available templates:
 
-| Template | Use case |
-|----------|----------|
-| `tts` | TTS training data: denoise, segment, ASR, word alignment |
-| `asr` | ASR training data: augmentation, transcription, filtering |
-| `cleaning` | Data cleaning: quality metrics, dedup, filtering |
-| `speaker` | Speaker analysis: diarization, embeddings, gender, language |
+| Template | Use case | Suggested image |
+|---|---|---|
+| `cleaning` | Quality metrics, dedup, filtering | `slim` |
+| `asr` | VAD, augmentation, ASR labeling, packing | `asr` |
+| `speaker` | Diarization, embeddings, language/gender labels | `latest` |
+| `tts` | Denoise, segment, transcribe, align, pack | `latest` |
 
-See all templates: `vkit init --list-templates`
-
-### Option B: Start from scratch
+See all templates:
 
 ```bash
-vkit init my-project
-cd my-project
+vkit init --list-templates
 ```
 
-### Add your audio and run
+## Inspect Results
 
 ```bash
-# Put audio files in the data/ directory
-cp /path/to/your/audio/*.wav data/
-
-# Validate the pipeline
-vkit run pipeline.yaml --dry-run
-
-# Run it
-vkit run pipeline.yaml
-
-# Inspect results
-vkit inspect run work/                              # stage summary + timing
-vkit inspect cuts work/*/07_pack/cuts.jsonl.gz       # cut statistics
-open work/report.html                                # visual report
+vkit inspect run work/
+vkit inspect cuts <work_dir>/<stage>/cuts.jsonl.gz
+vkit inspect errors work/
 ```
 
-## Download a dataset
+`vkit docker run` writes run artifacts under `./work` and exported datasets
+under `./output` with your host user ID. It also mounts `./data`
+automatically when that directory exists.
 
-Download and process a public dataset in two commands:
+## Download A Dataset
+
+Dataset download also runs through Docker, so recipe dependencies stay inside
+the runtime image and data lands under your project's `./data` directory.
 
 ```bash
-# Download LibriSpeech dev-clean (5.4 hours, ~350 MB)
-vkit download librispeech --root ./librispeech --subsets dev-clean
-
-# Process it
 vkit init ls-project --template asr
-# Edit pipeline.yaml: change ingest root to ./librispeech
-vkit run pipeline.yaml
+cd ls-project
+vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
+# Edit pipeline.yaml: set ingest.args.root to ./data/librispeech
+vkit docker run --tag asr pipeline.yaml
 ```
 
-Available datasets: `librispeech`, `aishell`, `fleurs`. See [Recipes & Download](reference/recipes.md).
+Available datasets: `librispeech`, `aishell`, `fleurs`. See
+[Recipes & Download](reference/recipes.md).
 
-## Discover operators
+## Configuration
+
+Some operators require API tokens. Put them in `./.env`; `vkit docker run`
+passes that file into the container automatically.
 
 ```bash
-# List all 51 operators (grouped by category)
-vkit operators
-
-# Show config fields + YAML example for any operator
-vkit operators show silero_vad
-vkit operators show qwen3_asr
-vkit operators show noise_augment
+cp .env.example .env
 ```
 
-## Python tools API
+| Variable | Required by | Notes |
+|---|---|---|
+| `HF_TOKEN` | `pyannote_diarize` | Accept the pyannote model agreement on HuggingFace first. |
 
-For quick one-off tasks without writing a YAML pipeline:
+## Next Steps
 
-```python
-from voxkitchen.tools import (
-    audio_info, transcribe, detect_speech, estimate_snr,
-    extract_speaker_embedding, enhance_speech, align_words,
-    synthesize,
-)
-
-audio_info("speech.wav")
-# AudioInfo(sample_rate=16000, duration=3.2, num_channels=1, format='WAV')
-
-transcribe("speech.wav", model="tiny")
-# [SpeechSegment(start=0.0, end=3.2, text="Hello world")]
-
-estimate_snr("speech.wav")
-# 18.3
-
-# Speaker embedding (requires: pip install voxkitchen[speaker])
-emb = extract_speaker_embedding("speaker.wav")
-
-# Forced alignment (requires: pip install voxkitchen[align])
-align_words("speech.wav", "hello world", language="English")
-
-# TTS synthesis (requires: pip install voxkitchen[tts-kokoro])
-synthesize("Hello world!", "output.wav", engine="kokoro")
-
-# Voice cloning (requires: pip install voxkitchen[tts-cosyvoice])
-synthesize("你好", "clone.wav", engine="cosyvoice",
-           reference_audio="ref.wav", reference_text="参考文本")
-```
-
-## Next steps
-
-- [TTS Tutorial](tutorials/tts-data-prep.md) — end-to-end TTS data preparation
-- [ASR Tutorial](tutorials/asr-training-data.md) — augmented ASR training data
-- [Data Cleaning Tutorial](tutorials/data-cleaning.md) — quality metrics and filtering
-- [Operators Reference](reference/operators.md) — all 51 operators with config details
-- [Data Protocol](concepts/data-protocol.md) — understand Recording / Supervision / Cut
+- [TTS Tutorial](tutorials/tts-data-prep.md)
+- [ASR Tutorial](tutorials/asr-training-data.md)
+- [Data Cleaning Tutorial](tutorials/data-cleaning.md)
+- [Operators Reference](reference/operators.md)
+- [Pipeline YAML](reference/pipeline-yaml.md)
+- [Data Protocol](concepts/data-protocol.md)

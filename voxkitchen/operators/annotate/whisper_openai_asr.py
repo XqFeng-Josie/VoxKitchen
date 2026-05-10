@@ -3,7 +3,7 @@
 Unlike faster-whisper (CTranslate2-based), this uses pure PyTorch and
 works reliably on macOS ARM64 without deadlock issues.
 
-Install: ``pip install openai-whisper``
+Runtime: ``vkit docker run --tag asr <yaml>``
 """
 
 from __future__ import annotations

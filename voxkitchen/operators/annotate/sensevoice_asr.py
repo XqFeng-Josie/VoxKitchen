@@ -18,7 +18,7 @@ type in the same forward pass. These are stored in ``supervision.custom``:
 ``"zh"``) rather than the requested language, so auto-detection results are
 faithfully recorded even when ``language="auto"``.
 
-Requires: ``pip install funasr``
+Runtime: ``vkit docker run --tag asr <yaml>``
 """
 
 from __future__ import annotations

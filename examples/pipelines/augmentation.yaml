@@ -5,11 +5,9 @@
 # each with a random volume adjustment.
 #
 # Usage:
-#   vkit run examples/pipelines/augmentation.yaml
-#
-# Prerequisites:
-#   pip install voxkitchen[audio]
-#   Put .wav/.flac/.mp3 files in ./data/
+#   1. Put .wav/.flac/.mp3 files in ./data/
+#   2. vkit docker run --tag slim examples/pipelines/augmentation.yaml --dry-run
+#   3. vkit docker run --tag slim examples/pipelines/augmentation.yaml
 
 version: "0.1"
 name: augmentation

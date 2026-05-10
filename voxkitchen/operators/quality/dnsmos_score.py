@@ -3,7 +3,7 @@
 Provides both P.835 (sig/bak/ovrl) and P.808 (overall MOS) scores.
 Uses the ``speechmos`` package which wraps the official ONNX models.
 
-Install: ``pip install speechmos``
+Runtime: ``vkit docker run --tag slim <yaml>``
 """
 
 from __future__ import annotations

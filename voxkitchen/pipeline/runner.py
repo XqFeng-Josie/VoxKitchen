@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from dataclasses import replace
 from datetime import datetime, timezone
@@ -78,6 +79,11 @@ def _make_executor(device: str, ctx: RunContext) -> Executor:
     if device == "gpu" and not _gpu_available():
         logger.info("GPU not available, falling back to CPU executor")
     return CpuPoolExecutor(num_workers=max(1, ctx.num_cpu_workers))
+
+
+def _default_num_cpu_workers() -> int:
+    """Choose the default CPU parallelism when YAML leaves it as null."""
+    return max(1, os.cpu_count() or 1)
 
 
 def _run_stage_in_process(
@@ -243,7 +249,7 @@ def run_pipeline(
         stage_index=0,
         stage_name="ingest",
         num_gpus=spec.num_gpus,
-        num_cpu_workers=spec.num_cpu_workers or 1,
+        num_cpu_workers=spec.num_cpu_workers or _default_num_cpu_workers(),
         gc_mode=gc_mode,
         device="cpu",
     )

@@ -1,6 +1,7 @@
 # Extract speaker embeddings from speech segments.
-# Usage: vkit run examples/pipelines/speaker-embed.yaml
-# Requires: pip install voxkitchen[audio,speaker]
+# Usage:
+#   vkit docker run --tag slim examples/pipelines/speaker-embed.yaml --dry-run
+#   vkit docker run --tag slim examples/pipelines/speaker-embed.yaml
 
 version: "0.1"
 name: speaker-embed

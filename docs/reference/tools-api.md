@@ -1,6 +1,8 @@
 # Python Tools API
 
-For quick tasks without writing a YAML pipeline, use the standalone functions in `voxkitchen.tools`.
+Developer reference for standalone helper functions in `voxkitchen.tools`.
+The supported user workflow for data processing remains YAML plus
+`vkit docker run`.
 
 ```python
 from voxkitchen.tools import (
@@ -91,7 +93,7 @@ emb = extract_speaker_embedding("speaker.wav", method="speechbrain",
                                  model="speechbrain/spkrec-ecapa-voxceleb")
 ```
 
-Requires: `pip install voxkitchen[speaker]`
+Runtime image for equivalent pipeline operators: `slim`.
 
 ## Speech Enhancement
 
@@ -99,7 +101,7 @@ Requires: `pip install voxkitchen[speaker]`
 enhance_speech("noisy.wav", "clean.wav", aggressiveness=0.5)
 ```
 
-Requires: `pip install voxkitchen[enhance]`
+Runtime image for equivalent pipeline operators: `slim`.
 
 ## Forced Alignment
 
@@ -112,7 +114,7 @@ words = align_words("speech.wav", "hello world", language="English")
 words = align_words("speech.wav", "你好世界", language="Chinese")
 ```
 
-Requires: `pip install voxkitchen[align]`
+Runtime image for equivalent pipeline operators: `asr`.
 
 ## TTS Synthesis
 
@@ -134,9 +136,9 @@ synthesize("Hello", "clone.wav", engine="fish_speech",
            reference_audio="ref.wav")
 ```
 
-| `engine` | Extras group | Device | Notes |
-|----------|--------------|:------:|-------|
-| `"kokoro"` | `tts-kokoro` | CPU/GPU | 82M params, 8 langs (`a`/`b`/`j`/`z`/...), `speed` supported. |
-| `"chattts"` | `tts-chattts` | GPU | Conversational ZH/EN, `seed` for speaker sampling. |
-| `"cosyvoice"` | `tts-cosyvoice` | GPU | Voice cloning via `reference_audio` + `reference_text`. |
-| `"fish_speech"` | `tts-fish-speech` | GPU | Voice cloning via `reference_audio` (operator currently parked; see CHANGELOG). |
+| `engine` | Docker tag | Device | Notes |
+|----------|------------|:------:|-------|
+| `"kokoro"` | `tts` | CPU/GPU | 82M params, 8 langs (`a`/`b`/`j`/`z`/...), `speed` supported. |
+| `"chattts"` | `tts` | GPU | Conversational ZH/EN, `seed` for speaker sampling. |
+| `"cosyvoice"` | `tts` | GPU | Voice cloning via `reference_audio` + `reference_text`. |
+| `"fish_speech"` | `fish-speech` | GPU | Voice cloning via `reference_audio` (operator currently parked; see CHANGELOG). |
