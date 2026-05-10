@@ -80,6 +80,7 @@ WORKDIR /app
 # stage and reinstalled with --no-deps.
 COPY pyproject.toml README.md LICENSE ./
 RUN mkdir -p voxkitchen && \
+    mkdir -p voxkitchen/templates/pipelines && \
     echo '__version__ = "0.0.0.dev0"' > voxkitchen/_version.py && \
     echo '' > voxkitchen/__init__.py
 
