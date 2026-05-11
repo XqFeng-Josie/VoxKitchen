@@ -654,10 +654,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using-speechbrain-for-speaker-embeddings" class="md-nav__link">
+  <a href="#using-a-specific-speechbrain-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using SpeechBrain for speaker embeddings
+        Using a specific SpeechBrain model
       
     </span>
   </a>
@@ -1150,10 +1150,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using-speechbrain-for-speaker-embeddings" class="md-nav__link">
+  <a href="#using-a-specific-speechbrain-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using SpeechBrain for speaker embeddings
+        Using a specific SpeechBrain model
       
     </span>
   </a>
@@ -1236,8 +1236,8 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 </tr>
 <tr>
 <td>Embed</td>
-<td><code>speaker_embed</code> (WeSpeaker)</td>
-<td>512-d speaker embedding vector per segment</td>
+<td><code>speaker_embed</code> (SpeechBrain)</td>
+<td>Speaker embedding vector per segment</td>
 </tr>
 <tr>
 <td>Gender</td>
@@ -1305,17 +1305,19 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> threshold</span><span class="p">:</span><span class="w"> </span><span class="nv">0.5</span><span class="w"> </span><span class="p p-Indicator">}</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">embed</span>
 <span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_embed</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> method</span><span class="p">:</span><span class="w"> </span><span class="nv">wespeaker</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> method</span><span class="p">:</span><span class="w"> </span><span class="nv">speechbrain</span><span class="w"> </span><span class="p p-Indicator">}</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
 <span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
 </code></pre></div>
-<h3 id="using-speechbrain-for-speaker-embeddings">Using SpeechBrain for speaker embeddings</h3>
+<h3 id="using-a-specific-speechbrain-model">Using a specific SpeechBrain model</h3>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">embed</span>
 <span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_embed</span>
 <span class="w">    </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speechbrain</span>
 <span class="w">      </span><span class="nt">speechbrain_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speechbrain/spkrec-ecapa-voxceleb</span>
 </code></pre></div>
+<p>The WeSpeaker backend is kept for custom environments, but official
+VoxKitchen Docker images use SpeechBrain for this operator.</p>
 <h3 id="add-emotion-recognition">Add emotion recognition</h3>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">emotion</span>
 <span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">emotion_recognize</span>

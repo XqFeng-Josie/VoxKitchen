@@ -1236,9 +1236,9 @@ The supported user workflow for data processing remains YAML plus
 </code></pre></div>
 <h2 id="speaker-embedding">Speaker Embedding</h2>
 <div class="highlight"><pre><span></span><code><span class="n">emb</span> <span class="o">=</span> <span class="n">extract_speaker_embedding</span><span class="p">(</span><span class="s2">&quot;speaker.wav&quot;</span><span class="p">)</span>
-<span class="c1"># [0.12, -0.34, 0.56, ...]  (512-d vector)</span>
+<span class="c1"># [0.12, -0.34, 0.56, ...]</span>
 
-<span class="c1"># SpeechBrain backend</span>
+<span class="c1"># Explicit SpeechBrain model</span>
 <span class="n">emb</span> <span class="o">=</span> <span class="n">extract_speaker_embedding</span><span class="p">(</span><span class="s2">&quot;speaker.wav&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;speechbrain&quot;</span><span class="p">,</span>
                                  <span class="n">model</span><span class="o">=</span><span class="s2">&quot;speechbrain/spkrec-ecapa-voxceleb&quot;</span><span class="p">)</span>
 </code></pre></div>

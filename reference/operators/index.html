@@ -3390,7 +3390,7 @@ The <code>SenseVoiceSmall</code> model is fast and accurate for these languages.
 </code></pre></div>
 <hr />
 <h3 id="speaker_embed"><code>speaker_embed</code></h3>
-<p><strong>Extract speaker embedding vectors using WeSpeaker or SpeechBrain.</strong></p>
+<p><strong>Extract speaker embedding vectors using SpeechBrain or WeSpeaker.</strong></p>
 <ul>
 <li><strong>Device:</strong> gpu</li>
 <li><strong>Runtime:</strong> <code>vkit docker run --tag slim &lt;yaml&gt;</code></li>
@@ -3409,7 +3409,7 @@ The <code>SenseVoiceSmall</code> model is fast and accurate for these languages.
 <tr>
 <td><code>method</code></td>
 <td>str</td>
-<td><code>wespeaker</code></td>
+<td><code>speechbrain</code></td>
 <td></td>
 </tr>
 <tr>
@@ -3429,10 +3429,13 @@ The <code>SenseVoiceSmall</code> model is fast and accurate for these languages.
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_speaker_embed</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speaker_embed</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wespeaker</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speechbrain</span>
 <span class="w">    </span><span class="nt">wespeaker_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">english</span>
 <span class="w">    </span><span class="nt">speechbrain_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speechbrain/spkrec-ecapa-voxceleb</span>
 </code></pre></div>
+<p>Official VoxKitchen Docker images use the SpeechBrain backend for this
+operator. The WeSpeaker backend is experimental and intended for custom
+environments.</p>
 <hr />
 <h3 id="speech_enhance"><code>speech_enhance</code></h3>
 <p><strong>Remove background noise using DeepFilterNet neural denoiser.</strong></p>
