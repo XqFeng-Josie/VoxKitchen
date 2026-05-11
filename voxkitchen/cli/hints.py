@@ -17,7 +17,7 @@ OPERATOR_EXTRAS_HINTS: dict[str, str] = {
     "forced_align": "align",
     "pyannote_diarize": "diarize",
     "speechbrain_langid": "classify",
-    "speaker_embed": "speaker",
+    "speaker_embed": "classify",
     "speech_enhance": "enhance",
     "codec_tokenize": "codec",
     "silero_vad": "segment",

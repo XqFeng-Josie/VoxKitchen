@@ -23,7 +23,7 @@ vkit docker run --tag latest pipeline.yaml
 | Resample | `resample` → 16kHz | Normalized audio |
 | VAD | `silero_vad` | Speech segments |
 | Diarize | `pyannote_diarize` | Speaker labels (spk_0, spk_1, ...) |
-| Embed | `speaker_embed` (WeSpeaker) | 512-d speaker embedding vector per segment |
+| Embed | `speaker_embed` (SpeechBrain) | Speaker embedding vector per segment |
 | Gender | `gender_classify` (F0-based) | "m" / "f" / "o" per segment |
 | Language | `whisper_langid` | Detected language per segment |
 | Pack | `pack_jsonl` | Manifest with all annotations |
@@ -93,12 +93,12 @@ stages:
     args: { threshold: 0.5 }
   - name: embed
     op: speaker_embed
-    args: { method: wespeaker }
+    args: { method: speechbrain }
   - name: pack
     op: pack_jsonl
 ```
 
-### Using SpeechBrain for speaker embeddings
+### Using a specific SpeechBrain model
 
 ```yaml
   - name: embed
@@ -107,6 +107,9 @@ stages:
       method: speechbrain
       speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
 ```
+
+The WeSpeaker backend is kept for custom environments, but official
+VoxKitchen Docker images use SpeechBrain for this operator.
 
 ### Add emotion recognition
 

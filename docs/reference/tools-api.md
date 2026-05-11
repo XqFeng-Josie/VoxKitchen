@@ -86,9 +86,9 @@ normalize_loudness("loud.wav", "normalized.wav", target_lufs=-23.0)
 
 ```python
 emb = extract_speaker_embedding("speaker.wav")
-# [0.12, -0.34, 0.56, ...]  (512-d vector)
+# [0.12, -0.34, 0.56, ...]
 
-# SpeechBrain backend
+# Explicit SpeechBrain model
 emb = extract_speaker_embedding("speaker.wav", method="speechbrain",
                                  model="speechbrain/spkrec-ecapa-voxceleb")
 ```

@@ -533,29 +533,28 @@ def normalize_loudness(
 def extract_speaker_embedding(
     audio_path: str | Path,
     *,
-    method: str = "wespeaker",
-    model: str = "english",
+    method: str = "speechbrain",
+    model: str | None = None,
 ) -> list[float]:
     """Extract a speaker embedding vector from an audio file.
 
     Args:
-        method: "wespeaker" (default) or "speechbrain".
-        model: Model name. Defaults depend on method:
+        method: "speechbrain" (default) or "wespeaker".
+        model: Optional model name. Defaults depend on method:
 
-            - wespeaker: "english", "chinese", etc.
             - speechbrain: "speechbrain/spkrec-ecapa-voxceleb"
+            - wespeaker: "english", "chinese", etc. (custom environments)
 
     Returns:
-        Speaker embedding as a list of floats (e.g. 512-d for WeSpeaker).
+        Speaker embedding as a list of floats.
 
     Example::
 
         emb = extract_speaker_embedding("speaker.wav")
-        print(f"Embedding dim: {len(emb)}")  # 512
+        print(f"Embedding dim: {len(emb)}")
 
-        # SpeechBrain backend
-        emb = extract_speaker_embedding("speaker.wav", method="speechbrain",
-                                         model="speechbrain/spkrec-ecapa-voxceleb")
+        # WeSpeaker backend in a custom environment
+        emb = extract_speaker_embedding("speaker.wav", method="wespeaker", model="english")
     """
     from voxkitchen.operators.annotate.speaker_embed import (
         SpeakerEmbedConfig,
@@ -565,10 +564,20 @@ def extract_speaker_embedding(
     path = Path(audio_path)
     cut = _make_cut(path)
     ctx = _make_ctx()
+    resolved_model = (
+        model
+        or (
+            "speechbrain/spkrec-ecapa-voxceleb"
+            if method == "speechbrain"
+            else "english"
+        )
+    )
     config = SpeakerEmbedConfig(
         method=method,
-        wespeaker_model=model if method == "wespeaker" else "english",
-        speechbrain_model=model if method == "speechbrain" else "speechbrain/spkrec-ecapa-voxceleb",
+        wespeaker_model=resolved_model if method == "wespeaker" else "english",
+        speechbrain_model=(
+            resolved_model if method == "speechbrain" else "speechbrain/spkrec-ecapa-voxceleb"
+        ),
     )
     op = SpeakerEmbedOperator(config, ctx)
     op.setup()
@@ -707,7 +716,7 @@ def compute_speaker_similarity(
     audio_path: str | Path,
     reference_path: str | Path,
     *,
-    method: str = "wespeaker",
+    method: str = "speechbrain",
 ) -> float:
     """Compute speaker similarity between an audio file and a reference.
 

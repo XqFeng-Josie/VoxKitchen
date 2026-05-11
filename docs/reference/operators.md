@@ -623,7 +623,7 @@ In addition to the transcript, each Supervision carries:
 
 ### `speaker_embed`
 
-**Extract speaker embedding vectors using WeSpeaker or SpeechBrain.**
+**Extract speaker embedding vectors using SpeechBrain or WeSpeaker.**
 
 - **Device:** gpu
 - **Runtime:** `vkit docker run --tag slim <yaml>`
@@ -631,7 +631,7 @@ In addition to the transcript, each Supervision carries:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `method` | str | `wespeaker` |  |
+| `method` | str | `speechbrain` |  |
 | `wespeaker_model` | str | `english` |  |
 | `speechbrain_model` | str | `speechbrain/spkrec-ecapa-voxceleb` |  |
 
@@ -639,10 +639,14 @@ In addition to the transcript, each Supervision carries:
 - name: my_speaker_embed
   op: speaker_embed
   args:
-    method: wespeaker
+    method: speechbrain
     wespeaker_model: english
     speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
 ```
+
+Official VoxKitchen Docker images use the SpeechBrain backend for this
+operator. The WeSpeaker backend is experimental and intended for custom
+environments.
 
 ---
 

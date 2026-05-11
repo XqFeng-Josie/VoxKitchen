@@ -43,6 +43,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - `vkit run --dry-run` can validate operators via exported schemas when the
   current environment cannot import the operator directly.
 - Documentation paths are consistently `./data`, `./work`, and `./output`.
+- `speaker_embed` now defaults to the SpeechBrain backend in official Docker
+  images, avoiding the upstream WeSpeaker/s3prl warmup failure on Python 3.11.
+
+### Known limitations
+
+- `tts_fish_speech`: operator targets fish-speech 1.x API; fish-speech 2.0
+  reshuffled the Python entry points. Image builds, model is cached,
+  operator is parked pending rewrite.
+- `speaker_embed` with `method: wespeaker` is experimental and intended for
+  custom environments. Official Docker images use `method: speechbrain`.
+- `utmos_score`: the `utmos` submodule is missing from the current
+  speechmos PyPI wheel. Operator registers but runtime fails.
+- `:latest` image is ~103 GB — larger than optimal because each per-env
+  stage re-copies core's model_cache. Use per-env tags unless you need
+  cross-cluster pipelines.
 
 ## [0.1.0] — 2026-04-19
 

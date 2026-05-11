@@ -26,13 +26,14 @@ checkpoints.
 
 ## Shape
 
-One Docker image. Four Python environments inside it, created with `uv`. A thin
-dispatch layer in the pipeline runner decides which env each stage runs in.
+One Docker image can contain multiple Python environments inside it, created
+with `uv`. A thin dispatch layer in the pipeline runner decides which env each
+stage runs in.
 
 ```
 /opt/voxkitchen/
   envs/
-    core/         # CPU torch 2.4;  audio/segment/quality/pack/pitch/dnsmos/classify/enhance/codec/speaker/viz
+    core/         # CPU torch 2.4;  audio/segment/quality/pack/pitch/dnsmos/classify/enhance/codec/viz
     asr/          # GPU torch 2.4;  asr/whisper/funasr/align (no diarize)
     diarize/      # GPU torch 2.4;  pyannote 3.x only — separate from asr so :diarize can ship small
     tts/          # GPU torch 2.4;  tts-kokoro/chattts/cosyvoice
@@ -244,7 +245,7 @@ FROM base AS core-env
 RUN uv venv /opt/voxkitchen/envs/core --python 3.11 && \
     uv pip install --python /opt/voxkitchen/envs/core/bin/python \
         -c docker/constraints/core.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz]"
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz]"
 # warmup + schema dump for core
 RUN /opt/voxkitchen/envs/core/bin/python scripts/warmup_models.py --group core
 RUN /opt/voxkitchen/envs/core/bin/python -m voxkitchen.runtime.dump_schemas \
@@ -261,7 +262,7 @@ FROM core-env AS asr-env
 RUN uv venv /opt/voxkitchen/envs/asr --python 3.11 && \
     uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
         -c docker/constraints/asr.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz,asr,whisper,funasr,align,diarize]"
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,asr,whisper,funasr,align]"
 RUN /opt/voxkitchen/envs/asr/bin/python scripts/warmup_models.py --group asr
 RUN /opt/voxkitchen/envs/asr/bin/python -m voxkitchen.runtime.dump_schemas \
         --env asr --out /tmp/schemas_asr.json
@@ -270,7 +271,7 @@ FROM asr-env AS tts-env
 RUN uv venv /opt/voxkitchen/envs/tts --python 3.11 && \
     uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         -c docker/constraints/tts.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz,tts-kokoro,tts-chattts,tts-cosyvoice,tts-fish-speech]"
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,tts-kokoro,tts-chattts,tts-cosyvoice]"
 RUN /opt/voxkitchen/envs/tts/bin/python scripts/warmup_models.py --group tts
 RUN /opt/voxkitchen/envs/tts/bin/python -m voxkitchen.runtime.dump_schemas \
         --env tts --out /tmp/schemas_tts.json

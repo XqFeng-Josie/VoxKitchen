@@ -110,10 +110,7 @@ RUN uv pip install --python /opt/voxkitchen/envs/core/bin/python \
 # gender_classify operator still registers and works via method=f0 / method=speechbrain.
 RUN uv pip install --python /opt/voxkitchen/envs/core/bin/python \
         -c /app/docker/constraints/core.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz,viz-panel]"
-
-# (wespeaker is pulled transitively by the [speaker] extras above — no
-# separate install needed.)
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel]"
 
 # Full source (overwrites the stub). Reinstall with --no-deps so the resolver
 # doesn't touch already-installed extras.
@@ -180,7 +177,7 @@ RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
 # image can ship without the full ASR stack.
 RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
         -c /app/docker/constraints/asr.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz,viz-panel,asr,whisper,funasr,align]"
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,asr,whisper,funasr,align]"
 
 # wenet_asr is intentionally NOT in EXPECTED_OPERATORS.asr — its upstream
 # tooling breaks often and we don't want one flaky dep to block the image.
@@ -216,7 +213,7 @@ RUN uv pip install --python /opt/voxkitchen/envs/diarize/bin/python \
 
 RUN uv pip install --python /opt/voxkitchen/envs/diarize/bin/python \
         -c /app/docker/constraints/diarize.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz,viz-panel,diarize]"
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,diarize]"
 
 RUN uv pip install --python /opt/voxkitchen/envs/diarize/bin/python -e . --no-deps
 
@@ -239,7 +236,7 @@ RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
 
 RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         -c /app/docker/constraints/tts.txt \
-        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,speaker,viz,viz-panel,tts-kokoro,tts-chattts,tts-cosyvoice]"
+        -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,tts-kokoro,tts-chattts,tts-cosyvoice]"
 
 # misaki (pulled by kokoro) lazy-downloads the spacy English model at first
 # TTS call via `uv pip install`. In a non-root runtime that lazy install

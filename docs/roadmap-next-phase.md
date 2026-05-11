@@ -189,7 +189,7 @@ stages:
 
   - name: embed
     op: speaker_embed
-    args: { method: wespeaker }
+    args: { method: speechbrain }
 
   - name: gender
     op: gender_classify

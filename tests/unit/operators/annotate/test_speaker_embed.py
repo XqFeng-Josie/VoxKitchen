@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
+import sys
+import types
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
-
-try:
-    import wespeaker  # noqa: F401
-except (ImportError, AttributeError):
-    pytest.skip("wespeaker not available", allow_module_level=True)
-
 from voxkitchen.operators.annotate.speaker_embed import (
     SpeakerEmbedConfig,
     SpeakerEmbedOperator,
@@ -46,10 +42,44 @@ def test_speaker_embed_is_registered() -> None:
     assert get_operator("speaker_embed") is SpeakerEmbedOperator
 
 
+def test_speaker_embed_defaults_to_speechbrain() -> None:
+    config = SpeakerEmbedConfig()
+
+    assert config.method == "speechbrain"
+    assert SpeakerEmbedOperator.required_extras == ["classify"]
+
+
+def test_speaker_embed_setup_loads_speechbrain(monkeypatch, make_run_context) -> None:
+    calls = []
+
+    class FakeEncoderClassifier:
+        @classmethod
+        def from_hparams(cls, *, source, run_opts):
+            calls.append((source, run_opts))
+            return "fake-speaker-model"
+
+    speechbrain_mod = types.ModuleType("speechbrain")
+    inference_mod = types.ModuleType("speechbrain.inference")
+    speaker_mod = types.ModuleType("speechbrain.inference.speaker")
+    speaker_mod.EncoderClassifier = FakeEncoderClassifier
+
+    monkeypatch.setitem(sys.modules, "speechbrain", speechbrain_mod)
+    monkeypatch.setitem(sys.modules, "speechbrain.inference", inference_mod)
+    monkeypatch.setitem(sys.modules, "speechbrain.inference.speaker", speaker_mod)
+
+    op = SpeakerEmbedOperator(SpeakerEmbedConfig(), make_run_context("speaker"))
+    op.setup()
+
+    assert op._model == "fake-speaker-model"
+    assert calls == [("speechbrain/spkrec-ecapa-voxceleb", {"device": "cpu"})]
+
+
 @pytest.mark.slow
 def test_speaker_embed_wespeaker_extracts_embedding(
-    mono_wav_16k: Path, tmp_path: Path, make_run_context
+    mono_wav_16k: Path, make_run_context
 ) -> None:
+    pytest.importorskip("wespeaker")
+
     ctx = make_run_context("speaker")
     cs = CutSet([_cut_from_path(mono_wav_16k)])
     config = SpeakerEmbedConfig(method="wespeaker")

@@ -1,7 +1,8 @@
 """Speaker embedding extraction operator.
 
 Extracts a fixed-dimension speaker embedding vector from each audio cut.
-Supports WeSpeaker and SpeechBrain backends.
+Uses SpeechBrain by default; the WeSpeaker backend is kept as an
+experimental option for custom environments.
 
 Embeddings are stored in ``cut.custom["speaker_embedding"]`` as a list of
 floats. Useful for speaker verification, clustering, and deduplication.
@@ -21,21 +22,21 @@ from voxkitchen.utils.audio import load_audio_for_cut
 
 
 class SpeakerEmbedConfig(OperatorConfig):
-    method: str = "wespeaker"  # "wespeaker" or "speechbrain"
+    method: str = "speechbrain"  # "speechbrain" or "wespeaker"
     wespeaker_model: str = "english"
     speechbrain_model: str = "speechbrain/spkrec-ecapa-voxceleb"
 
 
 @register_operator
 class SpeakerEmbedOperator(Operator):
-    """Extract speaker embedding vectors using WeSpeaker or SpeechBrain."""
+    """Extract speaker embedding vectors using SpeechBrain or WeSpeaker."""
 
     name = "speaker_embed"
     config_cls = SpeakerEmbedConfig
     device = "gpu"
     produces_audio = False
     reads_audio_bytes = True
-    required_extras = ["speaker"]
+    required_extras = ["classify"]
 
     _model: Any
 
@@ -51,10 +52,24 @@ class SpeakerEmbedOperator(Operator):
             )
 
     def _setup_wespeaker(self) -> None:
-        import wespeaker
+        try:
+            import wespeaker
+        except ImportError as exc:
+            raise RuntimeError(
+                "speaker_embed method='wespeaker' requires a custom environment with "
+                "WeSpeaker installed. Official VoxKitchen Docker images use "
+                "method='speechbrain' by default."
+            ) from exc
 
         assert isinstance(self.config, SpeakerEmbedConfig)
-        self._model = wespeaker.load_model(self.config.wespeaker_model)
+        try:
+            self._model = wespeaker.load_model(self.config.wespeaker_model)
+        except Exception as exc:
+            raise RuntimeError(
+                "speaker_embed method='wespeaker' failed to initialize in this "
+                "environment. Use method='speechbrain' in official VoxKitchen Docker "
+                "images, or provide a custom WeSpeaker-compatible image."
+            ) from exc
 
     def _setup_speechbrain(self) -> None:
         from speechbrain.inference.speaker import EncoderClassifier

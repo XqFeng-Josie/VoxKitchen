@@ -133,21 +133,17 @@ def warmup_speechbrain_langid(r: WarmupReport) -> None:
 
 
 def warmup_speaker_embed(r: WarmupReport) -> None:
-    """Warm wespeaker's English model.
-
-    Known issue: wespeaker -> s3prl ships a dataclass with a mutable
-    default that Python 3.11+ rejects. Until s3prl ships a fix (see
-    https://github.com/s3prl/s3prl/issues), this warmup will record
-    a FAIL and the speaker_embed operator will be unusable at runtime.
-    Keep the call so doctor surfaces the gap; don't let it fail the build.
-    """
+    """Warm the default SpeechBrain speaker-embedding model."""
     try:
-        import wespeaker
+        from speechbrain.inference.speaker import EncoderClassifier
 
-        wespeaker.load_model("english")
+        EncoderClassifier.from_hparams(
+            source="speechbrain/spkrec-ecapa-voxceleb",
+            run_opts={"device": "cpu"},
+        )
         r.record_ok("speaker_embed")
     except ImportError:
-        r.record_skip("speaker_embed", "wespeaker not installed")
+        r.record_skip("speaker_embed", "speechbrain not installed")
     except Exception as e:
         r.record_fail("speaker_embed", e)
 

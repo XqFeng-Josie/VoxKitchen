@@ -327,7 +327,7 @@ Image env groups:
 | `audio` | torch, torchaudio | Resample, VAD |
 | `asr` | faster-whisper | ASR transcription |
 | `segment` | webrtcvad, librosa | Speech segmentation |
-| `speaker` | wespeaker | Speaker embeddings |
+| `classify` | speechbrain | Speaker/language classifiers and speaker embeddings |
 | `diarize` | pyannote.audio | Speaker diarization |
 | `enhance` | deepfilternet | Speech denoising |
 | `align` | qwen-asr | Forced alignment |
