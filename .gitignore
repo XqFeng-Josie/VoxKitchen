@@ -32,6 +32,7 @@ voxkitchen/_version.py
 # Project-specific
 work/
 work_dir/
+experiments/
 *.jsonl.gz
 !tests/fixtures/**/*.jsonl.gz
 .claude/settings.local.json
