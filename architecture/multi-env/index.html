@@ -1452,18 +1452,12 @@ stage runs in.</p>
 <p>Why fish-speech is its own env: its <code>torch==2.8.0</code> pin is incompatible with
 ChatTTS / CosyVoice / kokoro on torch 2.4. Forcing them onto torch 2.8 would
 expand the risk surface from "one broken TTS" to "all TTS broken". Isolating
-fish-speech costs ~5 GB image size and one extra venv to warm; in return
-every other env stays on its validated stack.</p>
-<blockquote>
-<p><strong>Current status</strong>: fish-speech 2.0 reshaped its Python API
-(<code>fish_speech.inference.TTSInference</code> → <code>fish_speech.inference_engine.TTSInferenceEngine</code>
-with a queue-based Llama generator + DAC decoder wiring). The
-<code>tts_fish_speech</code> operator still targets the 1.x shape and is therefore
-temporarily <strong>excluded from <code>EXPECTED_OPERATORS["fish-speech"]</code></strong> so the
-<code>latest</code> build passes. The env is still built, the model is still
-pre-downloaded; a follow-up PR will rewrite the operator against the
-2.0 API. This is an operator-level lag, not an architecture issue.</p>
-</blockquote>
+fish-speech costs substantial image size and one extra venv to warm; in
+return every other env stays on its validated stack.</p>
+<p>Fish-Speech uses the S2 inference API
+(<code>fish_speech.inference_engine.TTSInferenceEngine</code>) with a queue-based Llama
+generator and DAC decoder. VoxKitchen wires that stack inside the isolated
+<code>fish-speech</code> env, and <code>latest</code> includes that env for mixed-runtime pipelines.</p>
 <p>The <code>vkit</code> command on <code>$PATH</code> is a shim that routes into <code>envs/core/bin/python</code>. The
 core env is the parent: it loads the pipeline YAML, decides per-stage envs, and
 dispatches.</p>
@@ -1602,8 +1596,8 @@ without surprising builds.</p>
 <li><code>target=asr</code>:         core + asr env,          ~48 GB</li>
 <li><code>target=diarize</code>:     core + diarize env (pyannote only), ~32 GB</li>
 <li><code>target=tts</code>:         core + tts env,          ~44 GB</li>
-<li><code>target=fish-speech</code>: core + fish-speech env (isolated torch 2.8), ~38 GB</li>
-<li><code>target=latest</code>:      all five envs merged,    ~103 GB</li>
+<li><code>target=fish-speech</code>: core + fish-speech env (isolated torch 2.8, S2 cached), ~57 GB</li>
+<li><code>target=latest</code>:      all five envs merged,    ~123 GB</li>
 </ul>
 <div class="highlight"><pre><span></span><code>FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime AS base
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv

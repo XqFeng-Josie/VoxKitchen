@@ -1185,9 +1185,10 @@
 
 
 <h1 id="building-voxkitchen-docker-images">Building VoxKitchen Docker images</h1>
-<p>Most users should <code>docker pull</code> the pre-built images from
-<code>ghcr.io/xqfeng-josie/voxkitchen:{slim,asr,diarize,tts,fish-speech,latest}</code>
-(or use <code>vkit docker pull</code>). Build locally when:</p>
+<p>Most users should use <code>vkit docker pull --tag &lt;tag&gt;</code> to fetch the prebuilt
+images from
+<code>ghcr.io/xqfeng-josie/voxkitchen:{slim,asr,diarize,tts,fish-speech,latest}</code>.
+Build locally only when:</p>
 <ul>
 <li>Air-gapped / internal registries that cannot reach GHCR</li>
 <li>Apple Silicon / non-<code>linux/amd64</code> hosts until we ship multi-arch images</li>
@@ -1203,8 +1204,7 @@ BuildKit targets:</p>
 <tr>
 <th>Target</th>
 <th>What it contains</th>
-<th>Base</th>
-<th>Size</th>
+<th>Approx. size</th>
 <th>GPU</th>
 </tr>
 </thead>
@@ -1214,42 +1214,36 @@ BuildKit targets:</p>
 <td><code>core</code> venv only</td>
 <td>~13 GB</td>
 <td>no</td>
-<td></td>
 </tr>
 <tr>
 <td><code>asr</code></td>
 <td>core + <code>asr</code> venv (faster-whisper / funasr / qwen3 / forced align)</td>
 <td>~48 GB</td>
 <td>yes</td>
-<td></td>
 </tr>
 <tr>
 <td><code>diarize</code></td>
 <td>core + <code>diarize</code> venv (pyannote only)</td>
 <td>~32 GB</td>
 <td>yes</td>
-<td></td>
 </tr>
 <tr>
 <td><code>tts</code></td>
 <td>core + <code>tts</code> venv (kokoro / ChatTTS / CosyVoice)</td>
 <td>~44 GB</td>
 <td>yes</td>
-<td></td>
 </tr>
 <tr>
 <td><code>fish-speech</code></td>
-<td>core + <code>fish-speech</code> venv (torch 2.8 stack)</td>
-<td>~38 GB</td>
+<td>core + <code>fish-speech</code> venv (torch 2.8 stack, S2 model cached)</td>
+<td>~57 GB</td>
 <td>yes</td>
-<td></td>
 </tr>
 <tr>
 <td><code>latest</code></td>
 <td>all 5 envs merged in one image</td>
-<td>~103 GB</td>
+<td>~123 GB</td>
 <td>yes</td>
-<td></td>
 </tr>
 </tbody>
 </table>
@@ -1298,9 +1292,10 @@ than shipping an image that <em>looks</em> healthy but breaks at runtime.</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>latest<span class="w"> </span>--build-arg<span class="w"> </span><span class="nv">HF_TOKEN</span><span class="o">=</span>hf_xxx<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>-t<span class="w"> </span>voxkitchen:latest<span class="w"> </span>.
 </code></pre></div>
-<p><strong>(b)</strong> Omit at build — pass at run time, pyannote downloads on first use:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>-e<span class="w"> </span><span class="nv">HF_TOKEN</span><span class="o">=</span>hf_xxx<span class="w"> </span>-v<span class="w"> </span>/data:/data<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>voxkitchen:latest<span class="w"> </span>run<span class="w"> </span>pipeline.yaml
+<p><strong>(b)</strong> Omit at build — pass <code>HF_TOKEN</code> at run time, pyannote downloads on
+first use:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Put HF_TOKEN=hf_xxx in ./.env, then run through the vkit wrapper.</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--image<span class="w"> </span>voxkitchen:latest<span class="w"> </span>pipeline.yaml
 </code></pre></div>
 <p>You must accept the
 <a href="https://huggingface.co/pyannote/speaker-diarization-3.1">model agreement</a>
@@ -1308,8 +1303,8 @@ on HuggingFace with the same account as the token, or pyannote returns 403.</p>
 <p><strong>Do not</strong> bake a personal HF token into an image you then publish — it
 remains retrievable in the image layer history.</p>
 <h2 id="checking-whats-inside-an-image">Checking what's inside an image</h2>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>voxkitchen:latest<span class="w"> </span>doctor<span class="w">          </span><span class="c1"># per-env table</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>voxkitchen:latest<span class="w"> </span>doctor<span class="w"> </span>--json<span class="w">   </span><span class="c1"># machine-readable</span>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>doctor<span class="w"> </span>--image<span class="w"> </span>voxkitchen:latest<span class="w">          </span><span class="c1"># per-env table</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>doctor<span class="w"> </span>--image<span class="w"> </span>voxkitchen:latest<span class="w"> </span>--json<span class="w">   </span><span class="c1"># machine-readable</span>
 </code></pre></div>
 <p><code>doctor</code> in the <code>latest</code> image auto-detects the five envs and runs each
 one's self-check in a subprocess, producing one row per env plus a detail

@@ -4230,7 +4230,7 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <tr>
 <td><code>model_id</code></td>
 <td>str</td>
-<td><code>fishaudio/fish-speech-1.5</code></td>
+<td><code>fishaudio/s2-pro</code></td>
 <td></td>
 </tr>
 <tr>
@@ -4254,19 +4254,43 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <tr>
 <td><code>top_p</code></td>
 <td>float</td>
-<td><code>0.7</code></td>
+<td><code>0.8</code></td>
 <td></td>
 </tr>
 <tr>
 <td><code>temperature</code></td>
 <td>float</td>
-<td><code>0.7</code></td>
+<td><code>0.8</code></td>
 <td></td>
 </tr>
 <tr>
 <td><code>repetition_penalty</code></td>
 <td>float</td>
-<td><code>1.2</code></td>
+<td><code>1.1</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>chunk_length</code></td>
+<td>int</td>
+<td><code>200</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>seed</code></td>
+<td>int</td>
+<td>None</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>compile</code></td>
+<td>bool</td>
+<td><code>False</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>half</code></td>
+<td>bool</td>
+<td><code>False</code></td>
 <td></td>
 </tr>
 </tbody>
@@ -4274,13 +4298,17 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_tts_fish_speech</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_fish_speech</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fishaudio/fish-speech-1.5</span>
+<span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fishaudio/s2-pro</span>
 <span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
 <span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
 <span class="w">    </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1024</span>
-<span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
-<span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
-<span class="w">    </span><span class="nt">repetition_penalty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.2</span>
+<span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+<span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+<span class="w">    </span><span class="nt">repetition_penalty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1</span>
+<span class="w">    </span><span class="nt">chunk_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">compile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">half</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
 </code></pre></div>
 <hr />
 <h3 id="tts_kokoro"><code>tts_kokoro</code></h3>

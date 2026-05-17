@@ -1136,8 +1136,21 @@ You do not need to install model dependencies on your host machine.</p>
 <li>Docker</li>
 <li>Python 3.10+ for the lightweight <code>vkit</code> CLI</li>
 </ul>
-<div class="highlight"><pre><span></span><code>pipx<span class="w"> </span>install<span class="w"> </span>voxkitchen
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">VKIT_VERSION</span><span class="o">=</span>v0.2.0
+
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>~/.venvs/voxkitchen
+~/.venvs/voxkitchen/bin/python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+~/.venvs/voxkitchen/bin/python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/</span><span class="si">${</span><span class="nv">VKIT_VERSION</span><span class="si">}</span><span class="s2">.zip&quot;</span>
+
+mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/bin
+ln<span class="w"> </span>-sf<span class="w"> </span>~/.venvs/voxkitchen/bin/vkit<span class="w"> </span>~/.local/bin/vkit
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.local/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
 </code></pre></div>
+<p>This installs only the lightweight launcher and inspection commands. Pipeline
+dependencies stay inside Docker images.</p>
+<p>If <code>vkit</code> is not found in a new shell, add the <code>PATH</code> line above to your
+shell startup file, such as <code>~/.bashrc</code> or <code>~/.zshrc</code>.</p>
 <h2 id="pull-a-runtime-image">Pull A Runtime Image</h2>
 <p>Start with the <code>slim</code> image for the demo. For your own pipelines, pick the
 smallest image that contains the operators you use. Mixed pipelines may need
@@ -1169,6 +1182,10 @@ smallest image that contains the operators you use. Mixed pipelines may need
 <td>Kokoro, ChatTTS, CosyVoice</td>
 </tr>
 <tr>
+<td><code>fish-speech</code></td>
+<td>Fish-Speech isolated runtime</td>
+</tr>
+<tr>
 <td><code>latest</code></td>
 <td>Mixed pipelines across ASR, diarization, TTS, Fish-Speech, and core operators</td>
 </tr>
@@ -1178,9 +1195,9 @@ smallest image that contains the operators you use. Mixed pipelines may need
 prints the recommended <code>vkit docker pull --tag ...</code> and run command.</p>
 <p>Command flags and tag behavior are listed in the <a href="../reference/cli/">CLI reference</a>.</p>
 <h2 id="run-the-demo">Run The Demo</h2>
-<p>The published image includes example pipelines and demo audio. Start with
-the <code>slim</code> demo; use <code>latest</code> later for pipelines that mix ASR, diarization,
-and TTS operators.</p>
+<p>The published image includes example pipelines and demo audio, so no
+repository clone is required for this quick start. Start with the <code>slim</code> demo;
+use <code>latest</code> later for pipelines that mix ASR, diarization, and TTS operators.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>examples/pipelines/demo-no-asr.yaml<span class="w"> </span>--dry-run
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>examples/pipelines/demo-no-asr.yaml
 vkit<span class="w"> </span>inspect<span class="w"> </span>run<span class="w"> </span>./work/demo-no-asr

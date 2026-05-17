@@ -1681,6 +1681,7 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <p>The wrapper automatically:</p>
 <ul>
 <li>Sets <code>--user $(id -u):$(id -g)</code> and <code>-e HOME=/tmp</code> so files in <code>./work</code> are owned by the host user.</li>
+<li>Sets <code>NUMBA_CACHE_DIR=/app/work/.numba-cache</code> so librosa/numba operators can cache under the mounted work directory.</li>
 <li>Binds <code>./work → /app/work</code> and <code>./output → /app/output</code>; if <code>./data</code> exists, binds it to both <code>/app/data</code> for template-relative YAML and <code>/data</code> for absolute data roots.</li>
 <li>Binds the pipeline YAML at its absolute path when it points to a host file.</li>
 </ul>
