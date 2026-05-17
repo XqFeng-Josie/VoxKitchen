@@ -1,29 +1,49 @@
 <p align="center">
-  <img src="voxkitchen_logo.svg" width="400" alt="VoxKitchen logo">
+  <img src="voxkitchen_logo.svg" width="360" alt="VoxKitchen logo">
+</p>
+
+<h1 align="center">VoxKitchen</h1>
+
+<p align="center">
+  <strong>Docker-first speech data pipelines for ASR, TTS, speaker analysis, and dataset cleaning.</strong>
+</p>
+
+<p align="center">
+  Write one YAML recipe, run it with <code>vkit docker</code>, and get resumable,
+  inspectable, training-ready speech datasets without installing model stacks on your host.
 </p>
 
 <p align="center">
   <a href="https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml"><img src="https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
+  <img src="https://img.shields.io/badge/runtime-Docker--first-2496ED" alt="Docker-first">
+  <img src="https://img.shields.io/badge/operators-51-brightgreen" alt="51 operators">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
-Declarative speech data processing toolkit. Write a YAML recipe, run it with `vkit docker`, get training-ready data.
+> **Status:** Pre-alpha. APIs and Docker image contents may change between
+> releases.
 
-> **Status:** Pre-alpha. API is unstable.
+## Why VoxKitchen
+
+Speech data preparation is usually a chain of fragile scripts: convert audio,
+split speech, denoise, transcribe, diarize, filter, and export. VoxKitchen makes
+that chain explicit and repeatable:
+
+- **Docker-first execution**: prebuilt runtimes avoid local dependency conflicts.
+- **One YAML pipeline**: define ingest, stages, filters, and output packs in one file.
+- **51 built-in operators**: audio prep, VAD, ASR, diarization, TTS, quality metrics, and packing.
+- **Resumable by design**: every stage checkpoints under `./work`.
+- **Inspectable outputs**: reports, cut statistics, provenance, and per-stage errors.
 
 ## Quick Start
-
-VoxKitchen runs user pipelines in prebuilt Docker images. The local `vkit`
-command is a lightweight launcher: it handles Docker flags, mounts, `.env`
-loading, GPU autodetection, and file ownership for you.
 
 Requirements:
 
 - Docker
-- Python 3.10+ for the lightweight `vkit` CLI
+- Python 3.10+ for the lightweight `vkit` launcher
 
-Install the CLI:
+Install `vkit` into a user-local virtual environment:
 
 ```bash
 export VKIT_VERSION=v0.2.0
@@ -38,15 +58,13 @@ ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-This installs only the lightweight launcher and inspection commands. Pipeline
-dependencies stay inside Docker images.
+This installs only the launcher and inspection commands. Pipeline dependencies
+stay inside Docker images. If `vkit` is not found in a new shell, add the
+`PATH` line above to your shell startup file, such as `~/.bashrc` or
+`~/.zshrc`.
 
-If `vkit` is not found in a new shell, add the `PATH` line above to your
-shell startup file, such as `~/.bashrc` or `~/.zshrc`.
-
-Pull a prebuilt runtime image and run the demo. No repository clone is required
-for this quick start; the published image includes the demo pipeline and demo
-audio.
+Run the included demo with the smallest runtime image. No repository clone is
+required; the published image includes the demo pipeline and demo audio.
 
 ```bash
 vkit docker pull --tag slim
@@ -55,43 +73,36 @@ vkit inspect run ./work/demo-no-asr
 ```
 
 `vkit docker run` writes run artifacts under `./work` and exported datasets
-under `./output` with your host user ID. It also mounts `./data`
-automatically when that directory exists.
+under `./output` with your host user ID. It also mounts `./data` automatically
+when that directory exists.
 
-## Create A Project
+## What You Can Build
 
-Scaffold a project, put audio under `data/`, check the plan, then run it
-inside a prebuilt image:
-
-```bash
-vkit init my-project --template asr
-cd my-project
-
-# Put your audio files in ./data first.
-vkit docker run --tag asr pipeline.yaml --dry-run
-vkit docker run --tag asr pipeline.yaml
-vkit inspect run work/
-```
-
-Templates:
-
-| Template | Use case | Suggested image |
+| Goal | Start with | Runtime image |
 |---|---|---|
-| `cleaning` | Quality metrics, dedup, filtering | `slim` |
-| `asr` | VAD, augmentation, ASR labeling, packing | `asr` |
-| `speaker` | VAD, diarization, speaker embedding, language/gender labels | `latest` |
-| `tts` | Denoise, segment, transcribe, align, pack | `latest` |
-
-List templates:
-
-```bash
-vkit init --list-templates
-```
+| Clean and filter raw speech audio | `vkit init my-cleaning --template cleaning` | `slim` |
+| Build ASR training manifests | `vkit init my-asr --template asr` | `asr` |
+| Analyze speakers and languages | `vkit init my-speakers --template speaker` | `latest` |
+| Prepare TTS training data | `vkit init my-tts --template tts` | `latest` |
+| Run Fish-Speech synthesis | create a pipeline with `tts_fish_speech` | `fish-speech` |
 
 ## How It Works
 
-A pipeline is a YAML file: ingest raw audio, pass it through stages, and
-write the result out.
+```mermaid
+flowchart LR
+  A[Raw audio] --> B[Ingest]
+  B --> C[Convert / resample]
+  C --> D[VAD / segment]
+  D --> E[ASR / diarize / TTS / features]
+  E --> F[Quality filters]
+  F --> G[Pack: JSONL / HF / Kaldi / Parquet]
+  D --> H[Stage checkpoints]
+  E --> H
+  F --> H
+```
+
+A pipeline is a YAML file. Each stage reads a `CutSet`, writes a checkpoint,
+and passes the result to the next stage.
 
 ```yaml
 version: "0.1"
@@ -126,10 +137,37 @@ stages:
     op: pack_jsonl
 ```
 
-VoxKitchen checkpoints every stage under `work_dir`, so interrupted runs
-can resume from completed stages.
+Interrupted runs resume from completed checkpoints.
 
-## Prebuilt Images
+## Create A Project
+
+```bash
+vkit init my-project --template asr
+cd my-project
+
+# Put your audio files in ./data first.
+vkit validate pipeline.yaml
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker run --tag asr pipeline.yaml
+vkit inspect run work/
+```
+
+List templates:
+
+```bash
+vkit init --list-templates
+```
+
+Not sure which image a pipeline needs? Run:
+
+```bash
+vkit validate pipeline.yaml
+```
+
+It prints the recommended `vkit docker pull --tag ...` and
+`vkit docker run --tag ...` commands for that YAML.
+
+## Runtime Images
 
 Every `vkit docker` command accepts `--tag <name>`:
 
@@ -142,30 +180,22 @@ Every `vkit docker` command accepts `--tag <name>`:
 | `fish-speech` | Fish-Speech isolated runtime | yes | ~57 GB |
 | `latest` | Mixed pipelines across ASR, diarization, TTS, or Fish-Speech | yes | ~123 GB |
 
-Examples:
+Use `latest` when one pipeline mixes multiple runtime families, such as ASR
+plus diarization or ASR plus TTS. Otherwise, prefer the smallest image that
+contains the operators you need.
+
+Useful checks:
 
 ```bash
-vkit docker run --tag slim pipeline.yaml
-vkit docker run --tag asr pipeline.yaml
+vkit docker pull --tag asr
+vkit docker doctor --tag asr --expect asr
 vkit docker doctor --tag latest
 ```
 
-Use `latest` when a pipeline mixes operators from multiple runtime
-families, such as diarization plus ASR or TTS plus ASR.
-
-Not sure which image a pipeline needs? Run:
-
-```bash
-vkit validate pipeline.yaml
-```
-
-It prints the recommended `vkit docker pull --tag ...` and
-`vkit docker run --tag ...` commands for that YAML.
-
 ## Configuration
 
-Some operators require API tokens. Create `./.env`; `vkit docker run`
-passes it into the container automatically.
+Some operators require API tokens. Create `./.env`; `vkit docker run` passes it
+into the container automatically.
 
 ```bash
 cp .env.example .env
@@ -179,6 +209,7 @@ cp .env.example .env
 
 ```bash
 vkit init <path> --template asr       # Scaffold a project
+vkit validate pipeline.yaml           # Validate YAML and recommend an image
 vkit docker run --tag asr pipeline.yaml --dry-run
 vkit docker run --tag asr pipeline.yaml
 vkit inspect run work/                # Stage summary
@@ -189,16 +220,6 @@ vkit docker download --tag slim librispeech --root ./data/librispeech --subsets 
 vkit docker doctor --tag latest        # Check image health
 ```
 
-Full CLI reference: [docs/reference/cli.md](docs/reference/cli.md).
-
-## Operators
-
-51 built-in operators across audio processing, segmentation,
-augmentation, annotation, quality metrics, TTS synthesis, and output
-packing.
-
-Full operator reference: [docs/reference/operators.md](docs/reference/operators.md).
-
 ## Documentation
 
 - [Getting Started](docs/getting-started.md)
@@ -206,31 +227,22 @@ Full operator reference: [docs/reference/operators.md](docs/reference/operators.
 - [Recipes & Download](docs/reference/recipes.md)
 - [CLI reference](docs/reference/cli.md)
 - [Operators reference](docs/reference/operators.md)
+- [Docker build guide](docs/docker-build.md)
+- [Contributing](CONTRIBUTING.md)
 
-Contributor setup and project internals are covered in
-[Contributing](CONTRIBUTING.md).
+## Examples
 
-Clone the repository only when you want to browse or edit examples, use the
-bundled `skill/`, contribute code, or build images locally:
+The published Docker images include ready-to-run demo YAML files. Clone the
+repository only when you want to inspect or modify examples, use the bundled
+`skill/`, contribute code, or build images locally:
 
 ```bash
 git clone https://github.com/XqFeng-Josie/VoxKitchen.git
 cd VoxKitchen
 ```
 
-## Key Features
-
-- **Docker-first execution** — prebuilt runtimes avoid local dependency conflicts
-- **Resumable** — each stage checkpoints; crashes resume from the last good stage
-- **Inspectable** — per-stage summaries, cut statistics, errors, and provenance
-- **Error tolerant** — bad cuts are logged to `_errors.jsonl` and skipped
-- **Extensible** — custom operators can be registered through Python entry points
-
-## Examples
-
-The published Docker images include ready-to-run demo YAML files. Clone the
-repository if you want to inspect or modify the full
-[`examples/pipelines/`](examples/pipelines/) set locally.
+See [`examples/pipelines/`](examples/pipelines/) for the full local example
+set.
 
 ## Agent Skill
 
