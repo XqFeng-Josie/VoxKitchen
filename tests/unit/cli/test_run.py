@@ -272,4 +272,4 @@ stages:
     result = runner.invoke(app, ["run", str(yaml_path), "--dry-run"])
 
     assert result.exit_code == 0
-    assert "contains no supported audio files" in result.output
+    assert "contains no supported audio files" in " ".join(result.output.split())
