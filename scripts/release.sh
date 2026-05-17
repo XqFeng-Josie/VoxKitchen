@@ -106,7 +106,12 @@ confirm "build and push now? (this takes 1-2 hours for all six)"
 
 for target in "${TARGETS[@]}"; do
     log "[$target] building"
-    docker build --target "$target" -f docker/Dockerfile -t "voxkitchen:$target" .
+    docker build \
+        --build-arg "VOXKITCHEN_VERSION=${VERSION}" \
+        --target "$target" \
+        -f docker/Dockerfile \
+        -t "voxkitchen:$target" \
+        .
 
     log "[$target] tagging"
     docker tag "voxkitchen:$target" "${GHCR_IMAGE}:${target}"

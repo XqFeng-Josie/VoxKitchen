@@ -75,9 +75,7 @@ def test_speaker_embed_setup_loads_speechbrain(monkeypatch, make_run_context) ->
 
 
 @pytest.mark.slow
-def test_speaker_embed_wespeaker_extracts_embedding(
-    mono_wav_16k: Path, make_run_context
-) -> None:
+def test_speaker_embed_wespeaker_extracts_embedding(mono_wav_16k: Path, make_run_context) -> None:
     pytest.importorskip("wespeaker")
 
     ctx = make_run_context("speaker")

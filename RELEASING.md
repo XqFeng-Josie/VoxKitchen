@@ -44,7 +44,7 @@ Move entries from `[Unreleased]` into a new dated section. Example:
 ```markdown
 ## [Unreleased]
 
-## [0.2.0] — 2026-06-15
+## [0.2.0] — 2026-05-17
 
 ### Added
 - new feature X
@@ -86,12 +86,14 @@ to a commit that must already be on the remote.
 `scripts/release.sh` builds and pushes each of the six targets in
 smallest-to-largest order (so auth / disk / network failures surface
 early on a cheap target) and tags each with both the rolling
-`:<target>` and the pinned `:<target>-<version>`. See
+`:<target>` and the pinned `:<target>-<version>`. It also passes
+`VOXKITCHEN_VERSION=<version>` into the Docker build so package metadata
+inside the image matches the release tag. See
 [`scripts/release.sh`](scripts/release.sh) for the exact loop.
 
 **Prerequisites**:
 
-- Logged in to GHCR: `echo $GH_PAT | docker login ghcr.io -u XqFeng-Josie --password-stdin`.
+- Logged in to GHCR: `printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u xqfeng-josie --password-stdin`.
   The PAT needs `write:packages` scope (classic PAT from
   https://github.com/settings/tokens/new).
 - HF_TOKEN in `./.env` if you want to bake pyannote into the `asr` and
@@ -99,7 +101,12 @@ early on a cheap target) and tags each with both the rolling
   download ~80 MB of pyannote weights).
 
 Build+push of all six targets on a well-provisioned machine takes
-~1-2 hours (latest is the bottleneck at ~100 GB).
+~1-2 hours (latest is the bottleneck at ~123 GB).
+
+If the Docker images were already rebuilt and pushed manually for this exact
+commit, do **not** run `scripts/release.sh` again; it will rebuild and push
+all six images. Instead, run the pre-flight checks, commit, tag, and push
+manually using steps 3, 4, and 6.
 
 ### 6. GitHub Release
 
@@ -125,8 +132,8 @@ One last sanity check against the published artifact:
 
 ```bash
 # Pull a published image and run doctor against it
-docker pull ghcr.io/xqfeng-josie/voxkitchen:slim
-docker run --rm ghcr.io/xqfeng-josie/voxkitchen:slim doctor --expect core
+vkit docker pull --tag slim
+vkit docker doctor --tag slim --expect core
 
 # Expected: 36 operators available in core env, 0 missing.
 ```
@@ -134,7 +141,7 @@ docker run --rm ghcr.io/xqfeng-josie/voxkitchen:slim doctor --expect core
 ## Why no CI for Docker publish
 
 GitHub Actions default runners have ~14 GB of free disk. Our `:asr`,
-`:tts`, and `:latest` images are 40-100 GB each and will not fit. Full
+`:tts`, `:fish-speech`, and `:latest` images are 40-123 GB each and will not fit. Full
 Docker publish CI requires either self-hosted runners or GitHub's
 larger-runner add-ons.
 
@@ -146,7 +153,7 @@ Non-Docker CI (lint, unit tests, typecheck) runs on every push via
 If a pushed release has a critical bug:
 
 1. **Publish a patch release** with the fix (`vX.Y.Z+1`) — this is the
-   normal path and what pip users expect.
+   normal path for users pinned to a release tag.
 2. **Mark the broken release as such** in `CHANGELOG.md` by adding a
    `### Yanked` subsection with an explanation.
 3. For Docker: you can re-tag the same image name at the fixed commit

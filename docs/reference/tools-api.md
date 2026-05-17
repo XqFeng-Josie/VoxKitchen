@@ -141,4 +141,4 @@ synthesize("Hello", "clone.wav", engine="fish_speech",
 | `"kokoro"` | `tts` | CPU/GPU | 82M params, 8 langs (`a`/`b`/`j`/`z`/...), `speed` supported. |
 | `"chattts"` | `tts` | GPU | Conversational ZH/EN, `seed` for speaker sampling. |
 | `"cosyvoice"` | `tts` | GPU | Voice cloning via `reference_audio` + `reference_text`. |
-| `"fish_speech"` | `fish-speech` | GPU | Voice cloning via `reference_audio` (operator currently parked; see CHANGELOG). |
+| `"fish_speech"` | `fish-speech` | GPU | Fish-Speech S2 voice cloning via `reference_audio`. |

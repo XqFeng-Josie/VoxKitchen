@@ -26,10 +26,27 @@ Requirements:
 Install the CLI:
 
 ```bash
-pipx install voxkitchen
+export VKIT_VERSION=v0.2.0
+
+python -m venv ~/.venvs/voxkitchen
+~/.venvs/voxkitchen/bin/python -m pip install -U pip
+~/.venvs/voxkitchen/bin/python -m pip install \
+  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
+
+mkdir -p ~/.local/bin
+ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Pull a prebuilt runtime image and run the demo:
+This installs only the lightweight launcher and inspection commands. Pipeline
+dependencies stay inside Docker images.
+
+If `vkit` is not found in a new shell, add the `PATH` line above to your
+shell startup file, such as `~/.bashrc` or `~/.zshrc`.
+
+Pull a prebuilt runtime image and run the demo. No repository clone is required
+for this quick start; the published image includes the demo pipeline and demo
+audio.
 
 ```bash
 vkit docker pull --tag slim
@@ -122,8 +139,8 @@ Every `vkit docker` command accepts `--tag <name>`:
 | `asr` | Faster-Whisper, FunASR, Qwen3-ASR, forced alignment | yes | ~48 GB |
 | `diarize` | Pyannote speaker diarization | yes | ~32 GB |
 | `tts` | Kokoro, ChatTTS, CosyVoice | yes | ~44 GB |
-| `fish-speech` | Fish-Speech isolated runtime | yes | ~38 GB |
-| `latest` | Mixed pipelines across ASR, diarization, TTS, or Fish-Speech | yes | ~103 GB |
+| `fish-speech` | Fish-Speech isolated runtime | yes | ~57 GB |
+| `latest` | Mixed pipelines across ASR, diarization, TTS, or Fish-Speech | yes | ~123 GB |
 
 Examples:
 
@@ -193,6 +210,14 @@ Full operator reference: [docs/reference/operators.md](docs/reference/operators.
 Contributor setup and project internals are covered in
 [Contributing](CONTRIBUTING.md).
 
+Clone the repository only when you want to browse or edit examples, use the
+bundled `skill/`, contribute code, or build images locally:
+
+```bash
+git clone https://github.com/XqFeng-Josie/VoxKitchen.git
+cd VoxKitchen
+```
+
 ## Key Features
 
 - **Docker-first execution** — prebuilt runtimes avoid local dependency conflicts
@@ -203,7 +228,9 @@ Contributor setup and project internals are covered in
 
 ## Examples
 
-See [`examples/pipelines/`](examples/pipelines/) for ready-to-run YAML files.
+The published Docker images include ready-to-run demo YAML files. Clone the
+repository if you want to inspect or modify the full
+[`examples/pipelines/`](examples/pipelines/) set locally.
 
 ## Agent Skill
 

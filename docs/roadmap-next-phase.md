@@ -325,19 +325,18 @@ nav:
 
 ### 3.2 README 优化
 
-- 添加 badges（CI、PyPI、Python 版本、License）
+- 添加 badges（CI、Python 版本、License）
 - 添加项目 logo/banner（可选）
 - 添加 "Who is this for" 段落
 - 添加 "Comparison with other tools" 段落（vs Lhotse、NeMo、SpeechBrain）
 
-### 3.3 修复 Release Workflow
+### 3.3 Release Workflow
 
 ```yaml
-# .github/workflows/release.yml 修复步骤
-1. 在 GitHub Settings → Environments 创建 "release" 环境
-2. 在 PyPI 注册 voxkitchen 包名（或用 pending publisher）
-3. 配置 Trusted Publisher（GitHub → PyPI OIDC）
-4. 打 v0.2.0 tag 触发发布
+1. 准备 CHANGELOG 和 release commit
+2. 手动验证并推送 GHCR Docker images
+3. 打 v0.2.0 tag
+4. 创建 GitHub Release
 ```
 
 ### 3.4 v0.2.0 Release Notes 大纲
@@ -370,8 +369,8 @@ nav:
 - [ ] 创建 SECURITY.md + CODE_OF_CONDUCT.md
 - [ ] 创建 Issue/PR templates
 - [ ] README 添加 badges
-- [ ] 配置 GitHub release environment + PyPI trusted publisher
-- [ ] 打 v0.2.0 tag 并发布
+- [ ] 手动验证并推送 GHCR Docker images
+- [ ] 打 v0.2.0 tag 并创建 GitHub Release
 
 ---
 
@@ -463,8 +462,8 @@ $ vkit recipes
 
 项目可以公开发布时，应满足：
 
-1. **新用户 5 分钟跑通**：`pipx install voxkitchen` → `vkit docker pull --tag slim` → `vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml` → 得到结果
+1. **新用户 5 分钟跑通**：在用户目录 venv 安装 `vkit` → `vkit docker pull --tag slim` → `vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml` → 得到结果
 2. **文档自助**：用户遇到问题能在文档站找到答案
 3. **贡献者友好**：有人想加新算子，看 CONTRIBUTING.md + custom-operator 教程就能做
 4. **数据覆盖**：中英文各有 2+ 个可直接下载的大规模数据集
-5. **CI 绿色**：所有 test pass，release workflow 能发 PyPI
+5. **CI 绿色**：所有 test pass，release checklist 能稳定产出 tag、GitHub Release 和 GHCR Docker images

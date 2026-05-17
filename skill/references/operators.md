@@ -109,7 +109,8 @@ Use `tts` only for pure synthesis/tts-family stages.
 | Speaker/language | `speaker_embed`, `speechbrain_langid`, `whisper_langid`, `gender_classify` | `slim` or `asr` |
 | Enhancement/features | `speech_enhance`, `codec_tokenize`, `mel_extract` | `slim` |
 | Quality | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `quality_score_filter`, `audio_fingerprint_dedup`, `speaker_similarity`, `cer_wer` | `slim` |
-| TTS | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` | `tts` or `fish-speech` |
+| TTS | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice` | `tts` |
+| Fish-Speech TTS | `tts_fish_speech` | `fish-speech` or `latest` |
 | Packing | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` | `slim` |
 
 ## Selection Rules

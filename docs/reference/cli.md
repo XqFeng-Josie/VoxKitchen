@@ -188,6 +188,7 @@ vkit docker run pipeline.yaml --mount /data/raw        # Extra read-only bind mo
 The wrapper automatically:
 
 - Sets `--user $(id -u):$(id -g)` and `-e HOME=/tmp` so files in `./work` are owned by the host user.
+- Sets `NUMBA_CACHE_DIR=/app/work/.numba-cache` so librosa/numba operators can cache under the mounted work directory.
 - Binds `./work → /app/work` and `./output → /app/output`; if `./data` exists, binds it to both `/app/data` for template-relative YAML and `/data` for absolute data roots.
 - Binds the pipeline YAML at its absolute path when it points to a host file.
 

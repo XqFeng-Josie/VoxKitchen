@@ -6,7 +6,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-## [0.2.0] — 2026-05-10
+## [0.2.0] — 2026-05-17
 
 ### Added
 
@@ -31,6 +31,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Quick start now uses the smaller `slim` demo path.
 - Operator and doctor hints now point to Docker runtime tags instead of pip
   installation commands.
+- Legacy source-tree Docker helper scripts were removed in favor of the
+  maintained `vkit docker ...` subcommands.
 
 ### Fixed
 
@@ -45,17 +47,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Documentation paths are consistently `./data`, `./work`, and `./output`.
 - `speaker_embed` now defaults to the SpeechBrain backend in official Docker
   images, avoiding the upstream WeSpeaker/s3prl warmup failure on Python 3.11.
+- `tts_fish_speech` now targets the Fish-Speech S2 inference engine and is
+  expected in both `fish-speech` and `latest` images.
+- Official Docker envs now pin `setuptools<81` for `pyworld`, fixing
+  `pitch_stats` runtime failures caused by the removal of `pkg_resources`.
 
 ### Known limitations
 
-- `tts_fish_speech`: operator targets fish-speech 1.x API; fish-speech 2.0
-  reshuffled the Python entry points. Image builds, model is cached,
-  operator is parked pending rewrite.
 - `speaker_embed` with `method: wespeaker` is experimental and intended for
   custom environments. Official Docker images use `method: speechbrain`.
 - `utmos_score`: the `utmos` submodule is missing from the current
   speechmos PyPI wheel. Operator registers but runtime fails.
-- `:latest` image is ~103 GB — larger than optimal because each per-env
+- `:latest` image is ~123 GB — larger than optimal because each per-env
   stage re-copies core's model_cache. Use per-env tags unless you need
   cross-cluster pipelines.
 

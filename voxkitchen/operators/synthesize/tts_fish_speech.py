@@ -1,18 +1,14 @@
 """Fish-Speech TTS operator: codec-LM text-to-speech with voice cloning.
 
-Supports 13 languages. Output sample rate 44100 Hz. Requires GPU
-(24 GB+ VRAM recommended).
-
-.. warning::
-   Targets fish-speech **1.x** API (``from fish_speech.inference import
-   TTSInference``). Upstream reshuffled to ``TTSInferenceEngine`` in 2.0.
-   Excluded from ``EXPECTED_OPERATORS["fish-speech"]``; a follow-up PR
-   will rewrite ``_load_model`` / ``_infer`` against the 2.0 API.
+Uses the Fish-Speech S2 inference stack. Output sample rate is determined
+by the bundled DAC codec. A GPU with large VRAM is strongly recommended.
 """
 
 from __future__ import annotations
 
 import logging
+import queue
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -31,13 +27,17 @@ FISH_SPEECH_SR = 44100
 
 
 class TtsFishSpeechConfig(OperatorConfig):
-    model_id: str = "fishaudio/fish-speech-1.5"
+    model_id: str = "fishaudio/s2-pro"
     reference_audio: str | None = None
     reference_text: str | None = None
     max_new_tokens: int = 1024
-    top_p: float = 0.7
-    temperature: float = 0.7
-    repetition_penalty: float = 1.2
+    top_p: float = 0.8
+    temperature: float = 0.8
+    repetition_penalty: float = 1.1
+    chunk_length: int = 200
+    seed: int | None = None
+    compile: bool = False
+    half: bool = False
 
 
 @register_operator
@@ -52,32 +52,73 @@ class TtsFishSpeechOperator(Operator):
     required_extras = ["tts-fish-speech"]
 
     _inference: Any
+    _llama_queue: queue.Queue[Any] | None
     _sample_rate: int
 
     def setup(self) -> None:
         assert isinstance(self.config, TtsFishSpeechConfig)
         self._sample_rate = FISH_SPEECH_SR
+        self._llama_queue = None
         self._load_model()
 
     def _load_model(self) -> None:
-        """Load Fish-Speech inference pipeline.
-
-        Fish-Speech packages its inference as a pipeline that handles
-        VQGAN encoding/decoding and LLM generation. The exact import
-        path may vary across versions -- adapt if needed.
-        """
+        """Load Fish-Speech S2 inference engine."""
         assert isinstance(self.config, TtsFishSpeechConfig)
-        try:
-            from fish_speech.inference import TTSInference
+        import torch
+        from fish_speech.inference_engine import TTSInferenceEngine
+        from fish_speech.models.text2semantic.inference import (
+            launch_thread_safe_queue,
+            load_codec_model,
+        )
 
-            self._inference = TTSInference(model_id=self.config.model_id)
-        except ImportError:
-            from huggingface_hub import snapshot_download
+        checkpoint_path = self._resolve_checkpoint_path(self.config.model_id)
+        codec_checkpoint = checkpoint_path / "codec.pth"
+        if not codec_checkpoint.is_file():
+            raise FileNotFoundError(
+                f"Fish-Speech checkpoint at {checkpoint_path} does not contain codec.pth. "
+                "Use an S2 checkpoint such as 'fishaudio/s2-pro'."
+            )
 
-            model_dir = snapshot_download(self.config.model_id)
-            from fish_speech.inference import TTSInference
+        device = self._select_device()
+        precision = torch.float16 if self.config.half else torch.bfloat16
 
-            self._inference = TTSInference(model_dir=model_dir)
+        self._llama_queue = launch_thread_safe_queue(
+            checkpoint_path=checkpoint_path,
+            device=device,
+            precision=precision,
+            compile=self.config.compile,
+        )
+        decoder_model = load_codec_model(codec_checkpoint, device, precision)
+        self._inference = TTSInferenceEngine(
+            llama_queue=self._llama_queue,
+            decoder_model=decoder_model,
+            precision=precision,
+            compile=self.config.compile,
+        )
+
+    @staticmethod
+    def _resolve_checkpoint_path(model_id: str) -> Path:
+        path = Path(model_id).expanduser()
+        if path.exists():
+            return path.resolve()
+
+        from huggingface_hub import snapshot_download
+
+        return Path(snapshot_download(model_id)).resolve()
+
+    def _select_device(self) -> str:
+        import torch
+
+        ctx_device = getattr(self.ctx, "device", "cpu")
+        if str(ctx_device).startswith("cuda") and torch.cuda.is_available():
+            return str(ctx_device)
+        if torch.cuda.is_available():
+            return "cuda"
+        raise RuntimeError(
+            "tts_fish_speech requires a CUDA GPU. Run with Docker GPU access "
+            "enabled, for example `vkit docker run --tag fish-speech ...` on "
+            "a machine with NVIDIA Container Toolkit."
+        )
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, TtsFishSpeechConfig)
@@ -132,24 +173,41 @@ class TtsFishSpeechOperator(Operator):
         try:
             ref_audio = self.config.reference_audio
             ref_text = self.config.reference_text
+            references = []
+            if ref_audio:
+                from fish_speech.utils.schema import ServeReferenceAudio
 
-            result = self._inference.synthesize(
+                references.append(
+                    ServeReferenceAudio(
+                        audio=Path(ref_audio).expanduser().read_bytes(),
+                        text=ref_text or "",
+                    )
+                )
+
+            from fish_speech.utils.schema import ServeTTSRequest
+
+            req = ServeTTSRequest(
                 text=text,
-                reference_audio=ref_audio,
-                reference_text=ref_text,
+                references=references,
+                seed=self.config.seed,
                 max_new_tokens=self.config.max_new_tokens,
                 top_p=self.config.top_p,
                 temperature=self.config.temperature,
                 repetition_penalty=self.config.repetition_penalty,
+                chunk_length=self.config.chunk_length,
             )
 
-            if isinstance(result, tuple):
-                audio, sr = result
-                self._sample_rate = sr
-            else:
-                audio = result
+            final_audio: np.ndarray[Any, Any] | None = None
+            for result in self._inference.inference(req):
+                if result.code == "error":
+                    raise RuntimeError(result.error or "Fish-Speech inference failed")
+                if result.code == "final" and result.audio is not None:
+                    sr, audio = result.audio
+                    self._sample_rate = sr
+                    final_audio = np.asarray(audio, dtype=np.float32).flatten()
+                    break
 
-            return np.asarray(audio, dtype=np.float32).flatten()
+            return final_audio
         except Exception:
             logger.exception("Fish-Speech inference failed")
             return None
@@ -162,4 +220,7 @@ class TtsFishSpeechOperator(Operator):
         return None
 
     def teardown(self) -> None:
+        if self._llama_queue is not None:
+            self._llama_queue.put(None)
+            self._llama_queue = None
         self._inference = None

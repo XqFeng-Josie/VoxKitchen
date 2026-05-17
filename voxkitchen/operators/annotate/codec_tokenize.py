@@ -52,7 +52,7 @@ class CodecTokenizeOperator(Operator):
             )
 
     def _setup_encodec(self) -> None:
-        from encodec import EncodecModel
+        from encodec.model import EncodecModel
 
         assert isinstance(self.config, CodecTokenizeConfig)
         if self.config.model == "encodec_48khz":

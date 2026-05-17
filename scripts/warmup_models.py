@@ -347,7 +347,7 @@ def warmup_fish_speech(r: WarmupReport) -> None:
     try:
         from huggingface_hub import snapshot_download
 
-        snapshot_download("fishaudio/fish-speech-1.5")
+        snapshot_download("fishaudio/s2-pro")
         r.record_ok("tts_fish_speech")
     except ImportError:
         r.record_skip("tts_fish_speech", "huggingface_hub not installed")

@@ -7,12 +7,23 @@ downloads run inside prebuilt images.
 ## First Run
 
 ```bash
-pipx install voxkitchen
+export VKIT_VERSION=v0.2.0
+
+python -m venv ~/.venvs/voxkitchen
+~/.venvs/voxkitchen/bin/python -m pip install -U pip
+~/.venvs/voxkitchen/bin/python -m pip install \
+  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
+mkdir -p ~/.local/bin
+ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
+export PATH="$HOME/.local/bin:$PATH"
 vkit docker pull --tag slim
 vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml --dry-run
 vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml
 vkit inspect run ./work/demo-no-asr
 ```
+
+No repository clone is required for this quick start; the published Docker
+image includes the demo pipeline and demo audio.
 
 ## Create And Run A Project
 

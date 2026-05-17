@@ -37,6 +37,25 @@ stages:
     assert "vkit docker pull --tag slim" in result.output
 
 
+def test_validate_recommends_fish_speech_image(tmp_path: Path) -> None:
+    yaml_path = _write(
+        tmp_path,
+        """
+version: "0.1"
+name: fish
+work_dir: /tmp/work
+ingest: { source: manifest, args: { path: /tmp/in.jsonl.gz } }
+stages:
+  - { name: fish, op: tts_fish_speech }
+""",
+    )
+    runner = CliRunner()
+    result = runner.invoke(app, ["validate", str(yaml_path)])
+    assert result.exit_code == 0, result.output
+    assert "recommended image: fish-speech" in result.output
+    assert "vkit docker pull --tag fish-speech" in result.output
+
+
 def test_validate_rejects_unknown_operator(tmp_path: Path) -> None:
     yaml_path = _write(
         tmp_path,

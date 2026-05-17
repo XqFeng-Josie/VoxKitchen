@@ -32,8 +32,7 @@ def _is_managed_runtime() -> bool:
     if os.environ.get("VKIT_ENV", "").strip():
         return True
     return (
-        Path("/opt/voxkitchen/op_env_map.json").is_file()
-        or Path("/opt/voxkitchen/envs").is_dir()
+        Path("/opt/voxkitchen/op_env_map.json").is_file() or Path("/opt/voxkitchen/envs").is_dir()
     )
 
 
@@ -122,9 +121,7 @@ def _dry_run_warnings(spec: PipelineSpec) -> list[str]:
                     f"ingest root {root!r} was not found from this shell; "
                     "create it, edit pipeline.yaml, or run with Docker mounts."
                 )
-            elif not _contains_audio_files(
-                root_path, recursive=bool(args.get("recursive", True))
-            ):
+            elif not _contains_audio_files(root_path, recursive=bool(args.get("recursive", True))):
                 warnings.append(
                     f"ingest root {root!r} contains no supported audio files; "
                     "put audio under data/ or update ingest.args.root."

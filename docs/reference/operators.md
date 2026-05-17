@@ -1181,25 +1181,33 @@ Useful for filtering synthetic/degraded audio from training data.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model_id` | str | `fishaudio/fish-speech-1.5` |  |
+| `model_id` | str | `fishaudio/s2-pro` |  |
 | `reference_audio` | str | None | `None` |  |
 | `reference_text` | str | None | `None` |  |
 | `max_new_tokens` | int | `1024` |  |
-| `top_p` | float | `0.7` |  |
-| `temperature` | float | `0.7` |  |
-| `repetition_penalty` | float | `1.2` |  |
+| `top_p` | float | `0.8` |  |
+| `temperature` | float | `0.8` |  |
+| `repetition_penalty` | float | `1.1` |  |
+| `chunk_length` | int | `200` |  |
+| `seed` | int | None | `None` |  |
+| `compile` | bool | `False` |  |
+| `half` | bool | `False` |  |
 
 ```yaml
 - name: my_tts_fish_speech
   op: tts_fish_speech
   args:
-    model_id: fishaudio/fish-speech-1.5
+    model_id: fishaudio/s2-pro
     reference_audio: None
     reference_text: None
     max_new_tokens: 1024
-    top_p: 0.7
-    temperature: 0.7
-    repetition_penalty: 1.2
+    top_p: 0.8
+    temperature: 0.8
+    repetition_penalty: 1.1
+    chunk_length: 200
+    seed: None
+    compile: False
+    half: False
 ```
 
 ---

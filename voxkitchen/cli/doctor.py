@@ -109,10 +109,10 @@ EXPECTED_OPERATORS["asr"] = EXPECTED_OPERATORS["core"] | {
     # not, the image is still considered healthy.
 }
 
-# diarize = core + pyannote only. Separate image target so users who
-# only need speaker diarization pull ~5 GB instead of the full ~10 GB
-# ASR image. Cross-env dispatch from a mixed pipeline still works: the
-# runner routes pyannote_diarize stages to this env regardless of image.
+# diarize = core + pyannote only. Separate image target so users who only
+# need speaker diarization do not have to pull the full ASR stack.
+# Cross-env dispatch from a mixed pipeline still works: the runner routes
+# pyannote_diarize stages to this env regardless of image.
 EXPECTED_OPERATORS["diarize"] = EXPECTED_OPERATORS["core"] | {
     "pyannote_diarize",
 }
@@ -127,18 +127,9 @@ EXPECTED_OPERATORS["tts"] = EXPECTED_OPERATORS["core"] | {
 }
 
 # fish-speech env: isolated torch 2.8 + numpy 2.1 stack.
-# tts_fish_speech is NOT in the expected set right now because the
-# fish-speech 2.0 upstream reshuffled its Python API (TTSInferenceEngine
-# now needs a llama_queue + DAC decoder, no longer a one-liner). The env
-# still builds, the model is downloaded, and the operator source is kept
-# intact — a follow-up PR will rewrite the operator against the new API.
-# See TODO in voxkitchen/operators/synthesize/tts_fish_speech.py.
-#
-# **Consequence**: `vkit doctor --expect fish-speech` always passes (empty
-# set → always a subset). That's intentional: the env's presence in the
-# image is the real contract right now, not operator availability. Once
-# the operator is rewritten, add "tts_fish_speech" back here.
-EXPECTED_OPERATORS["fish-speech"] = set()
+EXPECTED_OPERATORS["fish-speech"] = {
+    "tts_fish_speech",
+}
 
 
 def _detect_image_kind() -> str | None:
@@ -311,13 +302,6 @@ def _emit_table(
             f"Available: {len(expected & available)}   "
             f"[red]Missing: {len(missing)}[/red]"
         )
-        if image_kind == "fish-speech":
-            console.print(
-                "[yellow]note:[/yellow] fish-speech env is present, but the "
-                "[bold]tts_fish_speech[/bold] operator is parked pending a "
-                "rewrite for the fish-speech 2.0 API. Runtime use will fail. "
-                "See CHANGELOG.md."
-            )
     else:
         console.print(
             f"Available operators: {len(available)} "
@@ -390,13 +374,6 @@ def _emit_multi_env_table(reports: list[dict[str, Any]]) -> None:
             extras, hint = lookup_extras_hint(op)
             tail = f"  [dim]({extras})[/dim]" if extras else ""
             console.print(f"  [red]•[/red] {op}{tail}")
-
-    if any(r.get("image_kind") == "fish-speech" for r in reports):
-        console.print(
-            "\n[yellow]note:[/yellow] fish-speech env reports OK because its "
-            "expected-operator set is empty. The [bold]tts_fish_speech[/bold] "
-            "operator is parked pending a rewrite for the fish-speech 2.0 API."
-        )
 
     if total_missing == 0:
         console.print("\n[green]All envs healthy.[/green]")

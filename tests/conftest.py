@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import shutil
+import tempfile
 from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,6 +13,10 @@ import numpy as np
 import pytest
 import soundfile as sf
 from voxkitchen.pipeline.context import RunContext
+
+os.environ.setdefault(
+    "NUMBA_CACHE_DIR", str(Path(tempfile.gettempdir()) / "voxkitchen-numba-cache")
+)
 
 
 @pytest.fixture

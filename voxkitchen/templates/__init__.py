@@ -40,6 +40,5 @@ def get_template_content(name: str) -> str:
             return path.read_text(encoding="utf-8")
 
     raise FileNotFoundError(
-        f"template file {info['file']!r} was not found in installed package "
-        f"or repository examples"
+        f"template file {info['file']!r} was not found in installed package or repository examples"
     )

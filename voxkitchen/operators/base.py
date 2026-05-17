@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 class OperatorConfig(BaseModel):
     """Base class for operator parameter models. Forbids unknown fields."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", protected_namespaces=())
 
 
 class Operator(ABC):

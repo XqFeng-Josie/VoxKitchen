@@ -122,10 +122,14 @@ def _common_run_flags(
         "HOME=/tmp",
     ]
     if mount_work:
-        (cwd / "work").mkdir(parents=True, exist_ok=True)
+        work_dir = cwd / "work"
+        work_dir.mkdir(parents=True, exist_ok=True)
+        (work_dir / ".numba-cache").mkdir(parents=True, exist_ok=True)
         flags += [
+            "-e",
+            "NUMBA_CACHE_DIR=/app/work/.numba-cache",
             "-v",
-            f"{cwd / 'work'}:/app/work",
+            f"{work_dir}:/app/work",
         ]
     if mount_data and data_dir.is_dir():
         flags += [

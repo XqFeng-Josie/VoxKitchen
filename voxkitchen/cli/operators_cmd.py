@@ -44,8 +44,7 @@ def _docker_runtime_hint(required_extras: list[str]) -> str:
     if not required_extras:
         return "vkit docker run --tag slim <yaml>"
 
-    tags = {docker_tag_for_extras(extra) for extra in required_extras}
-    tags.discard(None)
+    tags = {tag for extra in required_extras if (tag := docker_tag_for_extras(extra)) is not None}
     if len(tags) == 1:
         return f"vkit docker run --tag {sorted(tags)[0]} <yaml>"
     return "vkit docker run --tag latest <yaml>"

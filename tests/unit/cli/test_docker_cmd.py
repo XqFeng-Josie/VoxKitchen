@@ -75,8 +75,10 @@ def test_run_basic_defaults(fake_docker, tmp_path) -> None:
     uid_gid = cmd[cmd.index("--user") + 1]
     assert uid_gid == f"{os.getuid()}:{os.getgid()}"
     assert "-e" in cmd and "HOME=/tmp" in cmd
+    assert "NUMBA_CACHE_DIR=/app/work/.numba-cache" in cmd
     assert f"{tmp_path / 'work'}:/app/work" in cmd
     assert f"{tmp_path / 'output'}:/app/output" in cmd
+    assert (tmp_path / "work" / ".numba-cache").is_dir()
     # image defaulted
     assert f"{docker_cmd.DEFAULT_IMAGE}:{docker_cmd.DEFAULT_TAG}" in cmd
     # trailing vkit-command shape: ["run", "<pipeline>"]

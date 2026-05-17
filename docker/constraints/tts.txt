@@ -1,5 +1,7 @@
-# Shared-dep pins for the tts env (GPU; kokoro + ChatTTS + CosyVoice + Fish-Speech).
+# Shared-dep pins for the tts env (GPU; kokoro + ChatTTS + CosyVoice).
 torch==2.4.1
 torchaudio==2.4.1
 numpy>=1.24,<2.0
+# pyworld imports pkg_resources; setuptools 81+ removed it.
+setuptools<81
 huggingface_hub>=0.23,<1.0

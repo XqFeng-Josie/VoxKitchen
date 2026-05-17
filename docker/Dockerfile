@@ -3,12 +3,12 @@
 # VoxKitchen: one Dockerfile, six build targets, five isolated envs.
 #
 # Targets (use --target <name>):
-#   slim          core env only               ~3 GB   CPU
-#   asr           core + asr                  ~10 GB  GPU
-#   diarize       core + pyannote             ~5 GB   GPU
-#   tts           core + kokoro/chattts/cv    ~10 GB  GPU
-#   fish-speech   core + fish-speech (t2.8)   ~6 GB   GPU
-#   latest        all five envs merged        ~25 GB  GPU
+#   slim          core env only               ~13 GB   CPU
+#   asr           core + asr                  ~48 GB   GPU
+#   diarize       core + pyannote             ~32 GB   GPU
+#   tts           core + kokoro/chattts/cv    ~44 GB   GPU
+#   fish-speech   core + fish-speech (t2.8)   ~57 GB   GPU
+#   latest        all five envs merged        ~123 GB  GPU
 #
 # Examples:
 #   docker build --target slim    -t voxkitchen:slim    -f docker/Dockerfile .
@@ -24,19 +24,23 @@
 
 # Global build args (available in every stage that re-declares them).
 ARG HF_TOKEN=""
+ARG VOXKITCHEN_VERSION="0.0.0.dev0"
 
 FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime AS base
+
+ARG VOXKITCHEN_VERSION
 
 # uv is ~10x faster than pip and handles per-venv deps cleanly.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
-    # Scope the pretend version to voxkitchen only. A bare
+    # Scope the pretend version to voxkitchen only. Release builds pass
+    # VOXKITCHEN_VERSION; local Docker builds keep the dev fallback. A bare
     # SETUPTOOLS_SCM_PRETEND_VERSION leaks into every setuptools-scm
     # build in the venv — observed breaking pyopenjtalk (misaki[ja] dep)
     # because its wheel then declared 0.0.0.dev0 != the requested 0.4.1.
-    SETUPTOOLS_SCM_PRETEND_VERSION_FOR_VOXKITCHEN=0.0.0.dev0 \
+    SETUPTOOLS_SCM_PRETEND_VERSION_FOR_VOXKITCHEN=${VOXKITCHEN_VERSION} \
     UV_NO_CACHE=1 \
     # Shared model-cache root. Default locations ($HOME/.cache/...) are
     # root-owned mode 700 during build and unreachable when users run
@@ -48,6 +52,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TRANSFORMERS_CACHE=/opt/voxkitchen/model_cache/huggingface \
     TORCH_HOME=/opt/voxkitchen/model_cache/torch \
     MODELSCOPE_CACHE=/opt/voxkitchen/model_cache/modelscope \
+    NUMBA_CACHE_DIR=/tmp/numba-cache \
     # HF's new Xet storage backend flakes out on pyannote repo (observed:
     # 416 Range Not Satisfiable against cas-server.xethub.hf.co). Fall
     # back to the stable LFS path for all HF downloads. Saves us from
@@ -71,6 +76,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libsndfile1 \
         espeak-ng \
         sox \
+    && mkdir -p /tmp/numba-cache \
+    && chmod 1777 /tmp/numba-cache \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -245,13 +252,9 @@ RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
 RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
-# [tts-fish-speech] is deliberately omitted: fish-speech HEAD pins
-# torch==2.8.0, incompatible with this env's torch 2.4.1 stack (ChatTTS /
-# CosyVoice / kokoro all validated against 2.4). Promoting fish-speech
-# back into the image requires either (a) a new env with torch 2.8, or
-# (b) upstream accepting our torch 2.4 range. The tts_fish_speech
-# operator source stays in the repo; users can `pip install fish-speech`
-# at runtime in a throwaway container if they need it.
+# Fish-Speech is isolated in fish-speech-env below because upstream pins a
+# torch 2.8 + numpy 2.x stack. Keep this tts env focused on Kokoro, ChatTTS,
+# and CosyVoice so those engines stay on the validated torch 2.4 stack.
 
 RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python -e . --no-deps
 

@@ -17,7 +17,15 @@ VoxKitchen users write a YAML pipeline and run it through the lightweight
 `vkit` launcher inside prebuilt Docker runtimes. The default user path is:
 
 ```bash
-pipx install voxkitchen
+export VKIT_VERSION=v0.2.0
+
+python -m venv ~/.venvs/voxkitchen
+~/.venvs/voxkitchen/bin/python -m pip install -U pip
+~/.venvs/voxkitchen/bin/python -m pip install \
+  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
+mkdir -p ~/.local/bin
+ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
+export PATH="$HOME/.local/bin:$PATH"
 vkit validate pipeline.yaml
 vkit docker pull --tag <recommended-tag>
 vkit docker run --tag <recommended-tag> pipeline.yaml
@@ -27,6 +35,11 @@ vkit inspect run work/
 `vkit validate <yaml>` and `vkit docker run <yaml> --dry-run` print the
 recommended Docker image for that pipeline. Prefer those commands over asking
 users to choose an image manually.
+
+No repository clone is required for the quick start; the published Docker
+images include the demo pipeline and demo audio. Recommend cloning the repo only
+when users want to inspect or modify examples, use the bundled `skill/`, build
+images locally, or contribute code.
 
 ## Product Boundaries
 

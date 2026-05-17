@@ -12,8 +12,23 @@ Requirements:
 - Python 3.10+ for the lightweight `vkit` CLI
 
 ```bash
-pipx install voxkitchen
+export VKIT_VERSION=v0.2.0
+
+python -m venv ~/.venvs/voxkitchen
+~/.venvs/voxkitchen/bin/python -m pip install -U pip
+~/.venvs/voxkitchen/bin/python -m pip install \
+  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
+
+mkdir -p ~/.local/bin
+ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
+export PATH="$HOME/.local/bin:$PATH"
 ```
+
+This installs only the lightweight launcher and inspection commands. Pipeline
+dependencies stay inside Docker images.
+
+If `vkit` is not found in a new shell, add the `PATH` line above to your
+shell startup file, such as `~/.bashrc` or `~/.zshrc`.
 
 ## Pull A Runtime Image
 
@@ -31,6 +46,7 @@ vkit docker pull --tag slim
 | `asr` | Faster-Whisper, FunASR, Qwen3-ASR, forced alignment |
 | `diarize` | Pyannote speaker diarization |
 | `tts` | Kokoro, ChatTTS, CosyVoice |
+| `fish-speech` | Fish-Speech isolated runtime |
 | `latest` | Mixed pipelines across ASR, diarization, TTS, Fish-Speech, and core operators |
 
 Not sure which image your YAML needs? Run `vkit validate pipeline.yaml`; it
@@ -40,9 +56,9 @@ Command flags and tag behavior are listed in the [CLI reference](reference/cli.m
 
 ## Run The Demo
 
-The published image includes example pipelines and demo audio. Start with
-the `slim` demo; use `latest` later for pipelines that mix ASR, diarization,
-and TTS operators.
+The published image includes example pipelines and demo audio, so no
+repository clone is required for this quick start. Start with the `slim` demo;
+use `latest` later for pipelines that mix ASR, diarization, and TTS operators.
 
 ```bash
 vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml --dry-run

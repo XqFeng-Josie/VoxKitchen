@@ -54,7 +54,11 @@ quality = ["simhash>=2.1"]
 pack = ["datasets>=2.16", "webdataset>=0.2", "pyarrow>=14"]
 asr = ["faster-whisper>=1.0"]
 whisper = ["openai-whisper>=20231117"]
-pitch = ["pyworld>=0.3"]
+pitch = [
+    "pyworld>=0.3",
+    # pyworld imports pkg_resources at import time; setuptools 81+ removed it.
+    "setuptools<81",
+]
 dnsmos = [
     "speechmos>=0.0.1",
     # speechmos's own wheel declares no dependencies, but dnsmos.run()
@@ -74,7 +78,10 @@ codec = ["encodec>=0.1", "descript-audio-codec>=1.0"]
 tts-kokoro = ["kokoro>=0.7", "soundfile>=0.12", "misaki[zh,ja,ko,vi]>=0.5"]
 tts-chattts = ["ChatTTS>=0.2"]
 tts-cosyvoice = ["modelscope>=1.0"]
-tts-fish-speech = ["fish-speech @ git+https://github.com/fishaudio/fish-speech.git"]
+tts-fish-speech = [
+    # Pinned to the Fish-Speech 2.0 commit validated by the Docker smoke test.
+    "fish-speech @ git+https://github.com/fishaudio/fish-speech.git@3dd1f85c402ee6f0a17c2971d3b0dd8d881ca139",
+]
 viz = ["jinja2>=3.1", "plotly>=5.18"]
 viz-panel = ["gradio>=4.12"]
 # Test tooling + the core-cluster dependency groups CI installs. This is the

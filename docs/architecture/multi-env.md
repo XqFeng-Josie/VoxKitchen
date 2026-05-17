@@ -46,17 +46,13 @@ stage runs in.
 Why fish-speech is its own env: its `torch==2.8.0` pin is incompatible with
 ChatTTS / CosyVoice / kokoro on torch 2.4. Forcing them onto torch 2.8 would
 expand the risk surface from "one broken TTS" to "all TTS broken". Isolating
-fish-speech costs ~5 GB image size and one extra venv to warm; in return
-every other env stays on its validated stack.
+fish-speech costs substantial image size and one extra venv to warm; in
+return every other env stays on its validated stack.
 
-> **Current status**: fish-speech 2.0 reshaped its Python API
-> (`fish_speech.inference.TTSInference` → `fish_speech.inference_engine.TTSInferenceEngine`
-> with a queue-based Llama generator + DAC decoder wiring). The
-> `tts_fish_speech` operator still targets the 1.x shape and is therefore
-> temporarily **excluded from `EXPECTED_OPERATORS["fish-speech"]`** so the
-> `latest` build passes. The env is still built, the model is still
-> pre-downloaded; a follow-up PR will rewrite the operator against the
-> 2.0 API. This is an operator-level lag, not an architecture issue.
+Fish-Speech uses the S2 inference API
+(`fish_speech.inference_engine.TTSInferenceEngine`) with a queue-based Llama
+generator and DAC decoder. VoxKitchen wires that stack inside the isolated
+`fish-speech` env, and `latest` includes that env for mixed-runtime pipelines.
 
 The `vkit` command on `$PATH` is a shim that routes into `envs/core/bin/python`. The
 core env is the parent: it loads the pipeline YAML, decides per-stage envs, and
@@ -231,8 +227,8 @@ One `Dockerfile` with six BuildKit targets:
 - `target=asr`:         core + asr env,          ~48 GB
 - `target=diarize`:     core + diarize env (pyannote only), ~32 GB
 - `target=tts`:         core + tts env,          ~44 GB
-- `target=fish-speech`: core + fish-speech env (isolated torch 2.8), ~38 GB
-- `target=latest`:      all five envs merged,    ~103 GB
+- `target=fish-speech`: core + fish-speech env (isolated torch 2.8, S2 cached), ~57 GB
+- `target=latest`:      all five envs merged,    ~123 GB
 
 ```
 FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime AS base

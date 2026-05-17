@@ -564,13 +564,8 @@ def extract_speaker_embedding(
     path = Path(audio_path)
     cut = _make_cut(path)
     ctx = _make_ctx()
-    resolved_model = (
-        model
-        or (
-            "speechbrain/spkrec-ecapa-voxceleb"
-            if method == "speechbrain"
-            else "english"
-        )
+    resolved_model = model or (
+        "speechbrain/spkrec-ecapa-voxceleb" if method == "speechbrain" else "english"
     )
     config = SpeakerEmbedConfig(
         method=method,

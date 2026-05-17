@@ -1,8 +1,9 @@
 # Building VoxKitchen Docker images
 
-Most users should `docker pull` the pre-built images from
-`ghcr.io/xqfeng-josie/voxkitchen:{slim,asr,diarize,tts,fish-speech,latest}`
-(or use `vkit docker pull`). Build locally when:
+Most users should use `vkit docker pull --tag <tag>` to fetch the prebuilt
+images from
+`ghcr.io/xqfeng-josie/voxkitchen:{slim,asr,diarize,tts,fish-speech,latest}`.
+Build locally only when:
 
 - Air-gapped / internal registries that cannot reach GHCR
 - Apple Silicon / non-`linux/amd64` hosts until we ship multi-arch images
@@ -15,14 +16,14 @@ Most users should `docker pull` the pre-built images from
 The single [`docker/Dockerfile`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docker/Dockerfile) exposes six
 BuildKit targets:
 
-| Target | What it contains | Base | Size | GPU |
-|--------|------------------|------|------|-----|
+| Target | What it contains | Approx. size | GPU |
+|--------|------------------|--------------|-----|
 | `slim`        | `core` venv only                          | ~13 GB  | no  |
 | `asr`         | core + `asr` venv (faster-whisper / funasr / qwen3 / forced align) | ~48 GB | yes |
 | `diarize`     | core + `diarize` venv (pyannote only)     | ~32 GB  | yes |
 | `tts`         | core + `tts` venv (kokoro / ChatTTS / CosyVoice) | ~44 GB | yes |
-| `fish-speech` | core + `fish-speech` venv (torch 2.8 stack) | ~38 GB  | yes |
-| `latest`      | all 5 envs merged in one image            | ~103 GB | yes |
+| `fish-speech` | core + `fish-speech` venv (torch 2.8 stack, S2 model cached) | ~57 GB  | yes |
+| `latest`      | all 5 envs merged in one image            | ~123 GB | yes |
 
 Base image for GPU targets: `pytorch/pytorch:2.4.1-cuda12.4`. Slim uses
 `torch==2.4.1+cpu` inside the same base image; the CUDA libs are unused
@@ -84,11 +85,12 @@ docker build --target latest --build-arg HF_TOKEN=hf_xxx \
     -f docker/Dockerfile -t voxkitchen:latest .
 ```
 
-**(b)** Omit at build — pass at run time, pyannote downloads on first use:
+**(b)** Omit at build — pass `HF_TOKEN` at run time, pyannote downloads on
+first use:
 
 ```bash
-docker run --rm --gpus all -e HF_TOKEN=hf_xxx -v /data:/data \
-    voxkitchen:latest run pipeline.yaml
+# Put HF_TOKEN=hf_xxx in ./.env, then run through the vkit wrapper.
+vkit docker run --image voxkitchen:latest pipeline.yaml
 ```
 
 You must accept the
@@ -101,8 +103,8 @@ remains retrievable in the image layer history.
 ## Checking what's inside an image
 
 ```bash
-docker run --rm voxkitchen:latest doctor          # per-env table
-docker run --rm voxkitchen:latest doctor --json   # machine-readable
+vkit docker doctor --image voxkitchen:latest          # per-env table
+vkit docker doctor --image voxkitchen:latest --json   # machine-readable
 ```
 
 `doctor` in the `latest` image auto-detects the five envs and runs each
