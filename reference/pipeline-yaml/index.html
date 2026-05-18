@@ -1308,11 +1308,13 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <p>Stages execute sequentially. Each stage:</p>
 <ol>
 <li>Receives the CutSet from the previous stage</li>
-<li>Splits it across CPU/GPU workers</li>
+<li>Splits it across CPU/GPU workers when the operator is shard-safe</li>
 <li>Runs the operator on each shard</li>
 <li>Merges results and writes <code>cuts.jsonl.gz</code> + <code>_SUCCESS</code> marker + <code>_stats.json</code></li>
 </ol>
-<p>Failed cuts are logged to <code>_errors.jsonl</code> and skipped — the pipeline continues.</p>
+<p>Failed cuts in shard-safe stages are logged to <code>_errors.jsonl</code> and skipped, so
+the pipeline continues. Batch exporters such as <code>pack_huggingface</code> run once
+over the whole CutSet and fail atomically to avoid partial output directories.</p>
 
 
 

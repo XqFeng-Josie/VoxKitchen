@@ -1269,6 +1269,11 @@ this stage. The MUSAN recipe is tracked in the roadmap, but is not a built-in
 recipe yet.</p>
 <h3 id="why-huggingface-output">Why HuggingFace output?</h3>
 <p><code>pack_huggingface</code> produces a dataset loadable with <code>datasets.load_from_disk()</code>, which integrates directly with HuggingFace training pipelines (Transformers, SpeechBrain, ESPnet).</p>
+<p>By default, the template writes the final dataset to <code>./output/hf_dataset</code>.
+The audio column is embedded in the HuggingFace Dataset's Arrow shard, so the
+final result is not a directory of standalone WAV files. Use
+<code>--keep-intermediates</code> or <code>gc_mode: keep</code> when you also need to preserve each
+stage's derived WAV files under <code>./work</code>.</p>
 <h2 id="customization">Customization</h2>
 <h3 id="for-chinese-asr">For Chinese ASR</h3>
 <p>Replace <code>faster_whisper_asr</code> with Qwen3 or Paraformer:</p>

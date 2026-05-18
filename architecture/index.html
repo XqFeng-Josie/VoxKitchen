@@ -1877,7 +1877,13 @@ Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (
 <h3 id="executors">Executors</h3>
 <p><strong>CpuPoolExecutor:</strong> <code>multiprocessing.Pool</code> with spawn context. Shards CutSet, runs operator per shard. Config passed as JSON (not pickled) for cross-process safety.</p>
 <p><strong>GpuPoolExecutor:</strong> Spawns N subprocesses, each pinned to one GPU via <code>CUDA_VISIBLE_DEVICES=i</code> before torch import. Operator sees <code>cuda:0</code>.</p>
-<p><strong>Error handling:</strong> If a shard fails, retries cut-by-cut. Bad cuts logged to <code>_errors.jsonl</code>, pipeline continues.</p>
+<p>Operators with <code>parallelizable = False</code> run once over the full CutSet. This is
+used for batch exporters such as <code>pack_huggingface</code>, where multiple workers
+would otherwise write the same output directory.</p>
+<p><strong>Error handling:</strong> If a sharded stage fails, retries cut-by-cut. Bad cuts are
+logged to <code>_errors.jsonl</code>, and a clean rerun removes stale error files. Batch
+stages with <code>parallelizable = False</code> fail atomically instead of falling back to
+per-cut retries.</p>
 <h3 id="resume-checkpointing">Resume &amp; Checkpointing</h3>
 <p>A stage is complete iff both <code>cuts.jsonl.gz</code> and <code>_SUCCESS</code> exist. <code>_SUCCESS</code> is written atomically after the manifest is fully flushed.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>pipeline.yaml<span class="w">                    </span><span class="c1"># full run</span>

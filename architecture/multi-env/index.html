@@ -989,21 +989,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#voxkitchenpipelineexecutorpy-changed" class="md-nav__link">
+  <a href="#voxkitchenpipelinerunnerpy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        voxkitchen/pipeline/executor.py (changed)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#voxkitchenpipelinerunnerpy-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        voxkitchen/pipeline/runner.py (changed)
+        voxkitchen/pipeline/runner.py
       
     </span>
   </a>
@@ -1099,10 +1088,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#phased-rollout" class="md-nav__link">
+  <a href="#implemented-pieces" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phased rollout
+        Implemented pieces
       
     </span>
   </a>
@@ -1263,21 +1252,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#voxkitchenpipelineexecutorpy-changed" class="md-nav__link">
+  <a href="#voxkitchenpipelinerunnerpy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        voxkitchen/pipeline/executor.py (changed)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#voxkitchenpipelinerunnerpy-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        voxkitchen/pipeline/runner.py (changed)
+        voxkitchen/pipeline/runner.py
       
     </span>
   </a>
@@ -1373,10 +1351,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#phased-rollout" class="md-nav__link">
+  <a href="#implemented-pieces" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phased rollout
+        Implemented pieces
       
     </span>
   </a>
@@ -1415,8 +1393,8 @@
 
 
 <h1 id="multi-env-architecture">Multi-env architecture</h1>
-<p>Status: <strong>design, in progress</strong>.
-Supersedes the interim 3-image Docker approach (<code>docker/Dockerfile.{core,asr,tts}</code>).</p>
+<p>Status: <strong>implemented</strong>. This page records the design rationale and the
+current runtime shape.</p>
 <h2 id="why">Why</h2>
 <p>A single Python environment cannot host all 51 operators. Concrete conflicts verified
 against wheel metadata:</p>
@@ -1527,41 +1505,19 @@ envs in the Dockerfile.</p>
 <p>Combines per-env dumps into the final <code>op_schemas.json</code> and <code>op_env_map.json</code>.
 Detects when the same operator is registered in multiple envs (which should not
 happen after this refactor — a symptom of an incorrect <code>EXTRA_TO_ENV</code> mapping).</p>
-<h3 id="voxkitchenpipelineexecutorpy-changed"><code>voxkitchen/pipeline/executor.py</code> (changed)</h3>
-<p>Add a third executor:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SubprocessStageExecutor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run one stage in a different Python env via subprocess.</span>
-
-<span class="sd">    Inputs and outputs cross the env boundary as jsonl.gz files on disk.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">cuts</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
-        <span class="c1"># op_cls is not importable in this env — it&#39;s a placeholder. We only</span>
-        <span class="c1"># need the name. config is serialized to JSON.</span>
-        <span class="c1"># cuts must already be on disk at ctx.input_manifest.</span>
-        <span class="o">...</span>
-</code></pre></div>
-<p><code>op_cls</code> is awkward here — the runner currently passes the operator class. When the
-parent env cannot import the class, the runner should instead pass the op name and
-let <code>SubprocessStageExecutor</code> handle it. This is a small executor protocol extension.</p>
-<h3 id="voxkitchenpipelinerunnerpy-changed"><code>voxkitchen/pipeline/runner.py</code> (changed)</h3>
-<p>Two changes:</p>
+<h3 id="voxkitchenpipelinerunnerpy"><code>voxkitchen/pipeline/runner.py</code></h3>
+<p>The runner is env-aware at the stage boundary:</p>
 <ol>
-<li>Replace <code>op_cls = get_operator(stage.op)</code> with a try/except that falls back to
-   reading <code>op_schemas.json</code> when the operator is not importable in the parent env.</li>
-<li>Add env-aware executor selection:</li>
+<li>Resolve <code>target_env = resolve_env(stage.op)</code>.</li>
+<li>If <code>target_env == current_env()</code>, run the operator in process with
+   <code>CpuPoolExecutor</code> or <code>GpuPoolExecutor</code>.</li>
+<li>Otherwise, write the stage input manifest to disk and call
+   <code>dispatch_stage_to_env(...)</code>, which spawns
+   <code>voxkitchen.runtime.stage_runner</code> in the target env.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="n">target_env</span> <span class="o">=</span> <span class="n">resolve_env</span><span class="p">(</span><span class="n">stage</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">target_env</span> <span class="o">==</span> <span class="n">current_env</span><span class="p">():</span>
-    <span class="n">executor</span> <span class="o">=</span> <span class="n">_make_in_process_executor</span><span class="p">(</span><span class="n">op_cls</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">executor</span> <span class="o">=</span> <span class="n">SubprocessStageExecutor</span><span class="p">(</span><span class="n">target_env</span><span class="p">)</span>
-</code></pre></div>
-<ol>
-<li><code>stage_runner</code> inside the subprocess re-runs the full in-process executor path,
-   so CPU sharding and GPU pinning still work.</li>
-</ol>
+<p><code>stage_runner</code> then re-runs the normal in-process executor path inside that
+env, so CPU sharding, GPU pinning, progress bars, <code>_errors.jsonl</code>, and
+<code>_stats.json</code> behave the same as local stages.</p>
 <h2 id="environment-construction">Environment construction</h2>
 <h3 id="tool-uv">Tool: uv</h3>
 <ul>
@@ -1653,13 +1609,10 @@ ENTRYPOINT [&quot;vkit&quot;]
 docker<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>slim<span class="w">   </span>-t<span class="w"> </span>voxkitchen:slim<span class="w">   </span>.
 </code></pre></div>
 <h2 id="cli-surface">CLI surface</h2>
-<p>No change to existing commands. One new command:</p>
-<ul>
-<li><code>vkit doctor [--env &lt;name&gt;]</code> — inspect a specific env or all envs (default)</li>
-<li><code>vkit env list</code> — short listing of installed envs and their operator counts</li>
-<li><code>vkit env exec &lt;env&gt; &lt;cmd...&gt;</code> — debugging helper: run a command inside an env</li>
-</ul>
-<p>Validate stays the same but uses <code>op_schemas.json</code> instead of importing operators.</p>
+<p>The user-facing path stays <code>vkit docker ...</code>. The main env-aware command is
+<code>vkit doctor --expect &lt;env&gt;</code>, and the <code>latest</code> image can aggregate doctor
+results across installed envs. <code>vkit validate</code> uses exported schemas when the
+current env cannot import an operator directly.</p>
 <h2 id="risks-and-mitigations">Risks and mitigations</h2>
 <table>
 <thead>
@@ -1675,7 +1628,7 @@ docker<span class="w"> </span>build<span class="w"> </span>--target<span class="
 </tr>
 <tr>
 <td>Error propagation across subprocess boundary</td>
-<td><code>stage_runner</code> writes <code>_errors.jsonl</code> and <code>_stats.json</code> as today. Exit code + stderr tail passes up through <code>SubprocessStageExecutor.run</code>.</td>
+<td><code>stage_runner</code> writes <code>_errors.jsonl</code> and <code>_stats.json</code> as today. Exit code and stderr pass through <code>dispatch_stage_to_env</code>.</td>
 </tr>
 <tr>
 <td>Cross-env pickle mismatch</td>
@@ -1703,16 +1656,17 @@ docker<span class="w"> </span>build<span class="w"> </span>--target<span class="
 </tr>
 </tbody>
 </table>
-<h2 id="phased-rollout">Phased rollout</h2>
-<ol>
-<li><strong>P1 runtime modules</strong> — <code>env_resolver</code>, <code>stage_runner</code>, <code>dump_schemas</code>, <code>merge_schemas</code>. Self-contained, unit-testable, no executor changes yet.</li>
-<li><strong>P2 executor wiring</strong> — <code>SubprocessStageExecutor</code>, runner dispatch. Feature-flagged: if <code>VKIT_MULTI_ENV=0</code>, use current in-process path.</li>
-<li><strong>P3 schema-driven validate</strong> — <code>vkit validate</code> stops importing operators; reads <code>op_schemas.json</code>.</li>
-<li><strong>P4 Dockerfile + uv + lockfiles</strong> — unified Dockerfile, BuildKit targets for <code>latest</code> / <code>slim</code>.</li>
-<li><strong>P5 doctor</strong> — cross-env aggregation; migrate existing <code>doctor.py</code>.</li>
-<li><strong>P6 integration</strong> — four pipelines end-to-end (core-only, asr-only, tts-only, mixed).</li>
-<li><strong>P7 cleanup + docs</strong> — delete the interim 3-Dockerfile setup, rewrite README.</li>
-</ol>
+<h2 id="implemented-pieces">Implemented pieces</h2>
+<ul>
+<li>Runtime modules: <code>env_resolver</code>, <code>dispatch</code>, <code>stage_runner</code>, <code>dump_schemas</code>,
+  <code>merge_schemas</code>.</li>
+<li>Schema-driven validation for operators that are not importable in the current
+  env.</li>
+<li>Unified <code>docker/Dockerfile</code> with BuildKit targets for <code>slim</code>, <code>asr</code>,
+  <code>diarize</code>, <code>tts</code>, <code>fish-speech</code>, and <code>latest</code>.</li>
+<li><code>vkit doctor --expect &lt;env&gt;</code> plus multi-env aggregation in <code>latest</code>.</li>
+<li>End-to-end tests for local and cross-env stage execution.</li>
+</ul>
 <h2 id="what-does-not-change">What does NOT change</h2>
 <ul>
 <li>Operator authoring contract: subclass <code>Operator</code>, declare <code>name</code>, <code>config_cls</code>, <code>required_extras</code>.</li>
