@@ -60,6 +60,7 @@ def test_generate_report_creates_html(tmp_path: Path) -> None:
     assert report_path == work_dir / "report.html"
     html = report_path.read_text()
     assert "VoxKitchen" in html
+    assert "https://github.com/XqFeng-Josie/VoxKitchen" in html
     assert "2 cuts" in html or "<b>2</b>" in html
 
 

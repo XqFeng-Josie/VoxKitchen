@@ -43,10 +43,14 @@ def _append_errors(errors_path: Path, errors: list[dict[str, str]]) -> None:
     """Write error records to _errors.jsonl (one JSON object per line).
 
     Uses write mode (not append) so that re-running a stage replaces stale
-    errors from a previous attempt rather than accumulating them.
+    errors from a previous attempt rather than accumulating them. A clean run
+    removes any stale error file.
     """
     if not errors:
+        if errors_path.exists():
+            errors_path.unlink()
         return
+    errors_path.parent.mkdir(parents=True, exist_ok=True)
     with errors_path.open("w", encoding="utf-8") as f:
         for err in errors:
             f.write(_json.dumps(err, ensure_ascii=False) + "\n")
@@ -58,6 +62,7 @@ def _cpu_worker(
     ctx: RunContext,
     cuts_list: list[Any],
     show_progress: bool = False,
+    allow_cut_fallback: bool = True,
 ) -> tuple[list[Any], list[dict[str, str]]]:
     """Instantiate op, call setup/process/teardown, return processed cuts.
 
@@ -79,6 +84,8 @@ def _cpu_worker(
         output_cuts = op.process(input_cuts)
         return list(output_cuts), []
     except Exception:
+        if not allow_cut_fallback:
+            raise
         # Per-cut fallback: retry one-by-one so only bad cuts are skipped
         good: list[Any] = []
         errors: list[dict[str, str]] = []
@@ -121,9 +128,21 @@ class CpuPoolExecutor:
         if len(cuts) == 0:
             return CutSet([])
 
+        config_json = config.model_dump_json()
+        if not op_cls.parallelizable:
+            good, errors = _cpu_worker(
+                op_cls,
+                config_json,
+                ctx,
+                list(cuts),
+                show_progress=True,
+                allow_cut_fallback=False,
+            )
+            _append_errors(ctx.stage_dir / "_errors.jsonl", errors)
+            return CutSet(good)
+
         effective_workers = min(self.num_workers, len(cuts))
         shards = cuts.split(effective_workers)
-        config_json = config.model_dump_json()
 
         if effective_workers == 1:
             good, errors = _cpu_worker(
@@ -157,6 +176,10 @@ def _gpu_worker(
     config_json: str,
     ctx: RunContext,
     cuts_list: list[Any],
+    show_progress: bool = False,
+    progress_position: int | None = None,
+    progress_desc: str | None = None,
+    allow_cut_fallback: bool = True,
 ) -> tuple[list[Any], list[dict[str, str]]]:
     """GPU worker entry point.
 
@@ -176,9 +199,16 @@ def _gpu_worker(
     op.setup()
     try:
         input_cuts = CutSet(cuts_list)
+        if show_progress:
+            input_cuts = input_cuts.with_progress(
+                desc=progress_desc or ctx.stage_name,
+                position=progress_position,
+            )
         output_cuts = op.process(input_cuts)
         return list(output_cuts), []
     except Exception:
+        if not allow_cut_fallback:
+            raise
         good: list[Any] = []
         errors: list[dict[str, str]] = []
         for cut in cuts_list:
@@ -225,13 +255,23 @@ class GpuPoolExecutor:
         if len(cuts) == 0:
             return CutSet([])
 
+        config_json = config.model_dump_json()
+        if not op_cls.parallelizable:
+            tasks = [(0, op_cls, config_json, ctx, list(cuts), True, 0, ctx.stage_name, False)]
+            ctx_mp = mp.get_context("spawn")
+            with ctx_mp.Pool(1) as pool:
+                results = pool.starmap(_gpu_worker, tasks)
+            good, errors = results[0]
+            _append_errors(ctx.stage_dir / "_errors.jsonl", errors)
+            return CutSet(good)
+
         effective_workers = min(self.num_gpus, len(cuts))
         shards = cuts.split(effective_workers)
-        config_json = config.model_dump_json()
 
-        tasks = [
-            (gpu_id, op_cls, config_json, ctx, list(shard)) for gpu_id, shard in enumerate(shards)
-        ]
+        tasks = []
+        for gpu_id, shard in enumerate(shards):
+            desc = ctx.stage_name if effective_workers == 1 else f"{ctx.stage_name}:gpu{gpu_id}"
+            tasks.append((gpu_id, op_cls, config_json, ctx, list(shard), True, gpu_id, desc, True))
 
         ctx_mp = mp.get_context("spawn")
         with ctx_mp.Pool(effective_workers) as pool:

@@ -6,7 +6,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-## [0.2.0] — 2026-05-17
+## [0.2.0] — 2026-05-18
 
 ### Added
 
@@ -28,6 +28,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   extras for runtime execution.
 - `vkit run` is treated as the current-environment/container entrypoint and
   warns when used directly on a host.
+- GPU stages now show per-cut progress bars, so long-running ASR/diarization/TTS
+  stages provide live feedback inside Docker runs.
 - Quick start now uses the smaller `slim` demo path.
 - Operator and doctor hints now point to Docker runtime tags instead of pip
   installation commands.
@@ -51,6 +53,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   expected in both `fish-speech` and `latest` images.
 - Official Docker envs now pin `setuptools<81` for `pyworld`, fixing
   `pitch_stats` runtime failures caused by the removal of `pkg_resources`.
+- `pack_*` export operators now run as whole-CutSet stages instead of sharded
+  workers, preventing shared output directories from being overwritten by the
+  last worker.
+- Non-shardable batch operators now fail atomically instead of falling back to
+  per-cut retries that could leave partial side-effect outputs behind.
+- `report.html` now links to the correct VoxKitchen GitHub repository.
 
 ### Known limitations
 

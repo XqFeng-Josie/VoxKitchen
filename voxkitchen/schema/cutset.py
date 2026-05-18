@@ -62,11 +62,13 @@ class CutSet:
         assert self._source_path is not None
         return read_cuts(self._source_path)
 
-    def with_progress(self, desc: str = "cuts") -> CutSet:
+    def with_progress(
+        self, desc: str = "cuts", *, position: int | None = None, leave: bool = True
+    ) -> CutSet:
         """Return a view whose ``__iter__`` wraps cuts with a tqdm bar."""
         self._materialize()
         assert self._cuts is not None
-        return _ProgressCutSet(self._cuts, desc)
+        return _ProgressCutSet(self._cuts, desc, position=position, leave=leave)
 
     # -- functional operations ------------------------------------------------
 
@@ -131,11 +133,23 @@ class CutSet:
 class _ProgressCutSet(CutSet):
     """CutSet whose __iter__ shows a tqdm progress bar."""
 
-    def __init__(self, cuts: list[Cut], desc: str) -> None:
+    def __init__(
+        self, cuts: list[Cut], desc: str, *, position: int | None = None, leave: bool = True
+    ) -> None:
         super().__init__(cuts)
         self._desc = desc
+        self._position = position
+        self._leave = leave
 
     def __iter__(self) -> Iterator[Cut]:
         from tqdm import tqdm  # type: ignore[import-untyped]
 
-        return iter(tqdm(self._cuts, desc=self._desc, unit="cut"))
+        return iter(
+            tqdm(
+                self._cuts,
+                desc=self._desc,
+                unit="cut",
+                position=self._position,
+                leave=self._leave,
+            )
+        )

@@ -216,4 +216,4 @@ Steps (mirrors the `:diarize` env split in the same PR):
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/voxkitchen/voxkitchen/discussions) or file an issue.
+Open an issue at https://github.com/XqFeng-Josie/VoxKitchen/issues.

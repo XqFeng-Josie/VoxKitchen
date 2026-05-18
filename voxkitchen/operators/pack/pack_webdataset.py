@@ -31,6 +31,7 @@ class PackWebDatasetOperator(Operator):
     name = "pack_webdataset"
     config_cls = PackWebDatasetConfig
     device = "cpu"
+    parallelizable = False
     produces_audio = True
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["pack"]
@@ -39,12 +40,13 @@ class PackWebDatasetOperator(Operator):
         assert isinstance(self.config, PackWebDatasetConfig)
         import webdataset as wds
 
+        input_cuts = list(cuts)
         out_dir = Path(self.config.output_dir or str(self.ctx.stage_dir / "wds_output"))
         out_dir.mkdir(parents=True, exist_ok=True)
         pattern = str(out_dir / "shard-%05d.tar")
 
         with wds.ShardWriter(pattern, maxcount=self.config.shard_size) as sink:
-            for cut in cuts:
+            for cut in input_cuts:
                 audio_path = cut.recording.sources[0].source if cut.recording else None
                 sample: dict[str, object] = {"__key__": cut.id}
                 if audio_path and Path(audio_path).exists():
@@ -59,4 +61,4 @@ class PackWebDatasetOperator(Operator):
                 ).encode()
                 sink.write(sample)
 
-        return CutSet(list(cuts))
+        return CutSet(input_cuts)

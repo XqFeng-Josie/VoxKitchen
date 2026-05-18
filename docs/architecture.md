@@ -229,7 +229,14 @@ work_dir/
 
 **GpuPoolExecutor:** Spawns N subprocesses, each pinned to one GPU via `CUDA_VISIBLE_DEVICES=i` before torch import. Operator sees `cuda:0`.
 
-**Error handling:** If a shard fails, retries cut-by-cut. Bad cuts logged to `_errors.jsonl`, pipeline continues.
+Operators with `parallelizable = False` run once over the full CutSet. This is
+used for batch exporters such as `pack_huggingface`, where multiple workers
+would otherwise write the same output directory.
+
+**Error handling:** If a sharded stage fails, retries cut-by-cut. Bad cuts are
+logged to `_errors.jsonl`, and a clean rerun removes stale error files. Batch
+stages with `parallelizable = False` fail atomically instead of falling back to
+per-cut retries.
 
 ### Resume & Checkpointing
 

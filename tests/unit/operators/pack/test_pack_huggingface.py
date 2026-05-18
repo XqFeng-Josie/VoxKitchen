@@ -69,3 +69,36 @@ def test_pack_hf_creates_dataset(mono_wav_16k: Path, tmp_path: Path) -> None:
 
     # Returns cuts unchanged
     assert [c.id for c in result] == [cut.id]
+
+
+def test_pack_hf_executor_writes_all_cuts_with_multiple_workers(
+    mono_wav_16k: Path, tmp_path: Path
+) -> None:
+    from datasets import Audio, load_from_disk
+    from voxkitchen.operators.pack.pack_huggingface import (
+        PackHuggingFaceConfig,
+        PackHuggingFaceOperator,
+    )
+    from voxkitchen.pipeline.context import RunContext
+    from voxkitchen.pipeline.executor import CpuPoolExecutor
+
+    ctx = RunContext(
+        work_dir=tmp_path,
+        pipeline_run_id="run-test",
+        stage_index=0,
+        stage_name="pack",
+        num_gpus=0,
+        num_cpu_workers=4,
+        gc_mode="keep",
+        device="cpu",
+    )
+    out_dir = tmp_path / "hf_out_executor"
+    config = PackHuggingFaceConfig(output_dir=str(out_dir))
+    base_cut = _cut_from_path(mono_wav_16k)
+    cuts = CutSet([base_cut.model_copy(update={"id": f"cut-{idx}"}) for idx in range(23)])
+
+    result = CpuPoolExecutor(num_workers=4).run(PackHuggingFaceOperator, config, cuts, ctx)
+
+    dataset = load_from_disk(str(out_dir)).cast_column("audio", Audio(decode=False))
+    assert dataset.num_rows == 23
+    assert len(result) == 23

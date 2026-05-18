@@ -12,6 +12,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.pipeline.context import RunContext
@@ -39,6 +40,31 @@ class _CudaSentinelOperator(Operator):
         for c in cuts:
             out.append(c.model_copy(update={"custom": {"cvd": cvd}}))
         return CutSet(out)
+
+
+@register_operator
+class _BatchCudaSentinelOperator(_CudaSentinelOperator):
+    """Non-shardable GPU operator used to verify single-worker execution."""
+
+    name = "_test_batch_cuda_sentinel"
+    parallelizable = False
+
+    def process(self, cuts: CutSet) -> CutSet:
+        cvd = os.environ.get("CUDA_VISIBLE_DEVICES", "UNSET")
+        return CutSet([_cut(f"batch-{len(cuts)}").model_copy(update={"custom": {"cvd": cvd}})])
+
+
+@register_operator
+class _BatchFailingCudaSentinelOperator(_CudaSentinelOperator):
+    """Fails for a batch but succeeds for single cuts."""
+
+    name = "_test_batch_failing_cuda_sentinel"
+    parallelizable = False
+
+    def process(self, cuts: CutSet) -> CutSet:
+        if len(cuts) > 1:
+            raise RuntimeError("gpu batch failure")
+        return CutSet(list(cuts))
 
 
 def _cut(cid: str) -> Cut:
@@ -103,3 +129,24 @@ def test_gpu_pool_executor_uses_single_gpu_when_fewer_cuts(tmp_path: Path) -> No
     assert len(result) == 1
     only_cut = next(iter(result))
     assert only_cut.custom["cvd"] == "0"
+
+
+def test_gpu_pool_executor_runs_non_parallelizable_operator_on_one_gpu(tmp_path: Path) -> None:
+    cs = CutSet([_cut(f"c{i}") for i in range(4)])
+    executor = GpuPoolExecutor(num_gpus=2)
+
+    result = executor.run(_BatchCudaSentinelOperator, _CudaSentinelConfig(), cs, _ctx(tmp_path))
+
+    cuts = list(result)
+    assert [c.id for c in cuts] == ["batch-4"]
+    assert cuts[0].custom["cvd"] == "0"
+
+
+def test_gpu_pool_executor_does_not_cut_fallback_non_parallelizable_operator(
+    tmp_path: Path,
+) -> None:
+    cs = CutSet([_cut("c0"), _cut("c1")])
+    executor = GpuPoolExecutor(num_gpus=2)
+
+    with pytest.raises(RuntimeError, match="gpu batch failure"):
+        executor.run(_BatchFailingCudaSentinelOperator, _CudaSentinelConfig(), cs, _ctx(tmp_path))

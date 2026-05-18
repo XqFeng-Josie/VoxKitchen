@@ -51,6 +51,12 @@ recipe yet.
 
 `pack_huggingface` produces a dataset loadable with `datasets.load_from_disk()`, which integrates directly with HuggingFace training pipelines (Transformers, SpeechBrain, ESPnet).
 
+By default, the template writes the final dataset to `./output/hf_dataset`.
+The audio column is embedded in the HuggingFace Dataset's Arrow shard, so the
+final result is not a directory of standalone WAV files. Use
+`--keep-intermediates` or `gc_mode: keep` when you also need to preserve each
+stage's derived WAV files under `./work`.
+
 ## Customization
 
 ### For Chinese ASR

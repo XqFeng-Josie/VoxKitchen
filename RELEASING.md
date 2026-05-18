@@ -44,7 +44,7 @@ Move entries from `[Unreleased]` into a new dated section. Example:
 ```markdown
 ## [Unreleased]
 
-## [0.2.0] — 2026-05-17
+## [0.2.0] — 2026-05-18
 
 ### Added
 - new feature X
@@ -83,9 +83,8 @@ to a commit that must already be on the remote.
 
 ### 5. Docker images
 
-`scripts/release.sh` builds and pushes each of the six targets in
-smallest-to-largest order (so auth / disk / network failures surface
-early on a cheap target) and tags each with both the rolling
+`scripts/release.sh` builds and pushes each of the six targets in a fixed
+order and tags each with both the rolling
 `:<target>` and the pinned `:<target>-<version>`. It also passes
 `VOXKITCHEN_VERSION=<version>` into the Docker build so package metadata
 inside the image matches the release tag. See
@@ -147,6 +146,20 @@ larger-runner add-ons.
 
 Non-Docker CI (lint, unit tests, typecheck) runs on every push via
 `.github/workflows/ci.yml` — that's the frequent regression gate.
+
+## Replacing an unpublished release
+
+Only do this before anyone has consumed the tag or Docker images. For an
+unpublished first release, it is acceptable to replace the tag and pinned image
+tags so the public `v0.2.0` points at the corrected commit:
+
+```bash
+scripts/release.sh 0.2.0 --replace-unpublished
+```
+
+This force-pushes only the release tag when it already exists. It still pushes
+`main` normally and rebuilds all Docker targets. Do not use this path after the
+release has external users; publish a patch release instead.
 
 ## Yanking a release
 

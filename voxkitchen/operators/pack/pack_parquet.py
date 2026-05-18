@@ -50,6 +50,7 @@ class PackParquetOperator(Operator):
     name = "pack_parquet"
     config_cls = PackParquetConfig
     device = "cpu"
+    parallelizable = False
     produces_audio = False
     reads_audio_bytes = False
     required_extras: ClassVar[list[str]] = ["pack"]
@@ -59,8 +60,9 @@ class PackParquetOperator(Operator):
         import pyarrow as pa
         import pyarrow.parquet as pq
 
+        input_cuts = list(cuts)
         rows = []
-        for cut in cuts:
+        for cut in input_cuts:
             # ------------------------------------------------------------------
             # Backward-compat flat supervision columns (first non-None wins)
             # ------------------------------------------------------------------
@@ -108,7 +110,7 @@ class PackParquetOperator(Operator):
         out_dir.mkdir(parents=True, exist_ok=True)
         pq.write_table(table, out_dir / "metadata.parquet")
 
-        return CutSet(list(cuts))
+        return CutSet(input_cuts)
 
 
 def _supervision_to_dict(sup: Any) -> dict[str, Any]:

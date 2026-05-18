@@ -103,8 +103,10 @@ By default (`gc_mode: aggressive`), intermediate audio files are cleaned up afte
 Stages execute sequentially. Each stage:
 
 1. Receives the CutSet from the previous stage
-2. Splits it across CPU/GPU workers
+2. Splits it across CPU/GPU workers when the operator is shard-safe
 3. Runs the operator on each shard
 4. Merges results and writes `cuts.jsonl.gz` + `_SUCCESS` marker + `_stats.json`
 
-Failed cuts are logged to `_errors.jsonl` and skipped — the pipeline continues.
+Failed cuts in shard-safe stages are logged to `_errors.jsonl` and skipped, so
+the pipeline continues. Batch exporters such as `pack_huggingface` run once
+over the whole CutSet and fail atomically to avoid partial output directories.

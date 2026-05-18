@@ -117,17 +117,19 @@ class PackJsonlOperator(Operator):
     name = "pack_jsonl"
     config_cls = PackJsonlConfig
     device = "cpu"
+    parallelizable = False
     produces_audio = False
     reads_audio_bytes = False
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackJsonlConfig)
+        input_cuts = list(cuts)
         out_path = Path(self.config.output_path or str(self.ctx.stage_dir / "manifest.jsonl"))
         out_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(out_path, "w", encoding="utf-8") as f:
-            for cut in cuts:
+            for cut in input_cuts:
                 row = _flatten_cut(cut)
                 f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
-        return CutSet(list(cuts))
+        return CutSet(input_cuts)

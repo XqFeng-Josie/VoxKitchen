@@ -28,11 +28,13 @@ class PackKaldiOperator(Operator):
     name = "pack_kaldi"
     config_cls = PackKaldiConfig
     device = "cpu"
+    parallelizable = False
     produces_audio = False
     reads_audio_bytes = False
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackKaldiConfig)
+        input_cuts = list(cuts)
         out = Path(self.config.output_dir or str(self.ctx.stage_dir / "kaldi_output"))
         out.mkdir(parents=True, exist_ok=True)
 
@@ -41,7 +43,7 @@ class PackKaldiOperator(Operator):
             open(out / "text", "w") as text_f,
             open(out / "utt2spk", "w") as u2s,
         ):
-            for cut in cuts:
+            for cut in input_cuts:
                 audio_path = cut.recording.sources[0].source if cut.recording else "MISSING"
                 wav_scp.write(f"{cut.id} {audio_path}\n")
                 transcript = next((s.text for s in cut.supervisions if s.text), "")
@@ -49,4 +51,4 @@ class PackKaldiOperator(Operator):
                 speaker = next((s.speaker for s in cut.supervisions if s.speaker), "unknown")
                 u2s.write(f"{cut.id} {speaker}\n")
 
-        return CutSet(list(cuts))
+        return CutSet(input_cuts)

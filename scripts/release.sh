@@ -2,19 +2,28 @@
 # One-command release wrapper — see RELEASING.md for what each step does.
 #
 # Usage:
-#   scripts/release.sh <version>
+#   scripts/release.sh <version> [--replace-unpublished]
 #
 # Example:
 #   scripts/release.sh 0.2.0
 #
 # The script is interactive: it prompts before each destructive step
 # (tag, git push, docker push). Ctrl-C out at any prompt to abort.
+# Use --replace-unpublished only when replacing a tag/image set that has not
+# been consumed by users.
 
 set -euo pipefail
 
 VERSION="${1:-}"
+REPLACE_UNPUBLISHED=false
 if [[ -z "$VERSION" ]]; then
-    echo "usage: $0 <version>   (e.g. 0.2.0)" >&2
+    echo "usage: $0 <version> [--replace-unpublished]   (e.g. 0.2.0)" >&2
+    exit 2
+fi
+if [[ "${2:-}" == "--replace-unpublished" ]]; then
+    REPLACE_UNPUBLISHED=true
+elif [[ -n "${2:-}" ]]; then
+    echo "error: unknown option '${2:-}'" >&2
     exit 2
 fi
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -58,8 +67,20 @@ if ! git diff --quiet "origin/main" -- .; then
     confirm "continue anyway?"
 fi
 
-if git rev-parse "$TAG" >/dev/null 2>&1; then
-    die "tag $TAG already exists locally."
+LOCAL_TAG_EXISTS=false
+REMOTE_TAG_EXISTS=false
+if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null 2>&1; then
+    LOCAL_TAG_EXISTS=true
+fi
+if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+    REMOTE_TAG_EXISTS=true
+fi
+if [[ "$LOCAL_TAG_EXISTS" == true || "$REMOTE_TAG_EXISTS" == true ]]; then
+    if [[ "$REPLACE_UNPUBLISHED" != true ]]; then
+        die "tag $TAG already exists. Use --replace-unpublished only if nobody has consumed it."
+    fi
+    warn "tag $TAG already exists; this will replace an unpublished release tag."
+    confirm "replace unpublished $TAG?"
 fi
 
 if ! grep -q "^## \[${VERSION}\]" CHANGELOG.md; then
@@ -77,6 +98,9 @@ log "Pre-flight ok."
 
 log "Creating annotated tag $TAG on HEAD ($(git rev-parse --short HEAD))"
 confirm "create tag $TAG?"
+if [[ "$LOCAL_TAG_EXISTS" == true ]]; then
+    git tag -d "$TAG"
+fi
 git tag -a "$TAG" -m "Release $TAG"
 
 # ---------------------------------------------------------------------------
@@ -86,7 +110,11 @@ git tag -a "$TAG" -m "Release $TAG"
 log "Pushing main and $TAG to origin"
 confirm "push to origin?"
 git push origin main
-git push origin "$TAG"
+if [[ "$REMOTE_TAG_EXISTS" == true ]]; then
+    git push --force origin "$TAG"
+else
+    git push origin "$TAG"
+fi
 
 # ---------------------------------------------------------------------------
 # 4. Docker build + push
@@ -98,7 +126,7 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 0
 fi
 
-log "Docker build + push ${#TARGETS[@]} targets (smallest → largest)"
+log "Docker build + push ${#TARGETS[@]} targets"
 echo "   targets: ${TARGETS[*]}"
 echo "   rolling tag: ${GHCR_IMAGE}:<target>"
 echo "   pinned tag:  ${GHCR_IMAGE}:<target>-${VERSION}"

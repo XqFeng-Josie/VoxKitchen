@@ -32,6 +32,7 @@ class PackHuggingFaceOperator(Operator):
     name = "pack_huggingface"
     config_cls = PackHuggingFaceConfig
     device = "cpu"
+    parallelizable = False
     produces_audio = True
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["pack"]
@@ -40,8 +41,9 @@ class PackHuggingFaceOperator(Operator):
         assert isinstance(self.config, PackHuggingFaceConfig)
         from datasets import Audio, Dataset
 
+        input_cuts = list(cuts)
         records = []
-        for cut in cuts:
+        for cut in input_cuts:
             audio_path = cut.recording.sources[0].source if cut.recording else None
             records.append(
                 {
@@ -73,4 +75,4 @@ class PackHuggingFaceOperator(Operator):
         out_dir = Path(self.config.output_dir or str(self.ctx.stage_dir / "hf_output"))
         ds.save_to_disk(str(out_dir))
 
-        return CutSet(list(cuts))
+        return CutSet(input_cuts)

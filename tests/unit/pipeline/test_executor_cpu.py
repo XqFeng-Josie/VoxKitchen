@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.noop.identity import IdentityConfig, IdentityOperator
 from voxkitchen.pipeline.context import RunContext
 from voxkitchen.pipeline.executor import CpuPoolExecutor
@@ -43,6 +45,26 @@ def _ctx(tmp_path: Path) -> RunContext:
     )
 
 
+class BatchOnlyOperator(Operator):
+    name = "batch_only_for_test"
+    config_cls = OperatorConfig
+    parallelizable = False
+
+    def process(self, cuts: CutSet) -> CutSet:
+        return CutSet([_cut(f"batch-{len(cuts)}")])
+
+
+class BatchFailingOperator(Operator):
+    name = "batch_failing_for_test"
+    config_cls = OperatorConfig
+    parallelizable = False
+
+    def process(self, cuts: CutSet) -> CutSet:
+        if len(cuts) > 1:
+            raise RuntimeError("batch failure")
+        return CutSet(list(cuts))
+
+
 def test_cpu_pool_executor_preserves_all_cuts(tmp_path: Path) -> None:
     cs = CutSet([_cut(f"c{i}") for i in range(10)])
     ctx = _ctx(tmp_path)
@@ -65,3 +87,37 @@ def test_cpu_pool_executor_handles_empty_cutset(tmp_path: Path) -> None:
     executor = CpuPoolExecutor(num_workers=2)
     result = executor.run(IdentityOperator, IdentityConfig(), cs, ctx)
     assert len(result) == 0
+
+
+def test_cpu_pool_executor_clears_stale_error_file_on_success(tmp_path: Path) -> None:
+    cs = CutSet([_cut("c0")])
+    ctx = _ctx(tmp_path)
+    ctx.stage_dir.mkdir(parents=True)
+    errors_path = ctx.stage_dir / "_errors.jsonl"
+    errors_path.write_text('{"cut_id":"old"}\n', encoding="utf-8")
+
+    result = CpuPoolExecutor(num_workers=1).run(IdentityOperator, IdentityConfig(), cs, ctx)
+
+    assert [c.id for c in result] == ["c0"]
+    assert not errors_path.exists()
+
+
+def test_cpu_pool_executor_runs_non_parallelizable_operator_once(tmp_path: Path) -> None:
+    cs = CutSet([_cut(f"c{i}") for i in range(10)])
+    ctx = _ctx(tmp_path)
+    executor = CpuPoolExecutor(num_workers=4)
+
+    result = executor.run(BatchOnlyOperator, OperatorConfig(), cs, ctx)
+
+    assert [c.id for c in result] == ["batch-10"]
+
+
+def test_cpu_pool_executor_does_not_cut_fallback_non_parallelizable_operator(
+    tmp_path: Path,
+) -> None:
+    cs = CutSet([_cut("c0"), _cut("c1")])
+    ctx = _ctx(tmp_path)
+    executor = CpuPoolExecutor(num_workers=4)
+
+    with pytest.raises(RuntimeError, match="batch failure"):
+        executor.run(BatchFailingOperator, OperatorConfig(), cs, ctx)

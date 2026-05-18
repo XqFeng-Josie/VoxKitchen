@@ -1,7 +1,7 @@
 # Multi-env architecture
 
-Status: **design, in progress**.
-Supersedes the interim 3-image Docker approach (`docker/Dockerfile.{core,asr,tts}`).
+Status: **implemented**. This page records the design rationale and the
+current runtime shape.
 
 ## Why
 
@@ -145,47 +145,20 @@ Combines per-env dumps into the final `op_schemas.json` and `op_env_map.json`.
 Detects when the same operator is registered in multiple envs (which should not
 happen after this refactor — a symptom of an incorrect `EXTRA_TO_ENV` mapping).
 
-### `voxkitchen/pipeline/executor.py` (changed)
+### `voxkitchen/pipeline/runner.py`
 
-Add a third executor:
+The runner is env-aware at the stage boundary:
 
-```python
-class SubprocessStageExecutor:
-    """Run one stage in a different Python env via subprocess.
+1. Resolve `target_env = resolve_env(stage.op)`.
+2. If `target_env == current_env()`, run the operator in process with
+   `CpuPoolExecutor` or `GpuPoolExecutor`.
+3. Otherwise, write the stage input manifest to disk and call
+   `dispatch_stage_to_env(...)`, which spawns
+   `voxkitchen.runtime.stage_runner` in the target env.
 
-    Inputs and outputs cross the env boundary as jsonl.gz files on disk.
-    """
-    def __init__(self, target_env: str) -> None: ...
-
-    def run(self, op_cls, config, cuts, ctx) -> CutSet:
-        # op_cls is not importable in this env — it's a placeholder. We only
-        # need the name. config is serialized to JSON.
-        # cuts must already be on disk at ctx.input_manifest.
-        ...
-```
-
-`op_cls` is awkward here — the runner currently passes the operator class. When the
-parent env cannot import the class, the runner should instead pass the op name and
-let `SubprocessStageExecutor` handle it. This is a small executor protocol extension.
-
-### `voxkitchen/pipeline/runner.py` (changed)
-
-Two changes:
-
-1. Replace `op_cls = get_operator(stage.op)` with a try/except that falls back to
-   reading `op_schemas.json` when the operator is not importable in the parent env.
-2. Add env-aware executor selection:
-
-   ```python
-   target_env = resolve_env(stage.op)
-   if target_env == current_env():
-       executor = _make_in_process_executor(op_cls.device, ctx)
-   else:
-       executor = SubprocessStageExecutor(target_env)
-   ```
-
-3. `stage_runner` inside the subprocess re-runs the full in-process executor path,
-   so CPU sharding and GPU pinning still work.
+`stage_runner` then re-runs the normal in-process executor path inside that
+env, so CPU sharding, GPU pinning, progress bars, `_errors.jsonl`, and
+`_stats.json` behave the same as local stages.
 
 ## Environment construction
 
@@ -290,20 +263,17 @@ docker build --target slim   -t voxkitchen:slim   .
 
 ## CLI surface
 
-No change to existing commands. One new command:
-
-- `vkit doctor [--env <name>]` — inspect a specific env or all envs (default)
-- `vkit env list` — short listing of installed envs and their operator counts
-- `vkit env exec <env> <cmd...>` — debugging helper: run a command inside an env
-
-Validate stays the same but uses `op_schemas.json` instead of importing operators.
+The user-facing path stays `vkit docker ...`. The main env-aware command is
+`vkit doctor --expect <env>`, and the `latest` image can aggregate doctor
+results across installed envs. `vkit validate` uses exported schemas when the
+current env cannot import an operator directly.
 
 ## Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
 | Subprocess spawn latency (~0.5s × N stages) | Only crossed when the op's env ≠ current. Core-only pipelines never spawn. |
-| Error propagation across subprocess boundary | `stage_runner` writes `_errors.jsonl` and `_stats.json` as today. Exit code + stderr tail passes up through `SubprocessStageExecutor.run`. |
+| Error propagation across subprocess boundary | `stage_runner` writes `_errors.jsonl` and `_stats.json` as today. Exit code and stderr pass through `dispatch_stage_to_env`. |
 | Cross-env pickle mismatch | We do NOT pickle across envs. Everything crosses via jsonl.gz on disk (Pydantic v2 serialization is env-agnostic). |
 | Operator registration differs per env | Each env runs its own `dump_schemas.py`. Parent trusts the merged `op_env_map.json` — it doesn't need to import. |
 | User adds a custom operator via plugin entry_points | The plugin's env must be declared. We extend `op_env_map.json` to accept operator→env overrides from `$VKIT_EXTRA_OP_ENV_MAP`. |
@@ -311,15 +281,16 @@ Validate stays the same but uses `op_schemas.json` instead of importing operator
 | GPU memory not released between stages | Subprocess exits between stages, so this is automatic. Better than current behavior within a single process. |
 | Resume across env switches | Checkpoint format is unchanged (`cuts.jsonl.gz` + `_SUCCESS` marker). Resume reads the file; it doesn't know or care which env produced it. |
 
-## Phased rollout
+## Implemented pieces
 
-1. **P1 runtime modules** — `env_resolver`, `stage_runner`, `dump_schemas`, `merge_schemas`. Self-contained, unit-testable, no executor changes yet.
-2. **P2 executor wiring** — `SubprocessStageExecutor`, runner dispatch. Feature-flagged: if `VKIT_MULTI_ENV=0`, use current in-process path.
-3. **P3 schema-driven validate** — `vkit validate` stops importing operators; reads `op_schemas.json`.
-4. **P4 Dockerfile + uv + lockfiles** — unified Dockerfile, BuildKit targets for `latest` / `slim`.
-5. **P5 doctor** — cross-env aggregation; migrate existing `doctor.py`.
-6. **P6 integration** — four pipelines end-to-end (core-only, asr-only, tts-only, mixed).
-7. **P7 cleanup + docs** — delete the interim 3-Dockerfile setup, rewrite README.
+- Runtime modules: `env_resolver`, `dispatch`, `stage_runner`, `dump_schemas`,
+  `merge_schemas`.
+- Schema-driven validation for operators that are not importable in the current
+  env.
+- Unified `docker/Dockerfile` with BuildKit targets for `slim`, `asr`,
+  `diarize`, `tts`, `fish-speech`, and `latest`.
+- `vkit doctor --expect <env>` plus multi-env aggregation in `latest`.
+- End-to-end tests for local and cross-env stage execution.
 
 ## What does NOT change
 

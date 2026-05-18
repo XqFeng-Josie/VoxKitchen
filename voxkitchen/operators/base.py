@@ -8,9 +8,11 @@ Every VoxKitchen operator subclasses ``Operator`` and declares:
 
 Operators may override ``setup()`` and ``teardown()`` for model loading/release.
 They may also override the class variables ``device`` (``"cpu"`` | ``"gpu"``),
-``produces_audio`` (whether the operator creates new audio files on disk),
-``reads_audio_bytes`` (whether downstream stages need to read audio samples
-from this stage's outputs), and ``required_extras`` (names of pyproject
+``parallelizable`` (whether the executor may shard the input CutSet across
+workers; set this to ``False`` for batch exporters that write one shared output
+directory), ``produces_audio`` (whether the operator creates new audio files on
+disk), ``reads_audio_bytes`` (whether downstream stages need to read audio
+samples from this stage's outputs), and ``required_extras`` (names of pyproject
 optional-dependencies groups this operator needs).
 
 ``RunContext`` is imported only under ``TYPE_CHECKING`` so that ``operators/``
@@ -51,6 +53,7 @@ class Operator(ABC):
 
     # Execution metadata (defaults suitable for most pure-Python CPU operators)
     device: ClassVar[Literal["cpu", "gpu"]] = "cpu"
+    parallelizable: ClassVar[bool] = True
     produces_audio: ClassVar[bool] = False
     reads_audio_bytes: ClassVar[bool] = True
     required_extras: ClassVar[list[str]] = []
