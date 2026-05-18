@@ -13,6 +13,7 @@ dist/
 .ruff_cache/
 .coverage
 htmlcov/
+.docker/
 
 # Virtual environments
 .venv/

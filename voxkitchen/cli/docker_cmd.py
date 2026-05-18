@@ -45,6 +45,8 @@ from rich import print as rprint
 DEFAULT_IMAGE = "ghcr.io/xqfeng-josie/voxkitchen"
 DEFAULT_TAG = "latest"
 DEFAULT_DOWNLOAD_TAG = "slim"
+DOCKER_WORK_DIR_ENV = "VKIT_DOCKER_WORK_DIR"
+DOCKER_WORK_DIR_DEFAULT = ".docker"
 
 
 docker_app = typer.Typer(
@@ -176,9 +178,40 @@ def _extra_mounts(paths: list[Path]) -> list[str]:
     return out
 
 
-def _run_and_exit(cmd: list[str]) -> NoReturn:
+def _docker_work_dir() -> Path:
+    """Return the host directory used for Docker client/build scratch data."""
+    raw = os.environ.get(DOCKER_WORK_DIR_ENV, DOCKER_WORK_DIR_DEFAULT)
+    path = Path(raw).expanduser()
+    if not path.is_absolute():
+        path = Path.cwd() / path
+    return path
+
+
+def _docker_build_env() -> dict[str, str]:
+    """Environment for local image builds.
+
+    These variables move Docker CLI temp files, Buildx metadata, and client
+    config into a project-local workspace. Docker image layers are still stored
+    by the Docker daemon's ``data-root`` (often ``/var/lib/docker``).
+    """
+    env = os.environ.copy()
+    work_dir = _docker_work_dir()
+    defaults = {
+        "DOCKER_CONFIG": work_dir / "config",
+        "TMPDIR": work_dir / "tmp",
+        "BUILDX_CONFIG": work_dir / "buildx",
+        "XDG_CACHE_HOME": work_dir / "cache",
+    }
+    for key, path in defaults.items():
+        if not env.get(key):
+            path.mkdir(parents=True, exist_ok=True)
+            env[key] = str(path)
+    return env
+
+
+def _run_and_exit(cmd: list[str], *, env: dict[str, str] | None = None) -> NoReturn:
     """Run ``cmd`` and propagate its exit code. stdout/stderr inherited."""
-    rc = subprocess.run(cmd, check=False).returncode
+    rc = subprocess.run(cmd, env=env, check=False).returncode
     raise typer.Exit(code=rc)
 
 
@@ -378,7 +411,12 @@ def build_cmd(
         *(extra or []),
         ".",
     ]
-    _run_and_exit(cmd)
+    build_env = _docker_build_env()
+    rprint(
+        "[dim][vkit docker build] Docker client temp/config dir: "
+        f"{_docker_work_dir()}[/dim]"
+    )
+    _run_and_exit(cmd, env=build_env)
 
 
 def _read_hf_token_from_env(env_path: Path | None = None) -> str | None:

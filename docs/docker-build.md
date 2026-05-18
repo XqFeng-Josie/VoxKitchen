@@ -70,6 +70,43 @@ docker build --target slim   -f docker/Dockerfile -t voxkitchen:slim   .
 docker build --target latest -f docker/Dockerfile -t voxkitchen:latest .
 ```
 
+`vkit docker build <target>` is the preferred local wrapper. It runs the same
+Dockerfile build and defaults Docker client scratch paths to `./.docker`:
+
+- `DOCKER_CONFIG=./.docker/config`
+- `TMPDIR=./.docker/tmp`
+- `BUILDX_CONFIG=./.docker/buildx`
+- `XDG_CACHE_HOME=./.docker/cache`
+
+Override the base directory with `VKIT_DOCKER_WORK_DIR`:
+
+```bash
+VKIT_DOCKER_WORK_DIR=/data2/xiaoqinfeng/workdir/VoxKitchen/.docker \
+    vkit docker build asr
+```
+
+The release script uses the same default before building and pushing images.
+If `DOCKER_CONFIG` is project-local, log in to GHCR with the same config:
+
+```bash
+mkdir -p .docker/config
+DOCKER_CONFIG="$PWD/.docker/config" docker login ghcr.io
+```
+
+Important: these variables move Docker CLI temp/config/cache files only. Image
+layers and BuildKit layer cache are stored by the Docker daemon's `data-root`,
+which is commonly `/var/lib/docker` and may still fill `/`. To move that data,
+configure Docker daemon storage, for example:
+
+```json
+{
+  "data-root": "/data2/xiaoqinfeng/docker-data"
+}
+```
+
+Put that in `/etc/docker/daemon.json` and restart Docker. Use a path outside
+the repository; daemon layer storage is much larger than `./.docker`.
+
 Each build ends with a per-env `vkit doctor --expect <env>` smoke test. If any
 expected operator fails to register in its env, the build fails loudly rather
 than shipping an image that *looks* healthy but breaks at runtime.

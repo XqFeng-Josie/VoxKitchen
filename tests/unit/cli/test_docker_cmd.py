@@ -30,6 +30,14 @@ def fake_docker(monkeypatch, tmp_path):
 
     monkeypatch.setattr(docker_cmd.shutil, "which", fake_which)
     monkeypatch.chdir(tmp_path)
+    for name in (
+        docker_cmd.DOCKER_WORK_DIR_ENV,
+        "DOCKER_CONFIG",
+        "TMPDIR",
+        "BUILDX_CONFIG",
+        "XDG_CACHE_HOME",
+    ):
+        monkeypatch.delenv(name, raising=False)
     # Most tests expect no .env; create an opt-in helper.
     yield originals  # tests can flip nvidia-smi by mutating this dict
 
@@ -38,7 +46,7 @@ def _captured_cmd(fake_docker) -> list[str]:
     """Helper: the docker argv that would have been executed."""
     with patch.object(docker_cmd, "_run_and_exit") as spy:
         # _run_and_exit normally raises typer.Exit; silence it for capture
-        def _capture(cmd: list[str]) -> None:
+        def _capture(cmd: list[str], **kwargs) -> None:
             pass
 
         spy.side_effect = _capture
@@ -47,16 +55,28 @@ def _captured_cmd(fake_docker) -> list[str]:
 
 def _invoke(args: list[str]) -> tuple[int, list[str] | None]:
     """Invoke `vkit docker ...` and return (exit_code, captured_docker_argv)."""
-    captured: list[list[str]] = []
+    exit_code, cmd, _ = _invoke_details(args)
+    return (exit_code, cmd)
 
-    def _capture(cmd: list[str]) -> None:
+
+def _invoke_details(args: list[str]) -> tuple[int, list[str] | None, dict[str, object]]:
+    """Invoke `vkit docker ...` and include kwargs passed to `_run_and_exit`."""
+    captured: list[list[str]] = []
+    captured_kwargs: list[dict[str, object]] = []
+
+    def _capture(cmd: list[str], **kwargs) -> None:
         captured.append(cmd)
+        captured_kwargs.append(kwargs)
         raise SystemExit(0)
 
     with patch.object(docker_cmd, "_run_and_exit", side_effect=_capture):
         runner = CliRunner()
         result = runner.invoke(app, args)
-    return (result.exit_code, captured[0] if captured else None)
+    return (
+        result.exit_code,
+        captured[0] if captured else None,
+        captured_kwargs[0] if captured_kwargs else {},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -281,6 +301,36 @@ def test_build_default_target(fake_docker, tmp_path) -> None:
     assert "-t" in cmd
     assert cmd[cmd.index("-t") + 1] == "voxkitchen:latest"
     assert cmd[-1] == "."
+
+
+def test_build_uses_project_docker_workspace(fake_docker, tmp_path) -> None:
+    exit_code, cmd, kwargs = _invoke_details(["docker", "build", "slim"])
+    assert exit_code == 0
+    assert cmd is not None
+    env = kwargs.get("env")
+    assert isinstance(env, dict)
+
+    docker_dir = tmp_path / ".docker"
+    assert env["DOCKER_CONFIG"] == str(docker_dir / "config")
+    assert env["TMPDIR"] == str(docker_dir / "tmp")
+    assert env["BUILDX_CONFIG"] == str(docker_dir / "buildx")
+    assert env["XDG_CACHE_HOME"] == str(docker_dir / "cache")
+    assert (docker_dir / "config").is_dir()
+    assert (docker_dir / "tmp").is_dir()
+    assert (docker_dir / "buildx").is_dir()
+    assert (docker_dir / "cache").is_dir()
+
+
+def test_build_respects_custom_docker_workspace(fake_docker, tmp_path, monkeypatch) -> None:
+    custom = tmp_path / "custom-docker-work"
+    monkeypatch.setenv(docker_cmd.DOCKER_WORK_DIR_ENV, str(custom))
+    _, _, kwargs = _invoke_details(["docker", "build", "slim"])
+    env = kwargs.get("env")
+    assert isinstance(env, dict)
+    assert env["DOCKER_CONFIG"] == str(custom / "config")
+    assert env["TMPDIR"] == str(custom / "tmp")
+    assert (custom / "config").is_dir()
+    assert (custom / "tmp").is_dir()
 
 
 def test_build_reads_hf_token_from_dotenv(fake_docker, tmp_path) -> None:

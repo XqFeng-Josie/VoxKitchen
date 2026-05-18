@@ -30,6 +30,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   warns when used directly on a host.
 - GPU stages now show per-cut progress bars, so long-running ASR/diarization/TTS
   stages provide live feedback inside Docker runs.
+- `vkit docker build` and `scripts/release.sh` now default Docker client
+  scratch/config/cache paths to project-local `./.docker`, with
+  `VKIT_DOCKER_WORK_DIR` as the override.
 - Quick start now uses the smaller `slim` demo path.
 - Operator and doctor hints now point to Docker runtime tags instead of pip
   installation commands.

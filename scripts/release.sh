@@ -45,6 +45,17 @@ confirm() {
     [[ "$reply" =~ ^[Yy]$ ]] || die "aborted."
 }
 
+configure_docker_workspace() {
+    DOCKER_WORK_DIR="${VKIT_DOCKER_WORK_DIR:-$PWD/.docker}"
+    DOCKER_CONFIG="${DOCKER_CONFIG:-$DOCKER_WORK_DIR/config}"
+    TMPDIR="${TMPDIR:-$DOCKER_WORK_DIR/tmp}"
+    BUILDX_CONFIG="${BUILDX_CONFIG:-$DOCKER_WORK_DIR/buildx}"
+    XDG_CACHE_HOME="${XDG_CACHE_HOME:-$DOCKER_WORK_DIR/cache}"
+    export DOCKER_WORK_DIR DOCKER_CONFIG TMPDIR BUILDX_CONFIG XDG_CACHE_HOME
+
+    mkdir -p "$DOCKER_CONFIG" "$TMPDIR" "$BUILDX_CONFIG" "$XDG_CACHE_HOME"
+}
+
 # ---------------------------------------------------------------------------
 # 1. Pre-flight
 # ---------------------------------------------------------------------------
@@ -126,10 +137,18 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 0
 fi
 
+configure_docker_workspace
+
 log "Docker build + push ${#TARGETS[@]} targets"
 echo "   targets: ${TARGETS[*]}"
 echo "   rolling tag: ${GHCR_IMAGE}:<target>"
 echo "   pinned tag:  ${GHCR_IMAGE}:<target>-${VERSION}"
+echo "   Docker work dir: $DOCKER_WORK_DIR"
+echo "   DOCKER_CONFIG:   $DOCKER_CONFIG"
+echo "   TMPDIR:          $TMPDIR"
+echo "   BUILDX_CONFIG:   $BUILDX_CONFIG"
+echo "   XDG_CACHE_HOME:  $XDG_CACHE_HOME"
+echo "   note: Docker image layers still use the daemon data-root (often /var/lib/docker)."
 confirm "build and push now? (this takes 1-2 hours for all six)"
 
 for target in "${TARGETS[@]}"; do

@@ -31,7 +31,8 @@ pytest -v -m "not slow and not gpu"
 
 Runtime images are built from `docker/Dockerfile`. Use Docker smoke checks
 to validate image health; run the pytest suite from the local dev
-environment below.
+environment below. `vkit docker build` keeps Docker client temp/config/cache
+files under `./.docker` by default; set `VKIT_DOCKER_WORK_DIR` to override it.
 
 ```bash
 # Build the small core image and run its doctor check

@@ -90,9 +90,23 @@ order and tags each with both the rolling
 inside the image matches the release tag. See
 [`scripts/release.sh`](scripts/release.sh) for the exact loop.
 
+Before Docker build/push, the script defaults Docker client scratch paths to
+`./.docker`:
+
+- `DOCKER_CONFIG=./.docker/config`
+- `TMPDIR=./.docker/tmp`
+- `BUILDX_CONFIG=./.docker/buildx`
+- `XDG_CACHE_HOME=./.docker/cache`
+
+Set `VKIT_DOCKER_WORK_DIR=/data2/.../.docker` to use a different base
+directory. This does not move Docker image layers; if `/var/lib/docker` is
+filling `/`, move Docker daemon `data-root` as described in
+[`docs/docker-build.md`](docs/docker-build.md).
+
 **Prerequisites**:
 
-- Logged in to GHCR: `printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u xqfeng-josie --password-stdin`.
+- Logged in to GHCR with the same Docker config the release script will use:
+  `mkdir -p .docker/config && printf '%s' "$GHCR_TOKEN" | DOCKER_CONFIG="$PWD/.docker/config" docker login ghcr.io -u xqfeng-josie --password-stdin`.
   The PAT needs `write:packages` scope (classic PAT from
   https://github.com/settings/tokens/new).
 - HF_TOKEN in `./.env` if you want to bake pyannote into the `asr` and

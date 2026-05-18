@@ -238,6 +238,13 @@ Pass extra `docker build` flags after `--`:
 vkit docker build latest -- --no-cache --progress=plain
 ```
 
+By default the wrapper keeps Docker client temp/config/cache files under
+`./.docker` (`DOCKER_CONFIG`, `TMPDIR`, `BUILDX_CONFIG`, `XDG_CACHE_HOME`).
+Set `VKIT_DOCKER_WORK_DIR=/path/to/.docker` to choose a different base
+directory. Docker image layers still live under the Docker daemon's
+`data-root` (often `/var/lib/docker`); move that daemon setting separately if
+`/` is full.
+
 #### `vkit docker pull`
 
 Pull a published image from GHCR.
