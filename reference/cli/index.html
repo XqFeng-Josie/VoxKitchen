@@ -1735,6 +1735,12 @@ vkit<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> 
 <p>Pass extra <code>docker build</code> flags after <code>--</code>:</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>latest<span class="w"> </span>--<span class="w"> </span>--no-cache<span class="w"> </span>--progress<span class="o">=</span>plain
 </code></pre></div>
+<p>By default the wrapper keeps Docker client temp/config/cache files under
+<code>./.docker</code> (<code>DOCKER_CONFIG</code>, <code>TMPDIR</code>, <code>BUILDX_CONFIG</code>, <code>XDG_CACHE_HOME</code>).
+Set <code>VKIT_DOCKER_WORK_DIR=/path/to/.docker</code> to choose a different base
+directory. Docker image layers still live under the Docker daemon's
+<code>data-root</code> (often <code>/var/lib/docker</code>); move that daemon setting separately if
+<code>/</code> is full.</p>
 <h4 id="vkit-docker-pull"><code>vkit docker pull</code></h4>
 <p>Pull a published image from GHCR.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>pull<span class="w">                      </span><span class="c1"># :latest</span>

@@ -1283,6 +1283,33 @@ existing on-disk checkpoints.</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>slim<span class="w">   </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>-t<span class="w"> </span>voxkitchen:slim<span class="w">   </span>.
 docker<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>latest<span class="w"> </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>-t<span class="w"> </span>voxkitchen:latest<span class="w"> </span>.
 </code></pre></div>
+<p><code>vkit docker build &lt;target&gt;</code> is the preferred local wrapper. It runs the same
+Dockerfile build and defaults Docker client scratch paths to <code>./.docker</code>:</p>
+<ul>
+<li><code>DOCKER_CONFIG=./.docker/config</code></li>
+<li><code>TMPDIR=./.docker/tmp</code></li>
+<li><code>BUILDX_CONFIG=./.docker/buildx</code></li>
+<li><code>XDG_CACHE_HOME=./.docker/cache</code></li>
+</ul>
+<p>Override the base directory with <code>VKIT_DOCKER_WORK_DIR</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">VKIT_DOCKER_WORK_DIR</span><span class="o">=</span>/data2/xiaoqinfeng/workdir/VoxKitchen/.docker<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>vkit<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>asr
+</code></pre></div>
+<p>The release script uses the same default before building and pushing images.
+If <code>DOCKER_CONFIG</code> is project-local, log in to GHCR with the same config:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>.docker/config
+<span class="nv">DOCKER_CONFIG</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/.docker/config&quot;</span><span class="w"> </span>docker<span class="w"> </span>login<span class="w"> </span>ghcr.io
+</code></pre></div>
+<p>Important: these variables move Docker CLI temp/config/cache files only. Image
+layers and BuildKit layer cache are stored by the Docker daemon's <code>data-root</code>,
+which is commonly <code>/var/lib/docker</code> and may still fill <code>/</code>. To move that data,
+configure Docker daemon storage, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data-root&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data2/xiaoqinfeng/docker-data&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Put that in <code>/etc/docker/daemon.json</code> and restart Docker. Use a path outside
+the repository; daemon layer storage is much larger than <code>./.docker</code>.</p>
 <p>Each build ends with a per-env <code>vkit doctor --expect &lt;env&gt;</code> smoke test. If any
 expected operator fails to register in its env, the build fails loudly rather
 than shipping an image that <em>looks</em> healthy but breaks at runtime.</p>
