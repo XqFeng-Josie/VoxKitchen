@@ -96,26 +96,7 @@ when that directory exists.
 
 ## How It Works
 
-```mermaid
-flowchart LR
-  A[Raw audio<br/>or existing manifests] --> B[One YAML pipeline]
-
-  subgraph R[Docker runtime]
-    direction LR
-    C[Ingest] --> D[Prepare<br/>convert, resample, segment]
-    D --> E[Annotate<br/>ASR, diarize, TTS, features]
-    E --> F[Filter<br/>quality rules and metrics]
-    F --> G[Pack<br/>HF, JSONL, Kaldi, Parquet]
-  end
-
-  B --> C
-  G --> H[Training-ready dataset]
-
-  D -. checkpoints .-> W[(./work)]
-  E -. reports .-> W
-  F -. errors and stats .-> W
-  G -. exports .-> O[(./output)]
-```
+![VoxKitchen pipeline overview](pipeline.png)
 
 A pipeline is a YAML file. Each stage reads a `CutSet`, writes a checkpoint,
 and passes the result to the next stage.
