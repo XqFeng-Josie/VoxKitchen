@@ -6,12 +6,12 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A researcher-friendly speech data processing toolkit">
+        <meta name="description" content="Docker-first speech data pipelines for clean, inspectable training datasets">
       
       
       
       
-        <link rel="prev" href="../../tutorials/speaker-analysis/">
+        <link rel="prev" href="../../concepts/data-protocol/">
       
       
         <link rel="next" href="../recipes/">
@@ -283,62 +283,15 @@
   
   
   
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Concepts
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Concepts
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../../concepts/data-protocol/" class="md-nav__link">
+      <a href="../../examples/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Data Protocol
+    Examples & Use Cases
   
 
     
@@ -347,14 +300,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -529,6 +474,88 @@
       
   
   
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/data-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -542,10 +569,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -563,8 +590,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1519,10 +1546,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -1540,8 +1567,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2452,7 +2479,7 @@
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ffmpeg_convert</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">target_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wav</span>
-<span class="w">    </span><span class="nt">clean_names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">clean_names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <hr />
 <h3 id="loudness_normalize"><code>loudness_normalize</code></h3>
@@ -2511,9 +2538,9 @@
 </tr>
 <tr>
 <td><code>target_channels</code></td>
-<td>int</td>
-<td>None</td>
+<td>int | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -2521,7 +2548,7 @@
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resample</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">target_sr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;int&gt;</span>
-<span class="w">    </span><span class="nt">target_channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">target_channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h2 id="segment">Segmentation</h2>
@@ -2792,7 +2819,7 @@ creates child Cuts for each speech region.  No new audio is written.</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reverb_augment</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">rir_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;str&gt;</span>
-<span class="w">    </span><span class="nt">normalize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">normalize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <hr />
 <h3 id="speed_perturb"><code>speed_perturb</code></h3>
@@ -2952,9 +2979,11 @@ creates child Cuts for each speech region.  No new audio is written.</p>
 <p><strong>Transcribe audio using faster-whisper and add Supervisions with text + language.</strong></p>
 <p>Uses CTranslate2 for inference. Has GPU and CPU, but on CPU the
 compute_type is coerced to "int8" because float16 is not supported.</p>
-<p>.. warning::
-CTranslate2 may deadlock on macOS ARM64. Use <code>whisper_openai_asr</code>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>CTranslate2 may deadlock on macOS ARM64. Use <code>whisper_openai_asr</code>
 on macOS instead.</p>
+</div>
 <ul>
 <li><strong>Device:</strong> gpu</li>
 <li><strong>Runtime:</strong> <code>vkit docker run --tag asr &lt;yaml&gt;</code></li>
@@ -2978,9 +3007,9 @@ on macOS instead.</p>
 </tr>
 <tr>
 <td><code>language</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>beam_size</code></td>
@@ -3006,7 +3035,7 @@ on macOS instead.</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">faster_whisper_asr</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tiny</span>
-<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">beam_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">    </span><span class="nt">compute_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int8</span>
 <span class="w">    </span><span class="nt">cpu_threads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
@@ -3159,9 +3188,9 @@ the published Docker images because it pulls in TensorFlow.</p>
 </tr>
 <tr>
 <td><code>fmax</code></td>
-<td>float</td>
-<td>None</td>
+<td>float | None</td>
 <td><code>8000.0</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>ref_db</code></td>
@@ -3171,9 +3200,9 @@ the published Docker images because it pulls in TensorFlow.</p>
 </tr>
 <tr>
 <td><code>output_dir</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -3186,7 +3215,7 @@ the published Docker images because it pulls in TensorFlow.</p>
 <span class="w">    </span><span class="nt">fmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
 <span class="w">    </span><span class="nt">fmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000.0</span>
 <span class="w">    </span><span class="nt">ref_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20.0</span>
-<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="paraformer_asr"><code>paraformer_asr</code></h3>
@@ -3257,21 +3286,21 @@ setting <code>HF_TOKEN</code> (or passing <code>hf_token</code> in the config).<
 </tr>
 <tr>
 <td><code>min_speakers</code></td>
-<td>int</td>
-<td>None</td>
+<td>int | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>max_speakers</code></td>
-<td>int</td>
-<td>None</td>
+<td>int | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>hf_token</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -3279,9 +3308,9 @@ setting <code>HF_TOKEN</code> (or passing <code>hf_token</code> in the config).<
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote_diarize</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote/speaker-diarization-3.1</span>
-<span class="w">    </span><span class="nt">min_speakers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
-<span class="w">    </span><span class="nt">max_speakers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
-<span class="w">    </span><span class="nt">hf_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">min_speakers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">max_speakers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">hf_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="qwen3_asr"><code>qwen3_asr</code></h3>
@@ -3311,9 +3340,9 @@ to also get word-level timestamps (uses ForcedAligner internally).</p>
 </tr>
 <tr>
 <td><code>language</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>return_timestamps</code></td>
@@ -3339,8 +3368,8 @@ to also get word-level timestamps (uses ForcedAligner internally).</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qwen3_asr</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Qwen/Qwen3-ASR-0.6B</span>
-<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
-<span class="w">    </span><span class="nt">return_timestamps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">return_timestamps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">    </span><span class="nt">aligner_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Qwen/Qwen3-ForcedAligner-0.6B</span>
 <span class="w">    </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
 </code></pre></div>
@@ -3391,6 +3420,9 @@ The <code>SenseVoiceSmall</code> model is fast and accurate for these languages.
 <hr />
 <h3 id="speaker_embed"><code>speaker_embed</code></h3>
 <p><strong>Extract speaker embedding vectors using SpeechBrain or WeSpeaker.</strong></p>
+<p>Official VoxKitchen Docker images support <code>method="speechbrain"</code>.
+<code>method="wespeaker"</code> is kept for custom environments with WeSpeaker
+installed.</p>
 <ul>
 <li><strong>Device:</strong> gpu</li>
 <li><strong>Runtime:</strong> <code>vkit docker run --tag slim &lt;yaml&gt;</code></li>
@@ -3433,9 +3465,6 @@ The <code>SenseVoiceSmall</code> model is fast and accurate for these languages.
 <span class="w">    </span><span class="nt">wespeaker_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">english</span>
 <span class="w">    </span><span class="nt">speechbrain_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speechbrain/spkrec-ecapa-voxceleb</span>
 </code></pre></div>
-<p>Official VoxKitchen Docker images use the SpeechBrain backend for this
-operator. The WeSpeaker backend is experimental and intended for custom
-environments.</p>
 <hr />
 <h3 id="speech_enhance"><code>speech_enhance</code></h3>
 <p><strong>Remove background noise using DeepFilterNet neural denoiser.</strong></p>
@@ -3622,9 +3651,9 @@ operators (faster_whisper_asr) may deadlock.</p>
 </tr>
 <tr>
 <td><code>language</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>beam_size</code></td>
@@ -3644,9 +3673,9 @@ operators (faster_whisper_asr) may deadlock.</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whisper_openai_asr</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tiny</span>
-<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">beam_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">    </span><span class="nt">fp16</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">fp16</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <hr />
 <h3 id="whisperx_asr"><code>whisperx_asr</code></h3>
@@ -3676,9 +3705,9 @@ operators (faster_whisper_asr) may deadlock.</p>
 </tr>
 <tr>
 <td><code>language</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>batch_size</code></td>
@@ -3698,7 +3727,7 @@ operators (faster_whisper_asr) may deadlock.</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whisperx_asr</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tiny</span>
-<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
 <span class="w">    </span><span class="nt">compute_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int8</span>
 </code></pre></div>
@@ -3833,7 +3862,7 @@ This makes CER directly comparable across different ASR backends.</p>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">hypothesis_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
 <span class="w">    </span><span class="nt">reference_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference_text</span>
-<span class="w">    </span><span class="nt">normalize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">normalize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <hr />
 <h3 id="clipping_detect"><code>clipping_detect</code></h3>
@@ -3908,7 +3937,7 @@ acceptable for training data.</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_dnsmos_score</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dnsmos_score</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">use_gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">use_gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
 <hr />
 <h3 id="duration_filter"><code>duration_filter</code></h3>
@@ -3937,9 +3966,9 @@ acceptable for training data.</p>
 </tr>
 <tr>
 <td><code>max_duration</code></td>
-<td>float</td>
-<td>None</td>
+<td>float | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -3947,7 +3976,7 @@ acceptable for training data.</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duration_filter</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">min_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
-<span class="w">    </span><span class="nt">max_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">max_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="pitch_stats"><code>pitch_stats</code></h3>
@@ -4118,9 +4147,9 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <tbody>
 <tr>
 <td><code>seed</code></td>
-<td>int</td>
-<td>None</td>
+<td>int | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>temperature</code></td>
@@ -4145,7 +4174,7 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_tts_chattts</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_chattts</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
 <span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
 <span class="w">    </span><span class="nt">top_k</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
@@ -4188,15 +4217,15 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 </tr>
 <tr>
 <td><code>reference_audio</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>reference_text</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -4206,8 +4235,8 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FunAudioLLM/CosyVoice2-0.5B</span>
 <span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sft</span>
 <span class="w">    </span><span class="nt">spk_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
-<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="tts_fish_speech"><code>tts_fish_speech</code></h3>
@@ -4235,15 +4264,15 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 </tr>
 <tr>
 <td><code>reference_audio</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>reference_text</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>max_new_tokens</code></td>
@@ -4277,9 +4306,9 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 </tr>
 <tr>
 <td><code>seed</code></td>
-<td>int</td>
-<td>None</td>
+<td>int | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>compile</code></td>
@@ -4299,16 +4328,16 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_fish_speech</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fishaudio/s2-pro</span>
-<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
-<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1024</span>
 <span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
 <span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
 <span class="w">    </span><span class="nt">repetition_penalty</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1</span>
 <span class="w">    </span><span class="nt">chunk_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
-<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
-<span class="w">    </span><span class="nt">compile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
-<span class="w">    </span><span class="nt">half</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">    </span><span class="nt">compile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">half</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
 <hr />
 <h3 id="tts_kokoro"><code>tts_kokoro</code></h3>
@@ -4359,6 +4388,13 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <h2 id="pack">Output / Packing</h2>
 <h3 id="pack_huggingface"><code>pack_huggingface</code></h3>
 <p><strong>Export CutSet as a HuggingFace Dataset with audio column.</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Recent HuggingFace <code>datasets</code> versions may require <code>torchcodec</code>
+when decoding <code>Audio</code> rows into arrays. Install <code>torchcodec</code> in the
+training environment, or cast with <code>Audio(decode=False)</code> when reading
+metadata/embedded audio bytes only.</p>
+</div>
 <ul>
 <li><strong>Device:</strong> cpu</li>
 <li><strong>Runtime:</strong> <code>vkit docker run --tag slim &lt;yaml&gt;</code></li>
@@ -4376,16 +4412,16 @@ Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
 <tbody>
 <tr>
 <td><code>output_dir</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_pack_huggingface</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_huggingface</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="pack_jsonl"><code>pack_jsonl</code></h3>
@@ -4411,16 +4447,16 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
 <tbody>
 <tr>
 <td><code>output_path</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_pack_jsonl</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">output_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">output_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="pack_kaldi"><code>pack_kaldi</code></h3>
@@ -4442,16 +4478,16 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
 <tbody>
 <tr>
 <td><code>output_dir</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_pack_kaldi</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_kaldi</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="pack_manifest"><code>pack_manifest</code></h3>
@@ -4484,16 +4520,16 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
 <tbody>
 <tr>
 <td><code>output_dir</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_pack_parquet</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_parquet</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 </code></pre></div>
 <hr />
 <h3 id="pack_webdataset"><code>pack_webdataset</code></h3>
@@ -4515,9 +4551,9 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
 <tbody>
 <tr>
 <td><code>output_dir</code></td>
-<td>str</td>
-<td>None</td>
+<td>str | None</td>
 <td><code>None</code></td>
+<td></td>
 </tr>
 <tr>
 <td><code>shard_size</code></td>
@@ -4530,7 +4566,7 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_pack_webdataset</span>
 <span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_webdataset</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
 <span class="w">    </span><span class="nt">shard_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
 </code></pre></div>
 <hr />
@@ -4595,7 +4631,7 @@ recording.  <code>origin_id</code> traces back to the source filename.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
