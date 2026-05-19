@@ -8,8 +8,8 @@ Prepare high-quality TTS training data from raw audio recordings.
 vkit init my-tts-project --template tts
 cd my-tts-project
 # Put your audio files in ./data/
-vkit docker run --tag latest pipeline.yaml --dry-run
-vkit docker run --tag latest pipeline.yaml
+vkit docker run --tag asr pipeline.yaml --dry-run
+vkit docker run --tag asr pipeline.yaml
 ```
 
 ## What the Pipeline Does
@@ -62,7 +62,8 @@ Change the ASR language detection to Chinese for better accuracy:
 
 ### For multi-speaker TTS
 
-Add speaker diarization before packing:
+Add speaker diarization before packing. This mixes ASR and diarization
+operators, so run the edited pipeline with `--tag latest`.
 
 ```yaml
   - name: diarize

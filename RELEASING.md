@@ -128,16 +128,25 @@ tag is pushed, create the Release page to attach release notes:
 
 ```bash
 # CLI (requires `gh` installed and authenticated)
-gh release create v0.2.0 \
-    --title "v0.2.0" \
-    --notes-from-tag
+VERSION=0.2.0
+TAG="v${VERSION}"
+NOTES="/tmp/voxkitchen-${TAG}-notes.md"
+
+awk -v version="$VERSION" '
+  $0 ~ "^## \\[" version "\\]" { in_section=1; next }
+  /^## \[/ { if (in_section) exit }
+  in_section { print }
+' CHANGELOG.md > "$NOTES"
+
+gh release create "$TAG" -t "$TAG" -F "$NOTES"
 ```
 
 Or via the web UI:
 https://github.com/XqFeng-Josie/VoxKitchen/releases/new?tag=v0.2.0
 
-Paste the relevant CHANGELOG section into the "Description" field and
-publish.
+Paste the relevant CHANGELOG section into the "Description" field and publish.
+If the Release page already exists, edit the description from the web UI; older
+`gh` builds may not include `gh release edit`.
 
 ### 7. Verify
 

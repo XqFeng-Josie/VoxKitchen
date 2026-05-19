@@ -28,7 +28,9 @@ stages:
 
   - name: embed
     op: speaker_embed
-    args: { method: wespeaker }
+    args:
+      method: speechbrain
+      speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
 
   - name: similarity
     op: speaker_similarity

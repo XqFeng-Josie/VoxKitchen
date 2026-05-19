@@ -1,23 +1,26 @@
 site_name: VoxKitchen
-site_description: A researcher-friendly speech data processing toolkit
+site_description: Docker-first speech data pipelines for clean, inspectable training datasets
 repo_url: https://github.com/XqFeng-Josie/VoxKitchen
 
 theme:
   name: material
   favicon: assets/voxkitchen_logo.svg
+  features:
+    - content.code.copy
   palette:
     primary: blue
 
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
-  - Concepts:
-    - Data Protocol: concepts/data-protocol.md
+  - Examples & Use Cases: examples.md
   - Tutorials:
     - TTS Data Preparation: tutorials/tts-data-prep.md
     - ASR Training Data: tutorials/asr-training-data.md
     - Data Cleaning: tutorials/data-cleaning.md
     - Speaker Analysis: tutorials/speaker-analysis.md
+  - Concepts:
+    - Data Protocol: concepts/data-protocol.md
   - Reference:
     - Operators: reference/operators.md
     - Recipes & Download: reference/recipes.md

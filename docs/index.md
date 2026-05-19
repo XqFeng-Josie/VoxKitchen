@@ -4,13 +4,16 @@
 
 # VoxKitchen
 
-Declarative speech data processing toolkit. Write a YAML recipe, run it with `vkit docker`, get training-ready data.
+Turn raw speech recordings into clean, inspectable training datasets. Write one
+Docker-backed YAML pipeline, run it with `vkit docker`, and get checkpoints,
+reports, and exported datasets.
 
 **51 operators** across 8 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, utility, and output packing.
 
 ## Get Started
 
 - [Getting Started](getting-started.md) — install, first pipeline, inspect results
+- [Examples & Use Cases](examples.md) — choose a ready-made pipeline by task
 - [Data Protocol](concepts/data-protocol.md) — Recording, Supervision, Cut, CutSet, Provenance
 
 ## Tutorials

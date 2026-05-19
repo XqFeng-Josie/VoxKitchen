@@ -10,8 +10,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 # Display-friendly category names and order
 CATEGORY_LABELS = {
@@ -48,6 +54,28 @@ def format_type(annotation: Any) -> str:
     return str(annotation).replace("typing.", "")
 
 
+def format_table_cell(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", "<br>")
+
+
+def format_yaml_value(value: Any) -> str:
+    if isinstance(value, str) and value.startswith("<") and value.endswith(">"):
+        return value
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int | float):
+        return str(value)
+    if isinstance(value, str):
+        if not value or value.lower() in {"null", "none", "true", "false", "yes", "no"}:
+            return json.dumps(value)
+        if any(ch in value for ch in [":", "#", "{", "}", "[", "]", ","]):
+            return json.dumps(value)
+        return value
+    return json.dumps(value)
+
+
 def docker_tag_for_required_extras(required_extras: list[str]) -> str:
     from voxkitchen.cli.hints import docker_tag_for_extras
 
@@ -58,6 +86,40 @@ def docker_tag_for_required_extras(required_extras: list[str]) -> str:
     if len(tags) == 1:
         return next(iter(tags))
     return "latest"
+
+
+def format_docstring(doc: str) -> tuple[str, str]:
+    """Return the one-line summary and MkDocs-friendly body text."""
+    if not doc:
+        return "", ""
+
+    raw_lines = doc.splitlines()
+    first_line = raw_lines[0].strip()
+    body_lines = [line.rstrip() for line in raw_lines[1:]]
+
+    lines: list[str] = []
+    i = 0
+    while i < len(body_lines):
+        line = body_lines[i]
+        stripped = line.strip()
+        if stripped == ".. warning::":
+            lines.append("!!! warning")
+            i += 1
+            while i < len(body_lines):
+                warning_line = body_lines[i]
+                if warning_line.strip() == "":
+                    i += 1
+                    break
+                if not warning_line.startswith((" ", "\t")):
+                    break
+                lines.append(f"    {warning_line.strip()}")
+                i += 1
+            continue
+
+        lines.append(stripped)
+        i += 1
+
+    return first_line, "\n".join(lines).strip()
 
 
 def generate() -> str:
@@ -73,19 +135,24 @@ def generate() -> str:
     lines: list[str] = []
     lines.append("# Operator Reference")
     lines.append("")
-    lines.append(f"VoxKitchen ships with **{len(names)} built-in operators** across "
-                 f"{len(groups)} categories.")
+    lines.append(
+        f"VoxKitchen ships with **{len(names)} built-in operators** across "
+        f"{len(groups)} categories."
+    )
     lines.append("")
     lines.append("!!! tip")
-    lines.append("    Run `vkit operators` to see this list in your terminal, "
-                 "or `vkit operators show <name>` for details.")
+    lines.append(
+        "    Run `vkit operators` to see this list in your terminal, "
+        "or `vkit operators show <name>` for details."
+    )
     lines.append("")
 
     # Table of contents
     lines.append("## Categories")
     lines.append("")
-    sorted_cats = sorted(groups.keys(),
-                         key=lambda c: CATEGORY_ORDER.index(c) if c in CATEGORY_ORDER else 99)
+    sorted_cats = sorted(
+        groups.keys(), key=lambda c: CATEGORY_ORDER.index(c) if c in CATEGORY_ORDER else 99
+    )
     for cat in sorted_cats:
         label = CATEGORY_LABELS.get(cat, cat.title())
         count = len(groups[cat])
@@ -102,8 +169,7 @@ def generate() -> str:
 
         for op_name, op_cls in ops:
             doc = (op_cls.__doc__ or "").strip()
-            first_line = doc.split("\n")[0] if doc else ""
-            full_doc = "\n".join(line.strip() for line in doc.split("\n")[1:]).strip()
+            first_line, full_doc = format_docstring(doc)
 
             lines.append(f"### `{op_name}`")
             lines.append("")
@@ -116,9 +182,7 @@ def generate() -> str:
             # Metadata
             tag = docker_tag_for_required_extras(list(op_cls.required_extras))
             lines.append(f"- **Device:** {op_cls.device}")
-            lines.append(
-                f"- **Runtime:** `vkit docker run --tag {tag} <yaml>`"
-            )
+            lines.append(f"- **Runtime:** `vkit docker run --tag {tag} <yaml>`")
             lines.append(f"- **Produces audio:** {'Yes' if op_cls.produces_audio else 'No'}")
             lines.append("")
 
@@ -136,7 +200,12 @@ def generate() -> str:
                     except Exception:
                         default_str = "required"
                     desc = info.description or ""
-                    lines.append(f"| `{field_name}` | {type_str} | {default_str} | {desc} |")
+                    lines.append(
+                        f"| `{format_table_cell(field_name)}` | "
+                        f"{format_table_cell(type_str)} | "
+                        f"{format_table_cell(default_str)} | "
+                        f"{format_table_cell(desc)} |"
+                    )
                 lines.append("")
 
             # YAML example
@@ -152,7 +221,7 @@ def generate() -> str:
                             d = f"<{format_type(info.annotation)}>"
                     except Exception:
                         d = "..."
-                    lines.append(f"    {field_name}: {d}")
+                    lines.append(f"    {field_name}: {format_yaml_value(d)}")
             lines.append("```")
             lines.append("")
             lines.append("---")
@@ -163,8 +232,9 @@ def generate() -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate operator reference docs.")
-    parser.add_argument("--output", "-o", type=str, default=None,
-                        help="Output file path. Defaults to stdout.")
+    parser.add_argument(
+        "--output", "-o", type=str, default=None, help="Output file path. Defaults to stdout."
+    )
     args = parser.parse_args()
 
     content = generate()

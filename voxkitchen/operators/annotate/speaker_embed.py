@@ -29,7 +29,12 @@ class SpeakerEmbedConfig(OperatorConfig):
 
 @register_operator
 class SpeakerEmbedOperator(Operator):
-    """Extract speaker embedding vectors using SpeechBrain or WeSpeaker."""
+    """Extract speaker embedding vectors using SpeechBrain or WeSpeaker.
+
+    Official VoxKitchen Docker images support ``method="speechbrain"``.
+    ``method="wespeaker"`` is kept for custom environments with WeSpeaker
+    installed.
+    """
 
     name = "speaker_embed"
     config_cls = SpeakerEmbedConfig

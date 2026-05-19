@@ -45,6 +45,21 @@ confirm() {
     [[ "$reply" =~ ^[Yy]$ ]] || die "aborted."
 }
 
+write_release_notes() {
+    local notes_file="/tmp/voxkitchen-${TAG}-notes.md"
+    awk -v version="$VERSION" '
+        $0 ~ "^## \\[" version "\\]" { in_section=1; next }
+        /^## \[/ { if (in_section) exit }
+        in_section { print }
+    ' CHANGELOG.md > "$notes_file"
+
+    if [[ ! -s "$notes_file" ]]; then
+        warn "could not extract CHANGELOG [${VERSION}] notes; fill the GitHub Release description manually."
+    fi
+
+    printf "%s" "$notes_file"
+}
+
 configure_docker_workspace() {
     DOCKER_WORK_DIR="${VKIT_DOCKER_WORK_DIR:-$PWD/.docker}"
     DOCKER_CONFIG="${DOCKER_CONFIG:-$DOCKER_WORK_DIR/config}"
@@ -175,9 +190,12 @@ done
 
 log "GitHub Release"
 
+NOTES_FILE="$(write_release_notes)"
 if command -v gh >/dev/null 2>&1; then
     echo "   to create the release page now:"
-    echo "     gh release create $TAG --title '$TAG' --notes-from-tag"
+    echo "     gh release create $TAG -t '$TAG' -F '$NOTES_FILE'"
+    echo "   if the release page already exists, edit its description in the web UI:"
+    echo "     https://github.com/XqFeng-Josie/VoxKitchen/releases/tag/${TAG}"
     echo "   or paste the CHANGELOG [${VERSION}] section into:"
 else
     echo "   gh CLI not found. Create the release manually at:"

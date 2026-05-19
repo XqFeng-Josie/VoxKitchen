@@ -1,6 +1,9 @@
 # Pipeline YAML Reference
 
 A VoxKitchen pipeline is defined as a YAML file with three sections: metadata, ingest, and stages.
+If you are choosing a starting point for a task, start with
+[Examples & Use Cases](../examples.md). Use this page when you want to edit,
+extend, or write a pipeline YAML file directly.
 
 ## Full Schema
 

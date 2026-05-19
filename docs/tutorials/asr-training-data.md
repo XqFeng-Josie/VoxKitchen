@@ -57,6 +57,33 @@ final result is not a directory of standalone WAV files. Use
 `--keep-intermediates` or `gc_mode: keep` when you also need to preserve each
 stage's derived WAV files under `./work`.
 
+Load the exported dataset with:
+
+```python
+from datasets import load_from_disk
+
+ds = load_from_disk("./output/hf_dataset")
+```
+
+Recent HuggingFace `datasets` versions decode `Audio` columns through
+`torchcodec`. If your training code needs `audio["array"]`, install it in the
+training environment:
+
+```bash
+pip install torchcodec
+```
+
+For metadata checks or custom audio decoding, avoid automatic decode:
+
+```python
+from datasets import Audio, load_from_disk
+
+ds = load_from_disk("./output/hf_dataset")
+ds = ds.cast_column("audio", Audio(decode=False))
+row = ds[0]
+audio_bytes = row["audio"]["bytes"]
+```
+
 ## Customization
 
 ### For Chinese ASR

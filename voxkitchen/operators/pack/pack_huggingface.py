@@ -27,7 +27,14 @@ class PackHuggingFaceConfig(OperatorConfig):
 
 @register_operator
 class PackHuggingFaceOperator(Operator):
-    """Export CutSet as a HuggingFace Dataset with audio column."""
+    """Export CutSet as a HuggingFace Dataset with audio column.
+
+    .. warning::
+       Recent HuggingFace ``datasets`` versions may require ``torchcodec``
+       when decoding ``Audio`` rows into arrays. Install ``torchcodec`` in the
+       training environment, or cast with ``Audio(decode=False)`` when reading
+       metadata/embedded audio bytes only.
+    """
 
     name = "pack_huggingface"
     config_cls = PackHuggingFaceConfig

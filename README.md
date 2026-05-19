@@ -5,12 +5,13 @@
 <h1 align="center">VoxKitchen</h1>
 
 <p align="center">
-  <strong>Docker-first speech data pipelines for ASR, TTS, speaker analysis, and dataset cleaning.</strong>
+  <strong>Turn raw speech recordings into clean, inspectable training datasets.</strong>
 </p>
 
 <p align="center">
-  Write one YAML recipe, run it with <code>vkit docker</code>, and get resumable,
-  inspectable, training-ready speech datasets without installing model stacks on your host.
+  VoxKitchen handles the repetitive audio prep around ASR, TTS, speaker
+  analysis, and data cleaning: convert, segment, label, filter, and export from
+  one Docker-backed YAML pipeline.
 </p>
 
 <p align="center">
@@ -23,6 +24,13 @@
 
 > **Status:** Pre-alpha. APIs and Docker image contents may change between
 > releases.
+
+Use VoxKitchen when you want to:
+
+- turn long recordings into ASR training data;
+- prepare and inspect TTS datasets;
+- diarize speakers, tag languages, or run speech quality checks;
+- clean, filter, and package audio without maintaining one-off scripts.
 
 ## Why VoxKitchen
 
@@ -83,22 +91,30 @@ when that directory exists.
 | Clean and filter raw speech audio | `vkit init my-cleaning --template cleaning` | `slim` |
 | Build ASR training manifests | `vkit init my-asr --template asr` | `asr` |
 | Analyze speakers and languages | `vkit init my-speakers --template speaker` | `latest` |
-| Prepare TTS training data | `vkit init my-tts --template tts` | `latest` |
+| Prepare TTS training data | `vkit init my-tts --template tts` | `asr` |
 | Run Fish-Speech synthesis | create a pipeline with `tts_fish_speech` | `fish-speech` |
 
 ## How It Works
 
 ```mermaid
 flowchart LR
-  A[Raw audio] --> B[Ingest]
-  B --> C[Convert / resample]
-  C --> D[VAD / segment]
-  D --> E[ASR / diarize / TTS / features]
-  E --> F[Quality filters]
-  F --> G[Pack: JSONL / HF / Kaldi / Parquet]
-  D --> H[Stage checkpoints]
-  E --> H
-  F --> H
+  A[Raw audio<br/>or existing manifests] --> B[One YAML pipeline]
+
+  subgraph R[Docker runtime]
+    direction LR
+    C[Ingest] --> D[Prepare<br/>convert, resample, segment]
+    D --> E[Annotate<br/>ASR, diarize, TTS, features]
+    E --> F[Filter<br/>quality rules and metrics]
+    F --> G[Pack<br/>HF, JSONL, Kaldi, Parquet]
+  end
+
+  B --> C
+  G --> H[Training-ready dataset]
+
+  D -. checkpoints .-> W[(./work)]
+  E -. reports .-> W
+  F -. errors and stats .-> W
+  G -. exports .-> O[(./output)]
 ```
 
 A pipeline is a YAML file. Each stage reads a `CutSet`, writes a checkpoint,
@@ -223,26 +239,13 @@ vkit docker doctor --tag latest        # Check image health
 ## Documentation
 
 - [Getting Started](docs/getting-started.md)
+- [Examples & Use Cases](docs/examples.md)
 - [Pipeline YAML](docs/reference/pipeline-yaml.md)
 - [Recipes & Download](docs/reference/recipes.md)
 - [CLI reference](docs/reference/cli.md)
 - [Operators reference](docs/reference/operators.md)
 - [Docker build guide](docs/docker-build.md)
 - [Contributing](CONTRIBUTING.md)
-
-## Examples
-
-The published Docker images include ready-to-run demo YAML files. Clone the
-repository only when you want to inspect or modify examples, use the bundled
-`skill/`, contribute code, or build images locally:
-
-```bash
-git clone https://github.com/XqFeng-Josie/VoxKitchen.git
-cd VoxKitchen
-```
-
-See [`examples/pipelines/`](examples/pipelines/) for the full local example
-set.
 
 ## Agent Skill
 

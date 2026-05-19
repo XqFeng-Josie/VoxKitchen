@@ -6,8 +6,8 @@
 #
 # Usage:
 #   1. Put your raw audio files in ./data/
-#   2. vkit docker run --tag latest examples/pipelines/tts-data-prep.yaml --dry-run
-#   3. vkit docker run --tag latest examples/pipelines/tts-data-prep.yaml
+#   2. vkit docker run --tag asr examples/pipelines/tts-data-prep.yaml --dry-run
+#   3. vkit docker run --tag asr examples/pipelines/tts-data-prep.yaml
 #   4. Results in work/ directory
 
 version: "0.1"

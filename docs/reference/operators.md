@@ -57,7 +57,7 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
   op: ffmpeg_convert
   args:
     target_format: wav
-    clean_names: True
+    clean_names: true
 ```
 
 ---
@@ -94,14 +94,14 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `target_sr` | int | required |  |
-| `target_channels` | int | None | `None` |  |
+| `target_channels` | int \| None | `None` |  |
 
 ```yaml
 - name: my_resample
   op: resample
   args:
     target_sr: <int>
-    target_channels: None
+    target_channels: null
 ```
 
 ---
@@ -268,7 +268,7 @@ creates child Cuts for each speech region.  No new audio is written.
   op: reverb_augment
   args:
     rir_dir: <str>
-    normalize: True
+    normalize: true
 ```
 
 ---
@@ -374,9 +374,9 @@ creates child Cuts for each speech region.  No new audio is written.
 Uses CTranslate2 for inference. Has GPU and CPU, but on CPU the
 compute_type is coerced to "int8" because float16 is not supported.
 
-.. warning::
-CTranslate2 may deadlock on macOS ARM64. Use ``whisper_openai_asr``
-on macOS instead.
+!!! warning
+    CTranslate2 may deadlock on macOS ARM64. Use ``whisper_openai_asr``
+    on macOS instead.
 
 - **Device:** gpu
 - **Runtime:** `vkit docker run --tag asr <yaml>`
@@ -385,7 +385,7 @@ on macOS instead.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `model` | str | `tiny` |  |
-| `language` | str | None | `None` |  |
+| `language` | str \| None | `None` |  |
 | `beam_size` | int | `5` |  |
 | `compute_type` | str | `int8` |  |
 | `cpu_threads` | int | `4` |  |
@@ -395,7 +395,7 @@ on macOS instead.
   op: faster_whisper_asr
   args:
     model: tiny
-    language: None
+    language: null
     beam_size: 5
     compute_type: int8
     cpu_threads: 4
@@ -482,9 +482,9 @@ the published Docker images because it pulls in TensorFlow.
 | `hop_length` | int | `256` |  |
 | `n_mels` | int | `80` |  |
 | `fmin` | float | `0.0` |  |
-| `fmax` | float | None | `8000.0` |  |
+| `fmax` | float \| None | `8000.0` |  |
 | `ref_db` | float | `20.0` |  |
-| `output_dir` | str | None | `None` |  |
+| `output_dir` | str \| None | `None` |  |
 
 ```yaml
 - name: my_mel_extract
@@ -496,7 +496,7 @@ the published Docker images because it pulls in TensorFlow.
     fmin: 0.0
     fmax: 8000.0
     ref_db: 20.0
-    output_dir: None
+    output_dir: null
 ```
 
 ---
@@ -542,18 +542,18 @@ setting ``HF_TOKEN`` (or passing ``hf_token`` in the config).
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `model` | str | `pyannote/speaker-diarization-3.1` |  |
-| `min_speakers` | int | None | `None` |  |
-| `max_speakers` | int | None | `None` |  |
-| `hf_token` | str | None | `None` |  |
+| `min_speakers` | int \| None | `None` |  |
+| `max_speakers` | int \| None | `None` |  |
+| `hf_token` | str \| None | `None` |  |
 
 ```yaml
 - name: my_pyannote_diarize
   op: pyannote_diarize
   args:
     model: pyannote/speaker-diarization-3.1
-    min_speakers: None
-    max_speakers: None
-    hf_token: None
+    min_speakers: null
+    max_speakers: null
+    hf_token: null
 ```
 
 ---
@@ -572,7 +572,7 @@ to also get word-level timestamps (uses ForcedAligner internally).
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `model` | str | `Qwen/Qwen3-ASR-0.6B` |  |
-| `language` | str | None | `None` |  |
+| `language` | str \| None | `None` |  |
 | `return_timestamps` | bool | `False` |  |
 | `aligner_model` | str | `Qwen/Qwen3-ForcedAligner-0.6B` |  |
 | `max_new_tokens` | int | `512` |  |
@@ -582,8 +582,8 @@ to also get word-level timestamps (uses ForcedAligner internally).
   op: qwen3_asr
   args:
     model: Qwen/Qwen3-ASR-0.6B
-    language: None
-    return_timestamps: False
+    language: null
+    return_timestamps: false
     aligner_model: Qwen/Qwen3-ForcedAligner-0.6B
     max_new_tokens: 512
 ```
@@ -625,6 +625,10 @@ In addition to the transcript, each Supervision carries:
 
 **Extract speaker embedding vectors using SpeechBrain or WeSpeaker.**
 
+Official VoxKitchen Docker images support ``method="speechbrain"``.
+``method="wespeaker"`` is kept for custom environments with WeSpeaker
+installed.
+
 - **Device:** gpu
 - **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
@@ -643,10 +647,6 @@ In addition to the transcript, each Supervision carries:
     wespeaker_model: english
     speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
 ```
-
-Official VoxKitchen Docker images use the SpeechBrain backend for this
-operator. The WeSpeaker backend is experimental and intended for custom
-environments.
 
 ---
 
@@ -772,7 +772,7 @@ operators (faster_whisper_asr) may deadlock.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `model` | str | `tiny` |  |
-| `language` | str | None | `None` |  |
+| `language` | str \| None | `None` |  |
 | `beam_size` | int | `5` |  |
 | `fp16` | bool | `True` |  |
 
@@ -781,9 +781,9 @@ operators (faster_whisper_asr) may deadlock.
   op: whisper_openai_asr
   args:
     model: tiny
-    language: None
+    language: null
     beam_size: 5
-    fp16: True
+    fp16: true
 ```
 
 ---
@@ -802,7 +802,7 @@ If whisperx is not installed, falls back to faster-whisper at segment level
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `model` | str | `tiny` |  |
-| `language` | str | None | `None` |  |
+| `language` | str \| None | `None` |  |
 | `batch_size` | int | `8` |  |
 | `compute_type` | str | `int8` |  |
 
@@ -811,7 +811,7 @@ If whisperx is not installed, falls back to faster-whisper at segment level
   op: whisperx_asr
   args:
     model: tiny
-    language: None
+    language: null
     batch_size: 8
     compute_type: int8
 ```
@@ -907,7 +907,7 @@ This makes CER directly comparable across different ASR backends.
   args:
     hypothesis_field: text
     reference_field: reference_text
-    normalize: True
+    normalize: true
 ```
 
 ---
@@ -966,7 +966,7 @@ acceptable for training data.
 - name: my_dnsmos_score
   op: dnsmos_score
   args:
-    use_gpu: False
+    use_gpu: false
 ```
 
 ---
@@ -984,14 +984,14 @@ This is an N-to-fewer operator: no audio is read or written.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `min_duration` | float | `0.0` |  |
-| `max_duration` | float | None | `None` |  |
+| `max_duration` | float \| None | `None` |  |
 
 ```yaml
 - name: my_duration_filter
   op: duration_filter
   args:
     min_duration: 0.0
-    max_duration: None
+    max_duration: null
 ```
 
 ---
@@ -1125,7 +1125,7 @@ Useful for filtering synthetic/degraded audio from training data.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `seed` | int | None | `None` |  |
+| `seed` | int \| None | `None` |  |
 | `temperature` | float | `0.3` |  |
 | `top_p` | float | `0.7` |  |
 | `top_k` | int | `20` |  |
@@ -1134,7 +1134,7 @@ Useful for filtering synthetic/degraded audio from training data.
 - name: my_tts_chattts
   op: tts_chattts
   args:
-    seed: None
+    seed: null
     temperature: 0.3
     top_p: 0.7
     top_k: 20
@@ -1155,8 +1155,8 @@ Useful for filtering synthetic/degraded audio from training data.
 | `model_id` | str | `FunAudioLLM/CosyVoice2-0.5B` |  |
 | `mode` | str | `sft` |  |
 | `spk_id` | str | `default` |  |
-| `reference_audio` | str | None | `None` |  |
-| `reference_text` | str | None | `None` |  |
+| `reference_audio` | str \| None | `None` |  |
+| `reference_text` | str \| None | `None` |  |
 
 ```yaml
 - name: my_tts_cosyvoice
@@ -1165,8 +1165,8 @@ Useful for filtering synthetic/degraded audio from training data.
     model_id: FunAudioLLM/CosyVoice2-0.5B
     mode: sft
     spk_id: default
-    reference_audio: None
-    reference_text: None
+    reference_audio: null
+    reference_text: null
 ```
 
 ---
@@ -1182,14 +1182,14 @@ Useful for filtering synthetic/degraded audio from training data.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `model_id` | str | `fishaudio/s2-pro` |  |
-| `reference_audio` | str | None | `None` |  |
-| `reference_text` | str | None | `None` |  |
+| `reference_audio` | str \| None | `None` |  |
+| `reference_text` | str \| None | `None` |  |
 | `max_new_tokens` | int | `1024` |  |
 | `top_p` | float | `0.8` |  |
 | `temperature` | float | `0.8` |  |
 | `repetition_penalty` | float | `1.1` |  |
 | `chunk_length` | int | `200` |  |
-| `seed` | int | None | `None` |  |
+| `seed` | int \| None | `None` |  |
 | `compile` | bool | `False` |  |
 | `half` | bool | `False` |  |
 
@@ -1198,16 +1198,16 @@ Useful for filtering synthetic/degraded audio from training data.
   op: tts_fish_speech
   args:
     model_id: fishaudio/s2-pro
-    reference_audio: None
-    reference_text: None
+    reference_audio: null
+    reference_text: null
     max_new_tokens: 1024
     top_p: 0.8
     temperature: 0.8
     repetition_penalty: 1.1
     chunk_length: 200
-    seed: None
-    compile: False
-    half: False
+    seed: null
+    compile: false
+    half: false
 ```
 
 ---
@@ -1243,19 +1243,25 @@ Useful for filtering synthetic/degraded audio from training data.
 
 **Export CutSet as a HuggingFace Dataset with audio column.**
 
+!!! warning
+    Recent HuggingFace ``datasets`` versions may require ``torchcodec``
+    when decoding ``Audio`` rows into arrays. Install ``torchcodec`` in the
+    training environment, or cast with ``Audio(decode=False)`` when reading
+    metadata/embedded audio bytes only.
+
 - **Device:** cpu
 - **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** Yes
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
+| `output_dir` | str \| None | `None` |  |
 
 ```yaml
 - name: my_pack_huggingface
   op: pack_huggingface
   args:
-    output_dir: None
+    output_dir: null
 ```
 
 ---
@@ -1276,13 +1282,13 @@ recording.  ``origin_id`` traces back to the source filename.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `output_path` | str | None | `None` |  |
+| `output_path` | str \| None | `None` |  |
 
 ```yaml
 - name: my_pack_jsonl
   op: pack_jsonl
   args:
-    output_path: None
+    output_path: null
 ```
 
 ---
@@ -1297,13 +1303,13 @@ recording.  ``origin_id`` traces back to the source filename.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
+| `output_dir` | str \| None | `None` |  |
 
 ```yaml
 - name: my_pack_kaldi
   op: pack_kaldi
   args:
-    output_dir: None
+    output_dir: null
 ```
 
 ---
@@ -1333,13 +1339,13 @@ recording.  ``origin_id`` traces back to the source filename.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
+| `output_dir` | str \| None | `None` |  |
 
 ```yaml
 - name: my_pack_parquet
   op: pack_parquet
   args:
-    output_dir: None
+    output_dir: null
 ```
 
 ---
@@ -1354,14 +1360,14 @@ recording.  ``origin_id`` traces back to the source filename.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `output_dir` | str | None | `None` |  |
+| `output_dir` | str \| None | `None` |  |
 | `shard_size` | int | `1000` |  |
 
 ```yaml
 - name: my_pack_webdataset
   op: pack_webdataset
   args:
-    output_dir: None
+    output_dir: null
     shard_size: 1000
 ```
 

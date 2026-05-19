@@ -24,7 +24,10 @@ pre-commit install
 ## Running Tests
 
 ```bash
-# All tests (skip slow model-download tests)
+# Local CI gate before push
+scripts/check-ci.sh
+
+# Fast pytest subset only
 pytest -v -m "not slow and not gpu"
 
 # Specific test file
@@ -219,7 +222,7 @@ Steps (mirrors the `:diarize` env split in the same PR):
 
 1. Fork the repo and create a branch from `main`
 2. Make your changes with tests
-3. Ensure all tests pass: `pytest -v -m "not slow and not gpu"`
+3. Ensure local CI passes: `scripts/check-ci.sh`
 4. Commit with conventional commit messages
 5. Open a PR with a clear description of what and why
 

@@ -5,7 +5,7 @@
 
 version: "0.1"
 name: speaker-embed
-description: "Extract speaker embeddings using WeSpeaker"
+description: "Extract speaker embeddings using SpeechBrain"
 work_dir: ./work/${name}
 
 ingest:
@@ -22,14 +22,13 @@ stages:
     op: silero_vad
     args: { threshold: 0.5 }
 
-  # Extract 512-d speaker embedding per segment.
+  # Extract a speaker embedding per segment.
   # Stored in cut.custom["speaker_embedding"] as list[float].
-  # method: "wespeaker" (default) or "speechbrain"
   - name: embed
     op: speaker_embed
     args:
-      method: wespeaker
-      wespeaker_model: english
+      method: speechbrain
+      speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
 
   - name: pack
     op: pack_jsonl

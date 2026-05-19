@@ -9,6 +9,7 @@ from pathlib import Path
 import voxkitchen.cli.run as run_module
 from typer.testing import CliRunner
 from voxkitchen.cli.main import app
+from voxkitchen.pipeline.spec import IngestSpec, PipelineSpec, StageSpec
 from voxkitchen.runtime import schemas as schemas_module
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
@@ -273,3 +274,38 @@ stages:
 
     assert result.exit_code == 0
     assert "contains no supported audio files" in " ".join(result.output.split())
+
+
+def test_pack_huggingface_output_hint_uses_configured_output_dir(tmp_path: Path) -> None:
+    spec = PipelineSpec(
+        version="0.1",
+        name="hf",
+        work_dir=str(tmp_path / "work"),
+        ingest=IngestSpec(source="manifest", args={"path": str(tmp_path / "in.jsonl.gz")}),
+        stages=[
+            StageSpec(name="prep", op="identity"),
+            StageSpec(
+                name="pack",
+                op="pack_huggingface",
+                args={"output_dir": "./output/hf_dataset"},
+            ),
+        ],
+    )
+
+    assert run_module._pack_huggingface_output_dir(spec, max_stage_idx=1) == Path(
+        "./output/hf_dataset"
+    )
+
+
+def test_pack_huggingface_output_hint_uses_stage_default(tmp_path: Path) -> None:
+    spec = PipelineSpec(
+        version="0.1",
+        name="hf",
+        work_dir=str(tmp_path / "work"),
+        ingest=IngestSpec(source="manifest", args={"path": str(tmp_path / "in.jsonl.gz")}),
+        stages=[StageSpec(name="pack", op="pack_huggingface")],
+    )
+
+    assert run_module._pack_huggingface_output_dir(spec, max_stage_idx=0) == (
+        tmp_path / "work" / "00_pack" / "hf_output"
+    )

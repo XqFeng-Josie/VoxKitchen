@@ -89,7 +89,7 @@ Available templates:
 | `cleaning` | Quality metrics, dedup, filtering | `slim` |
 | `asr` | VAD, augmentation, ASR labeling, packing | `asr` |
 | `speaker` | Diarization, embeddings, language/gender labels | `latest` |
-| `tts` | Denoise, segment, transcribe, align, pack | `latest` |
+| `tts` | Denoise, segment, transcribe, align, pack | `asr` |
 
 See all templates:
 

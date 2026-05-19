@@ -26,7 +26,7 @@ pytest tests/unit/operators/synthesize/ -v
 # Single operator
 pytest tests/unit/operators/annotate/test_faster_whisper_asr.py -v
 
-# Full test suite (all modules, not just operators)
+# Fast full suite (all modules, not just operators)
 pytest -v -m "not slow and not gpu"
 ```
 
@@ -88,9 +88,10 @@ pip install -e ".[dev]"
 | quality | 11 | 11 | `pitch`, `dnsmos`, `quality` |
 | pack | 6 | 6 | `pack` |
 | synthesize | 4 | 4 | `tts-kokoro`, `tts-chattts`, `tts-cosyvoice`, `tts-fish-speech` |
-| noop | 1 | 1 | core |
+| utility (`noop`) | 1 | 1 root-level operator test | core |
 
-**Total: 51 operators, 51 test files, 100% coverage.**
+**Total: 51 operators.** Each built-in operator has at least one unit test;
+shared base and registry tests are additional.
 
 ## Test Patterns
 
@@ -117,11 +118,19 @@ def test_faster_whisper_asr_transcribes(): ...
 
 ## What CI Runs
 
-CI (`.github/workflows/ci.yml`) runs only fast tests:
+CI (`.github/workflows/ci.yml`) and `scripts/check-ci.sh` run the same fast
+gate:
 
 ```
-pytest -v -m "not slow and not gpu" --cov=voxkitchen
+ruff check voxkitchen tests
+ruff format --check voxkitchen tests
+mypy voxkitchen
+pytest -m "not slow and not gpu" --cov=voxkitchen \
+  --deselect tests/unit/operators/pack/test_pack_huggingface.py \
+  --deselect tests/unit/operators/pack/test_pack_parquet.py \
+  --deselect tests/unit/viz/test_report.py
 ```
 
-Extras installed in CI: `segment`, `quality`, `pack`, `viz` (plus torch CPU).
-Operators requiring other extras are skipped at module level.
+Extras installed in CI: `audio`, `segment`, `quality`, `pack`, `pitch`,
+`dnsmos`, `classify`, `enhance`, and `viz` (plus torch CPU). Operators
+requiring other extras are skipped at module level.

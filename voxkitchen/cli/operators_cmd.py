@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import textwrap
 from typing import Any
 
 import typer
@@ -120,8 +121,9 @@ def show(name: str = typer.Argument(..., help="Operator name.")) -> None:
         warning_match = re.search(r"\.\. warning::\s*\n\s+(.+?)(?:\n\n|\Z)", doc, re.DOTALL)
         if warning_match:
             doc = doc[: warning_match.start()].rstrip()
+            warning = textwrap.dedent(warning_match.group(1)).strip()
             console.print(doc)
-            console.print(f"\n  [yellow]Warning: {warning_match.group(1).strip()}[/yellow]")
+            console.print(f"\n  [yellow]Warning: {warning}[/yellow]")
         else:
             console.print(doc)
         console.print()

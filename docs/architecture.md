@@ -4,7 +4,9 @@
 
 ## Overview
 
-VoxKitchen is a declarative speech data processing toolkit. Users write a YAML pipeline, run `vkit docker run`, and get training-ready datasets with full provenance tracking.
+VoxKitchen is a Docker-first speech data pipeline toolkit. Users write a YAML
+pipeline, run `vkit docker run`, and get training-ready datasets with full
+provenance tracking.
 
 **Core metaphor:** pipeline.yaml is a recipe, operators are cooking steps, ingest recipes are ingredient prep, `pack` is plating.
 
@@ -294,7 +296,8 @@ Each recipe implements `download()` and `prepare(root, subsets, ctx) -> CutSet`.
 | `vkit recipes` | List recipes |
 | `vkit viz <path>` | Gradio explorer |
 
-Templates: `tts`, `asr`, `cleaning`, `speaker` (stored in `examples/pipelines/`).
+Templates: `tts`, `asr`, `cleaning`, `speaker` (stored in
+`voxkitchen/templates/pipelines/`, with editable examples in `examples/pipelines/`).
 
 ---
 

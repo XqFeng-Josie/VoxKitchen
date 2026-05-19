@@ -225,8 +225,30 @@ def _print_completion(spec: PipelineSpec, *, stop_at: str | None) -> None:
         rprint(f"  final cuts: {final_manifest}")
     if report.exists():
         rprint(f"  report: {report}")
+    hf_output = _pack_huggingface_output_dir(spec, max_stage_idx=final_idx)
+    if hf_output is not None:
+        rprint(f"  HuggingFace dataset: {hf_output}")
 
     rprint("\n[bold]Next steps[/bold]")
     rprint(f"  vkit inspect run {work_dir}")
     if final_manifest.exists():
         rprint(f"  vkit inspect cuts {final_manifest}")
+    if hf_output is not None:
+        rprint(
+            "  load HF audio arrays with `torchcodec` installed, or use "
+            "`datasets.Audio(decode=False)` for metadata/bytes-only reads"
+        )
+
+
+def _pack_huggingface_output_dir(spec: PipelineSpec, *, max_stage_idx: int) -> Path | None:
+    """Return the output directory for the last completed pack_huggingface stage."""
+    output_dir: Path | None = None
+    for idx, stage in enumerate(spec.stages[: max_stage_idx + 1]):
+        if stage.op != "pack_huggingface":
+            continue
+        configured = stage.args.get("output_dir")
+        if isinstance(configured, str) and configured.strip():
+            output_dir = Path(configured)
+        else:
+            output_dir = Path(spec.work_dir) / stage_dir_name(idx, stage.name) / "hf_output"
+    return output_dir
