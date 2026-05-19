@@ -8,7 +8,7 @@
 
 ## Testing
 
-- [ ] Tests pass: `pytest -v -m "not slow and not gpu"`
+- [ ] Local CI checks pass: `scripts/check-ci.sh`
 - [ ] New tests added (if applicable)
 - [ ] Operator docs updated: `python scripts/gen_operator_docs.py -o docs/reference/operators.md`
 

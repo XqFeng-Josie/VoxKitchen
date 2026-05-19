@@ -34,7 +34,7 @@ each destructive step (tag, push, Docker push).
 
 - Working tree must be clean (no uncommitted changes).
 - Current branch must be `main` and up-to-date with `origin/main`.
-- All tests must pass: `pytest -m "not slow and not gpu"`.
+- Local CI checks must pass: `scripts/check-ci.sh`.
 - `CHANGELOG.md` must have a section matching the new version (see below).
 
 ### 2. CHANGELOG

@@ -6,6 +6,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Local release/push checks now run the same fast lint, format, typecheck, and
+  pytest gate as CI via `scripts/check-ci.sh`.
+
 ## [0.2.0] — 2026-05-18
 
 ### Added

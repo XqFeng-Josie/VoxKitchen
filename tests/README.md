@@ -3,6 +3,9 @@
 ## Quick Reference
 
 ```bash
+# Local CI gate before push
+scripts/check-ci.sh
+
 # Fast tests (no model download, seconds)
 pytest tests/unit/operators/ -v -m "not slow and not gpu"
 

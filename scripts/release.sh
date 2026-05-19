@@ -98,8 +98,8 @@ if ! grep -q "^## \[${VERSION}\]" CHANGELOG.md; then
     die "CHANGELOG.md has no '## [${VERSION}]' section — prepare it first (see RELEASING.md §2)."
 fi
 
-log "Running tests (not slow / not gpu)"
-pytest -q -m "not slow and not gpu" >/dev/null || die "tests failed — fix before releasing."
+log "Running local CI checks"
+scripts/check-ci.sh || die "local CI checks failed — fix before releasing."
 
 log "Pre-flight ok."
 

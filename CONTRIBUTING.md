@@ -17,7 +17,7 @@ conda activate voxkitchen
 pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip install -e ".[dev]"
 
-# Set up pre-commit hooks
+# Set up commit-time and push-time hooks
 pre-commit install
 ```
 
@@ -41,10 +41,19 @@ We use **ruff** for linting and formatting, **mypy** for type checking.
 ```bash
 ruff check voxkitchen tests   # Lint
 ruff format voxkitchen tests  # Format
+ruff format --check voxkitchen tests  # CI format check
 mypy voxkitchen tests         # Type check
 ```
 
-Pre-commit hooks run these automatically on `git commit`.
+Pre-commit hooks run fast style checks on `git commit`. The pre-push hook runs
+`scripts/check-ci.sh`, which mirrors the fast CI gate before code leaves your
+machine.
+
+Before pushing manually, run:
+
+```bash
+scripts/check-ci.sh
+```
 
 `[dev]` installs test tooling plus the core dependencies needed by the
 unit-test suite. Operator dependency clusters live in Docker images. Use

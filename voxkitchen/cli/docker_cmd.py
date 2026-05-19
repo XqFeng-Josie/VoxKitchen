@@ -412,10 +412,7 @@ def build_cmd(
         ".",
     ]
     build_env = _docker_build_env()
-    rprint(
-        "[dim][vkit docker build] Docker client temp/config dir: "
-        f"{_docker_work_dir()}[/dim]"
-    )
+    rprint(f"[dim][vkit docker build] Docker client temp/config dir: {_docker_work_dir()}[/dim]")
     _run_and_exit(cmd, env=build_env)
 
 
