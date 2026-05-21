@@ -2,49 +2,17 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import typer
 from rich import print as rprint
 from rich.table import Table
 
+from voxkitchen.cli.hints import warn_if_unmanaged_runtime
 from voxkitchen.pipeline.checkpoint import stage_dir_name
 from voxkitchen.pipeline.loader import PipelineLoadError, load_pipeline_spec
 from voxkitchen.pipeline.runner import StageFailedError, run_pipeline
 from voxkitchen.pipeline.spec import PipelineSpec
-
-
-def _env_truthy(name: str) -> bool:
-    value = os.environ.get(name, "").strip().lower()
-    return value in {"1", "true", "yes", "on"}
-
-
-def _is_managed_runtime() -> bool:
-    """Return true inside VoxKitchen Docker runtimes.
-
-    ``vkit run`` is the execution entrypoint inside images. A local source
-    checkout can still use it for low-level debugging, but the supported host
-    workflow is ``vkit docker run``.
-    """
-    if _env_truthy("VKIT_ALLOW_LOCAL_RUN"):
-        return True
-    if os.environ.get("VKIT_ENV", "").strip():
-        return True
-    return (
-        Path("/opt/voxkitchen/op_env_map.json").is_file() or Path("/opt/voxkitchen/envs").is_dir()
-    )
-
-
-def _warn_if_unmanaged_runtime() -> None:
-    if _is_managed_runtime():
-        return
-    rprint(
-        "[yellow]warning:[/yellow] `vkit run` executes in the current Python "
-        "environment and is intended for VoxKitchen Docker runtimes. "
-        "Use `vkit docker run <yaml>` for supported pipeline execution. "
-        "Set VKIT_ALLOW_LOCAL_RUN=1 to silence this warning."
-    )
 
 
 def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> bool:
@@ -165,7 +133,7 @@ def run_command(
     """Execute a pipeline."""
     import logging
 
-    _warn_if_unmanaged_runtime()
+    warn_if_unmanaged_runtime(command="run", recommended="vkit docker run <yaml>")
 
     logging.basicConfig(
         format="%(asctime)s  %(message)s",
@@ -199,8 +167,11 @@ def run_command(
             keep_intermediates=keep_intermediates,
         )
     except StageFailedError as exc:
+        # Exit code 1 = runtime failure (file missing, model error, bad data).
+        # Code 2 across the rest of the CLI is reserved for "invocation is
+        # malformed" (unknown flag, missing docker, unknown category).
         rprint(f"[red]stage failed:[/red] {exc}")
-        raise typer.Exit(code=2) from exc
+        raise typer.Exit(code=1) from exc
 
     _print_completion(spec, stop_at=stop_at)
 

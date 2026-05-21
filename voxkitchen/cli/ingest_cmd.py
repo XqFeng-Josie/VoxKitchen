@@ -8,6 +8,7 @@ from pathlib import Path
 import typer
 from rich import print as rprint
 
+from voxkitchen.cli.hints import warn_if_unmanaged_runtime
 from voxkitchen.ingest import get_ingest_source
 from voxkitchen.pipeline.context import RunContext
 from voxkitchen.schema.io import SCHEMA_VERSION, HeaderRecord
@@ -26,23 +27,30 @@ def ingest_command(
     args: dict[str, object] = {}
     if source == "dir":
         if not root:
-            rprint("[red]--root required for source=dir[/red]")
+            rprint("[red]error:[/red] --root required for source=dir")
             raise typer.Exit(code=1)
         args = {"root": root, "recursive": recursive}
     elif source == "manifest":
         if not path:
-            rprint("[red]--path required for source=manifest[/red]")
+            rprint("[red]error:[/red] --path required for source=manifest")
             raise typer.Exit(code=1)
         args = {"path": path}
     elif source == "recipe":
         if not recipe or not root:
-            rprint("[red]--recipe and --root required for source=recipe[/red]")
+            rprint("[red]error:[/red] --recipe and --root required for source=recipe")
             raise typer.Exit(code=1)
+        # Recipe ingest pulls dependencies (e.g. `datasets` for FLEURS) that
+        # ship in Docker images, not in the lightweight PyPI launcher. Warn
+        # host users. `dir` and `manifest` need no extra deps and stay quiet.
+        warn_if_unmanaged_runtime(
+            command="ingest --source recipe",
+            recommended="vkit docker download <recipe>",
+        )
         args = {"recipe": recipe, "root": root}
         if subsets:
             args["subsets"] = [s.strip() for s in subsets.split(",")]
     else:
-        rprint(f"[red]unknown source: {source}[/red]")
+        rprint(f"[red]error:[/red] unknown source: {source}")
         raise typer.Exit(code=1)
 
     source_cls = get_ingest_source(source)

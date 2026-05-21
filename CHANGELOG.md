@@ -26,6 +26,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `vkit operators search <keyword>` lists operators whose name or first-line
   docstring contains `<keyword>` (case-insensitive). Empty matches exit with
   code 1 so scripts can branch on no-result.
+- `vkit download` and `vkit ingest --source recipe` now warn host users when
+  invoked outside a managed runtime, mirroring the existing `vkit run`
+  warning. The recipe-side dependencies (e.g. `datasets`) live in the Docker
+  images, not in the PyPI launcher, so the previous silent failure mode is
+  replaced with a pointer to `vkit docker download <recipe>`. `vkit ingest
+  --source dir` and `--source manifest` stay quiet — they work on the host
+  with only the lightweight launcher deps.
 - `vkit schema export` writes a JSON Schema for `pipeline.yaml` files,
   derived from `PipelineSpec.model_json_schema()` plus the registered
   operators. A snapshot is committed at `docs/schemas/pipeline.schema.json`
@@ -54,6 +61,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   (`fish-speech` joins `wenet`'s existing pattern in `docker/Dockerfile`).
   Operators that declare `required_extras = ["wenet"|"tts-fish-speech"]` still
   route correctly via `EXTRA_TO_ENV` in `voxkitchen/runtime/env_resolver.py`.
+- `vkit run` now exits with code 1 (runtime failure) when a stage raises
+  `StageFailedError`, matching the rest of the CLI's exit-code convention.
+  Previously it returned code 2, which the codebase reserves for invocation
+  errors (unknown flag, missing docker binary, unknown operator category).
+- `vkit ingest` inline error messages now use the same `error:` prefix the
+  rest of the CLI prints, instead of rendering the whole line in red without
+  context.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 

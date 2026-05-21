@@ -98,6 +98,42 @@ stages:
     assert not (work_dir / "02_s2").exists()
 
 
+def test_run_stage_failure_exits_1_not_2(tmp_path: Path, monkeypatch) -> None:
+    """Stage-level failures are runtime errors (exit 1), not bad-invocation (exit 2).
+
+    The convention across the CLI: code 1 covers "ran but failed" (file
+    missing, validation failed, stage exception); code 2 is reserved for
+    "invocation is malformed" (unknown flag, missing docker binary, unknown
+    category). A stage exception belongs in the first bucket.
+    """
+    from voxkitchen.cli import run as run_cli
+    from voxkitchen.pipeline.runner import StageFailedError
+
+    def _raise_stage_failure(*_args, **_kwargs) -> None:
+        raise StageFailedError("vad", RuntimeError("synthetic operator crash"))
+
+    monkeypatch.setattr(run_cli, "run_pipeline", _raise_stage_failure)
+
+    input_manifest = tmp_path / "in.jsonl.gz"
+    _seed_manifest(input_manifest)
+    yaml_path = tmp_path / "pipeline.yaml"
+    yaml_path.write_text(
+        f"""
+version: "0.1"
+name: stagefail
+work_dir: {tmp_path / "work"}
+ingest: {{ source: manifest, args: {{ path: {input_manifest} }} }}
+stages:
+  - {{ name: vad, op: identity }}
+""",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(app, ["run", str(yaml_path)])
+    assert result.exit_code == 1, result.output
+    assert "stage failed" in result.output
+
+
 def _write_fake_schemas(tmp_path: Path) -> Path:
     schemas_path = tmp_path / "op_schemas.json"
     schemas_path.write_text(
@@ -123,7 +159,11 @@ def _write_fake_schemas(tmp_path: Path) -> Path:
 
 
 def test_run_warns_when_used_outside_managed_runtime(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr(run_module, "_is_managed_runtime", lambda: False)
+    # The runtime-detection logic now lives in voxkitchen.cli.hints — patch
+    # it there so warn_if_unmanaged_runtime() sees False regardless of host.
+    import voxkitchen.cli.hints as hints_module
+
+    monkeypatch.setattr(hints_module, "is_managed_runtime", lambda: False)
 
     yaml_path = tmp_path / "pipeline.yaml"
     yaml_path.write_text(
@@ -147,7 +187,9 @@ stages:
 
 
 def test_run_does_not_warn_inside_managed_runtime(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr(run_module, "_is_managed_runtime", lambda: True)
+    import voxkitchen.cli.hints as hints_module
+
+    monkeypatch.setattr(hints_module, "is_managed_runtime", lambda: True)
 
     yaml_path = tmp_path / "pipeline.yaml"
     yaml_path.write_text(

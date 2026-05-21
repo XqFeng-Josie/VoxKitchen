@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
+from rich import print as rprint
+
 from voxkitchen.runtime.env_resolver import EXTRA_TO_ENV
 
 OPERATOR_EXTRAS_HINTS: dict[str, str] = {
@@ -108,3 +113,51 @@ def format_missing_operator_hint(op_name: str) -> str | None:
     if not extras:
         return None
     return f"try: {runtime_hint}"
+
+
+def _env_truthy(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def is_managed_runtime() -> bool:
+    """Return True when the current process is running inside a VoxKitchen runtime.
+
+    The host ``vkit`` launcher is intended to dispatch into Docker via
+    ``vkit docker run`` rather than execute operator code in-process. A few
+    subcommands (``run``, ``download``, ``ingest --source recipe``) are
+    container-side entrypoints — they assume operator/recipe dependencies are
+    available in the current Python env. Calling them from a bare ``pipx``
+    install on the host typically fails as soon as a missing dep is hit. We
+    treat the following as evidence the caller really is inside a managed
+    runtime and silence the warning:
+
+    1. ``VKIT_ALLOW_LOCAL_RUN`` explicitly opts out of the warning.
+    2. ``VKIT_ENV`` is set (the Dockerfile sets it on every env's interpreter).
+    3. ``/opt/voxkitchen/op_env_map.json`` or ``/opt/voxkitchen/envs`` exists
+       — both are baked into the published images.
+    """
+    if _env_truthy("VKIT_ALLOW_LOCAL_RUN"):
+        return True
+    if os.environ.get("VKIT_ENV", "").strip():
+        return True
+    return (
+        Path("/opt/voxkitchen/op_env_map.json").is_file() or Path("/opt/voxkitchen/envs").is_dir()
+    )
+
+
+def warn_if_unmanaged_runtime(*, command: str, recommended: str) -> None:
+    """Emit a yellow warning when a container-side entrypoint runs on the host.
+
+    ``command`` is the bare subcommand name (e.g. ``"run"``, ``"download"``)
+    that triggered the warning; ``recommended`` is the supported alternative
+    the user should reach for (e.g. ``"vkit docker run <yaml>"``). No-op
+    inside a managed runtime, see :func:`is_managed_runtime`.
+    """
+    if is_managed_runtime():
+        return
+    rprint(
+        f"[yellow]warning:[/yellow] `vkit {command}` executes in the current Python "
+        "environment and is intended for VoxKitchen Docker runtimes. "
+        f"Use `{recommended}` for supported execution. "
+        "Set VKIT_ALLOW_LOCAL_RUN=1 to silence this warning."
+    )
