@@ -813,6 +813,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#vkit-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#vkit-recipes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -985,6 +996,34 @@
     
   
     Pipeline YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline JSON Schema
   
 
     
@@ -1252,6 +1291,17 @@
     <span class="md-ellipsis">
       
         vkit operators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vkit-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit schema
       
     </span>
   </a>
@@ -1607,9 +1657,26 @@ vkit<span class="w"> </span>inspect<span class="w"> </span>errors<span class="w"
 </table>
 <h3 id="vkit-operators"><code>vkit operators</code></h3>
 <p>List and inspect operators.</p>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>operators<span class="w">                  </span><span class="c1"># List all operators (grouped by category)</span>
-vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"> </span>silero_vad<span class="w">  </span><span class="c1"># Show config fields + YAML example for an operator</span>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>operators<span class="w">                       </span><span class="c1"># List all operators (grouped by category)</span>
+vkit<span class="w"> </span>operators<span class="w"> </span>--category<span class="w"> </span>quality<span class="w">    </span><span class="c1"># List only operators in one category</span>
+vkit<span class="w"> </span>operators<span class="w"> </span>search<span class="w"> </span>noise<span class="w">          </span><span class="c1"># Find operators whose name or description matches &quot;noise&quot;</span>
+vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"> </span>silero_vad<span class="w">       </span><span class="c1"># Show config fields + YAML example for an operator</span>
 </code></pre></div>
+<p><code>search</code> matches case-insensitively against the operator name and the first
+line of its docstring. It exits with code 1 when nothing matches, so shell
+scripts can branch on no-result.</p>
+<p>Valid <code>--category</code> values are: <code>basic</code>, <code>segment</code>, <code>augment</code>, <code>annotate</code>,
+<code>quality</code>, <code>synthesize</code>, <code>pack</code>, <code>noop</code>.</p>
+<h3 id="vkit-schema"><code>vkit schema</code></h3>
+<p>Generate JSON Schemas for YAML editor integration.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>schema<span class="w"> </span><span class="nb">export</span><span class="w">                                  </span><span class="c1"># → ./pipeline.schema.json</span>
+vkit<span class="w"> </span>schema<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--out<span class="w"> </span>docs/schemas/pipeline.schema.json<span class="w">   </span><span class="c1"># custom path</span>
+</code></pre></div>
+<p>The output is consumed by YAML language servers (VS Code, Neovim, JetBrains) so
+users get autocompletion and inline validation while editing <code>pipeline.yaml</code>.
+<code>vkit init</code> already writes the right <code># yaml-language-server: $schema=…</code>
+directive at the top of every scaffolded pipeline. See
+<a href="../schema/">Pipeline JSON Schema</a> for editor setup.</p>
 <h3 id="vkit-recipes"><code>vkit recipes</code></h3>
 <p>List dataset recipes (the entities behind <code>vkit docker download</code> and <code>ingest: source=recipe</code>).</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>recipes

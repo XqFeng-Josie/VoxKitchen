@@ -14,7 +14,7 @@
         <link rel="prev" href="../tools-api/">
       
       
-        <link rel="next" href="../../docker-build/">
+        <link rel="next" href="../schema/">
       
       
         
@@ -928,6 +928,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline JSON Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docker-build/" class="md-nav__link">
         
   
@@ -1293,13 +1321,33 @@ extend, or write a pipeline YAML file directly.</p>
 <td>Generated run ID (e.g., <code>run-20260415-a1b2c3</code>)</td>
 </tr>
 <tr>
-<td><code>${env:VAR_NAME}</code></td>
-<td>Environment variable</td>
+<td><code>${env:VAR}</code></td>
+<td>Value of environment variable <code>VAR</code>. Raises if unset.</td>
+</tr>
+<tr>
+<td><code>${env:VAR:-default}</code></td>
+<td>Value of <code>VAR</code> if set and non-empty, otherwise the literal <code>default</code>.</td>
+</tr>
+<tr>
+<td><code>${env:VAR:?msg}</code></td>
+<td>Value of <code>VAR</code> if set and non-empty, otherwise raises with <code>msg</code>.</td>
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><code><span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span><span class="w">      </span><span class="c1"># → ./work/my-pipeline-run-20260415-a1b2c3</span>
+<p>The <code>:-</code> and <code>:?</code> forms mirror the corresponding POSIX shell parameter
+expansions. <code>default</code> may be empty (<code>${env:VAR:-}</code> renders to the empty
+string when <code>VAR</code> is unset).</p>
+<div class="highlight"><pre><span></span><code><span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span><span class="w">              </span><span class="c1"># → ./work/my-pipeline-run-20260415-a1b2c3</span>
+<span class="nt">num_cpu_workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env:WORKERS:-8}</span><span class="w">              </span><span class="c1"># 8 unless WORKERS is exported</span>
+<span class="c1"># pyannote_diarize wants a HuggingFace token; surface a clear error if missing.</span>
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diarize</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote_diarize</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hf_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env:HF_TOKEN:?set HF_TOKEN in ./.env}</span>
 </code></pre></div>
+<p>A <code>}</code> cannot appear inside a default or error message — the parser stops at
+the first <code>}</code> character.</p>
 <h2 id="ingest-sources">Ingest Sources</h2>
 <h3 id="dir-scan-a-directory-for-audio-files"><code>dir</code> — Scan a directory for audio files</h3>
 <div class="highlight"><pre><span></span><code><span class="nt">ingest</span><span class="p">:</span>
