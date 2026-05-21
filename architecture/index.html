@@ -1987,6 +1987,8 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <p>Each recipe implements <code>download()</code> and <code>prepare(root, subsets, ctx) -&gt; CutSet</code>.</p>
 <hr />
 <h2 id="cli-commands">CLI Commands</h2>
+<p><strong>Host-recommended commands</strong> (the supported path for <code>pipx install
+voxkitchen</code> users):</p>
 <table>
 <thead>
 <tr>
@@ -1997,7 +1999,15 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <tbody>
 <tr>
 <td><code>vkit init &lt;path&gt; [-t template]</code></td>
-<td>Scaffold project</td>
+<td>Scaffold a project directory</td>
+</tr>
+<tr>
+<td><code>vkit validate &lt;yaml&gt;</code></td>
+<td>Validate YAML; print recommended image</td>
+</tr>
+<tr>
+<td><code>vkit docker pull --tag &lt;tag&gt;</code></td>
+<td>Pull a prebuilt runtime image</td>
 </tr>
 <tr>
 <td><code>vkit docker run &lt;yaml&gt;</code></td>
@@ -2008,55 +2018,96 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <td>Download dataset inside a prebuilt image</td>
 </tr>
 <tr>
-<td><code>vkit run &lt;yaml&gt;</code></td>
-<td>Current-env pipeline entrypoint used inside images</td>
+<td><code>vkit docker doctor</code> / <code>vkit doctor</code></td>
+<td>Per-env operator availability report</td>
 </tr>
 <tr>
-<td><code>vkit validate &lt;yaml&gt;</code></td>
-<td>Validate without executing</td>
+<td><code>vkit docker shell</code></td>
+<td>Open an interactive bash inside an image</td>
+</tr>
+<tr>
+<td><code>vkit docker build [target]</code></td>
+<td>Build a Docker image locally</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Browse and inspect</strong> (read-only, host-safe):</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vkit operators [--category &lt;cat&gt;]</code></td>
+<td>List operators, optionally filtered</td>
+</tr>
+<tr>
+<td><code>vkit operators search &lt;keyword&gt;</code></td>
+<td>Find operators by name or one-line summary</td>
+</tr>
+<tr>
+<td><code>vkit operators show &lt;name&gt;</code></td>
+<td>Operator detail (args, device, image hint)</td>
+</tr>
+<tr>
+<td><code>vkit recipes</code></td>
+<td>List dataset recipes</td>
+</tr>
+<tr>
+<td><code>vkit schema export [--out PATH]</code></td>
+<td>Generate <code>pipeline.schema.json</code> for editors</td>
+</tr>
+<tr>
+<td><code>vkit inspect run &lt;dir&gt;</code></td>
+<td>Stage summary for a run</td>
+</tr>
+<tr>
+<td><code>vkit inspect cuts &lt;path&gt;</code></td>
+<td>Cut statistics for a manifest</td>
+</tr>
+<tr>
+<td><code>vkit inspect trace &lt;id&gt; --in &lt;dir&gt;</code></td>
+<td>Provenance chain for a cut</td>
+</tr>
+<tr>
+<td><code>vkit inspect errors &lt;dir&gt;</code></td>
+<td>Per-stage error report</td>
+</tr>
+<tr>
+<td><code>vkit viz &lt;manifest&gt;</code></td>
+<td>Launch the Gradio explorer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Container / dev entrypoints</strong> (run inside an image, or with
+<code>VKIT_ALLOW_LOCAL_RUN=1</code> for local debugging):</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vkit run &lt;yaml&gt;</code></td>
+<td>Pipeline entrypoint used inside the image</td>
 </tr>
 <tr>
 <td><code>vkit download &lt;recipe&gt;</code></td>
 <td>Current-env dataset download helper</td>
 </tr>
 <tr>
-<td><code>vkit ingest</code></td>
-<td>Standalone ingest</td>
-</tr>
-<tr>
-<td><code>vkit inspect run &lt;dir&gt;</code></td>
-<td>Stage summary</td>
-</tr>
-<tr>
-<td><code>vkit inspect cuts &lt;path&gt;</code></td>
-<td>Cut statistics</td>
-</tr>
-<tr>
-<td><code>vkit inspect trace &lt;id&gt;</code></td>
-<td>Provenance chain</td>
-</tr>
-<tr>
-<td><code>vkit inspect errors &lt;dir&gt;</code></td>
-<td>Error report</td>
-</tr>
-<tr>
-<td><code>vkit operators</code></td>
-<td>List operators</td>
-</tr>
-<tr>
-<td><code>vkit operators show &lt;name&gt;</code></td>
-<td>Operator detail</td>
-</tr>
-<tr>
-<td><code>vkit recipes</code></td>
-<td>List recipes</td>
-</tr>
-<tr>
-<td><code>vkit viz &lt;path&gt;</code></td>
-<td>Gradio explorer</td>
+<td><code>vkit ingest --source &lt;dir\|manifest\|recipe&gt;</code></td>
+<td>Standalone manifest builder</td>
 </tr>
 </tbody>
 </table>
+<p>The three commands above warn when invoked from a bare host install,
+pointing to the recommended <code>vkit docker …</code> alternative.</p>
 <p>Templates: <code>tts</code>, <code>asr</code>, <code>cleaning</code>, <code>speaker</code> (stored in
 <code>voxkitchen/templates/pipelines/</code>, with editable examples in <code>examples/pipelines/</code>).</p>
 <hr />
