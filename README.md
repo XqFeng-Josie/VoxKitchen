@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="voxkitchen_logo.svg" width="360" alt="VoxKitchen logo">
+  <img src="https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/voxkitchen_logo.svg" width="360" alt="VoxKitchen logo">
 </p>
 
 <h1 align="center">VoxKitchen</h1>
@@ -20,7 +20,7 @@
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
   <img src="https://img.shields.io/badge/runtime-Docker--first-2496ED" alt="Docker-first">
   <img src="https://img.shields.io/badge/operators-51-brightgreen" alt="51 operators">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
+  <a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
 > **Status:** Pre-alpha. APIs and Docker image contents may change between
@@ -89,7 +89,7 @@ when that directory exists.
 
 ## How It Works
 
-![VoxKitchen pipeline overview](pipeline.png)
+![VoxKitchen pipeline overview](https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/pipeline.png)
 
 A pipeline is a YAML file. Each stage reads a `CutSet`, writes a checkpoint,
 and passes the result to the next stage.
@@ -212,22 +212,22 @@ vkit docker doctor --tag latest        # Check image health
 
 ## Documentation
 
-- [Getting Started](docs/getting-started.md)
-- [Examples & Use Cases](docs/examples.md)
-- [Pipeline YAML](docs/reference/pipeline-yaml.md)
-- [Recipes & Download](docs/reference/recipes.md)
-- [CLI reference](docs/reference/cli.md)
-- [Operators reference](docs/reference/operators.md)
-- [Docker build guide](docs/docker-build.md)
-- [Contributing](CONTRIBUTING.md)
+- [Getting Started](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/getting-started.md)
+- [Examples & Use Cases](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/examples.md)
+- [Pipeline YAML](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/pipeline-yaml.md)
+- [Recipes & Download](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/recipes.md)
+- [CLI reference](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/cli.md)
+- [Operators reference](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/operators.md)
+- [Docker build guide](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md)
+- [Contributing](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CONTRIBUTING.md)
 
 ## Agent Skill
 
-The repo includes an agent-neutral VoxKitchen skill at [skill/](skill/). Claude,
+The repo includes an agent-neutral VoxKitchen skill at [skill/](https://github.com/XqFeng-Josie/VoxKitchen/tree/main/skill). Claude,
 Codex, and other `SKILL.md`-compatible agents can copy, symlink, or import that
 folder into their own skill search path. The skill follows the Docker-first
 `vkit` workflow in this README.
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0. See [LICENSE](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/LICENSE).
