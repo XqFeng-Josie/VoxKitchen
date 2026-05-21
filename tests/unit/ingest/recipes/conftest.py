@@ -151,3 +151,27 @@ def mock_libritts(tmp_path: Path) -> Path:
     )
 
     return tmp_path
+
+
+@pytest.fixture
+def mock_musan(tmp_path: Path) -> Path:
+    """Create a tiny MUSAN-like directory with one file per major category.
+
+    Mirrors the real layout: ``musan/{noise,music,speech}/<subcategory>/*.wav``.
+    Two files in `noise/` (different subcategories) so we can verify the
+    subcategory tag survives; one each in music and speech to confirm
+    other categories produce cuts too.
+    """
+    ds = tmp_path / "musan"
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+    fixtures = [
+        ("noise", "free-sound", "noise-free-sound-0000.wav"),
+        ("noise", "sound-bible", "noise-sound-bible-0001.wav"),
+        ("music", "fma", "music-fma-0000.wav"),
+        ("speech", "librivox", "speech-librivox-0000.wav"),
+    ]
+    for cat, subcat, name in fixtures:
+        d = ds / cat / subcat
+        d.mkdir(parents=True, exist_ok=True)
+        sf.write(d / name, audio, 16000)
+    return tmp_path

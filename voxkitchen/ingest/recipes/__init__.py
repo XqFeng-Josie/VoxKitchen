@@ -32,6 +32,7 @@ def _load_builtin_recipes() -> None:
         librispeech,
         libritts,
         ljspeech,
+        musan,
     )
 
     try:
