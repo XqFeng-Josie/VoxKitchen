@@ -1314,15 +1314,15 @@ extend, or write a pipeline YAML file directly.</p>
 <tbody>
 <tr>
 <td><code>${name}</code></td>
-<td>Pipeline name</td>
+<td>Pipeline name.</td>
 </tr>
 <tr>
 <td><code>${run_id}</code></td>
-<td>Generated run ID (e.g., <code>run-20260415-a1b2c3</code>)</td>
+<td>Generated run ID (e.g., <code>run-20260415-a1b2c3</code>).</td>
 </tr>
 <tr>
 <td><code>${env:VAR}</code></td>
-<td>Value of environment variable <code>VAR</code>. Raises if unset.</td>
+<td>Value of environment variable <code>VAR</code>. Raises only if <code>VAR</code> is unset; an empty-string <code>VAR</code> passes through.</td>
 </tr>
 <tr>
 <td><code>${env:VAR:-default}</code></td>
@@ -1334,9 +1334,16 @@ extend, or write a pipeline YAML file directly.</p>
 </tr>
 </tbody>
 </table>
-<p>The <code>:-</code> and <code>:?</code> forms mirror the corresponding POSIX shell parameter
-expansions. <code>default</code> may be empty (<code>${env:VAR:-}</code> renders to the empty
-string when <code>VAR</code> is unset).</p>
+<p>The three <code>env:</code> forms differ in how they treat an empty-string value of
+<code>VAR</code>, matching the corresponding POSIX shell parameter expansions:</p>
+<ul>
+<li><code>${env:VAR}</code> accepts empty strings (only unset raises). Use this when an
+  empty value is a meaningful configuration.</li>
+<li><code>${env:VAR:-default}</code> and <code>${env:VAR:?msg}</code> treat unset and empty
+  identically. Prefer these when you want "missing or blank" to be one
+  case. <code>default</code> may itself be empty: <code>${env:VAR:-}</code> renders to the empty
+  string when <code>VAR</code> is unset or blank.</li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}-${run_id}</span><span class="w">              </span><span class="c1"># → ./work/my-pipeline-run-20260415-a1b2c3</span>
 <span class="nt">num_cpu_workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env:WORKERS:-8}</span><span class="w">              </span><span class="c1"># 8 unless WORKERS is exported</span>
 <span class="c1"># pyannote_diarize wants a HuggingFace token; surface a clear error if missing.</span>

@@ -840,6 +840,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1053,6 +1064,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1146,6 +1168,22 @@ git<span class="w"> </span>add<span class="w"> </span>docs/schemas/pipeline.sche
 <p>CI does not auto-regenerate this file — it's a maintainer responsibility.
 A stale snapshot causes editors to flag new operators as "unknown op", which
 is loud enough to catch.</p>
+<h2 id="versioning">Versioning</h2>
+<p>The schema URL written by <code>vkit init</code> points at the <code>main</code> branch:</p>
+<div class="highlight"><pre><span></span><code>https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/docs/schemas/pipeline.schema.json
+</code></pre></div>
+<p>Editors refetch this file periodically, so a scaffolded pipeline picks up
+new operators added to <code>main</code> without any local change. The trade-off is
+that changes on <code>main</code> can affect validation of pipelines users wrote
+weeks earlier — adding operators is always safe, but renaming or removing
+one (which we currently do not do) would silently invalidate older
+pipelines.</p>
+<p>If you need a frozen view, replace <code>main</code> with a release tag in the
+<code># yaml-language-server:</code> directive at the top of your <code>pipeline.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># yaml-language-server: $schema=https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/v0.3.0/docs/schemas/pipeline.schema.json</span>
+</code></pre></div>
+<p>Pin to a tag when reproducibility matters more than picking up new
+operators; otherwise leave the default.</p>
 
 
 
