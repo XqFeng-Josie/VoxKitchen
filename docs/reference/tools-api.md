@@ -15,8 +15,10 @@ from voxkitchen.tools import (
     resample_audio,
     normalize_loudness,
     extract_speaker_embedding,
+    compute_speaker_similarity,
     enhance_speech,
     align_words,
+    tokenize_audio,
     synthesize,
 )
 ```
@@ -95,6 +97,23 @@ emb = extract_speaker_embedding("speaker.wav", method="speechbrain",
 
 Runtime image for equivalent pipeline operators: `slim`.
 
+## Speaker Similarity
+
+Compare a sample against a saved reference embedding (cosine, 0–1):
+
+```python
+# First, save a reference embedding (e.g. enrollment audio):
+import numpy as np
+ref = extract_speaker_embedding("enroll.wav")
+np.save("reference.npy", np.asarray(ref, dtype=np.float32))
+
+# Later, score new samples against it:
+sim = compute_speaker_similarity("test.wav", "reference.npy")
+# > 0.65 → likely same speaker; < 0.40 → likely different.
+```
+
+Runtime image for equivalent pipeline operators: `slim`.
+
 ## Speech Enhancement
 
 ```python
@@ -115,6 +134,19 @@ words = align_words("speech.wav", "你好世界", language="Chinese")
 ```
 
 Runtime image for equivalent pipeline operators: `asr`.
+
+## Audio Tokenization
+
+Encode audio into discrete codec tokens for neural codec / audio LM use:
+
+```python
+tokens = tokenize_audio("speech.wav", backend="encodec", bandwidth=6.0)
+# tokens is a list of token sequences, one per codebook layer.
+
+tokens = tokenize_audio("speech.wav", backend="dac")
+```
+
+Runtime image for equivalent pipeline operators: `slim`.
 
 ## TTS Synthesis
 

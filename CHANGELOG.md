@@ -75,6 +75,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   work directory or an unknown cut id. They previously printed an error
   message but returned exit 0, so shell scripts treated the failure as
   success.
+- `docs/reference/tools-api.md` now documents the full
+  `voxkitchen.tools` API surface. `compute_speaker_similarity` and
+  `tokenize_audio` had shipped but were missing from the reference
+  page — added their import line, usage section, and runtime-image hint
+  to bring the doc in line with the code.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 
