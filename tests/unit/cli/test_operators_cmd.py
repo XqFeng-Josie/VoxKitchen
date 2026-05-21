@@ -70,3 +70,18 @@ def test_operators_search_is_case_insensitive() -> None:
     for op in ("noise_augment", "speech_enhance"):
         assert op in lower.output
         assert op in upper.output
+
+
+def test_operators_search_only_matches_first_line_of_docstring() -> None:
+    """`search` matches the same one-line summary shown in the table.
+
+    `sensevoice_asr`'s docstring uses "noise" only in a paragraph past the
+    first line. The search should NOT surface it, otherwise users would see
+    a result whose Description column doesn't visibly contain the keyword.
+    """
+    result = CliRunner().invoke(app, ["operators", "search", "noise"])
+    assert result.exit_code == 0
+    assert "sensevoice_asr" not in result.output
+    # Sanity check: the first-line matches we expect are still there.
+    assert "noise_augment" in result.output
+    assert "speech_enhance" in result.output

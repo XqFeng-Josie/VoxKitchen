@@ -109,8 +109,12 @@ def _render_table(*, category: str | None = None, keyword: str | None = None) ->
         if category is not None and cat != category:
             continue
         if needle is not None:
-            doc = (op_cls.__doc__ or "").lower()
-            if needle not in name.lower() and needle not in doc:
+            # Match the same one-line summary the table displays in the
+            # Description column. Matching the full docstring would surface
+            # operators whose match text is hidden — confusing for users who
+            # can't tell why a result was returned.
+            summary = (op_cls.__doc__ or "").strip().split("\n", 1)[0].lower()
+            if needle not in name.lower() and needle not in summary:
                 continue
         groups.setdefault(cat, []).append((name, op_cls))
         total += 1
