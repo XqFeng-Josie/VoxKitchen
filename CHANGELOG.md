@@ -20,6 +20,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `PipelineLoadError` with `msg` when `VAR` is missing. The original
   `${env:VAR}` form still fails loudly on unset variables and remains the
   default for required tokens.
+- `vkit operators` gained two new ways to navigate the 51-operator catalog:
+  `vkit operators --category <cat>` shows a single section (audio, segment,
+  augment, annotate, quality, synthesize, pack, noop) and
+  `vkit operators search <keyword>` lists operators whose name or first-line
+  docstring contains `<keyword>` (case-insensitive). Empty matches exit with
+  code 1 so scripts can branch on no-result.
 
 ### Fixed
 

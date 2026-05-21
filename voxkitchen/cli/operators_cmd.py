@@ -20,7 +20,9 @@ operators_app = typer.Typer(
     invoke_without_command=True,
 )
 
-# Display-friendly category names and order
+# Display-friendly category names and order. The keys are the directory names
+# under voxkitchen/operators/ — module path is the source of truth for which
+# category an operator belongs to (see _get_category).
 _CATEGORY_LABELS = {
     "basic": "Audio",
     "segment": "Segmentation",
@@ -52,28 +54,95 @@ def _docker_runtime_hint(required_extras: list[str]) -> str:
 
 
 @operators_app.callback()
-def list_all(ctx: typer.Context) -> None:
+def list_all(
+    ctx: typer.Context,
+    category: str | None = typer.Option(
+        None,
+        "--category",
+        "-c",
+        help=(
+            "Show only operators in a single category. One of: "
+            f"{', '.join(_CATEGORY_LABELS)}."
+        ),
+    ),
+) -> None:
     """List all registered operators with a brief description."""
     if ctx.invoked_subcommand is not None:
         return
+    _render_table(category=category)
+
+
+@operators_app.command()
+def search(
+    keyword: str = typer.Argument(
+        ..., help="Substring matched (case-insensitively) against name and description."
+    ),
+) -> None:
+    """Find operators by keyword in name or one-line description.
+
+    Example: ``vkit operators search noise`` lists `noise_augment`,
+    `snr_estimate`, `speech_enhance`, etc.
+    """
+    _render_table(keyword=keyword)
+
+
+def _render_table(
+    *, category: str | None = None, keyword: str | None = None
+) -> None:
+    """Group registered operators by category and print a Rich table.
+
+    Filters (``category`` and ``keyword``) compose. An empty result set exits
+    with code 1 so shell scripts can branch on "no matches" without parsing
+    text. Interactive callers see a styled message either way.
+    """
     from voxkitchen.operators.registry import get_operator, list_operators
 
-    names = list_operators()
+    if category is not None and category not in _CATEGORY_LABELS:
+        console.print(
+            f"[red]error:[/red] unknown category {category!r}. "
+            f"Available: {', '.join(_CATEGORY_LABELS)}."
+        )
+        raise typer.Exit(code=2)
 
-    # Group by category
+    needle = keyword.lower() if keyword else None
+
     groups: dict[str, list[tuple[str, type]]] = {}
-    for name in names:
+    total = 0
+    for name in list_operators():
         op_cls = get_operator(name)
         cat = _get_category(op_cls)
+        if category is not None and cat != category:
+            continue
+        if needle is not None:
+            doc = (op_cls.__doc__ or "").lower()
+            if needle not in name.lower() and needle not in doc:
+                continue
         groups.setdefault(cat, []).append((name, op_cls))
+        total += 1
 
-    t = Table(title=f"Available operators ({len(names)})")
+    if total == 0:
+        if keyword and category:
+            msg = f"no operators in category {category!r} match {keyword!r}"
+        elif keyword:
+            msg = f"no operators match {keyword!r}"
+        else:
+            msg = f"no operators in category {category!r}"
+        console.print(f"[yellow]{msg}[/yellow]")
+        raise typer.Exit(code=1)
+
+    if keyword:
+        title = f"Operators matching {keyword!r} ({total})"
+    elif category:
+        title = f"Operators in '{_CATEGORY_LABELS[category]}' ({total})"
+    else:
+        title = f"Available operators ({total})"
+
+    t = Table(title=title)
     t.add_column("Category", style="bold")
     t.add_column("Name")
     t.add_column("Device")
     t.add_column("Description")
 
-    # Print in category order
     sorted_cats = sorted(
         groups.keys(), key=lambda c: _CATEGORY_ORDER.index(c) if c in _CATEGORY_ORDER else 99
     )
@@ -84,14 +153,14 @@ def list_all(ctx: typer.Context) -> None:
             doc = (op_cls.__doc__ or "").strip().split("\n")[0]
             cat_col = label if i == 0 else ""
             t.add_row(cat_col, name, op_cls.device, doc)
-        # Add separator between categories (except last)
         if cat != sorted_cats[-1]:
             t.add_row("", "", "", "")
 
     console.print(t)
     console.print()
     console.print(
-        "[dim]Use[/dim] [bold]vkit operators show <name>[/bold] [dim]to see config fields and YAML example.[/dim]"
+        "[dim]Use[/dim] [bold]vkit operators show <name>[/bold] "
+        "[dim]to see config fields and YAML example.[/dim]"
     )
     console.print()
 

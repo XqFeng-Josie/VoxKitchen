@@ -122,9 +122,18 @@ vkit inspect errors work/                          # Per-stage error entries
 List and inspect operators.
 
 ```bash
-vkit operators                  # List all operators (grouped by category)
-vkit operators show silero_vad  # Show config fields + YAML example for an operator
+vkit operators                       # List all operators (grouped by category)
+vkit operators --category quality    # List only operators in one category
+vkit operators search noise          # Find operators whose name or description matches "noise"
+vkit operators show silero_vad       # Show config fields + YAML example for an operator
 ```
+
+`search` matches case-insensitively against the operator name and the first
+line of its docstring. It exits with code 1 when nothing matches, so shell
+scripts can branch on no-result.
+
+Valid `--category` values are: `basic`, `segment`, `augment`, `annotate`,
+`quality`, `synthesize`, `pack`, `noop`.
 
 ### `vkit recipes`
 
