@@ -111,6 +111,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   from each recipe's URL host (keithito / openslr / huggingface /
   bare hostname) instead of hard-coding "openslr" for every
   recipe with `download_urls`.
+- `voxkitchen.utils.download.download_file` is now atomic and
+  retryable. The body streams into ``<dest>.partial`` and is renamed
+  into place only on success, so an aborted transfer can no longer
+  be mistaken for a complete download on the next call. Up to three
+  attempts are made on transient errors (ConnectionResetError /
+  OSError / …) with exponential backoff (2s, 4s). This came out of
+  real OpenSLR mid-stream RSTs hit while end-to-end-verifying the
+  new AISHELL-3 and LibriTTS recipes.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 
