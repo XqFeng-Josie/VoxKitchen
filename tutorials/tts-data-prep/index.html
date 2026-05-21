@@ -14,7 +14,7 @@
         <link rel="prev" href="../../examples/">
       
       
-        <link rel="next" href="../asr-training-data/">
+        <link rel="next" href="../tts-synthesis/">
       
       
         
@@ -442,6 +442,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quality-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#key-design-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -563,10 +574,49 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tts-synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1154,6 +1204,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quality-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#key-design-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1275,6 +1336,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1296,7 +1368,15 @@
 
 
 <h1 id="tts-data-preparation">TTS Data Preparation</h1>
-<p>Prepare high-quality TTS training data from raw audio recordings.</p>
+<p>Prepare high-quality TTS training data from raw recordings. The pipeline
+is mostly a <strong>quality gate</strong>: it standardizes format, segments to a
+usable utterance length, denoises just enough, drops low-quality
+segments, and adds ASR text + timestamps so each kept segment is paired
+with a reliable label.</p>
+<blockquote>
+<p>Looking for the inverse direction — generating speech from text?
+See <a href="../tts-synthesis/">TTS Synthesis</a>.</p>
+</blockquote>
 <h2 id="quick-start">Quick Start</h2>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-tts-project<span class="w"> </span>--template<span class="w"> </span>tts
 <span class="nb">cd</span><span class="w"> </span>my-tts-project
@@ -1353,6 +1433,45 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <td>Pack</td>
 <td><code>pack_jsonl</code></td>
 <td>Output manifest with text, timestamps, quality metrics</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quality-checklist">Quality Checklist</h2>
+<p>Every kept segment in the output manifest satisfies all of these. Edit
+the <code>filter</code> stage if your dataset needs different thresholds.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th style="text-align: center;">Default</th>
+<th>Why this matters for TTS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sample rate</td>
+<td style="text-align: center;">22.05 kHz mono</td>
+<td>Matches VITS / FastSpeech2 / Tacotron2 training assumptions</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td style="text-align: center;">2 s ≤ len ≤ 15 s</td>
+<td>&lt; 2 s gives no prosody; &gt; 15 s strains attention</td>
+</tr>
+<tr>
+<td>SNR</td>
+<td style="text-align: center;">&gt; 15 dB</td>
+<td>TTS reproduces noise; 15 dB ≈ speech 30× louder than noise</td>
+</tr>
+<tr>
+<td>Text</td>
+<td style="text-align: center;">present and non-empty</td>
+<td>TTS training needs paired text</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td style="text-align: center;">word-level present</td>
+<td>Enables phoneme-aligned training / inspection</td>
 </tr>
 </tbody>
 </table>
@@ -1414,6 +1533,15 @@ operators, so run the edited pipeline with <code>--tag latest</code>.</p>
 <span class="w">  </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;snr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">22.5</span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>Train a TTS model on the resulting manifest using your framework of
+  choice (Tacotron2, VITS, FastSpeech2, Coqui XTTS, etc.).</li>
+<li>Or feed the manifest to a pretrained engine via
+  <a href="../tts-synthesis/">TTS Synthesis</a> to A/B compare your data against
+  built-in voices, or to generate new audio from the transcripts you
+  just extracted.</li>
+</ul>
 
 
 
