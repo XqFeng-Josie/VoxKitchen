@@ -53,3 +53,26 @@ def mock_aishell(tmp_path: Path) -> Path:
         "BAC001 你 好 世 界\nBAC002 再 见 世 界\n"
     )
     return tmp_path
+
+
+@pytest.fixture
+def mock_ljspeech(tmp_path: Path) -> Path:
+    """Create a tiny LJSpeech-1.1-like directory with 2 utterances.
+
+    Mirrors the real layout: a single ``metadata.csv`` (pipe-separated, no
+    header, three columns per row) plus a flat ``wavs/`` directory.
+    """
+    ls_root = tmp_path / "LJSpeech-1.1"
+    wavs = ls_root / "wavs"
+    wavs.mkdir(parents=True)
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+    for utt in ["LJ001-0001", "LJ001-0002"]:
+        sf.write(wavs / f"{utt}.wav", audio, 16000)
+    # Row 1 has identical raw/normalized; row 2 differs (normalization
+    # expanded "Mr." to "Mister") so the recipe's preference for the
+    # normalized column shows up in tests.
+    (ls_root / "metadata.csv").write_text(
+        "LJ001-0001|Hello world.|Hello world.\nLJ001-0002|Hi Mr. Smith.|Hi Mister Smith.\n",
+        encoding="utf-8",
+    )
+    return tmp_path
