@@ -16,6 +16,7 @@
 
 <p align="center">
   <a href="https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml"><img src="https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://pypi.org/project/voxkitchen/"><img src="https://img.shields.io/pypi/v/voxkitchen.svg" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
   <img src="https://img.shields.io/badge/runtime-Docker--first-2496ED" alt="Docker-first">
   <img src="https://img.shields.io/badge/operators-51-brightgreen" alt="51 operators">
@@ -51,25 +52,17 @@ Requirements:
 - Docker
 - Python 3.10+ for the lightweight `vkit` launcher
 
-Install `vkit` into a user-local virtual environment:
+Install the `vkit` launcher from PyPI:
 
 ```bash
-export VKIT_VERSION=v0.2.0
-
-python -m venv ~/.venvs/voxkitchen
-~/.venvs/voxkitchen/bin/python -m pip install -U pip
-~/.venvs/voxkitchen/bin/python -m pip install \
-  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
-
-mkdir -p ~/.local/bin
-ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
-export PATH="$HOME/.local/bin:$PATH"
+pipx install voxkitchen      # recommended — isolates the launcher
+# or
+pip install voxkitchen
 ```
 
-This installs only the launcher and inspection commands. Pipeline dependencies
-stay inside Docker images. If `vkit` is not found in a new shell, add the
-`PATH` line above to your shell startup file, such as `~/.bashrc` or
-`~/.zshrc`.
+This installs only the lightweight launcher and inspection commands (a few MB,
+no torch / ASR / TTS dependencies). All pipeline runtime dependencies stay
+inside the prebuilt Docker images.
 
 Run the included demo with the smallest runtime image. No repository clone is
 required; the published image includes the demo pipeline and demo audio.

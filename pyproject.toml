@@ -101,8 +101,9 @@ dev = [
 vkit = "voxkitchen.cli.main:app"
 
 [project.urls]
-Repository = "https://github.com/XqFeng-Josie/VoxKitchen"
+Homepage = "https://github.com/XqFeng-Josie/VoxKitchen"
 Documentation = "https://voxkitchen.readthedocs.io"
+Repository = "https://github.com/XqFeng-Josie/VoxKitchen"
 Issues = "https://github.com/XqFeng-Josie/VoxKitchen/issues"
 Changelog = "https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CHANGELOG.md"
 

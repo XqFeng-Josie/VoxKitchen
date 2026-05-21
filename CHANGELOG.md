@@ -6,8 +6,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Published the `voxkitchen` launcher to PyPI. Users install with
+  `pipx install voxkitchen` (or `pip install voxkitchen`) instead of fetching
+  a GitHub archive zip. A `publish` GitHub Actions workflow builds wheel +
+  sdist on every `v*` tag and uploads via PyPI Trusted Publishing (OIDC, no
+  stored API tokens). The workflow also exposes a manual `workflow_dispatch`
+  for TestPyPI dry-runs.
+- PyPI version badge in `README.md`.
+
 ### Fixed
 
+- Wheel no longer ships duplicate copies of `voxkitchen/templates/pipelines/*.yaml`.
+  The redundant `[tool.hatch.build.targets.wheel.force-include]` block was
+  removed; hatchling already includes non-Python files inside the package
+  directory.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 

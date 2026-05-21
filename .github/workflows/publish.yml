@@ -1,0 +1,113 @@
+name: publish
+
+# Publish the lightweight `vkit` launcher to PyPI.
+#
+# The published wheel contains only the host launcher (CLI + inspect/validate
+# + Docker wrapper). Heavy operator dependencies (torch, faster-whisper,
+# pyannote, ...) live in the prebuilt Docker images, not here.
+#
+# Triggers:
+#   - push tag v*    → build, then publish to PyPI (production release)
+#   - workflow_dispatch with target=testpypi → publish to TestPyPI (manual dry-run)
+#   - workflow_dispatch with target=pypi     → publish to PyPI (manual hot-fix)
+#
+# Trust model: PyPI Trusted Publishing via OIDC. No API tokens stored in
+# repository secrets. One-time setup on the PyPI side is required before the
+# first publish — see RELEASING.md.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Publish target"
+        required: true
+        default: "testpypi"
+        type: choice
+        options:
+          - testpypi
+          - pypi
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build wheel + sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # hatch-vcs derives the package version from the git tag, so the
+          # full history (or at least the tag commit) must be fetched.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade build twine
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Validate distributions
+        run: |
+          python -m twine check dist/*
+          echo "--- dist contents ---"
+          ls -lh dist/
+          echo "--- wheel contents (top 40) ---"
+          python -m zipfile -l dist/*.whl | head -40
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/voxkitchen
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    if: |
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/voxkitchen
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

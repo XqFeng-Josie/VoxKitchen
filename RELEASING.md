@@ -81,7 +81,40 @@ git push origin v0.2.0
 Main commit first, then tag. This order is important — the tag points
 to a commit that must already be on the remote.
 
-### 5. Docker images
+### 5. PyPI publish (automated)
+
+Pushing the `v*` tag triggers
+[`.github/workflows/publish.yml`](.github/workflows/publish.yml), which builds
+the wheel + sdist and uploads to <https://pypi.org/project/voxkitchen/> via
+PyPI Trusted Publishing (OIDC, no stored API tokens). No local action is
+needed — watch the workflow under the Actions tab on GitHub.
+
+To verify before a release, use the workflow's manual dispatch:
+
+```
+GitHub → Actions → publish → Run workflow → target: testpypi
+```
+
+This uploads to <https://test.pypi.org/project/voxkitchen/>.
+
+#### First-time PyPI setup (do once before the first release)
+
+PyPI Trusted Publishing needs a "pending publisher" registered on PyPI before
+the project exists. Do this once:
+
+1. Sign in to <https://pypi.org> and go to **Your projects → Publishing**.
+2. Click **Add a new pending publisher** and fill in:
+   - PyPI Project Name: `voxkitchen`
+   - Owner: `XqFeng-Josie`
+   - Repository name: `VoxKitchen`
+   - Workflow name: `publish.yml`
+   - Environment name: `pypi`
+3. Repeat on <https://test.pypi.org> with environment name `testpypi`.
+
+After the first successful publish, the pending publisher is converted to a
+regular trusted publisher and no further PyPI-side setup is needed.
+
+### 6. Docker images
 
 `scripts/release.sh` builds and pushes each of the six targets in a fixed
 order and tags each with both the rolling
@@ -121,7 +154,7 @@ commit, do **not** run `scripts/release.sh` again; it will rebuild and push
 all six images. Instead, run the pre-flight checks, commit, tag, and push
 manually using steps 3, 4, and 6.
 
-### 6. GitHub Release
+### 7. GitHub Release
 
 The git tag is not the same as a public Release on GitHub. After the
 tag is pushed, create the Release page to attach release notes:
@@ -148,11 +181,15 @@ Paste the relevant CHANGELOG section into the "Description" field and publish.
 If the Release page already exists, edit the description from the web UI; older
 `gh` builds may not include `gh release edit`.
 
-### 7. Verify
+### 8. Verify
 
 One last sanity check against the published artifact:
 
 ```bash
+# Verify PyPI publish picked up the tag
+pipx install --force voxkitchen==X.Y.Z
+vkit --help
+
 # Pull a published image and run doctor against it
 vkit docker pull --tag slim
 vkit docker doctor --tag slim --expect core

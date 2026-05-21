@@ -12,23 +12,14 @@ Requirements:
 - Python 3.10+ for the lightweight `vkit` CLI
 
 ```bash
-export VKIT_VERSION=v0.2.0
-
-python -m venv ~/.venvs/voxkitchen
-~/.venvs/voxkitchen/bin/python -m pip install -U pip
-~/.venvs/voxkitchen/bin/python -m pip install \
-  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
-
-mkdir -p ~/.local/bin
-ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
-export PATH="$HOME/.local/bin:$PATH"
+pipx install voxkitchen      # recommended — isolates the launcher
+# or
+pip install voxkitchen
 ```
 
-This installs only the lightweight launcher and inspection commands. Pipeline
-dependencies stay inside Docker images.
-
-If `vkit` is not found in a new shell, add the `PATH` line above to your
-shell startup file, such as `~/.bashrc` or `~/.zshrc`.
+This installs only the lightweight launcher and inspection commands (a few MB,
+no torch / ASR / TTS dependencies). All pipeline runtime dependencies stay
+inside the prebuilt Docker images.
 
 ## Pull A Runtime Image
 

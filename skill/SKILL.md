@@ -17,15 +17,7 @@ VoxKitchen users write a YAML pipeline and run it through the lightweight
 `vkit` launcher inside prebuilt Docker runtimes. The default user path is:
 
 ```bash
-export VKIT_VERSION=v0.2.0
-
-python -m venv ~/.venvs/voxkitchen
-~/.venvs/voxkitchen/bin/python -m pip install -U pip
-~/.venvs/voxkitchen/bin/python -m pip install \
-  "voxkitchen @ https://github.com/XqFeng-Josie/VoxKitchen/archive/refs/tags/${VKIT_VERSION}.zip"
-mkdir -p ~/.local/bin
-ln -sf ~/.venvs/voxkitchen/bin/vkit ~/.local/bin/vkit
-export PATH="$HOME/.local/bin:$PATH"
+pipx install voxkitchen      # or: pip install voxkitchen
 vkit validate pipeline.yaml
 vkit docker pull --tag <recommended-tag>
 vkit docker run --tag <recommended-tag> pipeline.yaml
