@@ -30,6 +30,7 @@ def _load_builtin_recipes() -> None:
         aishell3,
         commonvoice,
         librispeech,
+        libritts,
         ljspeech,
     )
 

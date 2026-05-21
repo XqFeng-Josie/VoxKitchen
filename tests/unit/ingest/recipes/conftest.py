@@ -113,3 +113,41 @@ def mock_aishell3(tmp_path: Path) -> Path:
     )
 
     return tmp_path
+
+
+@pytest.fixture
+def mock_libritts(tmp_path: Path) -> Path:
+    """Create a tiny LibriTTS-like directory under <tmp>/LibriTTS/.
+
+    Two speakers, two utterances in train-clean-100. One utterance has
+    both a normalized and an original transcript (normalized must win);
+    the other has only the original (so we exercise the fallback path).
+    The optional speakers.tsv is included to verify gender enrichment
+    when the file is present.
+    """
+    lt_root = tmp_path / "LibriTTS"
+    subset_dir = lt_root / "train-clean-100"
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+
+    # Speaker 1089, chapter 134686 — has both normalized and original text
+    ch1 = subset_dir / "1089" / "134686"
+    ch1.mkdir(parents=True)
+    sf.write(ch1 / "1089_134686_000001_000000.wav", audio, 16000)
+    (ch1 / "1089_134686_000001_000000.normalized.txt").write_text("Hello, world.", encoding="utf-8")
+    (ch1 / "1089_134686_000001_000000.original.txt").write_text("HELLO WORLD", encoding="utf-8")
+
+    # Speaker 2289, chapter 200000 — only original text (no normalized file)
+    ch2 = subset_dir / "2289" / "200000"
+    ch2.mkdir(parents=True)
+    sf.write(ch2 / "2289_200000_000001_000000.wav", audio, 16000)
+    (ch2 / "2289_200000_000001_000000.original.txt").write_text("Goodbye world.", encoding="utf-8")
+
+    # Header + two readers (1089 female, 2289 male) to verify gender lookup
+    (lt_root / "speakers.tsv").write_text(
+        "READER\tGENDER\tSUBSET\tNAME\n"
+        "1089\tF\ttrain-clean-100\tFirst Reader\n"
+        "2289\tM\ttrain-clean-100\tSecond Reader\n",
+        encoding="utf-8",
+    )
+
+    return tmp_path
