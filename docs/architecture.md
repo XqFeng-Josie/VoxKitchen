@@ -267,10 +267,13 @@ Static analysis builds a GC plan: for each `produces_audio=True` stage, find its
 
 ### Built-in Recipes
 
-- `librispeech` -- LibriSpeech ASR corpus
-- `aishell` -- AISHELL-1 Mandarin speech
-- `commonvoice` -- Mozilla Common Voice
-- `fleurs` -- Google FLEURS multilingual
+- `librispeech` -- LibriSpeech ASR corpus (English read audiobooks, 960h)
+- `libritts` -- LibriTTS, multi-speaker English TTS (LibriSpeech-derived, sentence-segmented + TTS-normalized)
+- `ljspeech` -- LJSpeech-1.1, single-speaker English TTS baseline (24h)
+- `aishell` -- AISHELL-1 Mandarin read ASR (170h)
+- `aishell3` -- AISHELL-3 multi-speaker Mandarin TTS (218 speakers, 85h)
+- `commonvoice` -- Mozilla Common Voice (multilingual, manual download)
+- `fleurs` -- Google FLEURS multilingual (102 languages, ~12h/lang)
 
 Each recipe implements `download()` and `prepare(root, subsets, ctx) -> CutSet`.
 
@@ -391,7 +394,7 @@ voxkitchen/
   pipeline/             # Runner, executors, checkpoint, GC
   schema/               # Cut, CutSet, Recording, Supervision, Provenance
   ingest/               # DirScan, Manifest, Recipe sources
-    recipes/            #   librispeech, aishell, commonvoice, fleurs
+    recipes/            #   librispeech, libritts, ljspeech, aishell, aishell3, commonvoice, fleurs
   viz/                  # HTML report + Gradio panel
   templates/            # vkit init template registry
   plugins/              # Entry-point discovery
@@ -423,7 +426,7 @@ tests/integration/      # End-to-end pipeline tests
 
 - Core framework (schema, pipeline engine, CLI)
 - 51 operators across 8 categories
-- 4 ingest recipes (LibriSpeech, AISHELL, CommonVoice, FLEURS)
+- 7 ingest recipes (LibriSpeech, LibriTTS, LJSpeech, AISHELL-1, AISHELL-3, CommonVoice, FLEURS)
 - Visualization (Rich CLI, HTML report, Gradio panel)
 - Plugin system (entry_points)
 - TTS synthesis (Kokoro, ChatTTS, CosyVoice2, Fish-Speech)

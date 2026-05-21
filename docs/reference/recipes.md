@@ -4,12 +4,15 @@ VoxKitchen recipes parse popular speech datasets into CutSets. Some recipes also
 
 ## Available Recipes
 
-| Recipe | Language | Download | Description |
-|--------|----------|:--------:|-------------|
-| `librispeech` | English | openslr | Read-aloud audiobooks (960h) |
-| `aishell` | Chinese | openslr | Mandarin read speech (170h) |
-| `commonvoice` | Multi | manual | Mozilla crowdsourced recordings |
-| `fleurs` | 102 languages | HuggingFace | Google's multilingual eval set (~12h/lang) |
+| Recipe | Task | Language | Download | Description |
+|--------|------|----------|:--------:|-------------|
+| `librispeech` | ASR | English | openslr | Read-aloud audiobooks (960h) |
+| `libritts` | TTS | English | openslr | Multi-speaker English TTS, sentence-segmented and TTS-normalized derivative of LibriSpeech |
+| `ljspeech` | TTS | English | keithito | Single-speaker English TTS (~24h, 13k utterances) — canonical TTS baseline |
+| `aishell` | ASR | Chinese | openslr | Mandarin read speech (170h) |
+| `aishell3` | TTS | Chinese | openslr | Multi-speaker Mandarin TTS (218 speakers, ~85h) |
+| `commonvoice` | ASR (multi) | Multi | manual | Mozilla crowdsourced recordings |
+| `fleurs` | ASR / langid | 102 languages | HuggingFace | Google's multilingual eval set (~12h/lang) |
 
 ## Downloading Datasets
 
@@ -18,8 +21,18 @@ VoxKitchen recipes parse popular speech datasets into CutSets. Some recipes also
 vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
 vkit docker download --tag slim librispeech --root ./data/librispeech --subsets train-clean-100
 
-# AISHELL-1 (Chinese, from openslr.org)
+# LibriTTS (English multi-speaker TTS, from openslr.org)
+vkit docker download --tag slim libritts --root ./data/libritts --subsets dev-clean
+vkit docker download --tag slim libritts --root ./data/libritts --subsets train-clean-100
+
+# LJSpeech (English single-speaker TTS, from data.keithito.com)
+vkit docker download --tag slim ljspeech --root ./data/ljspeech
+
+# AISHELL-1 (Chinese ASR, from openslr.org)
 vkit docker download --tag slim aishell --root ./data/aishell
+
+# AISHELL-3 (Chinese multi-speaker TTS, from openslr.org)
+vkit docker download --tag slim aishell3 --root ./data/aishell3
 
 # FLEURS (multilingual, from HuggingFace)
 vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_cn,fr_fr
@@ -36,6 +49,30 @@ vkit docker download --tag slim fleurs --root ./data/fleurs --subsets en_us,zh_c
 | `train-clean-100` | 100 | Clean training (recommended start) |
 | `train-clean-360` | 363 | Clean training (large) |
 | `train-other-500` | 496 | Noisy training |
+
+### LibriTTS Subsets
+
+Same partitioning as LibriSpeech (the corpus is a TTS-friendly
+resegmentation of the same audio). Pick subsets the same way; the
+recipe accepts the same names.
+
+### LJSpeech
+
+LJSpeech ships as a single archive (no subset selection). The recipe
+emits one Cut per row of `metadata.csv` — 13,100 cuts, ~24 hours.
+Each cut's supervision carries the *normalized* text; the *raw* text
+is kept under `cut.custom["raw_text"]` only when normalization actually
+changed it.
+
+### AISHELL-3 Subsets
+
+| Subset | Description |
+|--------|-------------|
+| `train` | 218 speakers, the bulk of the corpus (~85h) |
+| `test`  | held-out evaluation split |
+
+If a subset is missing on disk (partial extraction is common for the
+~17 GB tarball) the recipe silently skips it.
 
 ### CommonVoice (Manual Download)
 

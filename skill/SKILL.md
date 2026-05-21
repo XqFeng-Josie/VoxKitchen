@@ -94,8 +94,11 @@ For supported dataset recipes, use:
 
 ```bash
 vkit docker download librispeech --root ./data/librispeech --subsets dev-clean
-vkit docker download fleurs --root ./data/fleurs --subsets en_us,zh_cn
+vkit docker download libritts --root ./data/libritts --subsets dev-clean
+vkit docker download ljspeech --root ./data/ljspeech
 vkit docker download aishell --root ./data/aishell
+vkit docker download aishell3 --root ./data/aishell3
+vkit docker download fleurs --root ./data/fleurs --subsets en_us,zh_cn
 ```
 
 ### Running And Debugging

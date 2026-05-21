@@ -92,6 +92,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   gate" framing and ends with a Quality Checklist summarizing the
   five thresholds (sample rate, duration, SNR, text present, alignment
   present). Cross-links to the new synthesis tutorial.
+- Three new ingest recipes fill the TTS gap (previously only the 4
+  ASR-oriented recipes existed):
+  - `ljspeech` — single-speaker English TTS baseline (24h, 13.1k
+    utterances), downloaded from data.keithito.com. Prefers
+    normalized text over raw; preserves the raw form only when
+    normalization changed it.
+  - `aishell3` — multi-speaker Mandarin TTS (218 speakers, ~85h),
+    downloaded from OpenSLR resource 93. Splits the interleaved
+    character + pinyin `content.txt` into supervision text (chars)
+    and `cut.custom["pinyin"]`; enriches gender from `spk-info.txt`.
+  - `libritts` — multi-speaker English TTS derived from LibriSpeech
+    (OpenSLR resource 60). Prefers `*.normalized.txt` over
+    `*.original.txt`; enriches gender from `speakers.tsv`. Same
+    seven-subset partitioning as LibriSpeech.
+  `vkit recipes` now lists 7 recipes.
+- The Download column of `vkit recipes` now derives the source label
+  from each recipe's URL host (keithito / openslr / huggingface /
+  bare hostname) instead of hard-coding "openslr" for every
+  recipe with `download_urls`.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 
