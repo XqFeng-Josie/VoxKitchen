@@ -829,6 +829,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#speaker-similarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Speaker Similarity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#speech-enhancement" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -844,6 +855,17 @@
     <span class="md-ellipsis">
       
         Forced Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audio-tokenization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audio Tokenization
       
     </span>
   </a>
@@ -1175,6 +1197,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#speaker-similarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Speaker Similarity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#speech-enhancement" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1190,6 +1223,17 @@
     <span class="md-ellipsis">
       
         Forced Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audio-tokenization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audio Tokenization
       
     </span>
   </a>
@@ -1241,8 +1285,10 @@ The supported user workflow for data processing remains YAML plus
     <span class="n">resample_audio</span><span class="p">,</span>
     <span class="n">normalize_loudness</span><span class="p">,</span>
     <span class="n">extract_speaker_embedding</span><span class="p">,</span>
+    <span class="n">compute_speaker_similarity</span><span class="p">,</span>
     <span class="n">enhance_speech</span><span class="p">,</span>
     <span class="n">align_words</span><span class="p">,</span>
+    <span class="n">tokenize_audio</span><span class="p">,</span>
     <span class="n">synthesize</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -1298,6 +1344,18 @@ The supported user workflow for data processing remains YAML plus
                                  <span class="n">model</span><span class="o">=</span><span class="s2">&quot;speechbrain/spkrec-ecapa-voxceleb&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>Runtime image for equivalent pipeline operators: <code>slim</code>.</p>
+<h2 id="speaker-similarity">Speaker Similarity</h2>
+<p>Compare a sample against a saved reference embedding (cosine, 0–1):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># First, save a reference embedding (e.g. enrollment audio):</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">ref</span> <span class="o">=</span> <span class="n">extract_speaker_embedding</span><span class="p">(</span><span class="s2">&quot;enroll.wav&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;reference.npy&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+<span class="c1"># Later, score new samples against it:</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">compute_speaker_similarity</span><span class="p">(</span><span class="s2">&quot;test.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;reference.npy&quot;</span><span class="p">)</span>
+<span class="c1"># &gt; 0.65 → likely same speaker; &lt; 0.40 → likely different.</span>
+</code></pre></div>
+<p>Runtime image for equivalent pipeline operators: <code>slim</code>.</p>
 <h2 id="speech-enhancement">Speech Enhancement</h2>
 <div class="highlight"><pre><span></span><code><span class="n">enhance_speech</span><span class="p">(</span><span class="s2">&quot;noisy.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;clean.wav&quot;</span><span class="p">,</span> <span class="n">aggressiveness</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </code></pre></div>
@@ -1311,6 +1369,14 @@ The supported user workflow for data processing remains YAML plus
 <span class="n">words</span> <span class="o">=</span> <span class="n">align_words</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="s2">&quot;你好世界&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;Chinese&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>Runtime image for equivalent pipeline operators: <code>asr</code>.</p>
+<h2 id="audio-tokenization">Audio Tokenization</h2>
+<p>Encode audio into discrete codec tokens for neural codec / audio LM use:</p>
+<div class="highlight"><pre><span></span><code><span class="n">tokens</span> <span class="o">=</span> <span class="n">tokenize_audio</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;encodec&quot;</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>
+<span class="c1"># tokens is a list of token sequences, one per codebook layer.</span>
+
+<span class="n">tokens</span> <span class="o">=</span> <span class="n">tokenize_audio</span><span class="p">(</span><span class="s2">&quot;speech.wav&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;dac&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Runtime image for equivalent pipeline operators: <code>slim</code>.</p>
 <h2 id="tts-synthesis">TTS Synthesis</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Kokoro — lightweight (82M), CPU-capable, 8 languages</span>
 <span class="n">synthesize</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span> <span class="s2">&quot;hello.wav&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;kokoro&quot;</span><span class="p">)</span>
