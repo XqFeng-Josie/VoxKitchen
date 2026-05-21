@@ -278,23 +278,46 @@ Each recipe implements `download()` and `prepare(root, subsets, ctx) -> CutSet`.
 
 ## CLI Commands
 
+**Host-recommended commands** (the supported path for `pipx install
+voxkitchen` users):
+
 | Command | Purpose |
 |---------|---------|
-| `vkit init <path> [-t template]` | Scaffold project |
+| `vkit init <path> [-t template]` | Scaffold a project directory |
+| `vkit validate <yaml>` | Validate YAML; print recommended image |
+| `vkit docker pull --tag <tag>` | Pull a prebuilt runtime image |
 | `vkit docker run <yaml>` | Execute pipeline inside a prebuilt image |
 | `vkit docker download <recipe>` | Download dataset inside a prebuilt image |
-| `vkit run <yaml>` | Current-env pipeline entrypoint used inside images |
-| `vkit validate <yaml>` | Validate without executing |
+| `vkit docker doctor` / `vkit doctor` | Per-env operator availability report |
+| `vkit docker shell` | Open an interactive bash inside an image |
+| `vkit docker build [target]` | Build a Docker image locally |
+
+**Browse and inspect** (read-only, host-safe):
+
+| Command | Purpose |
+|---------|---------|
+| `vkit operators [--category <cat>]` | List operators, optionally filtered |
+| `vkit operators search <keyword>` | Find operators by name or one-line summary |
+| `vkit operators show <name>` | Operator detail (args, device, image hint) |
+| `vkit recipes` | List dataset recipes |
+| `vkit schema export [--out PATH]` | Generate `pipeline.schema.json` for editors |
+| `vkit inspect run <dir>` | Stage summary for a run |
+| `vkit inspect cuts <path>` | Cut statistics for a manifest |
+| `vkit inspect trace <id> --in <dir>` | Provenance chain for a cut |
+| `vkit inspect errors <dir>` | Per-stage error report |
+| `vkit viz <manifest>` | Launch the Gradio explorer |
+
+**Container / dev entrypoints** (run inside an image, or with
+`VKIT_ALLOW_LOCAL_RUN=1` for local debugging):
+
+| Command | Purpose |
+|---------|---------|
+| `vkit run <yaml>` | Pipeline entrypoint used inside the image |
 | `vkit download <recipe>` | Current-env dataset download helper |
-| `vkit ingest` | Standalone ingest |
-| `vkit inspect run <dir>` | Stage summary |
-| `vkit inspect cuts <path>` | Cut statistics |
-| `vkit inspect trace <id>` | Provenance chain |
-| `vkit inspect errors <dir>` | Error report |
-| `vkit operators` | List operators |
-| `vkit operators show <name>` | Operator detail |
-| `vkit recipes` | List recipes |
-| `vkit viz <path>` | Gradio explorer |
+| `vkit ingest --source <dir\|manifest\|recipe>` | Standalone manifest builder |
+
+The three commands above warn when invoked from a bare host install,
+pointing to the recommended `vkit docker …` alternative.
 
 Templates: `tts`, `asr`, `cleaning`, `speaker` (stored in
 `voxkitchen/templates/pipelines/`, with editable examples in `examples/pipelines/`).
