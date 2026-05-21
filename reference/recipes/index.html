@@ -758,6 +758,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#libritts-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LibriTTS Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ljspeech" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LJSpeech
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aishell-3-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AISHELL-3 Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#commonvoice-manual-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1122,6 +1155,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#libritts-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LibriTTS Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ljspeech" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LJSpeech
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aishell-3-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AISHELL-3 Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#commonvoice-manual-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1186,6 +1252,7 @@
 <thead>
 <tr>
 <th>Recipe</th>
+<th>Task</th>
 <th>Language</th>
 <th style="text-align: center;">Download</th>
 <th>Description</th>
@@ -1194,24 +1261,49 @@
 <tbody>
 <tr>
 <td><code>librispeech</code></td>
+<td>ASR</td>
 <td>English</td>
 <td style="text-align: center;">openslr</td>
 <td>Read-aloud audiobooks (960h)</td>
 </tr>
 <tr>
+<td><code>libritts</code></td>
+<td>TTS</td>
+<td>English</td>
+<td style="text-align: center;">openslr</td>
+<td>Multi-speaker English TTS, sentence-segmented and TTS-normalized derivative of LibriSpeech</td>
+</tr>
+<tr>
+<td><code>ljspeech</code></td>
+<td>TTS</td>
+<td>English</td>
+<td style="text-align: center;">keithito</td>
+<td>Single-speaker English TTS (~24h, 13k utterances) — canonical TTS baseline</td>
+</tr>
+<tr>
 <td><code>aishell</code></td>
+<td>ASR</td>
 <td>Chinese</td>
 <td style="text-align: center;">openslr</td>
 <td>Mandarin read speech (170h)</td>
 </tr>
 <tr>
+<td><code>aishell3</code></td>
+<td>TTS</td>
+<td>Chinese</td>
+<td style="text-align: center;">openslr</td>
+<td>Multi-speaker Mandarin TTS (218 speakers, ~85h)</td>
+</tr>
+<tr>
 <td><code>commonvoice</code></td>
+<td>ASR (multi)</td>
 <td>Multi</td>
 <td style="text-align: center;">manual</td>
 <td>Mozilla crowdsourced recordings</td>
 </tr>
 <tr>
 <td><code>fleurs</code></td>
+<td>ASR / langid</td>
 <td>102 languages</td>
 <td style="text-align: center;">HuggingFace</td>
 <td>Google's multilingual eval set (~12h/lang)</td>
@@ -1223,8 +1315,18 @@
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>train-clean-100
 
-<span class="c1"># AISHELL-1 (Chinese, from openslr.org)</span>
+<span class="c1"># LibriTTS (English multi-speaker TTS, from openslr.org)</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>libritts<span class="w"> </span>--root<span class="w"> </span>./data/libritts<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>libritts<span class="w"> </span>--root<span class="w"> </span>./data/libritts<span class="w"> </span>--subsets<span class="w"> </span>train-clean-100
+
+<span class="c1"># LJSpeech (English single-speaker TTS, from data.keithito.com)</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>ljspeech<span class="w"> </span>--root<span class="w"> </span>./data/ljspeech
+
+<span class="c1"># AISHELL-1 (Chinese ASR, from openslr.org)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>./data/aishell
+
+<span class="c1"># AISHELL-3 (Chinese multi-speaker TTS, from openslr.org)</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell3<span class="w"> </span>--root<span class="w"> </span>./data/aishell3
 
 <span class="c1"># FLEURS (multilingual, from HuggingFace)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>./data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn,fr_fr
@@ -1276,6 +1378,37 @@ vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w
 </tr>
 </tbody>
 </table>
+<h3 id="libritts-subsets">LibriTTS Subsets</h3>
+<p>Same partitioning as LibriSpeech (the corpus is a TTS-friendly
+resegmentation of the same audio). Pick subsets the same way; the
+recipe accepts the same names.</p>
+<h3 id="ljspeech">LJSpeech</h3>
+<p>LJSpeech ships as a single archive (no subset selection). The recipe
+emits one Cut per row of <code>metadata.csv</code> — 13,100 cuts, ~24 hours.
+Each cut's supervision carries the <em>normalized</em> text; the <em>raw</em> text
+is kept under <code>cut.custom["raw_text"]</code> only when normalization actually
+changed it.</p>
+<h3 id="aishell-3-subsets">AISHELL-3 Subsets</h3>
+<table>
+<thead>
+<tr>
+<th>Subset</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>train</code></td>
+<td>218 speakers, the bulk of the corpus (~85h)</td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td>held-out evaluation split</td>
+</tr>
+</tbody>
+</table>
+<p>If a subset is missing on disk (partial extraction is common for the
+~17 GB tarball) the recipe silently skips it.</p>
 <h3 id="commonvoice-manual-download">CommonVoice (Manual Download)</h3>
 <p>CommonVoice requires a Mozilla account. Download from <a href="https://commonvoice.mozilla.org">commonvoice.mozilla.org</a>, then use the recipe:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">ingest</span><span class="p">:</span>
