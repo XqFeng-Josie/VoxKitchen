@@ -84,8 +84,9 @@ when that directory exists.
 | Clean and filter raw speech audio | `vkit init my-cleaning --template cleaning` | `slim` |
 | Build ASR training manifests | `vkit init my-asr --template asr` | `asr` |
 | Analyze speakers and languages | `vkit init my-speakers --template speaker` | `latest` |
-| Prepare TTS training data | `vkit init my-tts --template tts` | `asr` |
-| Run Fish-Speech synthesis | create a pipeline with `tts_fish_speech` | `fish-speech` |
+| Prepare TTS training data (quality gate) | `vkit init my-tts --template tts` | `asr` |
+| Synthesize speech from text (built-in voices, 3-sec voice cloning) | see [TTS Synthesis tutorial](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/tutorials/tts-synthesis.md) | `tts` |
+| Voice cloning with Fish-Speech (44.1 kHz) | create a pipeline with `tts_fish_speech` | `fish-speech` |
 
 ## How It Works
 

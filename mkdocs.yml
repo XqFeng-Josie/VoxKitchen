@@ -16,6 +16,7 @@ nav:
   - Examples & Use Cases: examples.md
   - Tutorials:
     - TTS Data Preparation: tutorials/tts-data-prep.md
+    - TTS Synthesis: tutorials/tts-synthesis.md
     - ASR Training Data: tutorials/asr-training-data.md
     - Data Cleaning: tutorials/data-cleaning.md
     - Speaker Analysis: tutorials/speaker-analysis.md

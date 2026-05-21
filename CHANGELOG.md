@@ -80,6 +80,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `tokenize_audio` had shipped but were missing from the reference
   page — added their import line, usage section, and runtime-image hint
   to bring the doc in line with the code.
+- New tutorial `docs/tutorials/tts-synthesis.md` covers the inverse
+  direction of the existing TTS data-prep tutorial: how to synthesize
+  speech from text. Includes a per-engine capability matrix (cloning,
+  built-in voices, language scope, device, output SR, Docker image),
+  the short-reference voice-cloning workflow for `tts_cosyvoice` and
+  `tts_fish_speech`, and a decision flow for picking an engine. Linked
+  from `docs/index.md`, README "What You Can Build", and the existing
+  TTS data-prep tutorial.
+- `docs/tutorials/tts-data-prep.md` now opens with an explicit "quality
+  gate" framing and ends with a Quality Checklist summarizing the
+  five thresholds (sample rate, duration, SNR, text present, alignment
+  present). Cross-links to the new synthesis tutorial.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 

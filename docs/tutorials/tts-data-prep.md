@@ -1,6 +1,13 @@
 # TTS Data Preparation
 
-Prepare high-quality TTS training data from raw audio recordings.
+Prepare high-quality TTS training data from raw recordings. The pipeline
+is mostly a **quality gate**: it standardizes format, segments to a
+usable utterance length, denoises just enough, drops low-quality
+segments, and adds ASR text + timestamps so each kept segment is paired
+with a reliable label.
+
+> Looking for the inverse direction — generating speech from text?
+> See [TTS Synthesis](tts-synthesis.md).
 
 ## Quick Start
 
@@ -24,6 +31,19 @@ vkit docker run --tag asr pipeline.yaml
 | Filter | `quality_score_filter` | Keep only 2–15s segments with SNR > 15 dB |
 | ASR + Align | `qwen3_asr` (timestamps=true) | Transcribe + word-level forced alignment in one pass |
 | Pack | `pack_jsonl` | Output manifest with text, timestamps, quality metrics |
+
+## Quality Checklist
+
+Every kept segment in the output manifest satisfies all of these. Edit
+the `filter` stage if your dataset needs different thresholds.
+
+| Check | Default | Why this matters for TTS |
+|---|:---:|---|
+| Sample rate | 22.05 kHz mono | Matches VITS / FastSpeech2 / Tacotron2 training assumptions |
+| Duration | 2 s ≤ len ≤ 15 s | < 2 s gives no prosody; > 15 s strains attention |
+| SNR | > 15 dB | TTS reproduces noise; 15 dB ≈ speech 30× louder than noise |
+| Text | present and non-empty | TTS training needs paired text |
+| Alignment | word-level present | Enables phoneme-aligned training / inspection |
 
 ## Key Design Decisions
 
@@ -105,3 +125,12 @@ The final `pack_jsonl` stage produces a JSONL manifest where each line is a JSON
   "metrics": {"snr": 22.5}
 }
 ```
+
+## Next Steps
+
+- Train a TTS model on the resulting manifest using your framework of
+  choice (Tacotron2, VITS, FastSpeech2, Coqui XTTS, etc.).
+- Or feed the manifest to a pretrained engine via
+  [TTS Synthesis](tts-synthesis.md) to A/B compare your data against
+  built-in voices, or to generate new audio from the transcripts you
+  just extracted.
