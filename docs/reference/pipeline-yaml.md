@@ -38,15 +38,21 @@ Pipeline YAML supports variable substitution:
 
 | Variable | Value |
 |----------|-------|
-| `${name}` | Pipeline name |
-| `${run_id}` | Generated run ID (e.g., `run-20260415-a1b2c3`) |
-| `${env:VAR}` | Value of environment variable `VAR`. Raises if unset. |
+| `${name}` | Pipeline name. |
+| `${run_id}` | Generated run ID (e.g., `run-20260415-a1b2c3`). |
+| `${env:VAR}` | Value of environment variable `VAR`. Raises only if `VAR` is unset; an empty-string `VAR` passes through. |
 | `${env:VAR:-default}` | Value of `VAR` if set and non-empty, otherwise the literal `default`. |
 | `${env:VAR:?msg}` | Value of `VAR` if set and non-empty, otherwise raises with `msg`. |
 
-The `:-` and `:?` forms mirror the corresponding POSIX shell parameter
-expansions. `default` may be empty (`${env:VAR:-}` renders to the empty
-string when `VAR` is unset).
+The three `env:` forms differ in how they treat an empty-string value of
+`VAR`, matching the corresponding POSIX shell parameter expansions:
+
+- `${env:VAR}` accepts empty strings (only unset raises). Use this when an
+  empty value is a meaningful configuration.
+- `${env:VAR:-default}` and `${env:VAR:?msg}` treat unset and empty
+  identically. Prefer these when you want "missing or blank" to be one
+  case. `default` may itself be empty: `${env:VAR:-}` renders to the empty
+  string when `VAR` is unset or blank.
 
 ```yaml
 work_dir: ./work/${name}-${run_id}              # → ./work/my-pipeline-run-20260415-a1b2c3
