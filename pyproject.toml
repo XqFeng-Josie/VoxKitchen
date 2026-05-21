@@ -117,8 +117,10 @@ raw-options = { fallback_version = "0.0.0.dev0", tag_regex = "^(?:v)?(?P<version
 [tool.hatch.build.targets.wheel]
 packages = ["voxkitchen"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"voxkitchen/templates/pipelines" = "voxkitchen/templates/pipelines"
+# Non-Python files inside the package (templates, report.html.j2) are picked
+# up automatically by hatchling — no force-include needed. Adding one for
+# `voxkitchen/templates/pipelines` caused the .yaml files to appear twice in
+# the wheel and produced "Duplicate name" warnings at build time.
 
 [tool.hatch.build.hooks.vcs]
 version-file = "voxkitchen/_version.py"
