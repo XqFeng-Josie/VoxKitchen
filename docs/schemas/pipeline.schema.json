@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "IngestSpec": {
+      "additionalProperties": false,
+      "description": "How Cuts enter the pipeline before any stage runs.",
+      "properties": {
+        "source": {
+          "enum": [
+            "dir",
+            "manifest",
+            "recipe"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "args": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Args",
+          "type": "object"
+        },
+        "recipe": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recipe"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "IngestSpec",
+      "type": "object"
+    },
+    "StageSpec": {
+      "additionalProperties": false,
+      "description": "One stage in a pipeline — a named invocation of an operator.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "op": {
+          "title": "Op",
+          "type": "string",
+          "enum": [
+            "audio_fingerprint_dedup",
+            "bandwidth_estimate",
+            "cer_wer",
+            "channel_merge",
+            "clipping_detect",
+            "codec_tokenize",
+            "dnsmos_score",
+            "duration_filter",
+            "emotion_recognize",
+            "faster_whisper_asr",
+            "ffmpeg_convert",
+            "fixed_segment",
+            "forced_align",
+            "gender_classify",
+            "identity",
+            "loudness_normalize",
+            "mel_extract",
+            "noise_augment",
+            "pack_huggingface",
+            "pack_jsonl",
+            "pack_kaldi",
+            "pack_manifest",
+            "pack_parquet",
+            "pack_webdataset",
+            "paraformer_asr",
+            "pitch_stats",
+            "pyannote_diarize",
+            "quality_score_filter",
+            "qwen3_asr",
+            "resample",
+            "reverb_augment",
+            "sensevoice_asr",
+            "silence_split",
+            "silero_vad",
+            "snr_estimate",
+            "speaker_embed",
+            "speaker_similarity",
+            "speech_enhance",
+            "speechbrain_langid",
+            "speed_perturb",
+            "tts_chattts",
+            "tts_cosyvoice",
+            "tts_fish_speech",
+            "tts_kokoro",
+            "utmos_score",
+            "volume_perturb",
+            "webrtc_vad",
+            "wenet_asr",
+            "whisper_langid",
+            "whisper_openai_asr",
+            "whisperx_asr"
+          ],
+          "description": "Name of one of the 51 registered operators. Run `vkit operators` for a categorized list, or `vkit operators search <kw>` to find one by keyword."
+        },
+        "args": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Args",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "op"
+      ],
+      "title": "StageSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Schema for VoxKitchen pipeline YAML files. See https://github.com/XqFeng-Josie/VoxKitchen for the project.",
+  "properties": {
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "work_dir": {
+      "title": "Work Dir",
+      "type": "string"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "num_gpus": {
+      "default": 1,
+      "title": "Num Gpus",
+      "type": "integer"
+    },
+    "num_cpu_workers": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Num Cpu Workers"
+    },
+    "gc_mode": {
+      "default": "aggressive",
+      "enum": [
+        "aggressive",
+        "keep"
+      ],
+      "title": "Gc Mode",
+      "type": "string"
+    },
+    "ingest": {
+      "$ref": "#/$defs/IngestSpec"
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/$defs/StageSpec"
+      },
+      "title": "Stages",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "name",
+    "work_dir",
+    "ingest",
+    "stages"
+  ],
+  "title": "VoxKitchen pipeline",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

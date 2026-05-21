@@ -7,7 +7,20 @@ from pathlib import Path
 from rich import print as rprint
 from rich.table import Table
 
-DEFAULT_PIPELINE = """\
+# Editors that understand the YAML Language Server protocol (the VS Code
+# "YAML" extension, Neovim's yamlls, JetBrains' YAML support) fetch this
+# URL once and provide autocompletion + hover docs + inline validation while
+# users edit the file. The schema is checked into the repo and served from
+# raw.githubusercontent.com so it works without a custom hosting setup.
+SCHEMA_HEADER = (
+    "# yaml-language-server: $schema="
+    "https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen"
+    "/main/docs/schemas/pipeline.schema.json\n"
+)
+
+DEFAULT_PIPELINE = (
+    SCHEMA_HEADER
+    + """\
 version: "0.1"
 name: my-pipeline
 description: "A VoxKitchen pipeline"
@@ -30,6 +43,7 @@ stages:
   - name: pack
     op: pack_manifest
 """
+)
 
 README_TEMPLATE = """\
 # {name}
@@ -95,6 +109,11 @@ def init_project(target: Path, template: str | None = None) -> None:
         from voxkitchen.templates import get_template_content
 
         pipeline_content = get_template_content(template)
+        # Templates ship without the schema header so editing them in the
+        # repo stays clean; injected here so every scaffolded project gets
+        # editor autocomplete out of the box.
+        if not pipeline_content.lstrip().startswith("# yaml-language-server:"):
+            pipeline_content = SCHEMA_HEADER + pipeline_content
     else:
         pipeline_content = DEFAULT_PIPELINE
 

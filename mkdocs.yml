@@ -27,6 +27,7 @@ nav:
     - CLI Commands: reference/cli.md
     - Python Tools API: reference/tools-api.md
     - Pipeline YAML: reference/pipeline-yaml.md
+    - Pipeline JSON Schema: reference/schema.md
     - Building Docker Images: docker-build.md
   - Architecture:
     - Overview: architecture.md

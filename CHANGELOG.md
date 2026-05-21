@@ -26,6 +26,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `vkit operators search <keyword>` lists operators whose name or first-line
   docstring contains `<keyword>` (case-insensitive). Empty matches exit with
   code 1 so scripts can branch on no-result.
+- `vkit schema export` writes a JSON Schema for `pipeline.yaml` files,
+  derived from `PipelineSpec.model_json_schema()` plus the registered
+  operators. A snapshot is committed at `docs/schemas/pipeline.schema.json`
+  and served via raw.githubusercontent.com. `vkit init` now writes a
+  `# yaml-language-server: $schema=…` directive at the top of every
+  scaffolded `pipeline.yaml`, so VS Code, Neovim, and JetBrains users get
+  autocompletion on operator names and inline validation of the spec
+  structure out of the box. See `docs/reference/schema.md` for editor
+  setup.
 
 ### Fixed
 

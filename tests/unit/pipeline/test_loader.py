@@ -162,19 +162,13 @@ stages:
     )
 
 
-def test_env_default_uses_value_when_set(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_env_default_uses_value_when_set(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("WORKERS", "8")
-    spec = load_pipeline_spec(
-        _env_pipeline(tmp_path, "/tmp/${env:WORKERS:-4}"), run_id="run-x"
-    )
+    spec = load_pipeline_spec(_env_pipeline(tmp_path, "/tmp/${env:WORKERS:-4}"), run_id="run-x")
     assert spec.work_dir == "/tmp/8"
 
 
-def test_env_default_falls_back_when_unset(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_env_default_falls_back_when_unset(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("ABSENT_VAR_XYZ", raising=False)
     spec = load_pipeline_spec(
         _env_pipeline(tmp_path, "/tmp/${env:ABSENT_VAR_XYZ:-fallback}"), run_id="run-x"
@@ -182,9 +176,7 @@ def test_env_default_falls_back_when_unset(
     assert spec.work_dir == "/tmp/fallback"
 
 
-def test_env_default_falls_back_when_empty(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_env_default_falls_back_when_empty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # An empty-string env var falls back, matching POSIX `${VAR:-default}`.
     monkeypatch.setenv("EMPTY_VAR", "")
     spec = load_pipeline_spec(
@@ -209,9 +201,7 @@ def test_env_required_raises_with_custom_message(
     monkeypatch.delenv("HF_TOKEN", raising=False)
     with pytest.raises(PipelineLoadError, match="please set HF_TOKEN"):
         load_pipeline_spec(
-            _env_pipeline(
-                tmp_path, "${env:HF_TOKEN:?please set HF_TOKEN}"
-            ),
+            _env_pipeline(tmp_path, "${env:HF_TOKEN:?please set HF_TOKEN}"),
             run_id="run-x",
         )
 

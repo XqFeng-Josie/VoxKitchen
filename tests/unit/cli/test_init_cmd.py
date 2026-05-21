@@ -46,3 +46,21 @@ def test_init_rejects_non_empty_dir(tmp_path: Path) -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["init", str(tmp_path)])
     assert result.exit_code == 1
+
+
+def test_init_default_pipeline_starts_with_schema_directive(tmp_path: Path) -> None:
+    target = tmp_path / "p"
+    CliRunner().invoke(app, ["init", str(target)])
+    first_line = (target / "pipeline.yaml").read_text().splitlines()[0]
+    assert first_line.startswith("# yaml-language-server: $schema=")
+    assert "docs/schemas/pipeline.schema.json" in first_line
+
+
+def test_init_template_pipeline_starts_with_schema_directive(tmp_path: Path) -> None:
+    # Templates ship without the schema header (so editing them in the repo
+    # stays clean); init_project injects it at scaffold time. Verify it's
+    # present in the scaffolded copy.
+    target = tmp_path / "p"
+    CliRunner().invoke(app, ["init", str(target), "--template", "asr"])
+    first_line = (target / "pipeline.yaml").read_text().splitlines()[0]
+    assert first_line.startswith("# yaml-language-server: $schema=")

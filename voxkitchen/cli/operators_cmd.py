@@ -60,10 +60,7 @@ def list_all(
         None,
         "--category",
         "-c",
-        help=(
-            "Show only operators in a single category. One of: "
-            f"{', '.join(_CATEGORY_LABELS)}."
-        ),
+        help=(f"Show only operators in a single category. One of: {', '.join(_CATEGORY_LABELS)}."),
     ),
 ) -> None:
     """List all registered operators with a brief description."""
@@ -86,9 +83,7 @@ def search(
     _render_table(keyword=keyword)
 
 
-def _render_table(
-    *, category: str | None = None, keyword: str | None = None
-) -> None:
+def _render_table(*, category: str | None = None, keyword: str | None = None) -> None:
     """Group registered operators by category and print a Rich table.
 
     Filters (``category`` and ``keyword``) compose. An empty result set exits

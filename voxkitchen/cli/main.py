@@ -12,6 +12,7 @@ from voxkitchen.cli.doctor import doctor_app
 from voxkitchen.cli.inspect import inspect_app
 from voxkitchen.cli.operators_cmd import operators_app
 from voxkitchen.cli.recipes_cmd import recipes_app
+from voxkitchen.cli.schema_cmd import schema_app
 
 app = typer.Typer(
     name="vkit",
@@ -25,6 +26,7 @@ app.add_typer(operators_app, name="operators")
 app.add_typer(recipes_app, name="recipes")
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(docker_app, name="docker")
+app.add_typer(schema_app, name="schema")
 
 
 @app.command(help="Scaffold a new pipeline project directory.")

@@ -145,6 +145,16 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
    python scripts/gen_operator_docs.py -o docs/reference/operators.md
    ```
 
+9. **Regenerate the pipeline JSON Schema** so editors flag the new operator
+   correctly:
+
+   ```bash
+   vkit schema export --out docs/schemas/pipeline.schema.json
+   ```
+
+   Commit the result alongside the operator change. CI does not do this
+   automatically.
+
 ## Adding a New Docker Env
 
 Do this only when a new operator's dependencies genuinely cannot share a

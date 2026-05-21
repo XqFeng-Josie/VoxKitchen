@@ -135,6 +135,21 @@ scripts can branch on no-result.
 Valid `--category` values are: `basic`, `segment`, `augment`, `annotate`,
 `quality`, `synthesize`, `pack`, `noop`.
 
+### `vkit schema`
+
+Generate JSON Schemas for YAML editor integration.
+
+```bash
+vkit schema export                                  # → ./pipeline.schema.json
+vkit schema export --out docs/schemas/pipeline.schema.json   # custom path
+```
+
+The output is consumed by YAML language servers (VS Code, Neovim, JetBrains) so
+users get autocompletion and inline validation while editing `pipeline.yaml`.
+`vkit init` already writes the right `# yaml-language-server: $schema=…`
+directive at the top of every scaffolded pipeline. See
+[Pipeline JSON Schema](schema.md) for editor setup.
+
 ### `vkit recipes`
 
 List dataset recipes (the entities behind `vkit docker download` and `ingest: source=recipe`).
