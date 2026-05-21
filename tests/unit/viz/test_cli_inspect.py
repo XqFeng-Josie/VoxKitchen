@@ -134,3 +134,57 @@ def test_inspect_subcommands_in_help() -> None:
     assert "cuts" in result.output
     assert "run" in result.output
     assert "errors" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Missing-input edge cases — each subcommand prints a one-line `error:` and
+# exits with code 1 so shell scripts piping through `vkit inspect …` can
+# branch on the non-zero exit.
+# ---------------------------------------------------------------------------
+
+
+def test_inspect_cuts_missing_manifest_exits_1(tmp_path: Path) -> None:
+    result = CliRunner().invoke(app, ["inspect", "cuts", str(tmp_path / "absent.jsonl.gz")])
+    assert result.exit_code == 1
+    assert "error:" in result.output
+    assert "manifest does not exist" in result.output
+
+
+def test_inspect_cuts_corrupt_manifest_exits_1(tmp_path: Path) -> None:
+    """An empty (or otherwise invalid) gzip file is reported as a manifest error."""
+    bad = tmp_path / "corrupt.jsonl.gz"
+    bad.write_bytes(b"")  # zero-byte file — not a valid manifest
+    result = CliRunner().invoke(app, ["inspect", "cuts", str(bad)])
+    assert result.exit_code == 1
+    assert "error:" in result.output
+    assert "not a valid CutSet manifest" in result.output
+
+
+def test_inspect_run_missing_work_dir_exits_1(tmp_path: Path) -> None:
+    result = CliRunner().invoke(app, ["inspect", "run", str(tmp_path / "absent")])
+    assert result.exit_code == 1
+    assert "error:" in result.output
+    assert "work_dir does not exist" in result.output
+
+
+def test_inspect_errors_missing_work_dir_exits_1(tmp_path: Path) -> None:
+    result = CliRunner().invoke(app, ["inspect", "errors", str(tmp_path / "absent")])
+    assert result.exit_code == 1
+    assert "error:" in result.output
+
+
+def test_inspect_trace_missing_work_dir_exits_1(tmp_path: Path) -> None:
+    result = CliRunner().invoke(
+        app, ["inspect", "trace", "any-cut", "--in", str(tmp_path / "absent")]
+    )
+    assert result.exit_code == 1
+    assert "error:" in result.output
+
+
+def test_inspect_trace_unknown_cut_exits_1(tmp_path: Path) -> None:
+    """An existing work_dir that does not contain the requested cut also exits 1."""
+    (tmp_path / "00_stage").mkdir()  # empty stage dir is fine for this path
+    result = CliRunner().invoke(app, ["inspect", "trace", "no-such-cut", "--in", str(tmp_path)])
+    assert result.exit_code == 1
+    assert "error:" in result.output
+    assert "not found in any stage" in result.output

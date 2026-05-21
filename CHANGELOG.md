@@ -68,6 +68,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - `vkit ingest` inline error messages now use the same `error:` prefix the
   rest of the CLI prints, instead of rendering the whole line in red without
   context.
+- `vkit inspect cuts <missing>` no longer dumps a full Python traceback; it
+  prints a one-line `error: manifest does not exist: …` and exits 1.
+  Corrupt or empty manifests are reported the same way.
+- `vkit inspect run|errors|trace <missing>` now exit with code 1 on a missing
+  work directory or an unknown cut id. They previously printed an error
+  message but returned exit 0, so shell scripts treated the failure as
+  success.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 

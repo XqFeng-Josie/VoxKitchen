@@ -1,4 +1,11 @@
-"""Rich terminal rendering for vkit inspect subcommands."""
+"""Rich terminal rendering for vkit inspect subcommands.
+
+Each ``render_*`` helper prints to the console and returns ``True`` on
+success or ``False`` when the requested input is missing/unreadable. The
+CLI entry points in :mod:`voxkitchen.cli.inspect` translate ``False`` into
+``typer.Exit(code=1)`` so scripts that pipe ``vkit inspect …`` get a
+correct non-zero exit on failure.
+"""
 
 from __future__ import annotations
 
@@ -10,14 +17,24 @@ from rich.table import Table
 
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
+from voxkitchen.schema.io import IncompatibleSchemaError
 from voxkitchen.viz.stats import compute_cutset_stats
 
 console = Console()
 
 
-def render_cuts_stats(manifest_path: Path) -> None:
-    """Print CutSet statistics to the terminal."""
-    cuts = CutSet.from_jsonl_gz(manifest_path)
+def render_cuts_stats(manifest_path: Path) -> bool:
+    """Print CutSet statistics. Returns False on missing or unreadable manifest."""
+    if not manifest_path.exists():
+        console.print(f"[red]error:[/red] manifest does not exist: {manifest_path}")
+        return False
+    try:
+        cuts = CutSet.from_jsonl_gz(manifest_path)
+    except IncompatibleSchemaError as exc:
+        # Empty file, missing header, or version mismatch — all surface as
+        # the same actionable hint: the file is not a valid VoxKitchen manifest.
+        console.print(f"[red]error:[/red] not a valid CutSet manifest ({exc})")
+        return False
     stats = compute_cutset_stats(cuts)
 
     console.print(f"\n[bold]CutSet: {manifest_path.name}[/bold]")
@@ -44,13 +61,14 @@ def render_cuts_stats(manifest_path: Path) -> None:
         for k, v in stats["metrics_summary"].items():
             mt.add_row(k, *[f"{v.get(c, 0):.3f}" for c in ["min", "mean", "p50", "p95", "max"]])
         console.print(mt)
+    return True
 
 
-def render_run_summary(work_dir: Path) -> None:
-    """Print pipeline run summary: stages, status, cut counts."""
+def render_run_summary(work_dir: Path) -> bool:
+    """Print pipeline run summary. Returns False if work_dir is missing."""
     if not work_dir.exists():
-        console.print(f"[red]work_dir does not exist: {work_dir}[/red]")
-        return
+        console.print(f"[red]error:[/red] work_dir does not exist: {work_dir}")
+        return False
     stage_dirs = sorted(d for d in work_dir.iterdir() if d.is_dir() and d.name[:2].isdigit())
     console.print(f"\n[bold]Pipeline run: {work_dir.name}[/bold]")
     for sd in stage_dirs:
@@ -78,13 +96,14 @@ def render_run_summary(work_dir: Path) -> None:
                 pass
 
         console.print(f"  {sd.name}: {status} ({count} cuts){timing}")
+    return True
 
 
-def render_trace(cut_id: str, work_dir: Path) -> None:
-    """Walk the provenance chain for *cut_id* across all stage manifests."""
+def render_trace(cut_id: str, work_dir: Path) -> bool:
+    """Walk the provenance chain for *cut_id*. Returns False if input missing."""
     if not work_dir.exists():
-        console.print(f"[red]work_dir does not exist: {work_dir}[/red]")
-        return
+        console.print(f"[red]error:[/red] work_dir does not exist: {work_dir}")
+        return False
 
     # Build lookup: cut_id → Cut across all stages (latest stage wins)
     stage_dirs = sorted(d for d in work_dir.iterdir() if d.is_dir() and d.name[:2].isdigit())
@@ -99,8 +118,8 @@ def render_trace(cut_id: str, work_dir: Path) -> None:
                 continue
 
     if cut_id not in all_cuts:
-        console.print(f"[red]cut {cut_id!r} not found in any stage[/red]")
-        return
+        console.print(f"[red]error:[/red] cut {cut_id!r} not found in any stage")
+        return False
 
     # Walk the chain
     console.print(f"\n[bold]Provenance trace for {cut_id}[/bold]\n")
@@ -129,13 +148,14 @@ def render_trace(cut_id: str, work_dir: Path) -> None:
         indent = "  " * depth
         console.print(f"{indent}↑")
         console.print(f"{indent}[dim]{current_id}[/dim]  (source — not in pipeline stages)")
+    return True
 
 
-def render_errors(work_dir: Path) -> None:
-    """Print _errors.jsonl from each stage (if any)."""
+def render_errors(work_dir: Path) -> bool:
+    """Print _errors.jsonl from each stage. Returns False if work_dir missing."""
     if not work_dir.exists():
-        console.print(f"[red]work_dir does not exist: {work_dir}[/red]")
-        return
+        console.print(f"[red]error:[/red] work_dir does not exist: {work_dir}")
+        return False
     stage_dirs = sorted(d for d in work_dir.iterdir() if d.is_dir() and d.name[:2].isdigit())
     found = False
     for sd in stage_dirs:
@@ -149,3 +169,4 @@ def render_errors(work_dir: Path) -> None:
                     console.print(f"  cut={err.get('cut_id', '?')} error={err.get('error', '?')}")
     if not found:
         console.print("[green]No errors found.[/green]")
+    return True
