@@ -22,6 +22,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   The redundant `[tool.hatch.build.targets.wheel.force-include]` block was
   removed; hatchling already includes non-Python files inside the package
   directory.
+- Untagged dev builds (e.g. the publish workflow's manual TestPyPI dispatch)
+  now produce PEP 440-compliant versions like `0.2.1.dev5` instead of
+  `0.2.1.dev5+g<sha>`. PyPI and TestPyPI both reject the latter form. Set via
+  `local_scheme = "no-local-version"` in `[tool.hatch.version].raw-options`.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 
