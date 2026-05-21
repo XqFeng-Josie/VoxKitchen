@@ -1,26 +1,37 @@
 """AISHELL-3 recipe: parse a local AISHELL-3 directory into a CutSet.
 
 AISHELL-3 is a multi-speaker Mandarin TTS corpus: 218 speakers across
-roughly 85 hours of clean studio recordings. Distinct from AISHELL-1
-(read ASR, single channel) — AISHELL-3 is purpose-built for TTS and
-voice cloning research.
+roughly 85 hours / 88k utterances of clean studio recordings. Distinct
+from AISHELL-1 (read ASR, single channel) — AISHELL-3 is purpose-built
+for TTS and voice cloning research.
 
 Directory layout produced by extracting ``data_aishell3.tgz`` from
-OpenSLR resource 93::
+OpenSLR resource 93. The real tarball extracts **flat** into the
+current directory — there is no ``data_aishell3/`` wrapper, despite
+the archive name suggesting otherwise::
 
-    data_aishell3/
-      spk-info.txt              # speaker_id<TAB>age<TAB>gender<TAB>region
+    <extract_root>/
+      spk-info.txt              # voice-file name; age group; gender; accent
+                                # (header lines start with ``#``)
+      ReadMe.txt
+      ChangeLog
+      phone_set.txt
       train/
         wav/
           SSB0005/SSB00050001.wav
           SSB0005/SSB00050002.wav
           ...
         content.txt             # utt_id<TAB>char1 pinyin1 char2 pinyin2 ...
+        label_train-set.txt
       test/
         wav/
           SSBNNNN/SSBNNNNNNNN.wav
           ...
         content.txt
+
+For backward compatibility with users who unpacked the archive into a
+``data_aishell3/`` subdirectory by hand, the recipe also accepts that
+layout transparently.
 
 Each row of ``content.txt`` interleaves a Mandarin character with its
 pinyin token, e.g. ``SSB00050001.wav<TAB>请 qing3 选 xuan3 ...``.
@@ -29,7 +40,8 @@ the pinyin sequence in ``cut.custom["pinyin"]`` for downstream operators
 that want phonetic input (e.g. CosyVoice zero-shot).
 
 Speaker IDs are taken from the directory name (``SSB0005`` →
-``SSB0005``); gender is enriched from ``spk-info.txt`` when present.
+``SSB0005``); gender is enriched from ``spk-info.txt`` when present
+and normalized from ``male`` / ``female`` to the schema's ``m`` / ``f``.
 """
 
 from __future__ import annotations
