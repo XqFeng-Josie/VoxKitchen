@@ -128,6 +128,27 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
    operator map to different envs, the runner refuses to dispatch — split
    the extras or pick one env.
 
+   **Git URL dependencies.** If your operator depends on a package that
+   has no PyPI release and must be installed from git, do **not** add
+   it to `pyproject.toml`'s `[project.optional-dependencies]`. PyPI
+   rejects any uploaded distribution whose metadata declares a PEP 440
+   direct reference (`pkg @ git+https://...`), regardless of the
+   `[tool.hatch.metadata] allow-direct-references` flag — that flag
+   only affects the build step, not what PyPI accepts on upload.
+   Install the dependency from the Dockerfile instead, pinning to a
+   specific commit so image builds stay reproducible:
+
+   ```dockerfile
+   RUN uv pip install --python /opt/voxkitchen/envs/<env>/bin/python \
+           -c /app/docker/constraints/<env>.txt \
+           "<pkg> @ git+https://github.com/.../<repo>.git@<sha>"
+   ```
+
+   See `wenet_asr` and `tts_fish_speech` in `docker/Dockerfile` for the
+   existing pattern. The operator's `required_extras` string still needs
+   an `EXTRA_TO_ENV` entry so the runner knows where to dispatch it,
+   even though no matching pyproject group exists.
+
 5. **Add to expected set** in
    [`voxkitchen/cli/doctor.py`](voxkitchen/cli/doctor.py)'s
    `EXPECTED_OPERATORS[<env>]` — this is what the `vkit doctor --expect <env>`

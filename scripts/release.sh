@@ -134,6 +134,10 @@ git tag -a "$TAG" -m "Release $TAG"
 # ---------------------------------------------------------------------------
 
 log "Pushing main and $TAG to origin"
+echo "   Once the tag lands on origin, .github/workflows/publish.yml will"
+echo "   build the wheel + sdist and upload to PyPI via Trusted Publishing."
+echo "   Make sure the pypi.org pending publisher is configured first"
+echo "   (see RELEASING.md §5)."
 confirm "push to origin?"
 git push origin main
 if [[ "$REMOTE_TAG_EXISTS" == true ]]; then
@@ -141,6 +145,8 @@ if [[ "$REMOTE_TAG_EXISTS" == true ]]; then
 else
     git push origin "$TAG"
 fi
+echo "   PyPI workflow run:"
+echo "     https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/publish.yml"
 
 # ---------------------------------------------------------------------------
 # 4. Docker build + push
@@ -148,7 +154,7 @@ fi
 
 if ! command -v docker >/dev/null 2>&1; then
     warn "docker CLI not found — skipping image publish."
-    warn "publish manually later: see RELEASING.md §5."
+    warn "publish Docker images manually later: see RELEASING.md §6."
     exit 0
 fi
 
