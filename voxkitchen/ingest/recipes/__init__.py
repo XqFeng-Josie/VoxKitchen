@@ -28,6 +28,7 @@ def _load_builtin_recipes() -> None:
     from voxkitchen.ingest.recipes import (  # noqa: F401
         aishell,
         aishell3,
+        cnceleb,
         commonvoice,
         librispeech,
         libritts,

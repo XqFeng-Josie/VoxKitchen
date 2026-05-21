@@ -226,3 +226,42 @@ def mock_tedlium3(tmp_path: Path) -> Path:
     )
 
     return tmp_path
+
+
+@pytest.fixture
+def mock_cnceleb(tmp_path: Path) -> Path:
+    """Create a tiny CN-Celeb-1-like tree under <tmp>/CN-Celeb_flac/.
+
+    Two speakers, three utterances total in ``data/``. ``dev/dev.lst``
+    points to one utterance; ``eval/lists/{enroll,test}.lst`` together
+    point to the other two — enough to exercise both the data-mode
+    walk and the .lst-driven dev / eval modes plus the dedup logic
+    when a user passes multiple subsets that overlap.
+    """
+    ds_root = tmp_path / "CN-Celeb_flac"
+    data_root = ds_root / "data"
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+
+    for speaker, utts in [
+        ("id00000", ["interview-01-001", "vlog-01-001"]),
+        ("id00001", ["interview-01-001"]),
+    ]:
+        spk_dir = data_root / speaker
+        spk_dir.mkdir(parents=True, exist_ok=True)
+        for utt in utts:
+            sf.write(spk_dir / f"{utt}.flac", audio, 16000, format="FLAC")
+
+    # dev split: one utterance.
+    dev_dir = ds_root / "dev"
+    dev_dir.mkdir(parents=True, exist_ok=True)
+    (dev_dir / "dev.lst").write_text("id00000/interview-01-001.flac\n", encoding="utf-8")
+
+    # eval split: two .lst files, both consulted by the recipe; intentionally
+    # use one with the .flac suffix and one without to verify the recipe is
+    # tolerant of both line formats.
+    eval_lists = ds_root / "eval" / "lists"
+    eval_lists.mkdir(parents=True, exist_ok=True)
+    (eval_lists / "enroll.lst").write_text("id00000/vlog-01-001.flac\n", encoding="utf-8")
+    (eval_lists / "test.lst").write_text("id00001/interview-01-001\n", encoding="utf-8")
+
+    return tmp_path
