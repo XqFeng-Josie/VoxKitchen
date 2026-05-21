@@ -1,7 +1,7 @@
 # Data Cleaning Pipeline
 # Clean up raw audio: measure quality, remove duplicates, filter bad files.
 #
-# Flow: resample -> SNR + clipping + bandwidth metrics -> dedup -> filter -> pack
+# Flow: resample → SNR + clipping + bandwidth metrics → dedup → filter → pack
 #
 # Usage:
 #   1. Put your raw audio files in ./data/

@@ -1,8 +1,8 @@
 # ASR Training Data Pipeline
 # Prepare augmented ASR training data from raw audio.
 #
-# Flow: resample (16kHz) -> VAD -> speed perturbation (3x data) ->
-#       volume perturbation -> ASR labeling -> quality filter -> pack
+# Flow: resample (16kHz) → VAD → speed perturbation (3x data) →
+#       volume perturbation → ASR labeling → quality filter → pack
 #
 # Usage:
 #   1. Put your raw audio files in ./data/
@@ -12,7 +12,7 @@
 
 version: "0.1"
 name: asr-training-data
-description: "Raw audio -> augmented ASR training dataset"
+description: "Raw audio → augmented ASR training dataset"
 work_dir: ./work/${name}-${run_id}
 
 ingest:

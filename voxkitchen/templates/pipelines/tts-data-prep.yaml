@@ -1,8 +1,8 @@
 # TTS Data Preparation Pipeline
 # Prepare high-quality TTS training data from raw audio.
 #
-# Flow: format convert -> resample (22.05kHz) -> denoise -> VAD -> quality
-#       filter -> ASR -> word-level alignment -> pack
+# Flow: format convert → resample (22.05kHz) → denoise → VAD → quality
+#       filter → ASR → word-level alignment → pack
 #
 # Usage:
 #   1. Put your raw audio files in ./data/
@@ -12,7 +12,7 @@
 
 version: "0.1"
 name: tts-data-prep
-description: "Raw audio -> TTS-ready dataset with word-level alignment"
+description: "Raw audio → TTS-ready dataset with word-level alignment"
 work_dir: ./work/${name}-${run_id}
 
 ingest:
