@@ -26,6 +26,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   now produce PEP 440-compliant versions like `0.2.1.dev5` instead of
   `0.2.1.dev5+g<sha>`. PyPI and TestPyPI both reject the latter form. Set via
   `local_scheme = "no-local-version"` in `[tool.hatch.version].raw-options`.
+- Removed `[wenet]`, `[speaker]`, and `[tts-fish-speech]` optional-dependency
+  groups from `pyproject.toml` because they declared `pkg @ git+...` direct
+  references, which PyPI rejects on upload. These packages were never reachable
+  via `pip install voxkitchen[...]` for end users anyway; the Docker images
+  now install them from git inside their respective `RUN` lines
+  (`fish-speech` joins `wenet`'s existing pattern in `docker/Dockerfile`).
+  Operators that declare `required_extras = ["wenet"|"tts-fish-speech"]` still
+  route correctly via `EXTRA_TO_ENV` in `voxkitchen/runtime/env_resolver.py`.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 

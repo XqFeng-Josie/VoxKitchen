@@ -280,10 +280,14 @@ RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
         --extra-index-url https://pypi.org/simple \
         torch==2.8.0 torchaudio==2.8.0
 
-# fish-speech proper + voxkitchen base deps.
+# fish-speech proper. Installed from git directly here rather than via a
+# `[tts-fish-speech]` extra in pyproject.toml — PyPI refuses to accept any
+# uploaded distribution whose metadata declares a PEP 440 direct reference
+# (`pkg @ git+...`), so the published wheel cannot carry this URL.
+# Pinned to the Fish-Speech 2.0 commit validated by the Docker smoke test.
 RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
         -c /app/docker/constraints/fish-speech.txt \
-        -e ".[tts-fish-speech]"
+        "fish-speech @ git+https://github.com/fishaudio/fish-speech.git@3dd1f85c402ee6f0a17c2971d3b0dd8d881ca139"
 
 # Pin voxkitchen's editable link to /app source.
 RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python -e . --no-deps
