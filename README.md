@@ -198,16 +198,19 @@ cp .env.example .env
 ## Common Commands
 
 ```bash
-vkit init <path> --template asr       # Scaffold a project
-vkit validate pipeline.yaml           # Validate YAML and recommend an image
+vkit init <path> --template asr           # Scaffold a project
+vkit validate pipeline.yaml               # Validate YAML and recommend an image
 vkit docker run --tag asr pipeline.yaml --dry-run
 vkit docker run --tag asr pipeline.yaml
-vkit inspect run work/                # Stage summary
-vkit inspect cuts <cuts.jsonl.gz>      # CutSet statistics
-vkit inspect errors work/              # Per-stage failed cuts
-vkit recipes                           # List dataset recipes
+vkit inspect run work/                    # Stage summary
+vkit inspect cuts <cuts.jsonl.gz>          # CutSet statistics
+vkit inspect errors work/                  # Per-stage failed cuts
+vkit operators search <keyword>            # Find operators by name or summary
+vkit operators --category quality          # List one category's operators
+vkit schema export --out pipeline.schema.json  # Editor autocompletion for YAML
+vkit recipes                               # List dataset recipes
 vkit docker download --tag slim librispeech --root ./data/librispeech --subsets dev-clean
-vkit docker doctor --tag latest        # Check image health
+vkit docker doctor --tag latest            # Check image health
 ```
 
 ## Documentation

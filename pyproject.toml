@@ -10,7 +10,18 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "VoxKitchen contributors" }]
-keywords = ["speech", "audio", "dataset", "pipeline", "asr"]
+keywords = [
+    "speech",
+    "audio",
+    "dataset",
+    "pipeline",
+    "asr",
+    "tts",
+    "vad",
+    "diarization",
+    "voice",
+    "speaker",
+]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Science/Research",
