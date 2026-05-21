@@ -119,6 +119,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   OSError / …) with exponential backoff (2s, 4s). This came out of
   real OpenSLR mid-stream RSTs hit while end-to-end-verifying the
   new AISHELL-3 and LibriTTS recipes.
+- Three more ingest recipes complete the "common dataset" coverage,
+  bringing the total to 10:
+  - `tedlium3` — TED-LIUM Release 3, English TED-talk ASR (452 h),
+    distributed from OpenSLR/51. Parses STM utterance-aligned
+    transcripts into Cuts that reference `(start, duration)` slices
+    of the parent talk's `.sph`. Padding rows are filtered.
+  - `cnceleb` — CN-Celeb 1, Chinese speaker recognition (~130k
+    utterances, 1000 speakers, 11 genres), from OpenSLR/82. Empty-text
+    Supervisions carry speaker / language tags. Subsets `data` /
+    `dev` / `eval` follow the canonical splits; overlapping subsets
+    deduplicate.
+  - `musan` — MUSAN augmentation corpus (~11 GB of non-transcribed
+    noise / music / speech), from OpenSLR/17. Closes the loop with
+    the existing `noise_augment` operator. Subsets pick which of the
+    three top-level categories to ingest; sub-categories are
+    preserved as `cut.custom["musan_subcategory"]`.
 - Local release/push checks now run the same fast lint, format, typecheck, and
   pytest gate as CI via `scripts/check-ci.sh`.
 
