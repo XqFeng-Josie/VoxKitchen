@@ -15,6 +15,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   stored API tokens). The workflow also exposes a manual `workflow_dispatch`
   for TestPyPI dry-runs.
 - PyPI version badge in `README.md`.
+- Pipeline YAML interpolation gained POSIX-style fallbacks. `${env:VAR:-foo}`
+  uses `foo` when `VAR` is unset or empty; `${env:VAR:?msg}` raises a
+  `PipelineLoadError` with `msg` when `VAR` is missing. The original
+  `${env:VAR}` form still fails loudly on unset variables and remains the
+  default for required tokens.
 
 ### Fixed
 

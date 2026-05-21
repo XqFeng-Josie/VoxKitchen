@@ -4,10 +4,20 @@ Supported placeholders inside any string value:
 
 - ``${name}`` — the top-level pipeline ``name``
 - ``${run_id}`` — the pipeline run id (generated or provided by the caller)
-- ``${env:VAR_NAME}`` — value of the environment variable ``VAR_NAME``
+- ``${env:VAR}`` — value of the environment variable ``VAR``; raises if unset
+- ``${env:VAR:-default}`` — value of ``VAR`` if set and non-empty, otherwise
+  the literal ``default`` (which may itself be empty)
+- ``${env:VAR:?message}`` — value of ``VAR`` if set and non-empty, otherwise
+  raise ``PipelineLoadError`` with ``message`` (or a generic one if empty)
+
+The ``:-`` and ``:?`` operators mirror the corresponding POSIX shell
+parameter-expansion forms so users familiar with bash can carry over their
+intuition. ``${env:VAR}`` continues to raise on an unset variable (back-compat
+for pipelines that already depend on the fail-loud behavior).
 
 Placeholders are resolved by a single recursive pass over the parsed YAML.
-Non-string values pass through unchanged.
+Non-string values pass through unchanged. A ``}`` character cannot appear
+inside a default or error message — the regex stops at the first one.
 """
 
 from __future__ import annotations
@@ -83,13 +93,40 @@ def _interpolate_string(s: str, *, name: str, run_id: str) -> str:
         if key == "run_id":
             return run_id
         if key.startswith("env:"):
-            env_var = key[4:]
-            value = os.environ.get(env_var)
-            if value is None:
-                raise PipelineLoadError(
-                    f"environment variable {env_var!r} referenced by ${{env:{env_var}}} is not set"
-                )
-            return value
+            return _resolve_env_placeholder(key[4:])
         raise PipelineLoadError(f"unknown placeholder: ${{{key}}}")
 
     return _INTERP_RE.sub(replace, s)
+
+
+def _resolve_env_placeholder(rest: str) -> str:
+    """Resolve the body of an ``${env:...}`` placeholder.
+
+    ``rest`` is everything after ``env:`` and before the closing ``}``. The
+    accepted forms are documented at module top; the order of the checks below
+    matters: ``:?`` and ``:-`` win over the plain form so ``VAR:-foo`` is read
+    as "VAR with default foo", not "the variable literally named ``VAR:-foo``".
+    """
+    if ":?" in rest:
+        env_var, error_msg = rest.split(":?", 1)
+        value = os.environ.get(env_var)
+        if value:
+            return value
+        if error_msg:
+            raise PipelineLoadError(
+                f"${{env:{env_var}:?...}}: {error_msg} (environment variable {env_var!r} is not set)"
+            )
+        raise PipelineLoadError(
+            f"environment variable {env_var!r} referenced by ${{env:{env_var}:?}} is not set"
+        )
+    if ":-" in rest:
+        env_var, default = rest.split(":-", 1)
+        value = os.environ.get(env_var)
+        return value if value else default
+    env_var = rest
+    value = os.environ.get(env_var)
+    if value is None:
+        raise PipelineLoadError(
+            f"environment variable {env_var!r} referenced by ${{env:{env_var}}} is not set"
+        )
+    return value

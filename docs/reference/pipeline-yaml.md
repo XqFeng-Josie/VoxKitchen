@@ -40,11 +40,27 @@ Pipeline YAML supports variable substitution:
 |----------|-------|
 | `${name}` | Pipeline name |
 | `${run_id}` | Generated run ID (e.g., `run-20260415-a1b2c3`) |
-| `${env:VAR_NAME}` | Environment variable |
+| `${env:VAR}` | Value of environment variable `VAR`. Raises if unset. |
+| `${env:VAR:-default}` | Value of `VAR` if set and non-empty, otherwise the literal `default`. |
+| `${env:VAR:?msg}` | Value of `VAR` if set and non-empty, otherwise raises with `msg`. |
+
+The `:-` and `:?` forms mirror the corresponding POSIX shell parameter
+expansions. `default` may be empty (`${env:VAR:-}` renders to the empty
+string when `VAR` is unset).
 
 ```yaml
-work_dir: ./work/${name}-${run_id}      # → ./work/my-pipeline-run-20260415-a1b2c3
+work_dir: ./work/${name}-${run_id}              # → ./work/my-pipeline-run-20260415-a1b2c3
+num_cpu_workers: ${env:WORKERS:-8}              # 8 unless WORKERS is exported
+# pyannote_diarize wants a HuggingFace token; surface a clear error if missing.
+stages:
+  - name: diarize
+    op: pyannote_diarize
+    args:
+      hf_token: ${env:HF_TOKEN:?set HF_TOKEN in ./.env}
 ```
+
+A `}` cannot appear inside a default or error message — the parser stops at
+the first `}` character.
 
 ## Ingest Sources
 

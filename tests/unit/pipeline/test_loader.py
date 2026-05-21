@@ -141,3 +141,86 @@ stages:
     )
     spec = load_pipeline_spec(path)
     assert spec.work_dir.startswith("/tmp/run-")
+
+
+# ---------------------------------------------------------------------------
+# ${env:VAR:-default} / ${env:VAR:?msg} forms (POSIX-style fallbacks)
+# ---------------------------------------------------------------------------
+
+
+def _env_pipeline(tmp_path: Path, expression: str) -> Path:
+    return _write(
+        tmp_path,
+        f"""
+version: "0.1"
+name: demo
+work_dir: "{expression}"
+ingest: {{ source: manifest, args: {{}} }}
+stages:
+  - {{ name: s, op: identity }}
+""",
+    )
+
+
+def test_env_default_uses_value_when_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("WORKERS", "8")
+    spec = load_pipeline_spec(
+        _env_pipeline(tmp_path, "/tmp/${env:WORKERS:-4}"), run_id="run-x"
+    )
+    assert spec.work_dir == "/tmp/8"
+
+
+def test_env_default_falls_back_when_unset(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("ABSENT_VAR_XYZ", raising=False)
+    spec = load_pipeline_spec(
+        _env_pipeline(tmp_path, "/tmp/${env:ABSENT_VAR_XYZ:-fallback}"), run_id="run-x"
+    )
+    assert spec.work_dir == "/tmp/fallback"
+
+
+def test_env_default_falls_back_when_empty(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # An empty-string env var falls back, matching POSIX `${VAR:-default}`.
+    monkeypatch.setenv("EMPTY_VAR", "")
+    spec = load_pipeline_spec(
+        _env_pipeline(tmp_path, "/tmp/${env:EMPTY_VAR:-default-here}"), run_id="run-x"
+    )
+    assert spec.work_dir == "/tmp/default-here"
+
+
+def test_env_default_empty_default_renders_to_empty_string(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("ABSENT_VAR_XYZ", raising=False)
+    spec = load_pipeline_spec(
+        _env_pipeline(tmp_path, "/tmp/x${env:ABSENT_VAR_XYZ:-}y"), run_id="run-x"
+    )
+    assert spec.work_dir == "/tmp/xy"
+
+
+def test_env_required_raises_with_custom_message(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    with pytest.raises(PipelineLoadError, match="please set HF_TOKEN"):
+        load_pipeline_spec(
+            _env_pipeline(
+                tmp_path, "${env:HF_TOKEN:?please set HF_TOKEN}"
+            ),
+            run_id="run-x",
+        )
+
+
+def test_env_required_passes_through_when_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("HF_TOKEN", "secret-value")
+    spec = load_pipeline_spec(
+        _env_pipeline(tmp_path, "/tmp/${env:HF_TOKEN:?required}"), run_id="run-x"
+    )
+    assert spec.work_dir == "/tmp/secret-value"
