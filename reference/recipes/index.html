@@ -791,6 +791,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#ted-lium-3-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TED-LIUM 3 Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cn-celeb-1-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CN-Celeb 1 Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#musan-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MUSAN Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#commonvoice-manual-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1188,6 +1221,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#ted-lium-3-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TED-LIUM 3 Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cn-celeb-1-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CN-Celeb 1 Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#musan-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MUSAN Subsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#commonvoice-manual-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1281,6 +1347,13 @@
 <td>Single-speaker English TTS (~24h, 13k utterances) — canonical TTS baseline</td>
 </tr>
 <tr>
+<td><code>tedlium3</code></td>
+<td>ASR</td>
+<td>English</td>
+<td style="text-align: center;">openslr</td>
+<td>TED-LIUM 3 — English TED talks (~452h), utterance-aligned via STM</td>
+</tr>
+<tr>
 <td><code>aishell</code></td>
 <td>ASR</td>
 <td>Chinese</td>
@@ -1293,6 +1366,13 @@
 <td>Chinese</td>
 <td style="text-align: center;">openslr</td>
 <td>Multi-speaker Mandarin TTS (218 speakers, ~85h)</td>
+</tr>
+<tr>
+<td><code>cnceleb</code></td>
+<td>Speaker</td>
+<td>Chinese</td>
+<td style="text-align: center;">openslr</td>
+<td>CN-Celeb 1 — Chinese speaker recognition (~130k utts, 1000 spk, 11 genres)</td>
 </tr>
 <tr>
 <td><code>commonvoice</code></td>
@@ -1308,6 +1388,13 @@
 <td style="text-align: center;">HuggingFace</td>
 <td>Google's multilingual eval set (~12h/lang)</td>
 </tr>
+<tr>
+<td><code>musan</code></td>
+<td>Augmentation</td>
+<td>—</td>
+<td style="text-align: center;">openslr</td>
+<td>MUSAN — noise / music / speech augmentation source (~11 GB)</td>
+</tr>
 </tbody>
 </table>
 <h2 id="downloading-datasets">Downloading Datasets</h2>
@@ -1322,11 +1409,20 @@ vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w
 <span class="c1"># LJSpeech (English single-speaker TTS, from data.keithito.com)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>ljspeech<span class="w"> </span>--root<span class="w"> </span>./data/ljspeech
 
+<span class="c1"># TED-LIUM 3 (English TED-talk ASR, from openslr.org)</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>tedlium3<span class="w"> </span>--root<span class="w"> </span>./data/tedlium3
+
 <span class="c1"># AISHELL-1 (Chinese ASR, from openslr.org)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>./data/aishell
 
 <span class="c1"># AISHELL-3 (Chinese multi-speaker TTS, from openslr.org)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell3<span class="w"> </span>--root<span class="w"> </span>./data/aishell3
+
+<span class="c1"># CN-Celeb 1 (Chinese speaker recognition, from openslr.org)</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>cnceleb<span class="w"> </span>--root<span class="w"> </span>./data/cnceleb
+
+<span class="c1"># MUSAN (augmentation source — noise / music / speech, from openslr.org)</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>musan<span class="w"> </span>--root<span class="w"> </span>./data/musan
 
 <span class="c1"># FLEURS (multilingual, from HuggingFace)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>fleurs<span class="w"> </span>--root<span class="w"> </span>./data/fleurs<span class="w"> </span>--subsets<span class="w"> </span>en_us,zh_cn,fr_fr
@@ -1409,6 +1505,91 @@ changed it.</p>
 </table>
 <p>If a subset is missing on disk (partial extraction is common for the
 ~17 GB tarball) the recipe silently skips it.</p>
+<h3 id="ted-lium-3-subsets">TED-LIUM 3 Subsets</h3>
+<table>
+<thead>
+<tr>
+<th>Subset</th>
+<th style="text-align: center;">Hours</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>train</code></td>
+<td style="text-align: center;">~268</td>
+<td>TED talks training split (most of the 452h corpus)</td>
+</tr>
+<tr>
+<td><code>dev</code></td>
+<td style="text-align: center;">~1.6</td>
+<td>Held-out dev set used by every TED-LIUM ASR paper</td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td style="text-align: center;">~2.6</td>
+<td>Held-out test set for reporting numbers</td>
+</tr>
+</tbody>
+</table>
+<p>Audio is NIST SPHERE (<code>.sph</code>) — libsndfile reads it natively, so no
+manual conversion is needed. Each STM row produces one Cut that
+references a <code>(start, duration)</code> slice of the parent talk's <code>.sph</code>.
+Padding rows (<code>inter_segment_gap</code> speaker / <code>ignore_time_segment_in_scoring</code>
+transcript) are dropped automatically.</p>
+<h3 id="cn-celeb-1-subsets">CN-Celeb 1 Subsets</h3>
+<table>
+<thead>
+<tr>
+<th>Subset</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>All FLAC under <code>data/</code> — every utterance from every speaker (~130k utts)</td>
+</tr>
+<tr>
+<td><code>dev</code></td>
+<td>Utterances listed in <code>dev/dev.lst</code> — for tuning / model selection</td>
+</tr>
+<tr>
+<td><code>eval</code></td>
+<td>Concatenation of <code>eval/lists/enroll.lst</code> + <code>eval/lists/test.lst</code> — for trial pairs</td>
+</tr>
+</tbody>
+</table>
+<p>Default is <code>["data"]</code> when no subsets are passed. Asking for
+<code>["data", "dev"]</code> is safe — overlapping utterances are deduplicated
+by the recipe.</p>
+<h3 id="musan-subsets">MUSAN Subsets</h3>
+<table>
+<thead>
+<tr>
+<th>Subset</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>noise</code></td>
+<td>Free-sound + sound-bible noise samples (recommended for SNR augmentation)</td>
+</tr>
+<tr>
+<td><code>music</code></td>
+<td>FMA + classical + jamendo musical clips</td>
+</tr>
+<tr>
+<td><code>speech</code></td>
+<td>Librivox + US-Gov English background speech (use for babble augmentation)</td>
+</tr>
+</tbody>
+</table>
+<p>Default is all three. MUSAN cuts carry no supervisions text — only the
+audio plus <code>cut.custom["musan_category"]</code> / <code>["musan_subcategory"]</code>
+tags. The natural consumer is the <code>noise_augment</code> operator, which
+samples from any subset of these for mixing into your training data.</p>
 <h3 id="commonvoice-manual-download">CommonVoice (Manual Download)</h3>
 <p>CommonVoice requires a Mozilla account. Download from <a href="https://commonvoice.mozilla.org">commonvoice.mozilla.org</a>, then use the recipe:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">ingest</span><span class="p">:</span>
