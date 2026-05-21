@@ -27,6 +27,7 @@ def _load_builtin_recipes() -> None:
     """Import built-in recipe modules to trigger their register_recipe() calls."""
     from voxkitchen.ingest.recipes import (  # noqa: F401
         aishell,
+        aishell3,
         commonvoice,
         librispeech,
         ljspeech,
