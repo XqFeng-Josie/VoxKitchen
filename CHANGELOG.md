@@ -97,6 +97,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   from each recipe's URL host (keithito / openslr / huggingface /
   bare hostname) instead of hard-coding "openslr" for every recipe
   with `download_urls`.
+- Docker image builds now reuse wheel and layer caches across runs.
+  `docker/Dockerfile` mounts a BuildKit cache at `/root/.cache/uv` on
+  every `RUN uv pip install`, so torch / transformers / funasr wheels
+  download once instead of being refetched in each of the five venvs
+  (`UV_NO_CACHE=1` removed). `scripts/release.sh` now builds through
+  `docker buildx` against a dedicated `voxkitchen-builder` (auto-created
+  with the docker-container driver), and pushes layer descriptors to
+  `ghcr.io/xqfeng-josie/voxkitchen:buildcache-<target>` via
+  `--cache-to type=registry,mode=max`. First build from a cold cache
+  still takes 1-2 h; subsequent rebuilds where only application source
+  changed land in single-digit minutes per target.
 
 ### Fixed
 

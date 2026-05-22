@@ -71,6 +71,21 @@ configure_docker_workspace() {
     mkdir -p "$DOCKER_CONFIG" "$TMPDIR" "$BUILDX_CONFIG" "$XDG_CACHE_HOME"
 }
 
+# Registry-cache requires the docker-container driver; the default `docker`
+# driver only supports `cache-to type=inline`. Create a dedicated builder
+# once and reuse across builds.
+ensure_buildx_builder() {
+    BUILDX_BUILDER="${BUILDX_BUILDER:-voxkitchen-builder}"
+    export BUILDX_BUILDER
+    if docker buildx inspect "$BUILDX_BUILDER" >/dev/null 2>&1; then
+        docker buildx use "$BUILDX_BUILDER" >/dev/null
+    else
+        log "creating buildx builder '$BUILDX_BUILDER' (docker-container driver)"
+        docker buildx create --name "$BUILDX_BUILDER" --driver docker-container --use >/dev/null
+    fi
+    docker buildx inspect --bootstrap "$BUILDX_BUILDER" >/dev/null
+}
+
 # ---------------------------------------------------------------------------
 # 1. Pre-flight
 # ---------------------------------------------------------------------------
@@ -159,24 +174,37 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 configure_docker_workspace
+ensure_buildx_builder
 
 log "Docker build + push ${#TARGETS[@]} targets"
 echo "   targets: ${TARGETS[*]}"
-echo "   rolling tag: ${GHCR_IMAGE}:<target>"
-echo "   pinned tag:  ${GHCR_IMAGE}:<target>-${VERSION}"
+echo "   rolling tag:  ${GHCR_IMAGE}:<target>"
+echo "   pinned tag:   ${GHCR_IMAGE}:<target>-${VERSION}"
+echo "   layer cache:  ${GHCR_IMAGE}:buildcache-<target>   (pulled if present, refreshed on success)"
+echo "   builder:      ${BUILDX_BUILDER} (docker-container driver)"
 echo "   Docker work dir: $DOCKER_WORK_DIR"
 echo "   DOCKER_CONFIG:   $DOCKER_CONFIG"
 echo "   TMPDIR:          $TMPDIR"
 echo "   BUILDX_CONFIG:   $BUILDX_CONFIG"
 echo "   XDG_CACHE_HOME:  $XDG_CACHE_HOME"
-echo "   note: Docker image layers still use the daemon data-root (often /var/lib/docker)."
-confirm "build and push now? (this takes 1-2 hours for all six)"
+echo "   note: first build is full (~1-2 h for all six); subsequent builds pull layer cache from GHCR and complete in minutes."
+confirm "build and push now?"
 
 for target in "${TARGETS[@]}"; do
-    log "[$target] building"
-    docker build \
+    log "[$target] building (with registry layer cache)"
+    # --load brings the built image into the local daemon so the existing
+    # docker tag/push flow below keeps working unchanged. cache-to mode=max
+    # uploads every intermediate layer (not just the final stage), so the
+    # next build of any target that shares core-env / asr-env / ... can hit
+    # them. The buildcache-<target> tag is GHCR metadata only — it carries
+    # layer descriptors, not a runnable image.
+    docker buildx build \
+        --builder "$BUILDX_BUILDER" \
         --build-arg "VOXKITCHEN_VERSION=${VERSION}" \
         --target "$target" \
+        --cache-from "type=registry,ref=${GHCR_IMAGE}:buildcache-${target}" \
+        --cache-to   "type=registry,ref=${GHCR_IMAGE}:buildcache-${target},mode=max" \
+        --load \
         -f docker/Dockerfile \
         -t "voxkitchen:$target" \
         .

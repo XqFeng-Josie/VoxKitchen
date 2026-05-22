@@ -41,7 +41,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # build in the venv — observed breaking pyopenjtalk (misaki[ja] dep)
     # because its wheel then declared 0.0.0.dev0 != the requested 0.4.1.
     SETUPTOOLS_SCM_PRETEND_VERSION_FOR_VOXKITCHEN=${VOXKITCHEN_VERSION} \
-    UV_NO_CACHE=1 \
+    # uv writes wheels here; every `uv pip install` below mounts a BuildKit
+    # cache at this path (id=uv-cache, shared across stages). This lets the
+    # second venv that wants torch==2.4.1+cu124 — and every subsequent build
+    # — reuse the wheels already downloaded by the first one. The cache
+    # itself is not part of the final image layer.
+    UV_CACHE_DIR=/root/.cache/uv \
     # Shared model-cache root. Default locations ($HOME/.cache/...) are
     # root-owned mode 700 during build and unreachable when users run
     # with --user $(id -u):$(id -g). Re-point every model library we use
@@ -101,28 +106,32 @@ FROM base AS core-env
 RUN uv venv /opt/voxkitchen/envs/core --python 3.11
 
 # CPU PyTorch from the dedicated index (uv respects --index-url per-package).
-RUN uv pip install --python /opt/voxkitchen/envs/core/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/core/bin/python \
         -c /app/docker/constraints/core.txt \
         --index-url https://download.pytorch.org/whl/cpu \
         --extra-index-url https://pypi.org/simple \
         torch==2.4.1 torchaudio==2.4.1
 
 # Core package (no extras yet). MUST succeed.
-RUN uv pip install --python /opt/voxkitchen/envs/core/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/core/bin/python \
         -c /app/docker/constraints/core.txt \
         -e .
 
 # Core extras. [gender] is intentionally excluded everywhere — inaSpeechSegmenter
 # pulls tensorflow[and-cuda] which fights every other dep cluster. The
 # gender_classify operator still registers and works via method=f0 / method=speechbrain.
-RUN uv pip install --python /opt/voxkitchen/envs/core/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/core/bin/python \
         -c /app/docker/constraints/core.txt \
         -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel]"
 
 # Full source (overwrites the stub). Reinstall with --no-deps so the resolver
 # doesn't touch already-installed extras.
 COPY . .
-RUN uv pip install --python /opt/voxkitchen/envs/core/bin/python -e . --no-deps
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/core/bin/python -e . --no-deps
 
 # Pre-download core models; dump this env's operator schemas for later merge.
 RUN /opt/voxkitchen/envs/core/bin/python scripts/warmup_models.py --group core || true
@@ -173,7 +182,8 @@ RUN uv venv /opt/voxkitchen/envs/asr --python 3.11
 # CUDA 12.4 torch first — pinned via constraint so the later extras install
 # can't re-resolve it. PyPI default torch ships CUDA 12.1 wheels which
 # work on a 12.4 driver but we want version alignment.
-RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
         -c /app/docker/constraints/asr.txt \
         --index-url https://download.pytorch.org/whl/cu124 \
         --extra-index-url https://pypi.org/simple \
@@ -182,7 +192,8 @@ RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
 # ASR env inherits everything core has + ASR-specific extras. diarize
 # is deliberately NOT here — it lives in its own env so a ":diarize"
 # image can ship without the full ASR stack.
-RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
         -c /app/docker/constraints/asr.txt \
         -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,asr,whisper,funasr,align]"
 
@@ -190,12 +201,14 @@ RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
 # tooling breaks often and we don't want one flaky dep to block the image.
 # If the install fails, the operator just doesn't register; users who
 # need it can install wenet themselves.
-RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
         -c /app/docker/constraints/asr.txt \
         "wenet @ git+https://github.com/wenet-e2e/wenet.git" \
         || echo "WARN: wenet install failed — wenet_asr operator will be unavailable"
 
-RUN uv pip install --python /opt/voxkitchen/envs/asr/bin/python -e . --no-deps
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/asr/bin/python -e . --no-deps
 
 RUN HF_TOKEN=${HF_TOKEN} /opt/voxkitchen/envs/asr/bin/python scripts/warmup_models.py --group asr || true
 RUN /opt/voxkitchen/envs/asr/bin/python -m voxkitchen.runtime.dump_schemas \
@@ -212,17 +225,20 @@ ARG HF_TOKEN
 
 RUN uv venv /opt/voxkitchen/envs/diarize --python 3.11
 
-RUN uv pip install --python /opt/voxkitchen/envs/diarize/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/diarize/bin/python \
         -c /app/docker/constraints/diarize.txt \
         --index-url https://download.pytorch.org/whl/cu124 \
         --extra-index-url https://pypi.org/simple \
         torch==2.4.1 torchaudio==2.4.1
 
-RUN uv pip install --python /opt/voxkitchen/envs/diarize/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/diarize/bin/python \
         -c /app/docker/constraints/diarize.txt \
         -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,diarize]"
 
-RUN uv pip install --python /opt/voxkitchen/envs/diarize/bin/python -e . --no-deps
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/diarize/bin/python -e . --no-deps
 
 RUN HF_TOKEN=${HF_TOKEN} /opt/voxkitchen/envs/diarize/bin/python scripts/warmup_models.py --group diarize || true
 RUN /opt/voxkitchen/envs/diarize/bin/python -m voxkitchen.runtime.dump_schemas \
@@ -235,13 +251,15 @@ FROM core-env AS tts-env
 
 RUN uv venv /opt/voxkitchen/envs/tts --python 3.11
 
-RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         -c /app/docker/constraints/tts.txt \
         --index-url https://download.pytorch.org/whl/cu124 \
         --extra-index-url https://pypi.org/simple \
         torch==2.4.1 torchaudio==2.4.1
 
-RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         -c /app/docker/constraints/tts.txt \
         -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,tts-kokoro,tts-chattts,tts-cosyvoice]"
 
@@ -249,14 +267,16 @@ RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
 # TTS call via `uv pip install`. In a non-root runtime that lazy install
 # fails (can't write to /opt/voxkitchen/envs/*). Install it now so every
 # runtime call is a cache hit.
-RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # Fish-Speech is isolated in fish-speech-env below because upstream pins a
 # torch 2.8 + numpy 2.x stack. Keep this tts env focused on Kokoro, ChatTTS,
 # and CosyVoice so those engines stay on the validated torch 2.4 stack.
 
-RUN uv pip install --python /opt/voxkitchen/envs/tts/bin/python -e . --no-deps
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/tts/bin/python -e . --no-deps
 
 RUN /opt/voxkitchen/envs/tts/bin/python scripts/warmup_models.py --group tts || true
 RUN /opt/voxkitchen/envs/tts/bin/python -m voxkitchen.runtime.dump_schemas \
@@ -274,7 +294,8 @@ RUN uv venv /opt/voxkitchen/envs/fish-speech --python 3.11
 
 # Install torch 2.8 from cu124 first so the constraint is satisfied
 # before fish-speech's own deps try to pull it.
-RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
         -c /app/docker/constraints/fish-speech.txt \
         --index-url https://download.pytorch.org/whl/cu124 \
         --extra-index-url https://pypi.org/simple \
@@ -285,12 +306,14 @@ RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
 # uploaded distribution whose metadata declares a PEP 440 direct reference
 # (`pkg @ git+...`), so the published wheel cannot carry this URL.
 # Pinned to the Fish-Speech 2.0 commit validated by the Docker smoke test.
-RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python \
         -c /app/docker/constraints/fish-speech.txt \
         "fish-speech @ git+https://github.com/fishaudio/fish-speech.git@3dd1f85c402ee6f0a17c2971d3b0dd8d881ca139"
 
 # Pin voxkitchen's editable link to /app source.
-RUN uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python -e . --no-deps
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/fish-speech/bin/python -e . --no-deps
 
 RUN /opt/voxkitchen/envs/fish-speech/bin/python scripts/warmup_models.py --group fish-speech || true
 RUN /opt/voxkitchen/envs/fish-speech/bin/python -m voxkitchen.runtime.dump_schemas \

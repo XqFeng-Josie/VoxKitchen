@@ -147,7 +147,16 @@ filling `/`, move Docker daemon `data-root` as described in
   download ~80 MB of pyannote weights).
 
 Build+push of all six targets on a well-provisioned machine takes
-~1-2 hours (latest is the bottleneck at ~123 GB).
+~1-2 hours from a cold cache (latest is the bottleneck at ~123 GB).
+Subsequent builds reuse layer cache stored on GHCR as
+`ghcr.io/xqfeng-josie/voxkitchen:buildcache-<target>` and complete in
+minutes when only application source changes. The release script
+creates a dedicated `voxkitchen-builder` buildx instance
+(docker-container driver) the first time it runs — required for
+`cache-to type=registry`. Inside each `RUN uv pip install` the
+Dockerfile mounts a BuildKit cache at `/root/.cache/uv` so wheel
+downloads (torch, transformers, …) survive across builds without ever
+landing in an image layer.
 
 If the Docker images were already rebuilt and pushed manually for this exact
 commit, do **not** run `scripts/release.sh` again; it will rebuild and push
