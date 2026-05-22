@@ -6,6 +6,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-05-21
+
 ### Added
 
 - Published the `voxkitchen` launcher to PyPI. Users install with
