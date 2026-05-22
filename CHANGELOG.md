@@ -41,14 +41,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   scaffolded `pipeline.yaml`, so VS Code, Neovim, and JetBrains users get
   autocompletion on operator names and inline validation of the spec
   structure out of the box. See `docs/reference/schema.md` for editor setup.
-- New tutorial `docs/tutorials/tts-synthesis.md` covers the inverse
-  direction of the existing TTS data-prep tutorial: how to synthesize
-  speech from text. Includes a per-engine capability matrix (cloning,
-  built-in voices, language scope, device, output SR, Docker image),
-  the short-reference voice-cloning workflow for `tts_cosyvoice` and
-  `tts_fish_speech`, and a decision flow for picking an engine. Linked
-  from `docs/index.md`, README "What You Can Build", and the existing
-  TTS data-prep tutorial.
+- TTS tutorials split into three focused pages so each can grow
+  independently as new engines land. `tts-data-prep.md` renamed to
+  `tts-training-data.md` (quality gate for raw recordings used to train
+  a TTS model). The combined `tts-synthesis.md` was split into
+  `tts-speaker.md` (built-in / seed-sampled voices — `tts_kokoro`,
+  `tts_chattts`, `tts_cosyvoice` `sft` mode) and `tts-voice-cloning.md`
+  (short-reference cloning — `tts_cosyvoice` `zero_shot` /
+  `cross_lingual`, `tts_fish_speech`). Each tutorial carries its own
+  capability matrix filtered to the relevant engines, a Quick Start in
+  both Python and YAML, per-engine config snippets, and a decision flow.
+  `mkdocs.yml`, `docs/index.md`, `README.md` "What You Can Build", and
+  the skill operator notes were updated to match.
 - Five new ingest recipes complete the "common dataset" coverage,
   bringing the total registered to 9:
   - `ljspeech` — single-speaker English TTS baseline (24 h, 13.1k

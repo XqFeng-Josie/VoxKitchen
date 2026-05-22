@@ -137,7 +137,8 @@ cp .env.example .env
 
 ## Next Steps
 
-- [TTS Tutorial](tutorials/tts-data-prep.md)
+- [TTS Training Data](tutorials/tts-training-data.md)
+- [Speaker TTS](tutorials/tts-speaker.md) · [Voice Cloning & TTS](tutorials/tts-voice-cloning.md)
 - [ASR Tutorial](tutorials/asr-training-data.md)
 - [Data Cleaning Tutorial](tutorials/data-cleaning.md)
 - [Operators Reference](reference/operators.md)

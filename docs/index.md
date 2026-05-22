@@ -27,8 +27,9 @@ vkit init my-project --template cleaning  # Data cleaning
 vkit init my-project --template speaker   # Speaker analysis
 ```
 
-- [TTS Data Preparation](tutorials/tts-data-prep.md) — quality gate for TTS training audio: denoise, segment, transcribe, align
-- [TTS Synthesis](tutorials/tts-synthesis.md) — generate speech from text; built-in voices and short-reference voice cloning across four engines
+- [TTS Training Data](tutorials/tts-training-data.md) — quality gate for TTS training audio: denoise, segment, transcribe, align
+- [Speaker TTS](tutorials/tts-speaker.md) — synthesize text with a built-in voice (kokoro, ChatTTS, CosyVoice sft)
+- [Voice Cloning & TTS](tutorials/tts-voice-cloning.md) — clone a voice from a 3–10 s reference (CosyVoice zero-shot, Fish-Speech)
 - [ASR Training Data](tutorials/asr-training-data.md) — augment, transcribe, pack for training
 - [Data Cleaning](tutorials/data-cleaning.md) — quality metrics, dedup, filter
 - [Speaker Analysis](tutorials/speaker-analysis.md) — diarize, embed, classify

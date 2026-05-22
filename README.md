@@ -85,8 +85,8 @@ when that directory exists.
 | Build ASR training manifests | `vkit init my-asr --template asr` | `asr` |
 | Analyze speakers and languages | `vkit init my-speakers --template speaker` | `latest` |
 | Prepare TTS training data (quality gate) | `vkit init my-tts --template tts` | `asr` |
-| Synthesize speech from text (built-in voices, 3-sec voice cloning) | see [TTS Synthesis tutorial](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/tutorials/tts-synthesis.md) | `tts` |
-| Voice cloning with Fish-Speech (44.1 kHz) | create a pipeline with `tts_fish_speech` | `fish-speech` |
+| Synthesize speech in a built-in voice | see [Speaker TTS tutorial](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/tutorials/tts-speaker.md) | `tts` |
+| Clone a voice from a 3–10 s reference | see [Voice Cloning & TTS tutorial](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/tutorials/tts-voice-cloning.md) | `tts` or `fish-speech` |
 
 ## How It Works
 

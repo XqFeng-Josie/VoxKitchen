@@ -15,8 +15,9 @@ nav:
   - Getting Started: getting-started.md
   - Examples & Use Cases: examples.md
   - Tutorials:
-    - TTS Data Preparation: tutorials/tts-data-prep.md
-    - TTS Synthesis: tutorials/tts-synthesis.md
+    - TTS Training Data: tutorials/tts-training-data.md
+    - Speaker TTS: tutorials/tts-speaker.md
+    - Voice Cloning & TTS: tutorials/tts-voice-cloning.md
     - ASR Training Data: tutorials/asr-training-data.md
     - Data Cleaning: tutorials/data-cleaning.md
     - Speaker Analysis: tutorials/speaker-analysis.md

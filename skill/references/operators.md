@@ -79,7 +79,7 @@ annotation families. Use `diarize` for a pure pyannote pipeline.
 `pyannote_diarize` needs `HF_TOKEN` in `./.env` and accepted model terms on
 HuggingFace.
 
-### TTS Data Preparation
+### TTS Training Data
 
 Use `latest` for templates that transcribe or align with ASR before packing.
 Use `tts` only for pure synthesis/tts-family stages.
