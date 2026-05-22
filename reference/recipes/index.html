@@ -1321,6 +1321,7 @@
 <th>Task</th>
 <th>Language</th>
 <th style="text-align: center;">Download</th>
+<th style="text-align: right;">Size (compressed)</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -1330,13 +1331,15 @@
 <td>ASR</td>
 <td>English</td>
 <td style="text-align: center;">openslr</td>
-<td>Read-aloud audiobooks (960h)</td>
+<td style="text-align: right;">299 MB - 28.5 GB / subset</td>
+<td>Read-aloud audiobooks (960 h total)</td>
 </tr>
 <tr>
 <td><code>libritts</code></td>
 <td>TTS</td>
 <td>English</td>
 <td style="text-align: center;">openslr</td>
+<td style="text-align: right;">881 MB - 41.5 GB / subset</td>
 <td>Multi-speaker English TTS, sentence-segmented and TTS-normalized derivative of LibriSpeech</td>
 </tr>
 <tr>
@@ -1344,34 +1347,39 @@
 <td>TTS</td>
 <td>English</td>
 <td style="text-align: center;">keithito</td>
-<td>Single-speaker English TTS (~24h, 13k utterances) — canonical TTS baseline</td>
+<td style="text-align: right;">2.6 GB</td>
+<td>Single-speaker English TTS (~24 h, 13k utterances) — canonical TTS baseline</td>
 </tr>
 <tr>
 <td><code>tedlium3</code></td>
 <td>ASR</td>
 <td>English</td>
 <td style="text-align: center;">manual</td>
-<td>TED-LIUM 3 — English TED talks (~452h), utterance-aligned via STM. OpenSLR/51 was de-listed; see <a href="#ted-lium-3-manual-download">TED-LIUM 3</a> below.</td>
+<td style="text-align: right;">—</td>
+<td>TED-LIUM 3 — English TED talks (~452 h). OpenSLR/51 was de-listed; see <a href="#ted-lium-3-manual-download">TED-LIUM 3</a> below.</td>
 </tr>
 <tr>
 <td><code>aishell</code></td>
 <td>ASR</td>
 <td>Chinese</td>
 <td style="text-align: center;">openslr</td>
-<td>Mandarin read speech (170h)</td>
+<td style="text-align: right;">14.5 GB (+ 1 MB resources)</td>
+<td>Mandarin read speech (170 h)</td>
 </tr>
 <tr>
 <td><code>aishell3</code></td>
 <td>TTS</td>
 <td>Chinese</td>
 <td style="text-align: center;">openslr</td>
-<td>Multi-speaker Mandarin TTS (218 speakers, ~85h)</td>
+<td style="text-align: right;">17.7 GB</td>
+<td>Multi-speaker Mandarin TTS (218 speakers, ~85 h)</td>
 </tr>
 <tr>
 <td><code>cnceleb</code></td>
 <td>Speaker</td>
 <td>Chinese</td>
 <td style="text-align: center;">openslr</td>
+<td style="text-align: right;">20.7 GB</td>
 <td>CN-Celeb 1 — Chinese speaker recognition (~130k utts, 1000 spk, 11 genres)</td>
 </tr>
 <tr>
@@ -1379,6 +1387,7 @@
 <td>ASR (multi)</td>
 <td>Multi</td>
 <td style="text-align: center;">manual</td>
+<td style="text-align: right;">—</td>
 <td>Mozilla crowdsourced recordings</td>
 </tr>
 <tr>
@@ -1386,17 +1395,23 @@
 <td>ASR / langid</td>
 <td>102 languages</td>
 <td style="text-align: center;">HuggingFace</td>
-<td>Google's multilingual eval set (~12h/lang)</td>
+<td style="text-align: right;">—</td>
+<td>Google's multilingual eval set (~12 h / lang)</td>
 </tr>
 <tr>
 <td><code>musan</code></td>
 <td>Augmentation</td>
 <td>—</td>
 <td style="text-align: center;">openslr</td>
-<td>MUSAN — noise / music / speech augmentation source (~11 GB)</td>
+<td style="text-align: right;">10.3 GB</td>
+<td>MUSAN — noise / music / speech augmentation source</td>
 </tr>
 </tbody>
 </table>
+<p>Sizes are HEAD-probed Content-Length values from the canonical mirror
+(2026-05) and represent the <strong>compressed download</strong>. Extracted size is
+typically 1.2-1.5x larger. <code>vkit recipes</code> shows the same Size column
+so you can compare before downloading.</p>
 <h2 id="downloading-datasets">Downloading Datasets</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># LibriSpeech (English, from openslr.org)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>librispeech<span class="w"> </span>--root<span class="w"> </span>./data/librispeech<span class="w"> </span>--subsets<span class="w"> </span>dev-clean
