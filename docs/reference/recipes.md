@@ -9,7 +9,6 @@ VoxKitchen recipes parse popular speech datasets into CutSets. Some recipes also
 | `librispeech` | ASR | English | openslr | 299 MB - 28.5 GB / subset | Read-aloud audiobooks (960 h total) |
 | `libritts` | TTS | English | openslr | 881 MB - 41.5 GB / subset | Multi-speaker English TTS, sentence-segmented and TTS-normalized derivative of LibriSpeech |
 | `ljspeech` | TTS | English | keithito | 2.6 GB | Single-speaker English TTS (~24 h, 13k utterances) — canonical TTS baseline |
-| `tedlium3` | ASR | English | manual | — | TED-LIUM 3 — English TED talks (~452 h). OpenSLR/51 was de-listed; see [TED-LIUM 3](#ted-lium-3-manual-download) below. |
 | `aishell` | ASR | Chinese | openslr | 14.5 GB (+ 1 MB resources) | Mandarin read speech (170 h) |
 | `aishell3` | TTS | Chinese | openslr | 17.7 GB | Multi-speaker Mandarin TTS (218 speakers, ~85 h) |
 | `cnceleb` | Speaker | Chinese | openslr | 20.7 GB | CN-Celeb 1 — Chinese speaker recognition (~130k utts, 1000 spk, 11 genres) |
@@ -36,7 +35,6 @@ vkit docker download --tag slim libritts --root ./data/libritts --subsets train-
 # LJSpeech (English single-speaker TTS, from data.keithito.com)
 vkit docker download --tag slim ljspeech --root ./data/ljspeech
 
-# TED-LIUM 3 — manual download required, see below
 
 # AISHELL-1 (Chinese ASR, from openslr.org)
 vkit docker download --tag slim aishell --root ./data/aishell
@@ -89,42 +87,6 @@ changed it.
 
 If a subset is missing on disk (partial extraction is common for the
 ~17 GB tarball) the recipe silently skips it.
-
-### TED-LIUM 3 (Manual Download)
-
-`vkit docker download tedlium3` is currently a no-op: the canonical
-OpenSLR/51 mirror was de-listed and `www.openslr.org/51/` now returns
-"Resource not found". The recipe's `prepare()` continues to work
-against an extracted TED-LIUM 3 tree on disk — drop the corpus under
-`./data/tedlium3/` and reference it as a `recipe` ingest source:
-
-```yaml
-ingest:
-  source: recipe
-  recipe: tedlium3
-  args:
-    root: ./data/tedlium3
-    subsets: [train, dev, test]
-```
-
-| Subset | Hours | Description |
-|--------|:-----:|-------------|
-| `train` | ~268 | TED talks training split (most of the 452h corpus) |
-| `dev`   | ~1.6 | Held-out dev set used by every TED-LIUM ASR paper |
-| `test`  | ~2.6 | Held-out test set for reporting numbers |
-
-Audio is NIST SPHERE (`.sph`) — libsndfile reads it natively, so no
-manual conversion is needed. Each STM row produces one Cut that
-references a `(start, duration)` slice of the parent talk's `.sph`.
-Padding rows (`inter_segment_gap` speaker / `ignore_time_segment_in_scoring`
-transcript) are dropped automatically.
-
-Recommended sources for the data while the OpenSLR mirror is down:
-
-- HuggingFace `LIUM/tedlium` config `release3` (will need repacking
-  into the legacy/{train,dev,test}/{sph,stm}/ layout).
-- An institutional / lab-internal archived copy of the original
-  ~54 GB `TEDLIUM_release-3.tgz`.
 
 ### CN-Celeb 1 Subsets
 

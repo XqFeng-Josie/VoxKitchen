@@ -178,57 +178,6 @@ def mock_musan(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def mock_tedlium3(tmp_path: Path) -> Path:
-    """Create a tiny TED-LIUM-3-like tree under <tmp>/TEDLIUM_release-3/.
-
-    libsndfile (which ``soundfile`` wraps) detects audio format from the
-    file *content*, not the extension, so writing standard WAV data into
-    files named ``*.sph`` lets the recipe's ``recording_from_file``
-    succeed without depending on the host's libsndfile being built with
-    SPHERE support. The recipe only relies on sample-rate / duration
-    metadata, which is produced identically for both formats.
-
-    Two talks: one in ``train/`` whose STM exercises every padding /
-    valid branch of the STM parser, and one in ``dev/`` so multi-subset
-    iteration also has coverage.
-    """
-    ds = tmp_path / "TEDLIUM_release-3"
-    legacy = ds / "legacy"
-    audio = np.sin(np.linspace(0, 1, 16000 * 30)).astype(np.float32) * 0.5  # 30s "talk"
-
-    for subset, talk in [("train", "AaronHuey_2010X"), ("dev", "BenSaunders_2014")]:
-        sph_dir = legacy / subset / "sph"
-        stm_dir = legacy / subset / "stm"
-        sph_dir.mkdir(parents=True, exist_ok=True)
-        stm_dir.mkdir(parents=True, exist_ok=True)
-        # WAV bytes named .sph — libsndfile sniffs by content on read, but
-        # sf.write needs the format spelled out explicitly because .sph
-        # isn't a known WAV extension. recording_from_file reads via
-        # sf.info() which infers from content, so the test path matches
-        # what production does on real TED-LIUM SPHERE files.
-        sf.write(sph_dir / f"{talk}.sph", audio, 16000, format="WAV")
-
-    # train STM exercises: padding row → skipped, two valid utterances,
-    # and a row whose transcript is the "ignore" sentinel → skipped.
-    (legacy / "train" / "stm" / "AaronHuey_2010X.stm").write_text(
-        "AaronHuey_2010X 1 inter_segment_gap 0.00 5.00 unknown ignore_time_segment_in_scoring\n"
-        "AaronHuey_2010X 1 AaronHuey_2010X 5.00 8.40 <o,f0,male> hello world this is a talk\n"
-        "AaronHuey_2010X 1 inter_segment_gap 8.40 10.00 unknown ignore_time_segment_in_scoring\n"
-        "AaronHuey_2010X 1 AaronHuey_2010X 10.00 14.20 <o,f0,male> {NOISE} more talk content here\n",
-        encoding="utf-8",
-    )
-
-    # dev STM: one valid utterance, used to verify multi-subset traversal
-    # and default-subset auto-discovery.
-    (legacy / "dev" / "stm" / "BenSaunders_2014.stm").write_text(
-        "BenSaunders_2014 1 BenSaunders_2014 0.50 3.75 <o,f0,male> a different talk\n",
-        encoding="utf-8",
-    )
-
-    return tmp_path
-
-
-@pytest.fixture
 def mock_cnceleb(tmp_path: Path) -> Path:
     """Create a tiny CN-Celeb-1-like tree under <tmp>/CN-Celeb_flac/.
 

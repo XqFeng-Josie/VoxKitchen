@@ -21,7 +21,6 @@ def test_recipes_listing_lists_all_known_recipes() -> None:
         "libritts",
         "ljspeech",
         "musan",
-        "tedlium3",
     ):
         assert name in result.output, f"recipe {name!r} missing from `vkit recipes`"
 

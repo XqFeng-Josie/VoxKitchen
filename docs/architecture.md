@@ -270,7 +270,6 @@ Static analysis builds a GC plan: for each `produces_audio=True` stage, find its
 - `librispeech` -- LibriSpeech ASR corpus (English read audiobooks, 960h)
 - `libritts` -- LibriTTS, multi-speaker English TTS (LibriSpeech-derived, sentence-segmented + TTS-normalized)
 - `ljspeech` -- LJSpeech-1.1, single-speaker English TTS baseline (24h)
-- `tedlium3` -- TED-LIUM 3, English TED-talk ASR (452h, STM utterance alignment)
 - `aishell` -- AISHELL-1 Mandarin read ASR (170h)
 - `aishell3` -- AISHELL-3 multi-speaker Mandarin TTS (218 speakers, 85h)
 - `cnceleb` -- CN-Celeb 1 Chinese speaker recognition (1000 speakers, 130k utts, 11 genres)
@@ -397,7 +396,7 @@ voxkitchen/
   pipeline/             # Runner, executors, checkpoint, GC
   schema/               # Cut, CutSet, Recording, Supervision, Provenance
   ingest/               # DirScan, Manifest, Recipe sources
-    recipes/            #   librispeech, libritts, ljspeech, tedlium3, aishell, aishell3, cnceleb, commonvoice, fleurs, musan
+    recipes/            #   librispeech, libritts, ljspeech, aishell, aishell3, cnceleb, commonvoice, fleurs, musan
   viz/                  # HTML report + Gradio panel
   templates/            # vkit init template registry
   plugins/              # Entry-point discovery
@@ -429,7 +428,7 @@ tests/integration/      # End-to-end pipeline tests
 
 - Core framework (schema, pipeline engine, CLI)
 - 51 operators across 8 categories
-- 10 ingest recipes (LibriSpeech, LibriTTS, LJSpeech, TED-LIUM 3, AISHELL-1, AISHELL-3, CN-Celeb 1, CommonVoice, FLEURS, MUSAN)
+- 9 ingest recipes (LibriSpeech, LibriTTS, LJSpeech, AISHELL-1, AISHELL-3, CN-Celeb 1, CommonVoice, FLEURS, MUSAN)
 - Visualization (Rich CLI, HTML report, Gradio panel)
 - Plugin system (entry_points)
 - TTS synthesis (Kokoro, ChatTTS, CosyVoice2, Fish-Speech)

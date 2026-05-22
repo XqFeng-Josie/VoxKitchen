@@ -119,17 +119,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   OSError / …) with exponential backoff (2s, 4s). This came out of
   real OpenSLR mid-stream RSTs hit while end-to-end-verifying the
   new AISHELL-3 and LibriTTS recipes.
+### Removed
+
+- The ``tedlium3`` recipe is removed entirely. The canonical
+  ``openslr.org/resources/51/`` mirror was de-listed by the project
+  upstream — every probe returns 404 and ``www.openslr.org/51/``
+  reports "Resource not found". Without a working auto-download URL,
+  the recipe was effectively manual-only, and shipping a registered
+  recipe whose ``vkit docker download`` is a guaranteed no-op was a
+  UX cost without a corresponding benefit. The STM-parsing and slice
+  layout logic remain in git history (commit 15e6d19 and its
+  subsequent corrections); reintroduce via a HuggingFace-streaming
+  recipe (modelled on ``fleurs``) when a real data path is available.
+
 ### Fixed
 
-- ``tedlium3`` recipe now lists as ``manual`` instead of advertising a
-  broken auto-download. The canonical ``openslr.org/resources/51/`` URL
-  was de-listed by the project upstream — every probe returns 404 and
-  ``www.openslr.org/51/`` reports "Resource not found". The recipe's
-  ``prepare()`` still works against any extracted TED-LIUM 3 tree on
-  disk (e.g. archived tarball, HF ``LIUM/tedlium`` repacked into the
-  legacy/ structure); only the auto-fetch claim is gone. Updated
-  ``docs/reference/recipes.md`` and the skill cheat-sheets to spell
-  out the manual-download path.
 - ``cnceleb`` recipe rewritten to match the real corpus layout. Verified
   against the live 22 GB tarball, the previous implementation was wrong
   about ``dev.lst`` (it lists speaker IDs, not paths) and about ``eval``
@@ -149,18 +153,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added (continued)
 
-- Three more ingest recipes complete the "common dataset" coverage,
-  bringing the total to 10:
-  - `tedlium3` — TED-LIUM Release 3, English TED-talk ASR (452 h),
-    distributed from OpenSLR/51. Parses STM utterance-aligned
-    transcripts into Cuts that reference `(start, duration)` slices
-    of the parent talk's `.sph`. Padding rows are filtered.
+- Two more ingest recipes complete the "common dataset" coverage,
+  bringing the total to 9:
   - `cnceleb` — CN-Celeb 1, Chinese speaker recognition (~130k
     utterances, 1000 speakers, 11 genres), from OpenSLR/82. Empty-text
     Supervisions carry speaker / language tags. Subsets `data` /
     `dev` / `eval` follow the canonical splits; overlapping subsets
     deduplicate.
-  - `musan` — MUSAN augmentation corpus (~11 GB of non-transcribed
+  - `musan` — MUSAN augmentation corpus (~10 GB of non-transcribed
     noise / music / speech), from OpenSLR/17. Closes the loop with
     the existing `noise_augment` operator. Subsets pick which of the
     three top-level categories to ingest; sub-categories are
