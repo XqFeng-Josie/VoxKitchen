@@ -1,13 +1,16 @@
-# TTS Data Preparation
+# TTS Training Data
 
-Prepare high-quality TTS training data from raw recordings. The pipeline
-is mostly a **quality gate**: it standardizes format, segments to a
-usable utterance length, denoises just enough, drops low-quality
+Prepare high-quality TTS **training** data from raw recordings. The
+pipeline is mostly a **quality gate**: it standardizes format, segments
+to a usable utterance length, denoises just enough, drops low-quality
 segments, and adds ASR text + timestamps so each kept segment is paired
 with a reliable label.
 
 > Looking for the inverse direction — generating speech from text?
-> See [TTS Synthesis](tts-synthesis.md).
+> Two companion tutorials split synthesis by use case:
+> [Speaker TTS](tts-speaker.md) (pick a built-in voice) and
+> [Voice Cloning & TTS](tts-voice-cloning.md) (clone a voice from a
+> short reference).
 
 ## Quick Start
 
@@ -130,7 +133,10 @@ The final `pack_jsonl` stage produces a JSONL manifest where each line is a JSON
 
 - Train a TTS model on the resulting manifest using your framework of
   choice (Tacotron2, VITS, FastSpeech2, Coqui XTTS, etc.).
-- Or feed the manifest to a pretrained engine via
-  [TTS Synthesis](tts-synthesis.md) to A/B compare your data against
-  built-in voices, or to generate new audio from the transcripts you
-  just extracted.
+- Or feed the manifest to a pretrained engine to A/B compare your data
+  against existing voices or to generate new audio from the
+  transcripts you just extracted:
+  - [Speaker TTS](tts-speaker.md) — kokoro, ChatTTS, CosyVoice with a
+    built-in speaker id.
+  - [Voice Cloning & TTS](tts-voice-cloning.md) — CosyVoice zero-shot,
+    Fish-Speech: synthesize in a voice you supply via reference audio.
