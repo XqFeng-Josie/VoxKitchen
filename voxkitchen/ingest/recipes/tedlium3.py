@@ -86,14 +86,20 @@ class Tedlium3Recipe(Recipe):
     """Parse TED-LIUM release-3 into a CutSet."""
 
     name = "tedlium3"
-    download_urls = {
-        # Single ~54 GB tarball. OpenSLR has alternate mirrors
-        # (openslr.trmal.net, openslr.magicdatatech.com); the primary
-        # `www.openslr.org` works but is the most prone to mid-stream
-        # RST, which the resilient downloader in voxkitchen.utils.download
-        # transparently retries.
-        "tedlium3": ["https://www.openslr.org/resources/51/TEDLIUM_release-3.tgz"],
-    }
+    # ``download_urls`` intentionally empty: the canonical OpenSLR/51 mirror
+    # was de-listed at some point after 2024. ``www.openslr.org/51/`` now
+    # returns "Resource not found: 51" and every ``resources/51/...`` path
+    # returns 404. Verified against the live site. Until the LIUM team
+    # restores a public tarball, ``vkit docker download tedlium3`` falls
+    # back to the base-class NotImplementedError that ``commonvoice`` also
+    # uses for manual-download datasets.
+    #
+    # The recipe's ``prepare()`` continues to work for users who already
+    # have an extracted TED-LIUM 3 tree on disk — e.g. from an archived
+    # tarball, a colleague's copy, or the HuggingFace ``LIUM/tedlium``
+    # ``release3`` config repacked into the legacy/ structure. A
+    # streaming-from-HF download path is tracked for a future revision.
+    download_urls: dict[str, list[str]] = {}
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         # Tarball extracts to <root>/TEDLIUM_release-3/. Tolerate both

@@ -119,6 +119,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   OSError / …) with exponential backoff (2s, 4s). This came out of
   real OpenSLR mid-stream RSTs hit while end-to-end-verifying the
   new AISHELL-3 and LibriTTS recipes.
+### Fixed
+
+- ``tedlium3`` recipe now lists as ``manual`` instead of advertising a
+  broken auto-download. The canonical ``openslr.org/resources/51/`` URL
+  was de-listed by the project upstream — every probe returns 404 and
+  ``www.openslr.org/51/`` reports "Resource not found". The recipe's
+  ``prepare()`` still works against any extracted TED-LIUM 3 tree on
+  disk (e.g. archived tarball, HF ``LIUM/tedlium`` repacked into the
+  legacy/ structure); only the auto-fetch claim is gone. Updated
+  ``docs/reference/recipes.md`` and the skill cheat-sheets to spell
+  out the manual-download path.
+- ``cnceleb`` recipe rewritten to match the real corpus layout. Verified
+  against the live 22 GB tarball, the previous implementation was wrong
+  about ``dev.lst`` (it lists speaker IDs, not paths) and about ``eval``
+  (audio lives in separate ``eval/enroll`` and ``eval/test`` flat
+  directories, not as pointers into ``data/``). Counts now match the
+  paper: 126,532 cuts / 997 speakers in data, 107,953 cuts / 797
+  speakers in dev, 17,973 cuts / 200 speakers in eval.
+
+### Added (continued)
+
 - Three more ingest recipes complete the "common dataset" coverage,
   bringing the total to 10:
   - `tedlium3` — TED-LIUM Release 3, English TED-talk ASR (452 h),

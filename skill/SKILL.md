@@ -96,12 +96,12 @@ For supported dataset recipes, use:
 vkit docker download librispeech --root ./data/librispeech --subsets dev-clean
 vkit docker download libritts --root ./data/libritts --subsets dev-clean
 vkit docker download ljspeech --root ./data/ljspeech
-vkit docker download tedlium3 --root ./data/tedlium3
 vkit docker download aishell --root ./data/aishell
 vkit docker download aishell3 --root ./data/aishell3
 vkit docker download cnceleb --root ./data/cnceleb
 vkit docker download fleurs --root ./data/fleurs --subsets en_us,zh_cn
 vkit docker download musan --root ./data/musan
+# tedlium3 / commonvoice: manual download (see docs/reference/recipes.md)
 ```
 
 ### Running And Debugging
