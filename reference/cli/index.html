@@ -1709,7 +1709,16 @@ directive at the top of every scaffolded pipeline. See
 <p>List dataset recipes (the entities behind <code>vkit docker download</code> and <code>ingest: source=recipe</code>).</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>recipes
 </code></pre></div>
-<p>Output is a table with name, download mechanism (<code>openslr</code>, <code>HuggingFace</code>, or <code>manual</code>), and one-line description. To actually download, use <code>vkit docker download --tag slim &lt;name&gt; --root ./data/&lt;name&gt;</code>; to reference inside a pipeline, use <code>ingest: { source: recipe, recipe: &lt;name&gt;, args: { root: &lt;dir&gt; } }</code>. Recipe-specific subset names are listed in <a href="../recipes/">Recipes &amp; Download</a>.</p>
+<p>Output is a table with name, download mechanism (<code>openslr</code>, <code>keithito</code>,
+<code>HuggingFace</code>, or <code>manual</code>), compressed download size, and a one-line
+description. The Size column shows a single value for single-archive
+datasets and a range for multi-subset datasets (<code>299 MB - 28.5 GB</code>)
+so you can compare before downloading. Manual / HuggingFace recipes
+render as a dash.</p>
+<p>To actually download, use <code>vkit docker download --tag slim &lt;name&gt; --root ./data/&lt;name&gt;</code>;
+to reference inside a pipeline, use
+<code>ingest: { source: recipe, recipe: &lt;name&gt;, args: { root: &lt;dir&gt; } }</code>.
+Recipe-specific subset names are listed in <a href="../recipes/">Recipes &amp; Download</a>.</p>
 <h3 id="vkit-doctor"><code>vkit doctor</code></h3>
 <p>Report per-env operator availability and warmup-model status.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>doctor<span class="w">                          </span><span class="c1"># Single-env report (dev install or :slim image)</span>

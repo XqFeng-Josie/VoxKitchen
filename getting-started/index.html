@@ -1341,8 +1341,14 @@ vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w
 <span class="c1"># Edit pipeline.yaml: set ingest.args.root to ./data/librispeech</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>pipeline.yaml
 </code></pre></div>
-<p>Available datasets: <code>librispeech</code>, <code>aishell</code>, <code>fleurs</code>. See
-<a href="../reference/recipes/">Recipes &amp; Download</a>.</p>
+<p>Run <code>vkit recipes</code> to list every available dataset along with its
+compressed download size — 9 recipes ship today, covering English /
+Chinese ASR (<code>librispeech</code>, <code>aishell</code>), multi-speaker TTS
+(<code>libritts</code>, <code>ljspeech</code>, <code>aishell3</code>), Chinese speaker recognition
+(<code>cnceleb</code>), multilingual eval (<code>fleurs</code>), augmentation (<code>musan</code>),
+plus <code>commonvoice</code> (manual download). See
+<a href="../reference/recipes/">Recipes &amp; Download</a> for per-recipe subset
+details.</p>
 <h2 id="configuration">Configuration</h2>
 <p>Some operators require API tokens. Put them in <code>./.env</code>; <code>vkit docker run</code>
 passes that file into the container automatically.</p>

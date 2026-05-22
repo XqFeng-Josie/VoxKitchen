@@ -1394,7 +1394,6 @@ vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w
 <span class="c1"># LJSpeech (English single-speaker TTS, from data.keithito.com)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>ljspeech<span class="w"> </span>--root<span class="w"> </span>./data/ljspeech
 
-
 <span class="c1"># AISHELL-1 (Chinese ASR, from openslr.org)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>./data/aishell
 
@@ -1502,21 +1501,28 @@ tarball) the recipe silently skips it.</p>
 <tbody>
 <tr>
 <td><code>data</code></td>
-<td>All FLAC under <code>data/</code> — every utterance from every speaker (~130k utts)</td>
+<td>All FLAC under <code>data/</code> — every utterance from every speaker (~130k utts, 1000 speakers)</td>
 </tr>
 <tr>
 <td><code>dev</code></td>
-<td>Utterances listed in <code>dev/dev.lst</code> — for tuning / model selection</td>
+<td>Utterances under <code>data/&lt;spk&gt;/</code> for each speaker id listed in <code>dev/dev.lst</code> (~108k utts, ~800 speakers)</td>
 </tr>
 <tr>
 <td><code>eval</code></td>
-<td>Concatenation of <code>eval/lists/enroll.lst</code> + <code>eval/lists/test.lst</code> — for trial pairs</td>
+<td>FLAC under <code>eval/enroll/</code> plus <code>eval/test/</code> — separate recordings for verification trials (~18k utts, ~200 speakers)</td>
 </tr>
 </tbody>
 </table>
-<p>Default is <code>["data"]</code> when no subsets are passed. Asking for
-<code>["data", "dev"]</code> is safe — overlapping utterances are deduplicated
-by the recipe.</p>
+<p>Default is <code>["data"]</code> when no subsets are passed. <code>dev</code> is a
+<em>filter</em> on the same audio as <code>data</code> (same FLAC files), so asking
+for <code>["data", "dev"]</code> deduplicates and yields the same set as
+<code>["data"]</code>. <code>eval</code> is a disjoint set of FLAC files — asking for
+<code>["data", "eval"]</code> is additive.</p>
+<p>The <code>eval/lists/*.lst</code> files in the corpus reference <code>.wav</code> paths
+while the on-disk recordings are <code>.flac</code>, so the recipe walks the
+directories directly rather than consulting the lists. Speaker id
+for <code>eval/{enroll,test}/&lt;spk&gt;-&lt;utt&gt;.flac</code> files comes from the
+dash-prefix of the filename.</p>
 <h3 id="musan-subsets">MUSAN Subsets</h3>
 <table>
 <thead>
