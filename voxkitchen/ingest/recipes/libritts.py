@@ -56,6 +56,17 @@ class LibriTTSRecipe(Recipe):
         "train-clean-360": ["https://www.openslr.org/resources/60/train-clean-360.tar.gz"],
         "train-other-500": ["https://www.openslr.org/resources/60/train-other-500.tar.gz"],
     }
+    # HEAD-probed Content-Length values (2026-05) — compressed tarball
+    # size per subset.
+    download_sizes = {
+        "dev-clean": 1_291_469_655,
+        "dev-other": 924_804_676,
+        "test-clean": 1_230_670_113,
+        "test-other": 964_502_297,
+        "train-clean-100": 7_723_686_890,
+        "train-clean-360": 27_504_073_644,
+        "train-other-500": 44_565_031_479,
+    }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         # Tarballs extract to <root>/LibriTTS/<subset>/.... Tolerate both

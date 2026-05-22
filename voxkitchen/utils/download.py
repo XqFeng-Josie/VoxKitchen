@@ -17,6 +17,24 @@ logger = logging.getLogger(__name__)
 _DEFAULT_MAX_ATTEMPTS = 3
 
 
+def format_bytes(n: int) -> str:
+    """Render a byte count in the largest sensible unit (GB / MB / KB / B).
+
+    Used by ``Recipe.download()`` and ``vkit recipes`` to surface dataset
+    sizes in a form humans actually read. We round to 1 decimal place at
+    the GB scale and to the nearest integer below — speech datasets are
+    big enough that 0.1 GB precision is plenty and a "MB.5" decimal point
+    would just be noise.
+    """
+    if n >= 1024**3:
+        return f"{n / 1024**3:.1f} GB"
+    if n >= 1024**2:
+        return f"{n // 1024**2} MB"
+    if n >= 1024:
+        return f"{n // 1024} KB"
+    return f"{n} B"
+
+
 def _progress_hook(desc: str):  # type: ignore[no-untyped-def]
     """Return a urlretrieve reporthook that updates a tqdm bar."""
     from tqdm import tqdm

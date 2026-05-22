@@ -82,6 +82,10 @@ class CnCelebRecipe(Recipe):
             "https://www.openslr.org/resources/82/cn-celeb_v2.tar.gz",
         ],
     }
+    # HEAD-probed Content-Length (2026-05); 20.74 GB compressed.
+    download_sizes = {
+        "cn-celeb_v2": 22_264_439_915,
+    }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         # The tarball historically extracts to a top-level directory whose

@@ -7,7 +7,24 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from voxkitchen.utils.download import extract_tar
+from voxkitchen.utils.download import extract_tar, format_bytes
+
+
+def test_format_bytes_renders_human_friendly_units() -> None:
+    """``format_bytes`` picks the largest sensible unit and formats it.
+
+    GB is the only unit we render with a decimal (speech datasets are
+    almost always at GB scale; .1 GB precision is what users want).
+    Below GB we use integer division — "734 MB" not "734.0 MB" — so the
+    output stays compact in the `vkit recipes` Size column.
+    """
+    assert format_bytes(0) == "0 B"
+    assert format_bytes(512) == "512 B"
+    assert format_bytes(1024) == "1 KB"
+    assert format_bytes(2 * 1024**2) == "2 MB"
+    assert format_bytes(int(1.5 * 1024**3)) == "1.5 GB"
+    assert format_bytes(15_582_913_665) == "14.5 GB"  # AISHELL-1 data
+    assert format_bytes(44_565_031_479) == "41.5 GB"  # LibriTTS train-other-500
 
 
 def test_download_file_skips_existing(tmp_path: Path) -> None:

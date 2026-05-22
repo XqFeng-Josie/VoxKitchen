@@ -4,18 +4,23 @@ VoxKitchen recipes parse popular speech datasets into CutSets. Some recipes also
 
 ## Available Recipes
 
-| Recipe | Task | Language | Download | Description |
-|--------|------|----------|:--------:|-------------|
-| `librispeech` | ASR | English | openslr | Read-aloud audiobooks (960h) |
-| `libritts` | TTS | English | openslr | Multi-speaker English TTS, sentence-segmented and TTS-normalized derivative of LibriSpeech |
-| `ljspeech` | TTS | English | keithito | Single-speaker English TTS (~24h, 13k utterances) — canonical TTS baseline |
-| `tedlium3` | ASR | English | manual | TED-LIUM 3 — English TED talks (~452h), utterance-aligned via STM. OpenSLR/51 was de-listed; see [TED-LIUM 3](#ted-lium-3-manual-download) below. |
-| `aishell` | ASR | Chinese | openslr | Mandarin read speech (170h) |
-| `aishell3` | TTS | Chinese | openslr | Multi-speaker Mandarin TTS (218 speakers, ~85h) |
-| `cnceleb` | Speaker | Chinese | openslr | CN-Celeb 1 — Chinese speaker recognition (~130k utts, 1000 spk, 11 genres) |
-| `commonvoice` | ASR (multi) | Multi | manual | Mozilla crowdsourced recordings |
-| `fleurs` | ASR / langid | 102 languages | HuggingFace | Google's multilingual eval set (~12h/lang) |
-| `musan` | Augmentation | — | openslr | MUSAN — noise / music / speech augmentation source (~11 GB) |
+| Recipe | Task | Language | Download | Size (compressed) | Description |
+|--------|------|----------|:--------:|------------------:|-------------|
+| `librispeech` | ASR | English | openslr | 299 MB - 28.5 GB / subset | Read-aloud audiobooks (960 h total) |
+| `libritts` | TTS | English | openslr | 881 MB - 41.5 GB / subset | Multi-speaker English TTS, sentence-segmented and TTS-normalized derivative of LibriSpeech |
+| `ljspeech` | TTS | English | keithito | 2.6 GB | Single-speaker English TTS (~24 h, 13k utterances) — canonical TTS baseline |
+| `tedlium3` | ASR | English | manual | — | TED-LIUM 3 — English TED talks (~452 h). OpenSLR/51 was de-listed; see [TED-LIUM 3](#ted-lium-3-manual-download) below. |
+| `aishell` | ASR | Chinese | openslr | 14.5 GB (+ 1 MB resources) | Mandarin read speech (170 h) |
+| `aishell3` | TTS | Chinese | openslr | 17.7 GB | Multi-speaker Mandarin TTS (218 speakers, ~85 h) |
+| `cnceleb` | Speaker | Chinese | openslr | 20.7 GB | CN-Celeb 1 — Chinese speaker recognition (~130k utts, 1000 spk, 11 genres) |
+| `commonvoice` | ASR (multi) | Multi | manual | — | Mozilla crowdsourced recordings |
+| `fleurs` | ASR / langid | 102 languages | HuggingFace | — | Google's multilingual eval set (~12 h / lang) |
+| `musan` | Augmentation | — | openslr | 10.3 GB | MUSAN — noise / music / speech augmentation source |
+
+Sizes are HEAD-probed Content-Length values from the canonical mirror
+(2026-05) and represent the **compressed download**. Extracted size is
+typically 1.2-1.5x larger. `vkit recipes` shows the same Size column
+so you can compare before downloading.
 
 ## Downloading Datasets
 

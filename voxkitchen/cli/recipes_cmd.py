@@ -11,6 +11,27 @@ from rich.table import Table
 console = Console()
 
 
+def _format_size_column(download_sizes: dict[str, int]) -> str:
+    """Render the Size column entry for one recipe.
+
+    - Empty dict (manual / HuggingFace-streaming recipes) → "[dim]—[/dim]".
+    - Single-subset dict → exact size (e.g. "11.0 GB").
+    - Multi-subset dict → range across subsets ("330 MB - 28.5 GB"), so the
+      user can tell at a glance both the smallest dev subset they could
+      grab to kick the tires and the largest train subset they should
+      avoid on a laptop.
+    """
+    from voxkitchen.utils.download import format_bytes
+
+    if not download_sizes:
+        return "[dim]-[/dim]"
+    values = list(download_sizes.values())
+    lo, hi = min(values), max(values)
+    if lo == hi:
+        return format_bytes(lo)
+    return f"{format_bytes(lo)} - {format_bytes(hi)}"
+
+
 def _download_source_label(download_urls: dict[str, list[str]]) -> str:
     """Pick a short, accurate source label from a recipe's download URLs.
 
@@ -53,6 +74,7 @@ def list_recipes(ctx: typer.Context) -> None:
     t = Table(title=f"Available recipes ({len(_RECIPES)})")
     t.add_column("Recipe", style="bold")
     t.add_column("Download")
+    t.add_column("Size", justify="right")
     t.add_column("Description")
 
     for name in sorted(_RECIPES.keys()):
@@ -68,6 +90,8 @@ def list_recipes(ctx: typer.Context) -> None:
         else:
             dl = "[dim]manual[/dim]"
 
+        size_label = _format_size_column(recipe.download_sizes)
+
         doc = type(recipe).__doc__ or ""
         first_line = doc.strip().split("\n")[0] if doc.strip() else ""
         # Fallback description from module docstring
@@ -78,7 +102,7 @@ def list_recipes(ctx: typer.Context) -> None:
             m = importlib.import_module(mod)
             first_line = (m.__doc__ or "").strip().split("\n")[0]
 
-        t.add_row(name, dl, first_line)
+        t.add_row(name, dl, size_label, first_line)
 
     console.print(t)
     console.print()

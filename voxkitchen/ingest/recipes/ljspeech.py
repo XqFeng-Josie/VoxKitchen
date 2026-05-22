@@ -52,6 +52,10 @@ class LJSpeechRecipe(Recipe):
     download_urls = {
         "default": ["https://data.keithito.com/data/speech/LJSpeech-1.1.tar.bz2"],
     }
+    download_sizes = {
+        # HEAD-probed Content-Length on data.keithito.com (2026-05).
+        "default": 2_748_572_632,
+    }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         # The tarball extracts to <root>/LJSpeech-1.1/ ; tolerate both that

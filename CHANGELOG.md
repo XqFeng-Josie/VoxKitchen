@@ -137,6 +137,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   directories, not as pointers into ``data/``). Counts now match the
   paper: 126,532 cuts / 997 speakers in data, 107,953 cuts / 797
   speakers in dev, 17,973 cuts / 200 speakers in eval.
+- Every auto-downloadable recipe now ships HEAD-probed compressed-size
+  metadata in a new ``download_sizes`` dict on the Recipe class. The
+  size is surfaced in three places: a new Size column in
+  ``vkit recipes``, a per-subset "downloading X GB" log line inside
+  ``Recipe.download()``, and the table in
+  ``docs/reference/recipes.md``. Multi-subset recipes (LibriSpeech /
+  LibriTTS / AISHELL-1) show a range like ``299 MB – 28.5 GB``. Manual
+  / HuggingFace recipes render as ``—``. Came out of repeated
+  surprise that "wait, this 22 GB tarball started downloading silently".
 
 ### Added (continued)
 

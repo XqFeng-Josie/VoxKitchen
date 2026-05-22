@@ -58,9 +58,13 @@ class MusanRecipe(Recipe):
 
     name = "musan"
     download_urls = {
-        # MUSAN ships as one ~11 GB tarball. Single-archive design — no
+        # MUSAN ships as one ~10.3 GB tarball. Single-archive design — no
         # per-category download split is offered by OpenSLR.
         "musan": ["https://www.openslr.org/resources/17/musan.tar.gz"],
+    }
+    # HEAD-probed Content-Length (2026-05).
+    download_sizes = {
+        "musan": 11_086_114_085,
     }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:

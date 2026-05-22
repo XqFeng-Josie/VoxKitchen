@@ -29,6 +29,17 @@ class LibriSpeechRecipe(Recipe):
         "train-clean-360": ["https://www.openslr.org/resources/12/train-clean-360.tar.gz"],
         "train-other-500": ["https://www.openslr.org/resources/12/train-other-500.tar.gz"],
     }
+    # HEAD-probed Content-Length values (2026-05) — compressed tarball
+    # size per subset.
+    download_sizes = {
+        "dev-clean": 337_926_286,
+        "dev-other": 314_305_928,
+        "test-clean": 346_663_984,
+        "test-other": 328_757_843,
+        "train-clean-100": 6_387_309_499,
+        "train-clean-360": 23_049_477_885,
+        "train-other-500": 30_593_501_606,
+    }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         # openslr tarballs extract to root/LibriSpeech/<subset>/...

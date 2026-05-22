@@ -30,6 +30,12 @@ class AishellRecipe(Recipe):
             "https://www.openslr.org/resources/33/resource_aishell.tgz",
         ],
     }
+    # HEAD-probed Content-Length values (2026-05). The bulk is in
+    # data_aishell (~14.5 GB); resource_aishell is metadata under 2 MB.
+    download_sizes = {
+        "data_aishell": 15_582_913_665,
+        "resource_aishell": 1_246_920,
+    }
 
     def download(self, root: Path, subsets: list[str] | None) -> None:
         """Download AISHELL-1 and handle nested tgz extraction.

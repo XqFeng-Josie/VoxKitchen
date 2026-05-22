@@ -74,6 +74,10 @@ class Aishell3Recipe(Recipe):
             "https://www.openslr.org/resources/93/data_aishell3.tgz",
         ],
     }
+    # HEAD-probed Content-Length (2026-05); 17.75 GB compressed.
+    download_sizes = {
+        "data_aishell3": 19_057_141_777,
+    }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
         # Tarball extracts to <root>/data_aishell3/. Tolerate the user
