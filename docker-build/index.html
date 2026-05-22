@@ -922,14 +922,58 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Build commands">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faster-rebuilds-buildkit-cache-ghcr-layer-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Faster rebuilds (BuildKit cache + GHCR layer cache)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Faster rebuilds (BuildKit cache + GHCR layer cache)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#including-the-pyannote-diarization-model-at-build-time" class="md-nav__link">
+  <a href="#1-uv-wheel-cache-always-on-no-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Including the pyannote diarization model at build time
+        1. uv wheel cache (always on, no setup)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ghcr-registry-layer-cache-release-script-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. GHCR registry layer cache (release script only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expected-timings-releasesh-single-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected timings (release.sh, single machine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-cache-misses-happen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When cache misses happen
       
     </span>
   </a>
@@ -938,6 +982,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#including-the-pyannote-diarization-model-at-build-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Including the pyannote diarization model at build time
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1190,14 +1245,58 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Build commands">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faster-rebuilds-buildkit-cache-ghcr-layer-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Faster rebuilds (BuildKit cache + GHCR layer cache)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Faster rebuilds (BuildKit cache + GHCR layer cache)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#including-the-pyannote-diarization-model-at-build-time" class="md-nav__link">
+  <a href="#1-uv-wheel-cache-always-on-no-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Including the pyannote diarization model at build time
+        1. uv wheel cache (always on, no setup)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ghcr-registry-layer-cache-release-script-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. GHCR registry layer cache (release script only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expected-timings-releasesh-single-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected timings (release.sh, single machine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-cache-misses-happen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When cache misses happen
       
     </span>
   </a>
@@ -1206,6 +1305,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#including-the-pyannote-diarization-model-at-build-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Including the pyannote diarization model at build time
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1424,7 +1534,141 @@ the repository; daemon layer storage is much larger than <code>./.docker</code>.
 <p>Each build ends with a per-env <code>vkit doctor --expect &lt;env&gt;</code> smoke test. If any
 expected operator fails to register in its env, the build fails loudly rather
 than shipping an image that <em>looks</em> healthy but breaks at runtime.</p>
-<h3 id="including-the-pyannote-diarization-model-at-build-time">Including the pyannote diarization model at build time</h3>
+<h2 id="faster-rebuilds-buildkit-cache-ghcr-layer-cache">Faster rebuilds (BuildKit cache + GHCR layer cache)</h2>
+<p>A full cold build of all six targets takes ~1-2 hours and re-downloads
+several GB of wheels per env (torch alone is ~2.5 GB per CUDA venv).
+Two layers of cache make rebuilds — and builds from a fresh machine —
+much faster.</p>
+<h3 id="1-uv-wheel-cache-always-on-no-setup">1. uv wheel cache (always on, no setup)</h3>
+<p><code>docker/Dockerfile</code> mounts a BuildKit cache at <code>/root/.cache/uv</code> on
+every <code>RUN uv pip install</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>--mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,id<span class="o">=</span>uv-cache,target<span class="o">=</span>/root/.cache/uv,sharing<span class="o">=</span>locked<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--python<span class="w"> </span>/opt/voxkitchen/envs/&lt;env&gt;/bin/python<span class="w"> </span>...
+</code></pre></div>
+<p>The cache is keyed by <code>id=uv-cache</code> and shared across all stages, so
+torch 2.4.1+cu124 downloads <strong>once</strong> and the same wheel is reused by
+<code>core</code> / <code>asr</code> / <code>diarize</code> / <code>tts</code>; <code>fish-speech</code> reuses its own torch
+2.8 wheel on the next rebuild. The cache mount never lands in a final
+image layer — it lives in BuildKit's local cache volume.</p>
+<p>This is enabled automatically by Docker's default BuildKit. Both
+<code>docker build</code> and <code>docker buildx build</code> honor it without flags.</p>
+<p>To inspect or clear the local BuildKit cache:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>buildx<span class="w"> </span>du<span class="w">                              </span><span class="c1"># bytes on disk per cache type</span>
+docker<span class="w"> </span>buildx<span class="w"> </span>prune<span class="w"> </span>--filter<span class="w"> </span><span class="nv">type</span><span class="o">=</span>exec.cachemount<span class="w">   </span><span class="c1"># clear uv wheel cache</span>
+docker<span class="w"> </span>buildx<span class="w"> </span>prune<span class="w">                           </span><span class="c1"># clear everything</span>
+</code></pre></div>
+<h3 id="2-ghcr-registry-layer-cache-release-script-only">2. GHCR registry layer cache (release script only)</h3>
+<p>The uv cache above lives on a single machine. <code>scripts/release.sh</code>
+also publishes BuildKit's <strong>layer cache</strong> to GHCR so it survives
+across machines and across <code>docker buildx prune</code>:</p>
+<ul>
+<li>After every successful target build, the script pushes layer
+  descriptors to <code>ghcr.io/xqfeng-josie/voxkitchen:buildcache-&lt;target&gt;</code>
+  via <code>--cache-to type=registry,mode=max</code>.</li>
+<li>On the next run — on the same machine or any other one logged into
+  GHCR — <code>--cache-from</code> pulls those descriptors and BuildKit reuses
+  unchanged layers without re-running the underlying <code>RUN</code> step.</li>
+</ul>
+<p>The <code>buildcache-&lt;target&gt;</code> tags are <strong>not runnable images</strong>; they
+carry only layer manifests. They are public, so anyone can pull from
+them as a read-only mirror; pushing requires <code>write:packages</code> on the
+GHCR repo.</p>
+<p>Registry cache requires the <code>docker-container</code> BuildKit driver — the
+default <code>docker</code> driver only supports <code>cache-to type=inline</code>. The
+release script creates and reuses a builder named <code>voxkitchen-builder</code>
+automatically on first run:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>buildx<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>voxkitchen-builder<span class="w"> </span>--driver<span class="w"> </span>docker-container<span class="w"> </span>--use
+</code></pre></div>
+<p>If you want the same registry-cache behavior from a local <code>vkit docker
+build</code> (or a direct <code>docker buildx build</code>), build with buildx
+yourself. Read-only consumption of the public cache needs no
+authentication:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>buildx<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>vk-builder<span class="w"> </span>--driver<span class="w"> </span>docker-container<span class="w"> </span>--use<span class="w">   </span><span class="c1"># one-time</span>
+
+docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--target<span class="w"> </span>asr<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--cache-from<span class="w"> </span><span class="nv">type</span><span class="o">=</span>registry,ref<span class="o">=</span>ghcr.io/xqfeng-josie/voxkitchen:buildcache-asr<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--load<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>-t<span class="w"> </span>voxkitchen:asr<span class="w"> </span>.
+</code></pre></div>
+<p>To also <em>write</em> to the cache (for example, you maintain a private
+fork and want your CI builds to share state), point <code>--cache-to</code> at a
+repo you have write access to:</p>
+<div class="highlight"><pre><span></span><code>--cache-to<span class="w"> </span><span class="nv">type</span><span class="o">=</span>registry,ref<span class="o">=</span>ghcr.io/&lt;your-user&gt;/voxkitchen-cache:asr,mode<span class="o">=</span>max
+</code></pre></div>
+<p><code>mode=max</code> is important — <code>mode=min</code> only exports the final stage's
+layer, which discards most of the savings for multi-stage Dockerfiles
+like this one.</p>
+<h3 id="expected-timings-releasesh-single-machine">Expected timings (release.sh, single machine)</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th><code>latest</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First build, cold cache</td>
+<td>~1-2 h</td>
+</tr>
+<tr>
+<td>Rebuild after <code>voxkitchen/**</code> source change only</td>
+<td>~5-10 min</td>
+</tr>
+<tr>
+<td>Rebuild on a fresh machine after GHCR cache pull</td>
+<td>~10-20 min (cache download dominates)</td>
+</tr>
+<tr>
+<td>Rebuild after <code>pyproject.toml</code> extras change</td>
+<td>~30-60 min (re-runs the affected env's install)</td>
+</tr>
+</tbody>
+</table>
+<p>The single-env targets (<code>slim</code>, <code>asr</code>, <code>diarize</code>, <code>tts</code>, <code>fish-speech</code>)
+each take a fraction of <code>latest</code>'s time because they build only one
+env branch. Use <code>--target slim</code> for the fastest smoke test loop while
+hacking on <code>core</code> operators.</p>
+<h3 id="when-cache-misses-happen">When cache misses happen</h3>
+<p>Cache lookup is keyed by the exact <code>RUN</code> command string plus all
+preceding layer hashes. Common things that invalidate downstream
+layers:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Invalidates from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pyproject.toml</code> (any line)</td>
+<td><code>COPY pyproject.toml</code> → all later venv installs</td>
+</tr>
+<tr>
+<td><code>docker/constraints/&lt;env&gt;.txt</code></td>
+<td>that env's <code>RUN uv pip install</code> and everything after in the stage</td>
+</tr>
+<tr>
+<td><code>docker/Dockerfile</code> itself (e.g. add a <code>RUN</code>)</td>
+<td>the changed line and everything after in the same stage</td>
+</tr>
+<tr>
+<td><code>voxkitchen/**</code> source</td>
+<td><code>COPY . .</code> (line ~124) and the final <code>pip install -e . --no-deps</code>; warmup + schema dump rerun</td>
+</tr>
+<tr>
+<td>Base image tag (<code>pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime</code>)</td>
+<td>everything</td>
+</tr>
+</tbody>
+</table>
+<p>Warmup (model downloads) reruns whenever its <code>RUN</code> step's cache is
+invalidated, which currently includes any source change. Treat
+warmup as the most expensive step after wheel installs and re-order
+Dockerfile edits accordingly if you find yourself paying for it often.</p>
+<h2 id="including-the-pyannote-diarization-model-at-build-time">Including the pyannote diarization model at build time</h2>
 <p><code>pyannote/speaker-diarization-3.1</code> is gated. Two approaches:</p>
 <p><strong>(a)</strong> Supply the token during build — the model is baked into the image:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>latest<span class="w"> </span>--build-arg<span class="w"> </span><span class="nv">HF_TOKEN</span><span class="o">=</span>hf_xxx<span class="w"> </span><span class="se">\</span>
@@ -1505,8 +1749,9 @@ uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </s
 </ol>
 <h2 id="what-this-doc-doesnt-cover">What this doc doesn't cover</h2>
 <ul>
-<li>Publishing to GHCR — the CI workflow for that will land later, kept separate
-  from the Dockerfile itself so local builds don't depend on secrets / auth.</li>
+<li>Publishing to GHCR — that lives in <a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/RELEASING.md"><code>RELEASING.md</code></a>
+  and is driven by <code>scripts/release.sh</code>. The release script is also
+  what wires up the GHCR layer cache described above.</li>
 <li>Multi-arch builds (arm64). The buildx command is straightforward; the
   longer story is validating every extras group on arm64 wheels, which we
   haven't done.</li>
