@@ -1478,16 +1478,19 @@ changed it.</p>
 <tbody>
 <tr>
 <td><code>train</code></td>
-<td>218 speakers, the bulk of the corpus (~85h)</td>
+<td>Training split (the bulk of the ~88k utterances; 174 speaker dirs)</td>
 </tr>
 <tr>
 <td><code>test</code></td>
-<td>held-out evaluation split</td>
+<td>Held-out evaluation split (214 speaker dirs; speakers mostly overlap with <code>train</code>)</td>
 </tr>
 </tbody>
 </table>
-<p>If a subset is missing on disk (partial extraction is common for the
-~17 GB tarball) the recipe silently skips it.</p>
+<p>The corpus has 218 unique speakers across train + test combined
+(<code>train</code> and <code>test</code> share most speakers — AISHELL-3 holds out
+utterances per speaker, not speakers per split). If a subset is
+missing on disk (partial extraction is common for the ~17 GB
+tarball) the recipe silently skips it.</p>
 <h3 id="cn-celeb-1-subsets">CN-Celeb 1 Subsets</h3>
 <table>
 <thead>
