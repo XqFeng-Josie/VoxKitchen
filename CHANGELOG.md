@@ -107,7 +107,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `ghcr.io/xqfeng-josie/voxkitchen:buildcache-<target>` via
   `--cache-to type=registry,mode=max`. First build from a cold cache
   still takes 1-2 h; subsequent rebuilds where only application source
-  changed land in single-digit minutes per target.
+  changed land in single-digit minutes per target. New "Faster
+  rebuilds" section in `docs/docker-build.md` walks through both cache
+  layers, the manual `docker buildx` command to consume the public
+  registry cache from a fork, expected timings per scenario, and which
+  changes invalidate which layers.
 
 ### Fixed
 

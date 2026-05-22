@@ -111,7 +111,128 @@ Each build ends with a per-env `vkit doctor --expect <env>` smoke test. If any
 expected operator fails to register in its env, the build fails loudly rather
 than shipping an image that *looks* healthy but breaks at runtime.
 
-### Including the pyannote diarization model at build time
+## Faster rebuilds (BuildKit cache + GHCR layer cache)
+
+A full cold build of all six targets takes ~1-2 hours and re-downloads
+several GB of wheels per env (torch alone is ~2.5 GB per CUDA venv).
+Two layers of cache make rebuilds — and builds from a fresh machine —
+much faster.
+
+### 1. uv wheel cache (always on, no setup)
+
+`docker/Dockerfile` mounts a BuildKit cache at `/root/.cache/uv` on
+every `RUN uv pip install`:
+
+```dockerfile
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/<env>/bin/python ...
+```
+
+The cache is keyed by `id=uv-cache` and shared across all stages, so
+torch 2.4.1+cu124 downloads **once** and the same wheel is reused by
+`core` / `asr` / `diarize` / `tts`; `fish-speech` reuses its own torch
+2.8 wheel on the next rebuild. The cache mount never lands in a final
+image layer — it lives in BuildKit's local cache volume.
+
+This is enabled automatically by Docker's default BuildKit. Both
+`docker build` and `docker buildx build` honor it without flags.
+
+To inspect or clear the local BuildKit cache:
+
+```bash
+docker buildx du                              # bytes on disk per cache type
+docker buildx prune --filter type=exec.cachemount   # clear uv wheel cache
+docker buildx prune                           # clear everything
+```
+
+### 2. GHCR registry layer cache (release script only)
+
+The uv cache above lives on a single machine. `scripts/release.sh`
+also publishes BuildKit's **layer cache** to GHCR so it survives
+across machines and across `docker buildx prune`:
+
+- After every successful target build, the script pushes layer
+  descriptors to `ghcr.io/xqfeng-josie/voxkitchen:buildcache-<target>`
+  via `--cache-to type=registry,mode=max`.
+- On the next run — on the same machine or any other one logged into
+  GHCR — `--cache-from` pulls those descriptors and BuildKit reuses
+  unchanged layers without re-running the underlying `RUN` step.
+
+The `buildcache-<target>` tags are **not runnable images**; they
+carry only layer manifests. They are public, so anyone can pull from
+them as a read-only mirror; pushing requires `write:packages` on the
+GHCR repo.
+
+Registry cache requires the `docker-container` BuildKit driver — the
+default `docker` driver only supports `cache-to type=inline`. The
+release script creates and reuses a builder named `voxkitchen-builder`
+automatically on first run:
+
+```bash
+docker buildx create --name voxkitchen-builder --driver docker-container --use
+```
+
+If you want the same registry-cache behavior from a local `vkit docker
+build` (or a direct `docker buildx build`), build with buildx
+yourself. Read-only consumption of the public cache needs no
+authentication:
+
+```bash
+docker buildx create --name vk-builder --driver docker-container --use   # one-time
+
+docker buildx build \
+    --target asr \
+    --cache-from type=registry,ref=ghcr.io/xqfeng-josie/voxkitchen:buildcache-asr \
+    --load \
+    -f docker/Dockerfile -t voxkitchen:asr .
+```
+
+To also *write* to the cache (for example, you maintain a private
+fork and want your CI builds to share state), point `--cache-to` at a
+repo you have write access to:
+
+```bash
+--cache-to type=registry,ref=ghcr.io/<your-user>/voxkitchen-cache:asr,mode=max
+```
+
+`mode=max` is important — `mode=min` only exports the final stage's
+layer, which discards most of the savings for multi-stage Dockerfiles
+like this one.
+
+### Expected timings (release.sh, single machine)
+
+| Scenario | `latest` |
+|---|---|
+| First build, cold cache | ~1-2 h |
+| Rebuild after `voxkitchen/**` source change only | ~5-10 min |
+| Rebuild on a fresh machine after GHCR cache pull | ~10-20 min (cache download dominates) |
+| Rebuild after `pyproject.toml` extras change | ~30-60 min (re-runs the affected env's install) |
+
+The single-env targets (`slim`, `asr`, `diarize`, `tts`, `fish-speech`)
+each take a fraction of `latest`'s time because they build only one
+env branch. Use `--target slim` for the fastest smoke test loop while
+hacking on `core` operators.
+
+### When cache misses happen
+
+Cache lookup is keyed by the exact `RUN` command string plus all
+preceding layer hashes. Common things that invalidate downstream
+layers:
+
+| Change | Invalidates from |
+|---|---|
+| `pyproject.toml` (any line) | `COPY pyproject.toml` → all later venv installs |
+| `docker/constraints/<env>.txt` | that env's `RUN uv pip install` and everything after in the stage |
+| `docker/Dockerfile` itself (e.g. add a `RUN`) | the changed line and everything after in the same stage |
+| `voxkitchen/**` source | `COPY . .` (line ~124) and the final `pip install -e . --no-deps`; warmup + schema dump rerun |
+| Base image tag (`pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime`) | everything |
+
+Warmup (model downloads) reruns whenever its `RUN` step's cache is
+invalidated, which currently includes any source change. Treat
+warmup as the most expensive step after wheel installs and re-order
+Dockerfile edits accordingly if you find yourself paying for it often.
+
+## Including the pyannote diarization model at build time
 
 `pyannote/speaker-diarization-3.1` is gated. Two approaches:
 
@@ -213,8 +334,9 @@ image and run again.
 
 ## What this doc doesn't cover
 
-- Publishing to GHCR — the CI workflow for that will land later, kept separate
-  from the Dockerfile itself so local builds don't depend on secrets / auth.
+- Publishing to GHCR — that lives in [`RELEASING.md`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/RELEASING.md)
+  and is driven by `scripts/release.sh`. The release script is also
+  what wires up the GHCR layer cache described above.
 - Multi-arch builds (arm64). The buildx command is straightforward; the
   longer story is validating every extras group on arm64 wheels, which we
   haven't done.
