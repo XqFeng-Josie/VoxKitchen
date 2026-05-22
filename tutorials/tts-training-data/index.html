@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tts-data-preparation" class="md-skip">
+        <a href="#tts-training-data" class="md-skip">
           Skip to content
         </a>
       
@@ -1395,15 +1395,18 @@
   
 
 
-<h1 id="tts-data-preparation">TTS Data Preparation</h1>
-<p>Prepare high-quality TTS training data from raw recordings. The pipeline
-is mostly a <strong>quality gate</strong>: it standardizes format, segments to a
-usable utterance length, denoises just enough, drops low-quality
+<h1 id="tts-training-data">TTS Training Data</h1>
+<p>Prepare high-quality TTS <strong>training</strong> data from raw recordings. The
+pipeline is mostly a <strong>quality gate</strong>: it standardizes format, segments
+to a usable utterance length, denoises just enough, drops low-quality
 segments, and adds ASR text + timestamps so each kept segment is paired
 with a reliable label.</p>
 <blockquote>
 <p>Looking for the inverse direction — generating speech from text?
-See <a href="tts-synthesis.md">TTS Synthesis</a>.</p>
+Two companion tutorials split synthesis by use case:
+<a href="../tts-speaker/">Speaker TTS</a> (pick a built-in voice) and
+<a href="../tts-voice-cloning/">Voice Cloning &amp; TTS</a> (clone a voice from a
+short reference).</p>
 </blockquote>
 <h2 id="quick-start">Quick Start</h2>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-tts-project<span class="w"> </span>--template<span class="w"> </span>tts
@@ -1565,10 +1568,13 @@ operators, so run the edited pipeline with <code>--tag latest</code>.</p>
 <ul>
 <li>Train a TTS model on the resulting manifest using your framework of
   choice (Tacotron2, VITS, FastSpeech2, Coqui XTTS, etc.).</li>
-<li>Or feed the manifest to a pretrained engine via
-  <a href="tts-synthesis.md">TTS Synthesis</a> to A/B compare your data against
-  built-in voices, or to generate new audio from the transcripts you
-  just extracted.</li>
+<li>Or feed the manifest to a pretrained engine to A/B compare your data
+  against existing voices or to generate new audio from the
+  transcripts you just extracted:</li>
+<li><a href="../tts-speaker/">Speaker TTS</a> — kokoro, ChatTTS, CosyVoice with a
+    built-in speaker id.</li>
+<li><a href="../tts-voice-cloning/">Voice Cloning &amp; TTS</a> — CosyVoice zero-shot,
+    Fish-Speech: synthesize in a voice you supply via reference audio.</li>
 </ul>
 
 
