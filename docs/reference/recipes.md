@@ -82,11 +82,14 @@ changed it.
 
 | Subset | Description |
 |--------|-------------|
-| `train` | 218 speakers, the bulk of the corpus (~85h) |
-| `test`  | held-out evaluation split |
+| `train` | Training split (the bulk of the ~88k utterances; 174 speaker dirs) |
+| `test`  | Held-out evaluation split (214 speaker dirs; speakers mostly overlap with `train`) |
 
-If a subset is missing on disk (partial extraction is common for the
-~17 GB tarball) the recipe silently skips it.
+The corpus has 218 unique speakers across train + test combined
+(`train` and `test` share most speakers — AISHELL-3 holds out
+utterances per speaker, not speakers per split). If a subset is
+missing on disk (partial extraction is common for the ~17 GB
+tarball) the recipe silently skips it.
 
 ### CN-Celeb 1 Subsets
 

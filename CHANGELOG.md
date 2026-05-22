@@ -40,46 +40,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `# yaml-language-server: $schema=…` directive at the top of every
   scaffolded `pipeline.yaml`, so VS Code, Neovim, and JetBrains users get
   autocompletion on operator names and inline validation of the spec
-  structure out of the box. See `docs/reference/schema.md` for editor
-  setup.
-
-### Fixed
-
-- Wheel no longer ships duplicate copies of `voxkitchen/templates/pipelines/*.yaml`.
-  The redundant `[tool.hatch.build.targets.wheel.force-include]` block was
-  removed; hatchling already includes non-Python files inside the package
-  directory.
-- Untagged dev builds (e.g. the publish workflow's manual TestPyPI dispatch)
-  now produce PEP 440-compliant versions like `0.2.1.dev5` instead of
-  `0.2.1.dev5+g<sha>`. PyPI and TestPyPI both reject the latter form. Set via
-  `local_scheme = "no-local-version"` in `[tool.hatch.version].raw-options`.
-- Removed `[wenet]`, `[speaker]`, and `[tts-fish-speech]` optional-dependency
-  groups from `pyproject.toml` because they declared `pkg @ git+...` direct
-  references, which PyPI rejects on upload. These packages were never reachable
-  via `pip install voxkitchen[...]` for end users anyway; the Docker images
-  now install them from git inside their respective `RUN` lines
-  (`fish-speech` joins `wenet`'s existing pattern in `docker/Dockerfile`).
-  Operators that declare `required_extras = ["wenet"|"tts-fish-speech"]` still
-  route correctly via `EXTRA_TO_ENV` in `voxkitchen/runtime/env_resolver.py`.
-- `vkit run` now exits with code 1 (runtime failure) when a stage raises
-  `StageFailedError`, matching the rest of the CLI's exit-code convention.
-  Previously it returned code 2, which the codebase reserves for invocation
-  errors (unknown flag, missing docker binary, unknown operator category).
-- `vkit ingest` inline error messages now use the same `error:` prefix the
-  rest of the CLI prints, instead of rendering the whole line in red without
-  context.
-- `vkit inspect cuts <missing>` no longer dumps a full Python traceback; it
-  prints a one-line `error: manifest does not exist: …` and exits 1.
-  Corrupt or empty manifests are reported the same way.
-- `vkit inspect run|errors|trace <missing>` now exit with code 1 on a missing
-  work directory or an unknown cut id. They previously printed an error
-  message but returned exit 0, so shell scripts treated the failure as
-  success.
-- `docs/reference/tools-api.md` now documents the full
-  `voxkitchen.tools` API surface. `compute_speaker_similarity` and
-  `tokenize_audio` had shipped but were missing from the reference
-  page — added their import line, usage section, and runtime-image hint
-  to bring the doc in line with the code.
+  structure out of the box. See `docs/reference/schema.md` for editor setup.
 - New tutorial `docs/tutorials/tts-synthesis.md` covers the inverse
   direction of the existing TTS data-prep tutorial: how to synthesize
   speech from text. Includes a per-engine capability matrix (cloning,
@@ -88,85 +49,124 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `tts_fish_speech`, and a decision flow for picking an engine. Linked
   from `docs/index.md`, README "What You Can Build", and the existing
   TTS data-prep tutorial.
-- `docs/tutorials/tts-data-prep.md` now opens with an explicit "quality
-  gate" framing and ends with a Quality Checklist summarizing the
-  five thresholds (sample rate, duration, SNR, text present, alignment
-  present). Cross-links to the new synthesis tutorial.
-- Three new ingest recipes fill the TTS gap (previously only the 4
-  ASR-oriented recipes existed):
-  - `ljspeech` — single-speaker English TTS baseline (24h, 13.1k
+- Five new ingest recipes complete the "common dataset" coverage,
+  bringing the total registered to 9:
+  - `ljspeech` — single-speaker English TTS baseline (24 h, 13.1k
     utterances), downloaded from data.keithito.com. Prefers
     normalized text over raw; preserves the raw form only when
     normalization changed it.
-  - `aishell3` — multi-speaker Mandarin TTS (218 speakers, ~85h),
-    downloaded from OpenSLR resource 93. Splits the interleaved
-    character + pinyin `content.txt` into supervision text (chars)
-    and `cut.custom["pinyin"]`; enriches gender from `spk-info.txt`.
+  - `aishell3` — multi-speaker Mandarin TTS (218 speakers, ~85 h),
+    downloaded from OpenSLR/93. Splits the interleaved character +
+    pinyin `content.txt` into supervision text (chars) and
+    `cut.custom["pinyin"]`; enriches gender from `spk-info.txt`.
   - `libritts` — multi-speaker English TTS derived from LibriSpeech
-    (OpenSLR resource 60). Prefers `*.normalized.txt` over
-    `*.original.txt`; enriches gender from `speakers.tsv`. Same
-    seven-subset partitioning as LibriSpeech.
-  `vkit recipes` now lists 7 recipes.
+    (OpenSLR/60). Prefers `*.normalized.txt` over `*.original.txt`;
+    enriches gender from `speakers.tsv`. Same seven-subset
+    partitioning as LibriSpeech.
+  - `cnceleb` — CN-Celeb 1, Chinese speaker recognition (~130k
+    utterances, 1000 speakers, 11 genres), from OpenSLR/82.
+    Empty-text Supervisions carry speaker / language tags. Subsets
+    `data` / `dev` / `eval` follow the canonical splits; overlapping
+    subsets deduplicate.
+  - `musan` — MUSAN augmentation corpus (~10 GB of non-transcribed
+    noise / music / speech), from OpenSLR/17. Closes the loop with
+    the existing `noise_augment` operator. Subsets pick which of the
+    three top-level categories to ingest; sub-categories are
+    preserved as `cut.custom["musan_subcategory"]`.
+- Every auto-downloadable recipe ships HEAD-probed compressed-size
+  metadata in a new `download_sizes` dict on the Recipe class. The
+  size is surfaced in three places: a new Size column in
+  `vkit recipes`, a per-subset "downloading X GB" log line inside
+  `Recipe.download()`, and the table in `docs/reference/recipes.md`.
+  Multi-subset recipes (LibriSpeech / LibriTTS / AISHELL-1) show a
+  range like `299 MB - 28.5 GB`. Manual / HuggingFace recipes render
+  as a dash.
+
+### Changed
+
+- `docs/tutorials/tts-data-prep.md` now opens with an explicit
+  "quality gate" framing and ends with a Quality Checklist
+  summarizing the five thresholds (sample rate, duration, SNR, text
+  present, alignment present). Cross-links to the new synthesis
+  tutorial.
 - The Download column of `vkit recipes` now derives the source label
   from each recipe's URL host (keithito / openslr / huggingface /
-  bare hostname) instead of hard-coding "openslr" for every
-  recipe with `download_urls`.
+  bare hostname) instead of hard-coding "openslr" for every recipe
+  with `download_urls`.
+
+### Fixed
+
+- Wheel no longer ships duplicate copies of
+  `voxkitchen/templates/pipelines/*.yaml`. The redundant
+  `[tool.hatch.build.targets.wheel.force-include]` block was removed;
+  hatchling already includes non-Python files inside the package
+  directory.
+- Untagged dev builds (e.g. the publish workflow's manual TestPyPI
+  dispatch) now produce PEP 440-compliant versions like
+  `0.2.1.dev5` instead of `0.2.1.dev5+g<sha>`. PyPI and TestPyPI both
+  reject the latter form. Set via `local_scheme = "no-local-version"`
+  in `[tool.hatch.version].raw-options`.
+- Removed `[wenet]`, `[speaker]`, and `[tts-fish-speech]`
+  optional-dependency groups from `pyproject.toml` because they
+  declared `pkg @ git+...` direct references, which PyPI rejects on
+  upload. The Docker images now install these from git inside their
+  respective `RUN` lines (`fish-speech` joins `wenet`'s existing
+  pattern in `docker/Dockerfile`). Operators that declare
+  `required_extras = ["wenet"|"tts-fish-speech"]` still route
+  correctly via `EXTRA_TO_ENV` in
+  `voxkitchen/runtime/env_resolver.py`.
+- `vkit run` now exits with code 1 (runtime failure) when a stage
+  raises `StageFailedError`, matching the rest of the CLI's exit-code
+  convention. Previously it returned code 2, which the codebase
+  reserves for invocation errors (unknown flag, missing docker
+  binary, unknown operator category).
+- `vkit ingest` inline error messages now use the same `error:`
+  prefix the rest of the CLI prints, instead of rendering the whole
+  line in red without context.
+- `vkit inspect cuts <missing>` no longer dumps a full Python
+  traceback; it prints a one-line
+  `error: manifest does not exist: …` and exits 1. Corrupt or empty
+  manifests are reported the same way.
+- `vkit inspect run|errors|trace <missing>` now exit with code 1 on
+  a missing work directory or an unknown cut id. They previously
+  printed an error message but returned exit 0, so shell scripts
+  treated the failure as success.
+- `docs/reference/tools-api.md` now documents the full
+  `voxkitchen.tools` API surface. `compute_speaker_similarity` and
+  `tokenize_audio` had shipped but were missing from the reference
+  page — added their import line, usage section, and runtime-image
+  hint to bring the doc in line with the code.
 - `voxkitchen.utils.download.download_file` is now atomic and
-  retryable. The body streams into ``<dest>.partial`` and is renamed
+  retryable. The body streams into `<dest>.partial` and is renamed
   into place only on success, so an aborted transfer can no longer
   be mistaken for a complete download on the next call. Up to three
   attempts are made on transient errors (ConnectionResetError /
   OSError / …) with exponential backoff (2s, 4s). This came out of
   real OpenSLR mid-stream RSTs hit while end-to-end-verifying the
   new AISHELL-3 and LibriTTS recipes.
+- `cnceleb` recipe rewritten to match the real corpus layout.
+  Verified against the live 22 GB tarball, the previous
+  implementation was wrong about `dev.lst` (it lists speaker IDs,
+  not paths) and about `eval` (audio lives in separate
+  `eval/enroll` and `eval/test` flat directories, not as pointers
+  into `data/`). Counts now match the paper: 126,532 cuts / 997
+  speakers in data, 107,953 cuts / 797 speakers in dev, 17,973 cuts
+  / 200 speakers in eval.
+- Local release/push checks now run the same fast lint, format,
+  typecheck, and pytest gate as CI via `scripts/check-ci.sh`.
+
 ### Removed
 
-- The ``tedlium3`` recipe is removed entirely. The canonical
-  ``openslr.org/resources/51/`` mirror was de-listed by the project
-  upstream — every probe returns 404 and ``www.openslr.org/51/``
+- The `tedlium3` recipe is removed entirely. The canonical
+  `openslr.org/resources/51/` mirror was de-listed by the project
+  upstream — every probe returns 404 and `www.openslr.org/51/`
   reports "Resource not found". Without a working auto-download URL,
   the recipe was effectively manual-only, and shipping a registered
-  recipe whose ``vkit docker download`` is a guaranteed no-op was a
-  UX cost without a corresponding benefit. The STM-parsing and slice
-  layout logic remain in git history (commit 15e6d19 and its
+  recipe whose `vkit docker download` is a guaranteed no-op was a
+  UX cost without a corresponding benefit. The STM-parsing and
+  slice layout logic remain in git history (commit 15e6d19 and its
   subsequent corrections); reintroduce via a HuggingFace-streaming
-  recipe (modelled on ``fleurs``) when a real data path is available.
-
-### Fixed
-
-- ``cnceleb`` recipe rewritten to match the real corpus layout. Verified
-  against the live 22 GB tarball, the previous implementation was wrong
-  about ``dev.lst`` (it lists speaker IDs, not paths) and about ``eval``
-  (audio lives in separate ``eval/enroll`` and ``eval/test`` flat
-  directories, not as pointers into ``data/``). Counts now match the
-  paper: 126,532 cuts / 997 speakers in data, 107,953 cuts / 797
-  speakers in dev, 17,973 cuts / 200 speakers in eval.
-- Every auto-downloadable recipe now ships HEAD-probed compressed-size
-  metadata in a new ``download_sizes`` dict on the Recipe class. The
-  size is surfaced in three places: a new Size column in
-  ``vkit recipes``, a per-subset "downloading X GB" log line inside
-  ``Recipe.download()``, and the table in
-  ``docs/reference/recipes.md``. Multi-subset recipes (LibriSpeech /
-  LibriTTS / AISHELL-1) show a range like ``299 MB – 28.5 GB``. Manual
-  / HuggingFace recipes render as ``—``. Came out of repeated
-  surprise that "wait, this 22 GB tarball started downloading silently".
-
-### Added (continued)
-
-- Two more ingest recipes complete the "common dataset" coverage,
-  bringing the total to 9:
-  - `cnceleb` — CN-Celeb 1, Chinese speaker recognition (~130k
-    utterances, 1000 speakers, 11 genres), from OpenSLR/82. Empty-text
-    Supervisions carry speaker / language tags. Subsets `data` /
-    `dev` / `eval` follow the canonical splits; overlapping subsets
-    deduplicate.
-  - `musan` — MUSAN augmentation corpus (~10 GB of non-transcribed
-    noise / music / speech), from OpenSLR/17. Closes the loop with
-    the existing `noise_augment` operator. Subsets pick which of the
-    three top-level categories to ingest; sub-categories are
-    preserved as `cut.custom["musan_subcategory"]`.
-- Local release/push checks now run the same fast lint, format, typecheck, and
-  pytest gate as CI via `scripts/check-ci.sh`.
+  recipe (modelled on `fleurs`) when a real data path is available.
 
 ## [0.2.0] — 2026-05-18
 

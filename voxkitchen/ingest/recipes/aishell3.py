@@ -80,9 +80,10 @@ class Aishell3Recipe(Recipe):
     }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
-        # Tarball extracts to <root>/data_aishell3/. Tolerate the user
-        # pointing either at the parent (with the tarball alongside) or at
-        # the extracted directory itself.
+        # The real OpenSLR/93 tarball extracts FLAT into <root>/ — see the
+        # module docstring. The probe for ``<root>/data_aishell3/`` is a
+        # back-compat affordance for users who manually unpacked into a
+        # subdirectory of that name.
         ds_dir = root / "data_aishell3"
         effective_root = ds_dir if ds_dir.is_dir() else root
 
