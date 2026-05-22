@@ -48,7 +48,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from voxkitchen.ingest.recipes import register_recipe
 from voxkitchen.ingest.recipes.base import Recipe
@@ -166,16 +166,18 @@ class Aishell3Recipe(Recipe):
         return result
 
     @staticmethod
-    def _parse_speaker_info(path: Path) -> dict[str, str]:
+    def _parse_speaker_info(path: Path) -> dict[str, Literal["m", "f"]]:
         """Return ``{speaker_id: gender}`` from spk-info.txt when present.
 
         File is tab-separated; the gender column uses ``male`` / ``female``
         — we map to the schema's compact codes ``m`` / ``f``. Missing or
-        unparseable rows are silently skipped.
+        unparseable rows are silently skipped. The return type uses the
+        same ``Literal`` shape as ``Supervision.gender`` so the value can
+        be passed through without a runtime cast.
         """
         if not path.is_file():
             return {}
-        result: dict[str, str] = {}
+        result: dict[str, Literal["m", "f"]] = {}
         for line in path.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if not line or line.startswith("#"):

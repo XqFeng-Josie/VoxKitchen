@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from voxkitchen.ingest.recipes import register_recipe
 from voxkitchen.ingest.recipes.base import Recipe
@@ -155,16 +155,19 @@ class LibriTTSRecipe(Recipe):
         return sorted(p.name for p in root.iterdir() if p.is_dir() and p.name in official)
 
     @staticmethod
-    def _parse_speakers_tsv(path: Path) -> dict[str, str]:
+    def _parse_speakers_tsv(path: Path) -> dict[str, Literal["m", "f"]]:
         """Return ``{speaker_id: gender}`` from speakers.tsv when present.
 
         The official file is tab-separated: ``READER\tGENDER\tSUBSET\tNAME``.
         We accept either ``M`` / ``F`` or full words and normalize to the
-        schema's ``m`` / ``f`` codes. Rows we can't parse are skipped.
+        schema's ``m`` / ``f`` codes. Rows we can't parse are skipped. The
+        return type uses the same ``Literal`` shape as
+        ``Supervision.gender`` so the value can be passed through without
+        a runtime cast.
         """
         if not path.is_file():
             return {}
-        result: dict[str, str] = {}
+        result: dict[str, Literal["m", "f"]] = {}
         for i, line in enumerate(path.read_text(encoding="utf-8").splitlines()):
             line = line.strip()
             if not line:
