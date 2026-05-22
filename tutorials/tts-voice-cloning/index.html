@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../../examples/">
+        <link rel="prev" href="../tts-speaker/">
       
       
-        <link rel="next" href="../tts-synthesis/">
+        <link rel="next" href="../asr-training-data/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>TTS Data Preparation - VoxKitchen</title>
+        <title>Voice Cloning & TTS - VoxKitchen</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tts-data-preparation" class="md-skip">
+        <a href="#voice-cloning-tts" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              TTS Data Preparation
+              Voice Cloning & TTS
             
           </span>
         </div>
@@ -357,6 +357,62 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../tts-training-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Training Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tts-speaker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Speaker TTS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -376,7 +432,7 @@
   <span class="md-ellipsis">
     
   
-    TTS Data Preparation
+    Voice Cloning & TTS
   
 
     
@@ -394,7 +450,7 @@
   <span class="md-ellipsis">
     
   
-    TTS Data Preparation
+    Voice Cloning & TTS
   
 
     
@@ -420,10 +476,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#quick-start-python" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Quick Start (Python)
       
     </span>
   </a>
@@ -431,10 +487,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-the-pipeline-does" class="md-nav__link">
+  <a href="#quick-start-yaml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What the Pipeline Does
+        Quick Start (YAML)
       
     </span>
   </a>
@@ -442,10 +498,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quality-checklist" class="md-nav__link">
+  <a href="#engine-capabilities" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quality Checklist
+        Engine Capabilities
       
     </span>
   </a>
@@ -453,121 +509,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-design-decisions" class="md-nav__link">
+  <a href="#preparing-the-reference-audio" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Design Decisions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key Design Decisions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-2205-khz" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why 22.05 kHz?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-light-denoising-03" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why light denoising (0.3)?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-215-seconds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why 2–15 seconds?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-snr-15-db" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why SNR &gt; 15 dB?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Customization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Customization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#for-chinese-tts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        For Chinese TTS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-multi-speaker-tts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        For multi-speaker TTS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adjust-quality-thresholds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adjust quality thresholds
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Output Format
+        Preparing The Reference Audio
       
     </span>
   </a>
@@ -575,10 +520,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#cosyvoice-zero_shot-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        CosyVoice — zero_shot mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cosyvoice-cross_lingual-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CosyVoice — cross_lingual mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fish-speech-441-khz-language-agnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fish-Speech — 44.1 kHz, language-agnostic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-an-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing An Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-the-input-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preparing The Input Manifest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting Outputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
       
     </span>
   </a>
@@ -589,34 +600,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tts-synthesis/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    TTS Synthesis
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1182,10 +1165,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#quick-start-python" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Quick Start (Python)
       
     </span>
   </a>
@@ -1193,10 +1176,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-the-pipeline-does" class="md-nav__link">
+  <a href="#quick-start-yaml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What the Pipeline Does
+        Quick Start (YAML)
       
     </span>
   </a>
@@ -1204,10 +1187,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quality-checklist" class="md-nav__link">
+  <a href="#engine-capabilities" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quality Checklist
+        Engine Capabilities
       
     </span>
   </a>
@@ -1215,121 +1198,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-design-decisions" class="md-nav__link">
+  <a href="#preparing-the-reference-audio" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Design Decisions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key Design Decisions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-2205-khz" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why 22.05 kHz?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-light-denoising-03" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why light denoising (0.3)?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-215-seconds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why 2–15 seconds?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-snr-15-db" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why SNR &gt; 15 dB?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Customization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Customization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#for-chinese-tts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        For Chinese TTS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-multi-speaker-tts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        For multi-speaker TTS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adjust-quality-thresholds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adjust quality thresholds
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Output Format
+        Preparing The Reference Audio
       
     </span>
   </a>
@@ -1337,10 +1209,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#cosyvoice-zero_shot-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        CosyVoice — zero_shot mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cosyvoice-cross_lingual-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CosyVoice — cross_lingual mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fish-speech-441-khz-language-agnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fish-Speech — 44.1 kHz, language-agnostic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-an-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing An Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-the-input-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preparing The Input Manifest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting Outputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
       
     </span>
   </a>
@@ -1367,180 +1305,212 @@
   
 
 
-<h1 id="tts-data-preparation">TTS Data Preparation</h1>
-<p>Prepare high-quality TTS training data from raw recordings. The pipeline
-is mostly a <strong>quality gate</strong>: it standardizes format, segments to a
-usable utterance length, denoises just enough, drops low-quality
-segments, and adds ASR text + timestamps so each kept segment is paired
-with a reliable label.</p>
+<h1 id="voice-cloning-tts">Voice Cloning &amp; TTS</h1>
+<p>Clone a target voice from a single short reference recording (3–10
+seconds is enough) and synthesize new text in that voice. VoxKitchen
+ships two reference-driven engines: <strong>CosyVoice</strong> (24 kHz, GPU, <code>tts</code>
+image) and <strong>Fish-Speech</strong> (44.1 kHz, GPU, <code>fish-speech</code> image).</p>
 <blockquote>
-<p>Looking for the inverse direction — generating speech from text?
-See <a href="../tts-synthesis/">TTS Synthesis</a>.</p>
+<p>Just want a built-in voice and don't need cloning? See
+<a href="../tts-speaker/">Speaker TTS</a>. Preparing audio to <em>train</em> your own
+TTS model? See <a href="../tts-training-data/">TTS Training Data</a>.</p>
 </blockquote>
-<h2 id="quick-start">Quick Start</h2>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-tts-project<span class="w"> </span>--template<span class="w"> </span>tts
-<span class="nb">cd</span><span class="w"> </span>my-tts-project
-<span class="c1"># Put your audio files in ./data/</span>
-vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
-vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>pipeline.yaml
-</code></pre></div>
-<h2 id="what-the-pipeline-does">What the Pipeline Does</h2>
-<table>
-<thead>
-<tr>
-<th>Stage</th>
-<th>Operator</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Format convert</td>
-<td><code>ffmpeg_convert</code></td>
-<td>Handle any input format (opus, flac, mp3, etc.)</td>
-</tr>
-<tr>
-<td>Resample</td>
-<td><code>resample</code> → 22.05kHz mono</td>
-<td>TTS standard sample rate; mono for single-speaker</td>
-</tr>
-<tr>
-<td>Denoise</td>
-<td><code>speech_enhance</code> (aggressiveness=0.3)</td>
-<td>Light denoising — preserve natural speech quality</td>
-</tr>
-<tr>
-<td>VAD</td>
-<td><code>silero_vad</code> (min 1s)</td>
-<td>Split into utterances; 1s minimum for meaningful TTS segments</td>
-</tr>
-<tr>
-<td>SNR</td>
-<td><code>snr_estimate</code></td>
-<td>Measure signal-to-noise ratio</td>
-</tr>
-<tr>
-<td>Filter</td>
-<td><code>quality_score_filter</code></td>
-<td>Keep only 2–15s segments with SNR &gt; 15 dB</td>
-</tr>
-<tr>
-<td>ASR + Align</td>
-<td><code>qwen3_asr</code> (timestamps=true)</td>
-<td>Transcribe + word-level forced alignment in one pass</td>
-</tr>
-<tr>
-<td>Pack</td>
-<td><code>pack_jsonl</code></td>
-<td>Output manifest with text, timestamps, quality metrics</td>
-</tr>
-</tbody>
-</table>
-<h2 id="quality-checklist">Quality Checklist</h2>
-<p>Every kept segment in the output manifest satisfies all of these. Edit
-the <code>filter</code> stage if your dataset needs different thresholds.</p>
-<table>
-<thead>
-<tr>
-<th>Check</th>
-<th style="text-align: center;">Default</th>
-<th>Why this matters for TTS</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Sample rate</td>
-<td style="text-align: center;">22.05 kHz mono</td>
-<td>Matches VITS / FastSpeech2 / Tacotron2 training assumptions</td>
-</tr>
-<tr>
-<td>Duration</td>
-<td style="text-align: center;">2 s ≤ len ≤ 15 s</td>
-<td>&lt; 2 s gives no prosody; &gt; 15 s strains attention</td>
-</tr>
-<tr>
-<td>SNR</td>
-<td style="text-align: center;">&gt; 15 dB</td>
-<td>TTS reproduces noise; 15 dB ≈ speech 30× louder than noise</td>
-</tr>
-<tr>
-<td>Text</td>
-<td style="text-align: center;">present and non-empty</td>
-<td>TTS training needs paired text</td>
-</tr>
-<tr>
-<td>Alignment</td>
-<td style="text-align: center;">word-level present</td>
-<td>Enables phoneme-aligned training / inspection</td>
-</tr>
-</tbody>
-</table>
-<h2 id="key-design-decisions">Key Design Decisions</h2>
-<h3 id="why-2205-khz">Why 22.05 kHz?</h3>
-<p>Most TTS systems (VITS, Tacotron2, FastSpeech2) use 22.05 kHz. Using 16 kHz loses high-frequency detail that matters for speech naturalness. 44.1/48 kHz is unnecessarily large.</p>
-<h3 id="why-light-denoising-03">Why light denoising (0.3)?</h3>
-<p>Aggressive denoising removes subtle speech nuances (breath, lip sounds) that make TTS output sound natural. For TTS, clean-but-natural is better than sterile-but-artificial. If your source audio is very noisy, increase to 0.5.</p>
-<h3 id="why-215-seconds">Why 2–15 seconds?</h3>
-<ul>
-<li><strong>&lt; 2s</strong>: Too short for TTS models to learn prosody patterns</li>
-<li><strong>&gt; 15s</strong>: Attention-based TTS models struggle with long sequences</li>
-<li>Sweet spot for most TTS architectures: <strong>5–10 seconds</strong></li>
-</ul>
-<h3 id="why-snr-15-db">Why SNR &gt; 15 dB?</h3>
-<p>TTS training is more sensitive to noise than ASR training. The model learns to reproduce whatever is in the audio, including noise. SNR 15 dB means the speech is ~30x louder than noise — clean enough for high-quality synthesis.</p>
-<h2 id="customization">Customization</h2>
-<h3 id="for-chinese-tts">For Chinese TTS</h3>
-<p>Change the ASR language detection to Chinese for better accuracy:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qwen3_asr</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Qwen/Qwen3-ASR-0.6B</span>
-<span class="w">      </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Chinese</span>
-<span class="w">      </span><span class="nt">return_timestamps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</code></pre></div>
-<h3 id="for-multi-speaker-tts">For multi-speaker TTS</h3>
-<p>Add speaker diarization before packing. This mixes ASR and diarization
-operators, so run the edited pipeline with <code>--tag latest</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diarize</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote_diarize</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote/speaker-diarization-3.1</span>
-</code></pre></div>
-<h3 id="adjust-quality-thresholds">Adjust quality thresholds</h3>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="c1"># Stricter (fewer but cleaner segments)</span>
-<span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">3&quot;</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">12&quot;</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">20&quot;</span>
+<h2 id="quick-start-python">Quick Start (Python)</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">synthesize</span>
 
-<span class="w">  </span><span class="c1"># Looser (more data, tolerate some noise)</span>
-<span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">1&quot;</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">20&quot;</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span>
+<span class="c1"># CosyVoice zero-shot — Mandarin reference + transcript</span>
+<span class="n">synthesize</span><span class="p">(</span>
+    <span class="s2">&quot;你好，这是克隆出来的声音。&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;out.wav&quot;</span><span class="p">,</span>
+    <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;cosyvoice&quot;</span><span class="p">,</span>
+    <span class="n">reference_audio</span><span class="o">=</span><span class="s2">&quot;ref.wav&quot;</span><span class="p">,</span>
+    <span class="n">reference_text</span><span class="o">=</span><span class="s2">&quot;我是参考文本。&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Fish-Speech — reference + transcript, English</span>
+<span class="n">synthesize</span><span class="p">(</span>
+    <span class="s2">&quot;Hello, this is a cloned voice.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;out.wav&quot;</span><span class="p">,</span>
+    <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;fish_speech&quot;</span><span class="p">,</span>
+    <span class="n">reference_audio</span><span class="o">=</span><span class="s2">&quot;ref.wav&quot;</span><span class="p">,</span>
+    <span class="n">reference_text</span><span class="o">=</span><span class="s2">&quot;I am the reference, about five seconds long.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
-<h2 id="output-format">Output Format</h2>
-<p>The final <code>pack_jsonl</code> stage produces a JSONL manifest where each line is a JSON object:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;segment_001__enhanced&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.2</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;这是一段示例语音&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;word_alignments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;这&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.12</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.35</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;是&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.35</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.52</span><span class="p">},</span>
-<span class="w">    </span><span class="err">...</span>
-<span class="w">  </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;snr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">22.5</span><span class="p">}</span>
-<span class="p">}</span>
+<p>Run from inside an image that has the right engine installed:</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>shell<span class="w"> </span>--tag<span class="w"> </span>tts<span class="w">          </span><span class="c1"># CosyVoice</span>
+vkit<span class="w"> </span>docker<span class="w"> </span>shell<span class="w"> </span>--tag<span class="w"> </span>fish-speech<span class="w">  </span><span class="c1"># Fish-Speech</span>
 </code></pre></div>
-<h2 id="next-steps">Next Steps</h2>
+<h2 id="quick-start-yaml">Quick Start (YAML)</h2>
+<p>Batch cloning runs through the standard pipeline: ingest a manifest of
+text-only cuts, run a <code>tts_&lt;engine&gt;</code> stage that points at a reference
+WAV, then pack the results.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># yaml-language-server: $schema=https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/docs/schemas/pipeline.schema.json</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.1&quot;</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts-voice-cloning</span>
+<span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./work/${name}</span>
+
+<span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">manifest</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./text_scripts.jsonl.gz</span>
+
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clone</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_cosyvoice</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">zero_shot</span>
+<span class="w">      </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./voices/alice_5s.wav</span>
+<span class="w">      </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;我是参考文本，时长大约五秒。&quot;</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_jsonl</span>
+</code></pre></div>
+<p>The input manifest is a regular VoxKitchen <code>cuts.jsonl.gz</code> whose
+supervisions carry <code>text</code> (no audio needed). Each text supervision is
+synthesized into one new WAV file written under
+<code>&lt;work_dir&gt;/&lt;stage&gt;/derived/&lt;cut-id&gt;__&lt;engine&gt;.wav</code>, and the output
+manifest references those files.</p>
+<p>A ready-to-use example lives at
+<a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/examples/pipelines/tts-synthesis.yaml"><code>examples/pipelines/tts-synthesis.yaml</code></a>.</p>
+<h2 id="engine-capabilities">Engine Capabilities</h2>
+<table>
+<thead>
+<tr>
+<th>Engine / mode</th>
+<th style="text-align: center;">Reference text</th>
+<th style="text-align: center;">Cross-lingual</th>
+<th style="text-align: center;">Device</th>
+<th style="text-align: center;">Output SR</th>
+<th style="text-align: center;">Image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tts_cosyvoice</code> (<code>zero_shot</code>)</td>
+<td style="text-align: center;">required</td>
+<td style="text-align: center;">— (same language as reference)</td>
+<td style="text-align: center;">GPU</td>
+<td style="text-align: center;">24 kHz</td>
+<td style="text-align: center;"><code>tts</code></td>
+</tr>
+<tr>
+<td><code>tts_cosyvoice</code> (<code>cross_lingual</code>)</td>
+<td style="text-align: center;">not used</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">GPU</td>
+<td style="text-align: center;">24 kHz</td>
+<td style="text-align: center;"><code>tts</code></td>
+</tr>
+<tr>
+<td><code>tts_fish_speech</code></td>
+<td style="text-align: center;">optional but recommended</td>
+<td style="text-align: center;">follows reference accent</td>
+<td style="text-align: center;">GPU</td>
+<td style="text-align: center;">44.1 kHz</td>
+<td style="text-align: center;"><code>fish-speech</code></td>
+</tr>
+</tbody>
+</table>
+<p>Fish-Speech lives in its own <code>fish-speech</code> image because upstream pins
+<code>torch==2.8</code>, incompatible with the CosyVoice stack. Mixing the two
+engines in one pipeline — or mixing either with ASR / diarization
+stages — requires the <code>latest</code> image.</p>
+<h2 id="preparing-the-reference-audio">Preparing The Reference Audio</h2>
+<p>A clean 3–10 second reference is enough for both engines. The clip
+quality dominates the output far more than its length, so prefer:</p>
 <ul>
-<li>Train a TTS model on the resulting manifest using your framework of
-  choice (Tacotron2, VITS, FastSpeech2, Coqui XTTS, etc.).</li>
-<li>Or feed the manifest to a pretrained engine via
-  <a href="../tts-synthesis/">TTS Synthesis</a> to A/B compare your data against
-  built-in voices, or to generate new audio from the transcripts you
-  just extracted.</li>
+<li><strong>Single speaker</strong>, no overlap, no background music.</li>
+<li><strong>Mono</strong>, with the engine's sample rate or higher: 24 kHz+ for
+  CosyVoice, 44.1 kHz+ for Fish-Speech. The engines resample if needed.</li>
+<li><strong>Loudness in a normal speaking range</strong> — clipping or whispered audio
+  will be cloned along with the timbre.</li>
+<li>For <code>zero_shot</code> and Fish-Speech: an <strong>accurate transcript</strong> of the
+  reference. The transcript anchors timbre extraction; small mistakes
+  in this string materially degrade output.</li>
+</ul>
+<p>If you only have a long recording, segment to a clean 3–10 s slice
+first — <code>vkit init my-voices --template tts</code> scaffolds a pipeline that
+denoises, segments, and transcribes raw audio into exactly this shape.
+See <a href="../tts-training-data/">TTS Training Data</a>.</p>
+<h2 id="cosyvoice-zero_shot-mode">CosyVoice — <code>zero_shot</code> mode</h2>
+<p>Reference audio plus its transcript. Output is synthesized in the
+reference speaker's voice and language.</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synthesize</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_cosyvoice</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">zero_shot</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./voices/alice_5s.wav</span><span class="w">   </span><span class="c1"># 3–10 second WAV</span>
+<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;我是参考文本，时长大约五秒。&quot;</span>
+</code></pre></div>
+<p>The transcript anchors timbre extraction; the model then synthesizes
+any new text in the same voice and language.</p>
+<h2 id="cosyvoice-cross_lingual-mode">CosyVoice — <code>cross_lingual</code> mode</h2>
+<p>Voice carries over across languages — English reference, Mandarin
+output (or vice versa). No reference transcript needed.</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synthesize</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_cosyvoice</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cross_lingual</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./voices/alice_en_5s.wav</span>
+<span class="w">    </span><span class="c1"># No reference_text needed; the input text can be in any supported language.</span>
+</code></pre></div>
+<h2 id="fish-speech-441-khz-language-agnostic">Fish-Speech — 44.1 kHz, language-agnostic</h2>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synthesize</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tts_fish_speech</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">reference_audio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./voices/alice_5s.wav</span>
+<span class="w">    </span><span class="nt">reference_text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;I</span><span class="nv"> </span><span class="s">am</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">reference,</span><span class="nv"> </span><span class="s">about</span><span class="nv"> </span><span class="s">five</span><span class="nv"> </span><span class="s">seconds</span><span class="nv"> </span><span class="s">long.&quot;</span>
+<span class="w">    </span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span><span class="w">                </span><span class="c1"># optional; locks token sampling</span>
+<span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+</code></pre></div>
+<p>Fish-Speech outputs 44.1 kHz audio and follows the reference accent
+across languages. It ships in its own <code>fish-speech</code> image (~57 GB);
+use the <code>latest</code> image only when mixing Fish-Speech with other engines
+in one pipeline.</p>
+<h2 id="choosing-an-engine">Choosing An Engine</h2>
+<ul>
+<li><strong>Same-language cloning, 24 kHz acceptable</strong> → <code>tts_cosyvoice</code> in
+  <code>zero_shot</code> mode.</li>
+<li><strong>Voice from one language, synthesis in another</strong> → <code>tts_cosyvoice</code>
+  in <code>cross_lingual</code> mode.</li>
+<li><strong>Need 44.1 kHz output, or following the reference accent across
+  languages</strong> → <code>tts_fish_speech</code>.</li>
+<li><strong>No GPU available</strong> → cloning is not currently supported on CPU; use
+  <a href="../tts-speaker/">Speaker TTS</a> with <code>tts_kokoro</code> instead.</li>
+</ul>
+<p>When in doubt, run</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>validate<span class="w"> </span>pipeline.yaml
+</code></pre></div>
+<p>— it prints the smallest Docker tag that can run all stages in your
+pipeline.</p>
+<h2 id="preparing-the-input-manifest">Preparing The Input Manifest</h2>
+<p>The synthesis pipeline reads a <code>cuts.jsonl.gz</code> whose cuts already
+carry text. Two common ways to produce one:</p>
+<ol>
+<li><strong>Write Python</strong> that emits <code>Cut</code> records with <code>Supervision(text=...)</code>
+   and <code>to_jsonl_gz</code> to disk. See
+   <a href="../../reference/tools-api/">Python Tools API</a> for <code>Cut</code> / <code>CutSet</code>.</li>
+<li><strong>Reuse the output of an ASR pipeline</strong> — every cut from an ASR run
+   already has <code>text</code>. Point this cloning pipeline at that manifest to
+   resynthesize the same utterances in the reference voice.</li>
+</ol>
+<h2 id="inspecting-outputs">Inspecting Outputs</h2>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>inspect<span class="w"> </span>run<span class="w"> </span>work/tts-voice-cloning/
+vkit<span class="w"> </span>inspect<span class="w"> </span>cuts<span class="w"> </span>work/tts-voice-cloning/01_pack/cuts.jsonl.gz
+</code></pre></div>
+<p>The synthesized WAV files live under each TTS stage's <code>derived/</code>
+directory. The final manifest's recordings point at them.</p>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="../tts-speaker/">Speaker TTS</a> — pick a built-in voice instead of
+  cloning one.</li>
+<li><a href="../tts-training-data/">TTS Training Data</a> — quality gate for raw
+  speech, including how to slice a long recording down to a clean
+  reference clip.</li>
+<li><a href="../../reference/tools-api/#tts-synthesis">Python Tools API — TTS Synthesis</a>
+  — full signature of <code>synthesize()</code>.</li>
+<li><a href="../../reference/operators/">Operators reference</a> — every TTS
+  operator's full config schema.</li>
 </ul>
 
 

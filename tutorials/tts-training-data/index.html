@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../tts-voice-cloning/">
+        <link rel="prev" href="../../examples/">
       
       
-        <link rel="next" href="../data-cleaning/">
+        <link rel="next" href="../tts-speaker/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>ASR Training Data - VoxKitchen</title>
+        <title>TTS Training Data - VoxKitchen</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#asr-training-data" class="md-skip">
+        <a href="#tts-data-preparation" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ASR Training Data
+              TTS Training Data
             
           </span>
         </div>
@@ -357,10 +357,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../tts-training-data/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TTS Training Data
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -376,6 +403,192 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-pipeline-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the Pipeline Does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Design Decisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Design Decisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-2205-khz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why 22.05 kHz?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-light-denoising-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why light denoising (0.3)?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-215-seconds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why 2–15 seconds?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-snr-15-db" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why SNR &gt; 15 dB?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-chinese-tts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Chinese TTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-multi-speaker-tts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For multi-speaker TTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adjust-quality-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adjust quality thresholds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -441,37 +654,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ASR Training Data
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../asr-training-data/" class="md-nav__link">
         
   
   
@@ -487,148 +673,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Start
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-the-pipeline-does" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the Pipeline Does
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-design-decisions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Design Decisions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key Design Decisions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-speed-perturbation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why speed perturbation?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-not-noise-augmentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why not noise augmentation?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-huggingface-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why HuggingFace output?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Customization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Customization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#for-chinese-asr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        For Chinese ASR
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#start-from-a-known-dataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Start from a known dataset
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kaldi-output-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kaldi output format
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1188,6 +1232,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quality-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#key-design-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1200,10 +1255,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#why-speed-perturbation" class="md-nav__link">
+  <a href="#why-2205-khz" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why speed perturbation?
+        Why 22.05 kHz?
       
     </span>
   </a>
@@ -1211,10 +1266,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-not-noise-augmentation" class="md-nav__link">
+  <a href="#why-light-denoising-03" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why not noise augmentation?
+        Why light denoising (0.3)?
       
     </span>
   </a>
@@ -1222,10 +1277,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-huggingface-output" class="md-nav__link">
+  <a href="#why-215-seconds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why HuggingFace output?
+        Why 2–15 seconds?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-snr-15-db" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why SNR &gt; 15 dB?
       
     </span>
   </a>
@@ -1250,10 +1316,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-chinese-asr" class="md-nav__link">
+  <a href="#for-chinese-tts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For Chinese ASR
+        For Chinese TTS
       
     </span>
   </a>
@@ -1261,10 +1327,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#start-from-a-known-dataset" class="md-nav__link">
+  <a href="#for-multi-speaker-tts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Start from a known dataset
+        For multi-speaker TTS
       
     </span>
   </a>
@@ -1272,10 +1338,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kaldi-output-format" class="md-nav__link">
+  <a href="#adjust-quality-thresholds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Kaldi output format
+        Adjust quality thresholds
       
     </span>
   </a>
@@ -1284,6 +1350,28 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1307,11 +1395,19 @@
   
 
 
-<h1 id="asr-training-data">ASR Training Data</h1>
-<p>Prepare augmented ASR training data with automatic transcription.</p>
+<h1 id="tts-data-preparation">TTS Data Preparation</h1>
+<p>Prepare high-quality TTS training data from raw recordings. The pipeline
+is mostly a <strong>quality gate</strong>: it standardizes format, segments to a
+usable utterance length, denoises just enough, drops low-quality
+segments, and adds ASR text + timestamps so each kept segment is paired
+with a reliable label.</p>
+<blockquote>
+<p>Looking for the inverse direction — generating speech from text?
+See <a href="tts-synthesis.md">TTS Synthesis</a>.</p>
+</blockquote>
 <h2 id="quick-start">Quick Start</h2>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-asr-project<span class="w"> </span>--template<span class="w"> </span>asr
-<span class="nb">cd</span><span class="w"> </span>my-asr-project
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-tts-project<span class="w"> </span>--template<span class="w"> </span>tts
+<span class="nb">cd</span><span class="w"> </span>my-tts-project
 <span class="c1"># Put your audio files in ./data/</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
 vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w"> </span>pipeline.yaml
@@ -1327,112 +1423,153 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 </thead>
 <tbody>
 <tr>
+<td>Format convert</td>
+<td><code>ffmpeg_convert</code></td>
+<td>Handle any input format (opus, flac, mp3, etc.)</td>
+</tr>
+<tr>
 <td>Resample</td>
-<td><code>resample</code> → 16kHz mono</td>
-<td>ASR standard; most pretrained models expect 16kHz</td>
+<td><code>resample</code> → 22.05kHz mono</td>
+<td>TTS standard sample rate; mono for single-speaker</td>
+</tr>
+<tr>
+<td>Denoise</td>
+<td><code>speech_enhance</code> (aggressiveness=0.3)</td>
+<td>Light denoising — preserve natural speech quality</td>
 </tr>
 <tr>
 <td>VAD</td>
-<td><code>silero_vad</code></td>
-<td>Split long recordings into utterance-level segments</td>
+<td><code>silero_vad</code> (min 1s)</td>
+<td>Split into utterances; 1s minimum for meaningful TTS segments</td>
 </tr>
 <tr>
-<td>Speed perturb</td>
-<td><code>speed_perturb</code> [0.9, 1.0, 1.1]</td>
-<td>3x data augmentation — improves ASR robustness</td>
-</tr>
-<tr>
-<td>Volume perturb</td>
-<td><code>volume_perturb</code> [-3, +3] dB</td>
-<td>Simulates varying recording conditions</td>
-</tr>
-<tr>
-<td>ASR</td>
-<td><code>faster_whisper_asr</code> large-v3</td>
-<td>Generate text labels for training</td>
+<td>SNR</td>
+<td><code>snr_estimate</code></td>
+<td>Measure signal-to-noise ratio</td>
 </tr>
 <tr>
 <td>Filter</td>
 <td><code>quality_score_filter</code></td>
-<td>Remove too-short/too-long segments</td>
+<td>Keep only 2–15s segments with SNR &gt; 15 dB</td>
+</tr>
+<tr>
+<td>ASR + Align</td>
+<td><code>qwen3_asr</code> (timestamps=true)</td>
+<td>Transcribe + word-level forced alignment in one pass</td>
 </tr>
 <tr>
 <td>Pack</td>
-<td><code>pack_huggingface</code></td>
-<td>Output as HuggingFace Dataset (ready for training)</td>
+<td><code>pack_jsonl</code></td>
+<td>Output manifest with text, timestamps, quality metrics</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quality-checklist">Quality Checklist</h2>
+<p>Every kept segment in the output manifest satisfies all of these. Edit
+the <code>filter</code> stage if your dataset needs different thresholds.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th style="text-align: center;">Default</th>
+<th>Why this matters for TTS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sample rate</td>
+<td style="text-align: center;">22.05 kHz mono</td>
+<td>Matches VITS / FastSpeech2 / Tacotron2 training assumptions</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td style="text-align: center;">2 s ≤ len ≤ 15 s</td>
+<td>&lt; 2 s gives no prosody; &gt; 15 s strains attention</td>
+</tr>
+<tr>
+<td>SNR</td>
+<td style="text-align: center;">&gt; 15 dB</td>
+<td>TTS reproduces noise; 15 dB ≈ speech 30× louder than noise</td>
+</tr>
+<tr>
+<td>Text</td>
+<td style="text-align: center;">present and non-empty</td>
+<td>TTS training needs paired text</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td style="text-align: center;">word-level present</td>
+<td>Enables phoneme-aligned training / inspection</td>
 </tr>
 </tbody>
 </table>
 <h2 id="key-design-decisions">Key Design Decisions</h2>
-<h3 id="why-speed-perturbation">Why speed perturbation?</h3>
-<p>Speed perturbation at factors [0.9, 1.0, 1.1] is the single most effective data augmentation for ASR. It simulates different speaking rates and slightly shifts pitch, making the model robust to natural variation. This triples your training data.</p>
-<h3 id="why-not-noise-augmentation">Why not noise augmentation?</h3>
-<p>Noise augmentation (<code>noise_augment</code>) is also effective but requires a noise dataset (e.g., MUSAN). The default template keeps it simple — no external data dependencies. To add noise augmentation:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="c1"># Add after volume_aug, requires noise files in ./data/noise/</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">noise_aug</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">noise_augment</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">noise_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/noise</span>
-<span class="w">      </span><span class="nt">snr_range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">20</span><span class="p p-Indicator">]</span>
-</code></pre></div>
-<p>Put MUSAN or another noise dataset under <code>./data/noise/</code> before enabling
-this stage. The MUSAN recipe is tracked in the roadmap, but is not a built-in
-recipe yet.</p>
-<h3 id="why-huggingface-output">Why HuggingFace output?</h3>
-<p><code>pack_huggingface</code> produces a dataset loadable with <code>datasets.load_from_disk()</code>, which integrates directly with HuggingFace training pipelines (Transformers, SpeechBrain, ESPnet).</p>
-<p>By default, the template writes the final dataset to <code>./output/hf_dataset</code>.
-The audio column is embedded in the HuggingFace Dataset's Arrow shard, so the
-final result is not a directory of standalone WAV files. Use
-<code>--keep-intermediates</code> or <code>gc_mode: keep</code> when you also need to preserve each
-stage's derived WAV files under <code>./work</code>.</p>
-<p>Load the exported dataset with:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_from_disk</span>
-
-<span class="n">ds</span> <span class="o">=</span> <span class="n">load_from_disk</span><span class="p">(</span><span class="s2">&quot;./output/hf_dataset&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>Recent HuggingFace <code>datasets</code> versions decode <code>Audio</code> columns through
-<code>torchcodec</code>. If your training code needs <code>audio["array"]</code>, install it in the
-training environment:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>torchcodec
-</code></pre></div>
-<p>For metadata checks or custom audio decoding, avoid automatic decode:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Audio</span><span class="p">,</span> <span class="n">load_from_disk</span>
-
-<span class="n">ds</span> <span class="o">=</span> <span class="n">load_from_disk</span><span class="p">(</span><span class="s2">&quot;./output/hf_dataset&quot;</span><span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">cast_column</span><span class="p">(</span><span class="s2">&quot;audio&quot;</span><span class="p">,</span> <span class="n">Audio</span><span class="p">(</span><span class="n">decode</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="n">row</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">audio_bytes</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;audio&quot;</span><span class="p">][</span><span class="s2">&quot;bytes&quot;</span><span class="p">]</span>
-</code></pre></div>
+<h3 id="why-2205-khz">Why 22.05 kHz?</h3>
+<p>Most TTS systems (VITS, Tacotron2, FastSpeech2) use 22.05 kHz. Using 16 kHz loses high-frequency detail that matters for speech naturalness. 44.1/48 kHz is unnecessarily large.</p>
+<h3 id="why-light-denoising-03">Why light denoising (0.3)?</h3>
+<p>Aggressive denoising removes subtle speech nuances (breath, lip sounds) that make TTS output sound natural. For TTS, clean-but-natural is better than sterile-but-artificial. If your source audio is very noisy, increase to 0.5.</p>
+<h3 id="why-215-seconds">Why 2–15 seconds?</h3>
+<ul>
+<li><strong>&lt; 2s</strong>: Too short for TTS models to learn prosody patterns</li>
+<li><strong>&gt; 15s</strong>: Attention-based TTS models struggle with long sequences</li>
+<li>Sweet spot for most TTS architectures: <strong>5–10 seconds</strong></li>
+</ul>
+<h3 id="why-snr-15-db">Why SNR &gt; 15 dB?</h3>
+<p>TTS training is more sensitive to noise than ASR training. The model learns to reproduce whatever is in the audio, including noise. SNR 15 dB means the speech is ~30x louder than noise — clean enough for high-quality synthesis.</p>
 <h2 id="customization">Customization</h2>
-<h3 id="for-chinese-asr">For Chinese ASR</h3>
-<p>Replace <code>faster_whisper_asr</code> with Qwen3 or Paraformer:</p>
+<h3 id="for-chinese-tts">For Chinese TTS</h3>
+<p>Change the ASR language detection to Chinese for better accuracy:</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
 <span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qwen3_asr</span>
 <span class="w">    </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Qwen/Qwen3-ASR-0.6B</span>
 <span class="w">      </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Chinese</span>
-
-<span class="w">  </span><span class="c1"># Or use Paraformer (optimized for Chinese)</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asr</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">paraformer_asr</span>
+<span class="w">      </span><span class="nt">return_timestamps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<h3 id="for-multi-speaker-tts">For multi-speaker TTS</h3>
+<p>Add speaker diarization before packing. This mixes ASR and diarization
+operators, so run the edited pipeline with <code>--tag latest</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diarize</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote_diarize</span>
 <span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch</span>
+<span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pyannote/speaker-diarization-3.1</span>
 </code></pre></div>
-<h3 id="start-from-a-known-dataset">Start from a known dataset</h3>
-<p>Replace <code>dir</code> ingest with a recipe:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">ingest</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recipe</span>
-<span class="w">  </span><span class="nt">recipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">librispeech</span>
-<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/librispeech</span>
-<span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">train-clean-100</span><span class="p p-Indicator">]</span>
+<h3 id="adjust-quality-thresholds">Adjust quality thresholds</h3>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="c1"># Stricter (fewer but cleaner segments)</span>
+<span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">3&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">12&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">20&quot;</span>
+
+<span class="w">  </span><span class="c1"># Looser (more data, tolerate some noise)</span>
+<span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">1&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">20&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span>
 </code></pre></div>
-<h3 id="kaldi-output-format">Kaldi output format</h3>
-<p>Replace <code>pack_huggingface</code> with:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pack_kaldi</span>
+<h2 id="output-format">Output Format</h2>
+<p>The final <code>pack_jsonl</code> stage produces a JSONL manifest where each line is a JSON object:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;segment_001__enhanced&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;这是一段示例语音&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;word_alignments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;这&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.12</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.35</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;是&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.35</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.52</span><span class="p">},</span>
+<span class="w">    </span><span class="err">...</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;snr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">22.5</span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
-<p>Produces <code>wav.scp</code>, <code>text</code>, <code>utt2spk</code>, <code>spk2utt</code> files.</p>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>Train a TTS model on the resulting manifest using your framework of
+  choice (Tacotron2, VITS, FastSpeech2, Coqui XTTS, etc.).</li>
+<li>Or feed the manifest to a pretrained engine via
+  <a href="tts-synthesis.md">TTS Synthesis</a> to A/B compare your data against
+  built-in voices, or to generate new audio from the transcripts you
+  just extracted.</li>
+</ul>
 
 
 
