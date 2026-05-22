@@ -88,11 +88,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
-- `docs/tutorials/tts-data-prep.md` now opens with an explicit
-  "quality gate" framing and ends with a Quality Checklist
-  summarizing the five thresholds (sample rate, duration, SNR, text
-  present, alignment present). Cross-links to the new synthesis
-  tutorial.
+- The TTS training-data tutorial (`tts-training-data.md`) now opens
+  with an explicit "quality gate" framing and ends with a Quality
+  Checklist summarizing the five thresholds (sample rate, duration,
+  SNR, text present, alignment present).
 - The Download column of `vkit recipes` now derives the source label
   from each recipe's URL host (keithito / openslr / huggingface /
   bare hostname) instead of hard-coding "openslr" for every recipe
@@ -155,6 +154,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `tokenize_audio` had shipped but were missing from the reference
   page — added their import line, usage section, and runtime-image
   hint to bring the doc in line with the code.
+- README image and documentation links now use absolute
+  `raw.githubusercontent.com` / `github.com` URLs. PyPI's README
+  renderer leaves relative paths intact and resolves them against
+  `https://pypi.org/project/voxkitchen/`, which 404s; the project
+  page's logo and pipeline diagram were broken on the first publish.
 - `voxkitchen.utils.download.download_file` is now atomic and
   retryable. The body streams into `<dest>.partial` and is renamed
   into place only on success, so an aborted transfer can no longer
