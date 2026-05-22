@@ -163,6 +163,31 @@ commit, do **not** run `scripts/release.sh` again; it will rebuild and push
 all six images. Instead, run the pre-flight checks, commit, tag, and push
 manually using steps 3, 4, and 6.
 
+### Splitting PyPI and Docker across machines (or across time)
+
+The PyPI publish step is automated and finishes in minutes; the Docker
+build can take hours and may want to run on a different machine
+(GPU workstation, or a Mac with Docker Desktop set up *after* PyPI
+already published). Pass `--docker-only` to skip the tag + git push
+and go straight to the Docker build/push step:
+
+```bash
+# Machine 1 (e.g. Mac, no Docker): publish to PyPI, push the tag.
+scripts/release.sh 0.3.0
+# The script skips Docker cleanly when `docker` is missing.
+
+# Machine 2 (e.g. workstation with Docker, or same machine later):
+# fetch the tag that machine 1 created, then build + push images.
+git fetch --tags
+git checkout v0.3.0          # or stay on main if main == tag
+scripts/release.sh 0.3.0 --docker-only
+```
+
+The flag also lets you rebuild Docker images later for a tag that's
+already published. Pre-flight CHANGELOG and CI checks still run
+because the Docker build bakes the current source tree into the
+image — its content must match a healthy state.
+
 ### 7. GitHub Release
 
 The git tag is not the same as a public Release on GitHub. After the

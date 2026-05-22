@@ -2,28 +2,47 @@
 # One-command release wrapper — see RELEASING.md for what each step does.
 #
 # Usage:
-#   scripts/release.sh <version> [--replace-unpublished]
+#   scripts/release.sh <version> [--replace-unpublished | --docker-only]
 #
-# Example:
+# Examples:
 #   scripts/release.sh 0.2.0
+#   scripts/release.sh 0.3.0 --docker-only       # tag already pushed, just (re)build images
 #
 # The script is interactive: it prompts before each destructive step
 # (tag, git push, docker push). Ctrl-C out at any prompt to abort.
-# Use --replace-unpublished only when replacing a tag/image set that has not
-# been consumed by users.
+#
+# Flags:
+#   --replace-unpublished   replace an existing tag/image set that has not been
+#                           consumed by users. Force-pushes the tag.
+#   --docker-only           skip the tag + git push steps; only build and push
+#                           Docker images for the existing <version> tag. Use
+#                           this when PyPI publish has already succeeded on a
+#                           tag push but Docker rebuild is happening later
+#                           (e.g. on a different machine, or after preparing
+#                           a Docker Desktop install). Pre-flight CHANGELOG
+#                           and CI checks still run because the Docker build
+#                           bakes the current source into the image.
 
 set -euo pipefail
 
 VERSION="${1:-}"
 REPLACE_UNPUBLISHED=false
+DOCKER_ONLY=false
 if [[ -z "$VERSION" ]]; then
-    echo "usage: $0 <version> [--replace-unpublished]   (e.g. 0.2.0)" >&2
+    echo "usage: $0 <version> [--replace-unpublished | --docker-only]   (e.g. 0.2.0)" >&2
     exit 2
 fi
-if [[ "${2:-}" == "--replace-unpublished" ]]; then
-    REPLACE_UNPUBLISHED=true
-elif [[ -n "${2:-}" ]]; then
-    echo "error: unknown option '${2:-}'" >&2
+case "${2:-}" in
+    "")                       ;;
+    --replace-unpublished)    REPLACE_UNPUBLISHED=true ;;
+    --docker-only)            DOCKER_ONLY=true ;;
+    *)
+        echo "error: unknown option '${2:-}'" >&2
+        exit 2
+        ;;
+esac
+if [[ "$REPLACE_UNPUBLISHED" == true && "$DOCKER_ONLY" == true ]]; then
+    echo "error: --replace-unpublished and --docker-only are mutually exclusive" >&2
     exit 2
 fi
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -116,9 +135,16 @@ fi
 if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
     REMOTE_TAG_EXISTS=true
 fi
-if [[ "$LOCAL_TAG_EXISTS" == true || "$REMOTE_TAG_EXISTS" == true ]]; then
+if [[ "$DOCKER_ONLY" == true ]]; then
+    # docker-only mode requires the tag to already exist somewhere — it's
+    # the whole point. The image content is whatever HEAD currently has;
+    # the version arg is the published tag we're catching up to.
+    if [[ "$LOCAL_TAG_EXISTS" != true && "$REMOTE_TAG_EXISTS" != true ]]; then
+        die "tag $TAG not found locally or on origin — run the full release flow first to create + push the tag."
+    fi
+elif [[ "$LOCAL_TAG_EXISTS" == true || "$REMOTE_TAG_EXISTS" == true ]]; then
     if [[ "$REPLACE_UNPUBLISHED" != true ]]; then
-        die "tag $TAG already exists. Use --replace-unpublished only if nobody has consumed it."
+        die "tag $TAG already exists. Use --replace-unpublished only if nobody has consumed it, or --docker-only to (re)build images for the existing tag."
     fi
     warn "tag $TAG already exists; this will replace an unpublished release tag."
     confirm "replace unpublished $TAG?"
@@ -135,33 +161,38 @@ log "Pre-flight ok."
 
 # ---------------------------------------------------------------------------
 # 2. Tag
-# ---------------------------------------------------------------------------
-
-log "Creating annotated tag $TAG on HEAD ($(git rev-parse --short HEAD))"
-confirm "create tag $TAG?"
-if [[ "$LOCAL_TAG_EXISTS" == true ]]; then
-    git tag -d "$TAG"
-fi
-git tag -a "$TAG" -m "Release $TAG"
-
-# ---------------------------------------------------------------------------
 # 3. Push
+#
+# Skipped in --docker-only mode: the tag is already on origin (we asserted
+# that during pre-flight), and PyPI publish has presumably already run from
+# that earlier push.
 # ---------------------------------------------------------------------------
 
-log "Pushing main and $TAG to origin"
-echo "   Once the tag lands on origin, .github/workflows/publish.yml will"
-echo "   build the wheel + sdist and upload to PyPI via Trusted Publishing."
-echo "   Make sure the pypi.org pending publisher is configured first"
-echo "   (see RELEASING.md §5)."
-confirm "push to origin?"
-git push origin main
-if [[ "$REMOTE_TAG_EXISTS" == true ]]; then
-    git push --force origin "$TAG"
+if [[ "$DOCKER_ONLY" == true ]]; then
+    log "Docker-only mode: skipping tag and push (tag $TAG already on origin)"
 else
-    git push origin "$TAG"
+    log "Creating annotated tag $TAG on HEAD ($(git rev-parse --short HEAD))"
+    confirm "create tag $TAG?"
+    if [[ "$LOCAL_TAG_EXISTS" == true ]]; then
+        git tag -d "$TAG"
+    fi
+    git tag -a "$TAG" -m "Release $TAG"
+
+    log "Pushing main and $TAG to origin"
+    echo "   Once the tag lands on origin, .github/workflows/publish.yml will"
+    echo "   build the wheel + sdist and upload to PyPI via Trusted Publishing."
+    echo "   Make sure the pypi.org pending publisher is configured first"
+    echo "   (see RELEASING.md §5)."
+    confirm "push to origin?"
+    git push origin main
+    if [[ "$REMOTE_TAG_EXISTS" == true ]]; then
+        git push --force origin "$TAG"
+    else
+        git push origin "$TAG"
+    fi
+    echo "   PyPI workflow run:"
+    echo "     https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/publish.yml"
 fi
-echo "   PyPI workflow run:"
-echo "     https://github.com/XqFeng-Josie/VoxKitchen/actions/workflows/publish.yml"
 
 # ---------------------------------------------------------------------------
 # 4. Docker build + push

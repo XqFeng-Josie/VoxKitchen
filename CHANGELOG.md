@@ -6,6 +6,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/release.sh <version> --docker-only` skips the tag + git push
+  steps and goes straight to the Docker build/push loop. Useful when
+  PyPI publish already succeeded from an earlier run (or from a
+  different machine) and you only need to (re)build the GHCR images.
+  Mutually exclusive with `--replace-unpublished`. Pre-flight CHANGELOG
+  and CI checks still run because the Docker build bakes the current
+  source into the image.
+
 ## [0.3.0] — 2026-05-21
 
 ### Added
