@@ -232,16 +232,29 @@ def mock_tedlium3(tmp_path: Path) -> Path:
 def mock_cnceleb(tmp_path: Path) -> Path:
     """Create a tiny CN-Celeb-1-like tree under <tmp>/CN-Celeb_flac/.
 
-    Two speakers, three utterances total in ``data/``. ``dev/dev.lst``
-    points to one utterance; ``eval/lists/{enroll,test}.lst`` together
-    point to the other two — enough to exercise both the data-mode
-    walk and the .lst-driven dev / eval modes plus the dedup logic
-    when a user passes multiple subsets that overlap.
+    Mirrors the layout the real cn-celeb_v2.tar.gz produces — verified
+    against the actual ~21 GB tarball:
+
+    - ``data/<spk>/<utt>.flac`` — training audio (here 3 utterances
+      across 2 speakers).
+    - ``dev/dev.lst`` — speaker IDs only (one per line), not paths.
+      Here, id00000 is in dev; id00001 is not.
+    - ``eval/enroll/<spk>-enroll.flac`` — flat directory of enrolment
+      recordings. Speaker id is the dash-prefix of the filename.
+    - ``eval/test/<spk>-<utt>.flac`` — flat directory of test trial
+      recordings.
+
+    The fixture also creates ``eval/lists/{enroll,test}.lst`` files
+    that the recipe does NOT consume (it walks the directories
+    directly because .lst lines spell paths with ``.wav`` while the
+    on-disk files are ``.flac``). They are present only to mirror
+    the real release; tests don't reference them.
     """
     ds_root = tmp_path / "CN-Celeb_flac"
     data_root = ds_root / "data"
     audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
 
+    # data/ — two speakers, three utterances total
     for speaker, utts in [
         ("id00000", ["interview-01-001", "vlog-01-001"]),
         ("id00001", ["interview-01-001"]),
@@ -251,17 +264,33 @@ def mock_cnceleb(tmp_path: Path) -> Path:
         for utt in utts:
             sf.write(spk_dir / f"{utt}.flac", audio, 16000, format="FLAC")
 
-    # dev split: one utterance.
+    # dev/dev.lst — one speaker id. id00000 is in dev; id00001 is not.
     dev_dir = ds_root / "dev"
     dev_dir.mkdir(parents=True, exist_ok=True)
-    (dev_dir / "dev.lst").write_text("id00000/interview-01-001.flac\n", encoding="utf-8")
+    (dev_dir / "dev.lst").write_text("id00000\n", encoding="utf-8")
 
-    # eval split: two .lst files, both consulted by the recipe; intentionally
-    # use one with the .flac suffix and one without to verify the recipe is
-    # tolerant of both line formats.
-    eval_lists = ds_root / "eval" / "lists"
-    eval_lists.mkdir(parents=True, exist_ok=True)
-    (eval_lists / "enroll.lst").write_text("id00000/vlog-01-001.flac\n", encoding="utf-8")
-    (eval_lists / "test.lst").write_text("id00001/interview-01-001\n", encoding="utf-8")
+    # eval/enroll/ and eval/test/ — flat directories with speaker-prefixed
+    # filenames. Two enrol files (one per eval speaker) + two test files.
+    enroll_dir = ds_root / "eval" / "enroll"
+    test_dir = ds_root / "eval" / "test"
+    enroll_dir.mkdir(parents=True, exist_ok=True)
+    test_dir.mkdir(parents=True, exist_ok=True)
+    sf.write(enroll_dir / "id00800-enroll.flac", audio, 16000, format="FLAC")
+    sf.write(enroll_dir / "id00801-enroll.flac", audio, 16000, format="FLAC")
+    sf.write(test_dir / "id00800-singing-01-001.flac", audio, 16000, format="FLAC")
+    sf.write(test_dir / "id00801-vlog-01-001.flac", audio, 16000, format="FLAC")
+
+    # The real corpus also has eval/lists/*.lst alongside; ship empty
+    # placeholders so the directory tree matches reality (the recipe
+    # does not read them).
+    lists_dir = ds_root / "eval" / "lists"
+    lists_dir.mkdir(parents=True, exist_ok=True)
+    (lists_dir / "enroll.lst").write_text(
+        "id00800-enroll enroll/id00800-enroll.wav\nid00801-enroll enroll/id00801-enroll.wav\n",
+        encoding="utf-8",
+    )
+    (lists_dir / "test.lst").write_text(
+        "test/id00800-singing-01-001.wav\ntest/id00801-vlog-01-001.wav\n", encoding="utf-8"
+    )
 
     return tmp_path

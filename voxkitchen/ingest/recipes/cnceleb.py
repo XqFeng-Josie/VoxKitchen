@@ -2,37 +2,54 @@
 
 CN-Celeb (Fan et al., 2020; v2 dataset card on OpenSLR resource 82) is
 the standard open Chinese speaker-recognition benchmark and the
-counterpart to the gated VoxCeleb. It contains roughly 130,000
-utterances from ~1,000 speakers across 11 genres (interview, vlog,
-singing, drama, …). The dataset is distributed as a single ~22 GB
-tarball (``cn-celeb_v2.tar.gz``).
+counterpart to the gated VoxCeleb. It contains roughly 130k utterances
+from ~1000 speakers across 11 genres (interview, vlog, singing, drama,
+…). The dataset is distributed as a single ~21 GB tarball
+(``cn-celeb_v2.tar.gz``).
 
 The recipe is intentionally lean: CN-Celeb is **non-transcribed**
 (speaker-identity research target, not ASR), so each Cut is emitted
-with an empty supervisions list and a populated speaker tag. Subset
-selection follows the canonical splits the corpus ships:
+with an empty-text Supervision that carries only speaker + language
+tags. Subset selection follows the canonical splits the corpus ships:
 
 - ``data`` (default) — every FLAC under ``data/``. Useful for
   speaker-embedding extraction across the whole corpus.
-- ``dev`` — the official dev set listed in ``dev/dev.lst``.
-- ``eval`` — the official eval set listed in ``eval/lists/enroll.lst``
-  and ``eval/lists/test.lst`` (concatenated).
+- ``dev`` — the development split for training speaker-embedding
+  models. ``dev/dev.lst`` lists ~800 **speaker IDs** (one per line);
+  the recipe expands each ID to that speaker's utterances under
+  ``data/<spk>/*.flac``. Note: dev shares audio with ``data`` — it is
+  a filter on the same recordings, not a separate audio store.
+- ``eval`` — the verification eval set. The corpus stores eval audio
+  in ``eval/enroll/`` (one enrollment recording per eval speaker) and
+  ``eval/test/`` (~17k test recordings); both directories are
+  **separate** FLAC files from ``data/``, not pointers into it.
 
 Directory layout produced by extracting ``cn-celeb_v2.tar.gz``::
 
     CN-Celeb_flac/
-      README
-      data/
+      README.TXT
+      1911.01799.pdf                  # the CN-Celeb paper
+      data/                           # training-side audio
         id00000/
-          enroll-001-001.flac, vlog-01-001.flac, …
-        id00001/
+          singing-01-001.flac, vlog-01-001.flac, …
         …
         id00999/
       dev/
-        dev.lst                       # one path per line, relative to data/
+        dev.lst                       # speaker IDs only (e.g. ``id00000``)
       eval/
+        enroll/                       # flat dir of enrollment FLACs
+          id00800-enroll.flac, …
+        test/                         # flat dir of test trial FLACs
+          id00800-singing-01-001.flac, …
         lists/
-          enroll.lst, test.lst        # trial-pair lists
+          enroll.lst                  # "<utt-id> <relative-path>" per line
+          test.lst                    # "<relative-path>" per line
+          trials.lst                  # speaker-verification trial pairs
+
+Speakers are extracted from the path layout: under
+``data/<spk>/<utt>.flac`` the parent dir name is the speaker id;
+under ``eval/enroll/`` and ``eval/test/`` the speaker id is the
+dash-prefix of the filename (``id00800-enroll.flac`` → ``id00800``).
 """
 
 from __future__ import annotations
@@ -67,9 +84,10 @@ class CnCelebRecipe(Recipe):
     }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
-        # The tarball historically extracts to a top-level directory
-        # whose exact name has varied between releases. Probe the common
-        # ones; fall back to the user-supplied root if none match.
+        # The tarball historically extracts to a top-level directory whose
+        # exact name has varied between releases (CN-Celeb_flac, CN-Celeb,
+        # CN-Celeb_v2). Probe the common ones; fall back to the user-supplied
+        # root if none match.
         effective_root = root
         for candidate in ("CN-Celeb_flac", "CN-Celeb", "CN-Celeb_v2"):
             if (root / candidate).is_dir():
@@ -83,21 +101,22 @@ class CnCelebRecipe(Recipe):
                     f"unknown CN-Celeb subset {s!r}; valid values are {list(_VALID_SUBSETS)}"
                 )
 
-        # Collect (path, source_subset_name) pairs to avoid double-emitting
-        # the same utterance when the user passes overlapping subsets.
+        # Collect (path, source_subset_name) pairs. Dedup on resolved path so
+        # ['data', 'dev'] doesn't emit dev utterances twice — they're a
+        # subset of the data/ audio, not separate files.
         seen: set[Path] = set()
         flac_paths: list[tuple[Path, str]] = []
         for subset_name in target:
             for flac in self._iter_subset(effective_root, subset_name):
-                if flac in seen or not flac.is_file():
+                resolved = flac.resolve()
+                if resolved in seen or not flac.is_file():
                     continue
-                seen.add(flac)
+                seen.add(resolved)
                 flac_paths.append((flac, subset_name))
 
         cuts: list[Cut] = []
         for flac, subset_name in flac_paths:
-            # Layout invariant: data/<speaker_id>/<utterance>.flac
-            speaker = flac.parent.name
+            speaker = self._speaker_from_path(flac)
             utt_id = flac.stem
             rec = recording_from_file(flac, recording_id=utt_id)
             cuts.append(
@@ -134,10 +153,19 @@ class CnCelebRecipe(Recipe):
     def _iter_subset(root: Path, subset_name: str) -> list[Path]:
         """Return the FLAC paths that belong to *subset_name*.
 
-        ``data`` walks the corpus root; ``dev`` and ``eval`` consult the
-        canonical split files and resolve each line against ``data/``.
-        Returns ``[]`` if the relevant on-disk structure is missing —
-        partial extracts shouldn't abort the whole prepare step.
+        - ``data``: walk every FLAC under ``data/``.
+        - ``dev``: read speaker IDs from ``dev/dev.lst``, then walk each
+          ``data/<spk>/*.flac`` — dev is a filter on the data/ audio.
+        - ``eval``: walk ``eval/enroll/*.flac`` plus ``eval/test/*.flac``.
+          These are separate FLAC files from ``data/`` — enrolment and
+          verification trial recordings. The ``eval/lists/*.lst`` files
+          are NOT consulted because they reference ``.wav`` extensions
+          while the on-disk files are ``.flac``; walking the directories
+          directly is both more robust and matches the corpus invariant.
+
+        Missing on-disk structure yields ``[]`` rather than raising — a
+        partial extract should still be ingestable for whatever it does
+        contain.
         """
         data_root = root / "data"
         if subset_name == "data":
@@ -145,30 +173,44 @@ class CnCelebRecipe(Recipe):
                 return []
             return sorted(data_root.rglob("*.flac"))
 
-        # dev / eval: read the .lst files and resolve relative paths.
         if subset_name == "dev":
-            list_files = [root / "dev" / "dev.lst"]
-        else:  # eval
-            list_files = [
-                root / "eval" / "lists" / "enroll.lst",
-                root / "eval" / "lists" / "test.lst",
-            ]
-
-        paths: list[Path] = []
-        for lf in list_files:
-            if not lf.is_file():
-                continue
-            for line in lf.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if not line or line.startswith("#"):
+            dev_lst = root / "dev" / "dev.lst"
+            if not dev_lst.is_file() or not data_root.is_dir():
+                return []
+            paths: list[Path] = []
+            for line in dev_lst.read_text(encoding="utf-8").splitlines():
+                speaker = line.strip()
+                if not speaker or speaker.startswith("#"):
                     continue
-                # Lines may be bare paths (vlog-01-001.flac) or include the
-                # speaker prefix (id00001/vlog-01-001.flac). Be tolerant.
-                candidate = data_root / line
-                if candidate.suffix.lower() != ".flac":
-                    candidate = candidate.with_suffix(".flac")
-                paths.append(candidate)
-        return paths
+                spk_dir = data_root / speaker
+                if spk_dir.is_dir():
+                    paths.extend(sorted(spk_dir.glob("*.flac")))
+            return paths
+
+        # eval
+        paths_eval: list[Path] = []
+        for sub in ("enroll", "test"):
+            d = root / "eval" / sub
+            if d.is_dir():
+                paths_eval.extend(sorted(d.glob("*.flac")))
+        return paths_eval
+
+    @staticmethod
+    def _speaker_from_path(path: Path) -> str:
+        """Extract the speaker id given a FLAC's position in the corpus tree.
+
+        - ``data/<spk>/<utt>.flac`` → parent directory name (``<spk>``).
+        - ``eval/enroll/<spk>-enroll.flac`` and
+          ``eval/test/<spk>-<utt>.flac`` → the speaker id is encoded as
+          the dash-prefix of the filename (``id00800-enroll`` →
+          ``id00800``). The flat ``enroll/`` and ``test/`` directories
+          don't carry the speaker in the path, only in the filename.
+        """
+        if path.parent.name in ("enroll", "test"):
+            stem = path.stem
+            dash = stem.find("-")
+            return stem[:dash] if dash > 0 else stem
+        return path.parent.name
 
 
 register_recipe(CnCelebRecipe())
