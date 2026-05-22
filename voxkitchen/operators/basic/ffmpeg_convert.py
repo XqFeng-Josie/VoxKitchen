@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import re
 
-import ffmpeg
-
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
@@ -32,6 +30,12 @@ class FfmpegConvertOperator(Operator):
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, FfmpegConvertConfig)
+        # ffmpeg-python is an [audio] extra and is not present in every venv
+        # (the fish-speech env, for example, ships only the tts_fish_speech
+        # operator). Importing at module scope would crash any env that
+        # merely loads voxkitchen.operators to inspect the registry.
+        import ffmpeg
+
         derived_dir = self.ctx.stage_dir / "derived"
         derived_dir.mkdir(parents=True, exist_ok=True)
 
