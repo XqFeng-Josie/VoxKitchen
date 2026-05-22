@@ -791,10 +791,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ted-lium-3-subsets" class="md-nav__link">
+  <a href="#ted-lium-3-manual-download" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TED-LIUM 3 Subsets
+        TED-LIUM 3 (Manual Download)
       
     </span>
   </a>
@@ -1221,10 +1221,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ted-lium-3-subsets" class="md-nav__link">
+  <a href="#ted-lium-3-manual-download" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TED-LIUM 3 Subsets
+        TED-LIUM 3 (Manual Download)
       
     </span>
   </a>
@@ -1350,8 +1350,8 @@
 <td><code>tedlium3</code></td>
 <td>ASR</td>
 <td>English</td>
-<td style="text-align: center;">openslr</td>
-<td>TED-LIUM 3 — English TED talks (~452h), utterance-aligned via STM</td>
+<td style="text-align: center;">manual</td>
+<td>TED-LIUM 3 — English TED talks (~452h), utterance-aligned via STM. OpenSLR/51 was de-listed; see <a href="#ted-lium-3-manual-download">TED-LIUM 3</a> below.</td>
 </tr>
 <tr>
 <td><code>aishell</code></td>
@@ -1409,8 +1409,7 @@ vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w
 <span class="c1"># LJSpeech (English single-speaker TTS, from data.keithito.com)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>ljspeech<span class="w"> </span>--root<span class="w"> </span>./data/ljspeech
 
-<span class="c1"># TED-LIUM 3 (English TED-talk ASR, from openslr.org)</span>
-vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>tedlium3<span class="w"> </span>--root<span class="w"> </span>./data/tedlium3
+<span class="c1"># TED-LIUM 3 — manual download required, see below</span>
 
 <span class="c1"># AISHELL-1 (Chinese ASR, from openslr.org)</span>
 vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>aishell<span class="w"> </span>--root<span class="w"> </span>./data/aishell
@@ -1505,7 +1504,19 @@ changed it.</p>
 </table>
 <p>If a subset is missing on disk (partial extraction is common for the
 ~17 GB tarball) the recipe silently skips it.</p>
-<h3 id="ted-lium-3-subsets">TED-LIUM 3 Subsets</h3>
+<h3 id="ted-lium-3-manual-download">TED-LIUM 3 (Manual Download)</h3>
+<p><code>vkit docker download tedlium3</code> is currently a no-op: the canonical
+OpenSLR/51 mirror was de-listed and <code>www.openslr.org/51/</code> now returns
+"Resource not found". The recipe's <code>prepare()</code> continues to work
+against an extracted TED-LIUM 3 tree on disk — drop the corpus under
+<code>./data/tedlium3/</code> and reference it as a <code>recipe</code> ingest source:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">ingest</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recipe</span>
+<span class="w">  </span><span class="nt">recipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tedlium3</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/tedlium3</span>
+<span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">train</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dev</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">test</span><span class="p p-Indicator">]</span>
+</code></pre></div>
 <table>
 <thead>
 <tr>
@@ -1537,6 +1548,13 @@ manual conversion is needed. Each STM row produces one Cut that
 references a <code>(start, duration)</code> slice of the parent talk's <code>.sph</code>.
 Padding rows (<code>inter_segment_gap</code> speaker / <code>ignore_time_segment_in_scoring</code>
 transcript) are dropped automatically.</p>
+<p>Recommended sources for the data while the OpenSLR mirror is down:</p>
+<ul>
+<li>HuggingFace <code>LIUM/tedlium</code> config <code>release3</code> (will need repacking
+  into the legacy/{train,dev,test}/{sph,stm}/ layout).</li>
+<li>An institutional / lab-internal archived copy of the original
+  ~54 GB <code>TEDLIUM_release-3.tgz</code>.</li>
+</ul>
 <h3 id="cn-celeb-1-subsets">CN-Celeb 1 Subsets</h3>
 <table>
 <thead>
