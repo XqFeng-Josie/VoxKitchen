@@ -158,7 +158,17 @@ List dataset recipes (the entities behind `vkit docker download` and `ingest: so
 vkit recipes
 ```
 
-Output is a table with name, download mechanism (`openslr`, `HuggingFace`, or `manual`), and one-line description. To actually download, use `vkit docker download --tag slim <name> --root ./data/<name>`; to reference inside a pipeline, use `ingest: { source: recipe, recipe: <name>, args: { root: <dir> } }`. Recipe-specific subset names are listed in [Recipes & Download](recipes.md).
+Output is a table with name, download mechanism (`openslr`, `keithito`,
+`HuggingFace`, or `manual`), compressed download size, and a one-line
+description. The Size column shows a single value for single-archive
+datasets and a range for multi-subset datasets (`299 MB - 28.5 GB`)
+so you can compare before downloading. Manual / HuggingFace recipes
+render as a dash.
+
+To actually download, use `vkit docker download --tag slim <name> --root ./data/<name>`;
+to reference inside a pipeline, use
+`ingest: { source: recipe, recipe: <name>, args: { root: <dir> } }`.
+Recipe-specific subset names are listed in [Recipes & Download](recipes.md).
 
 ### `vkit doctor`
 

@@ -35,7 +35,6 @@ vkit docker download --tag slim libritts --root ./data/libritts --subsets train-
 # LJSpeech (English single-speaker TTS, from data.keithito.com)
 vkit docker download --tag slim ljspeech --root ./data/ljspeech
 
-
 # AISHELL-1 (Chinese ASR, from openslr.org)
 vkit docker download --tag slim aishell --root ./data/aishell
 
@@ -95,13 +94,21 @@ tarball) the recipe silently skips it.
 
 | Subset | Description |
 |--------|-------------|
-| `data` | All FLAC under `data/` — every utterance from every speaker (~130k utts) |
-| `dev`  | Utterances listed in `dev/dev.lst` — for tuning / model selection |
-| `eval` | Concatenation of `eval/lists/enroll.lst` + `eval/lists/test.lst` — for trial pairs |
+| `data` | All FLAC under `data/` — every utterance from every speaker (~130k utts, 1000 speakers) |
+| `dev`  | Utterances under `data/<spk>/` for each speaker id listed in `dev/dev.lst` (~108k utts, ~800 speakers) |
+| `eval` | FLAC under `eval/enroll/` plus `eval/test/` — separate recordings for verification trials (~18k utts, ~200 speakers) |
 
-Default is `["data"]` when no subsets are passed. Asking for
-`["data", "dev"]` is safe — overlapping utterances are deduplicated
-by the recipe.
+Default is `["data"]` when no subsets are passed. `dev` is a
+*filter* on the same audio as `data` (same FLAC files), so asking
+for `["data", "dev"]` deduplicates and yields the same set as
+`["data"]`. `eval` is a disjoint set of FLAC files — asking for
+`["data", "eval"]` is additive.
+
+The `eval/lists/*.lst` files in the corpus reference `.wav` paths
+while the on-disk recordings are `.flac`, so the recipe walks the
+directories directly rather than consulting the lists. Speaker id
+for `eval/{enroll,test}/<spk>-<utt>.flac` files comes from the
+dash-prefix of the filename.
 
 ### MUSAN Subsets
 

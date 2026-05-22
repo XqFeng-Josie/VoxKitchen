@@ -113,8 +113,14 @@ vkit docker download --tag slim librispeech --root ./data/librispeech --subsets 
 vkit docker run --tag asr pipeline.yaml
 ```
 
-Available datasets: `librispeech`, `aishell`, `fleurs`. See
-[Recipes & Download](reference/recipes.md).
+Run `vkit recipes` to list every available dataset along with its
+compressed download size — 9 recipes ship today, covering English /
+Chinese ASR (`librispeech`, `aishell`), multi-speaker TTS
+(`libritts`, `ljspeech`, `aishell3`), Chinese speaker recognition
+(`cnceleb`), multilingual eval (`fleurs`), augmentation (`musan`),
+plus `commonvoice` (manual download). See
+[Recipes & Download](reference/recipes.md) for per-recipe subset
+details.
 
 ## Configuration
 
