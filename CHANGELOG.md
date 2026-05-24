@@ -8,6 +8,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Simplified Chinese README (`README.zh-CN.md`), a full translation of
+  the top-level README. The English and Chinese READMEs cross-link each
+  other in the header; all deeper docs remain English-only.
+- Both READMEs now show a collapsed "Example output" block under Quick
+  Start with the actual `vkit docker run` + `vkit inspect run` logs for
+  the bundled `demo-no-asr` pipeline.
+- `CITATION.cff` and a "Citation" section in both READMEs, so GitHub
+  renders a "Cite this repository" entry for research use.
 - `scripts/release.sh <version> --docker-only` skips the tag + git push
   steps and goes straight to the Docker build/push loop. Useful when
   PyPI publish already succeeded from an earlier run (or from a
@@ -15,6 +23,28 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   Mutually exclusive with `--replace-unpublished`. Pre-flight CHANGELOG
   and CI checks still run because the Docker build bakes the current
   source into the image.
+
+### Changed
+
+- Dropped the "Pre-alpha" status banner from the README and bumped the
+  PyPI `Development Status` classifier from `2 - Pre-Alpha` to
+  `4 - Beta` to match the current v0.3.x surface.
+- `vkit run --dry-run` (and `vkit docker run --dry-run`) clarifies its
+  GPU reporting. The `gpus:` header line is now labelled `(requested)`,
+  and when any stage prefers the GPU executor the stage table is
+  followed by a note that the Device column shows the *preferred*
+  executor — `gpu` stages run on GPU when one is available and fall back
+  to CPU otherwise. This removes the confusion where a `gpu` stage such
+  as `silero_vad` appeared to require a GPU even though it runs fine on
+  the CPU-only `slim` image.
+
+### Fixed
+
+- Capped `numpy<2.3` in the `dev` optional-dependency group. `numba`
+  (pulled in by `librosa` via the `segment` extra) supports `numpy<=2.2`,
+  so a fresh `pip install -e .[dev]` on a host with a newer NumPy failed
+  to import `librosa` and broke local test collection. The core
+  `numpy>=1.24` runtime bound is unchanged.
 
 ## [0.3.0] — 2026-05-21
 

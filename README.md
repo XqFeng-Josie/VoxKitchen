@@ -23,8 +23,9 @@
   <a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
-> **Status:** Pre-alpha. APIs and Docker image contents may change between
-> releases.
+<p align="center">
+  <a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/README.zh-CN.md">简体中文</a>
+</p>
 
 Use VoxKitchen when you want to:
 
@@ -72,6 +73,50 @@ vkit docker pull --tag slim
 vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml
 vkit inspect run ./work/demo-no-asr
 ```
+
+<details>
+<summary>Example output</summary>
+
+```text
+$ vkit docker run --tag slim examples/pipelines/demo-no-asr.yaml
+06:20:54  stage [1/9] to_wav  (ffmpeg_convert, 1 cuts in, env=core)
+06:20:55  stage [1/9] to_wav  done → 1 cuts out (0.3s)
+06:20:55  stage [2/9] vad  (silero_vad, 1 cuts in, env=core)
+06:21:08  stage [2/9] vad  done → 7 cuts out (13.2s)
+06:21:08  stage [3/9] extract  (ffmpeg_convert, 7 cuts in, env=core)
+06:21:08  stage [3/9] extract  done → 7 cuts out (0.6s)
+06:21:08  stage [4/9] snr  (snr_estimate, 7 cuts in, env=core)
+06:21:08  stage [4/9] snr  done → 7 cuts out (0.0s)
+06:21:08  stage [5/9] pitch  (pitch_stats, 7 cuts in, env=core)
+06:21:11  stage [5/9] pitch  done → 7 cuts out (2.3s)
+06:21:11  stage [6/9] clipping  (clipping_detect, 7 cuts in, env=core)
+06:21:11  stage [6/9] clipping  done → 7 cuts out (0.0s)
+06:21:11  stage [7/9] gender  (gender_classify, 7 cuts in, env=core)
+06:21:44  stage [7/9] gender  done → 7 cuts out (33.2s)
+06:21:44  stage [8/9] filter  (quality_score_filter, 7 cuts in, env=core)
+06:21:44  stage [8/9] filter  done → 7 cuts out (0.0s)
+06:21:44  stage [9/9] pack  (pack_jsonl, 7 cuts in, env=core)
+06:21:44  stage [9/9] pack  done → 7 cuts out (0.0s)
+06:21:44  report generated: work/demo-no-asr/report.html
+pipeline complete
+  work_dir: work/demo-no-asr
+  final cuts: work/demo-no-asr/08_pack/cuts.jsonl.gz
+  report: work/demo-no-asr/report.html
+
+$ vkit inspect run ./work/demo-no-asr
+Pipeline run: demo-no-asr
+  00_to_wav: OK (1 cuts)  0.3s, 4 cuts/s
+  01_vad: OK (7 cuts)  13.2s, 1 cuts/s
+  02_extract: OK (7 cuts)  0.6s, 11 cuts/s
+  03_snr: OK (7 cuts)  0.0s, 310 cuts/s
+  04_pitch: OK (7 cuts)  2.3s, 3 cuts/s
+  05_clipping: OK (7 cuts)  0.0s, 381 cuts/s
+  06_gender: OK (7 cuts)  33.2s, 0 cuts/s
+  07_filter: OK (7 cuts)  0.0s, 8124 cuts/s
+  08_pack: OK (7 cuts)  0.0s, 6638 cuts/s
+```
+
+</details>
 
 `vkit docker run` writes run artifacts under `./work` and exported datasets
 under `./output` with your host user ID. It also mounts `./data` automatically
@@ -231,6 +276,12 @@ The repo includes an agent-neutral VoxKitchen skill at [skill/](https://github.c
 Codex, and other `SKILL.md`-compatible agents can copy, symlink, or import that
 folder into their own skill search path. The skill follows the Docker-first
 `vkit` workflow in this README.
+
+## Citation
+
+If you use VoxKitchen in your research, please cite it. The repository ships
+[`CITATION.cff`](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CITATION.cff),
+which GitHub renders under "Cite this repository".
 
 ## License
 

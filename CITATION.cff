@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use VoxKitchen in your research, please cite it as below."
+title: "VoxKitchen: a declarative, Docker-first speech data processing toolkit"
+abstract: >-
+  VoxKitchen turns raw speech recordings into clean, inspectable training
+  datasets. It handles the repetitive audio prep around ASR, TTS, speaker
+  analysis, and data cleaning through a single Docker-backed YAML pipeline:
+  convert, segment, label, filter, and export with 51 built-in operators,
+  resumable checkpoints, and full provenance tracking.
+type: software
+authors:
+  - given-names: Xiaoqin
+    family-names: Feng
+    orcid: "https://orcid.org/0009-0008-8942-2926"
+repository-code: "https://github.com/XqFeng-Josie/VoxKitchen"
+url: "https://github.com/XqFeng-Josie/VoxKitchen"
+license: Apache-2.0
+version: "0.3.0"
+date-released: "2026-05-21"
+keywords:
+  - speech
+  - audio
+  - dataset
+  - pipeline
+  - asr
+  - tts
+  - vad
+  - diarization
+  - voice
+  - speaker

@@ -24,7 +24,7 @@ def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> 
     rprint(f"\n[bold]{spec.name}[/bold]  (dry-run)")
     rprint(f"  work_dir: {spec.work_dir}")
     rprint(f"  gc_mode:  {spec.gc_mode}")
-    rprint(f"  gpus: {spec.num_gpus}  cpu_workers: {spec.num_cpu_workers or 'auto'}")
+    rprint(f"  gpus: {spec.num_gpus} (requested)  cpu_workers: {spec.num_cpu_workers or 'auto'}")
     rprint(f"  ingest:   source={spec.ingest.source}", end="")
     if spec.ingest.recipe:
         rprint(f"  recipe={spec.ingest.recipe}", end="")
@@ -43,6 +43,7 @@ def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> 
     t.add_column("Operator")
     t.add_column("Device")
     t.add_column("Args")
+    has_gpu_pref = False
     for i, stage in enumerate(spec.stages):
         result = validate_stage_args(stage.op, stage.args, schemas)
         validation_results.append(result)
@@ -50,9 +51,17 @@ def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> 
             errors.append(f"stage {i} ({stage.name}): {result.error}")
         if result.validator == "schema" and result.device != "?":
             schema_checked.append(stage.op)
+        if result.device == "gpu":
+            has_gpu_pref = True
         args_str = ", ".join(f"{k}={v}" for k, v in stage.args.items()) if stage.args else "-"
         t.add_row(str(i), stage.name, stage.op, result.device, args_str)
     rprint(t)
+
+    if has_gpu_pref:
+        rprint(
+            "[dim]Device shows the preferred executor. gpu stages run on GPU "
+            "when one is available and fall back to CPU otherwise.[/dim]"
+        )
 
     if schema_checked:
         checked = ", ".join(sorted(set(schema_checked)))
