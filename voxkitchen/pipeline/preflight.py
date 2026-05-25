@@ -7,6 +7,11 @@ Pure, dependency-free set logic — no type checking, no audio, no models.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass, field
+
+from voxkitchen.pipeline.spec import PipelineSpec
+
 
 def _namespace(token: str) -> str | None:
     """Return the namespace prefix for a wildcard token like 'metrics.*'."""
@@ -47,3 +52,86 @@ def apply_clears(available: set[str], clears: list[str]) -> set[str]:
         else:
             out.discard(token)
     return out
+
+
+# ---------------------------------------------------------------------------
+# Forward-walk preflight — checks operator field contracts across all stages
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class PreflightResult:
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+
+
+@dataclass
+class _Contract:
+    reads: list[str]
+    writes: list[str]
+    optional_reads: list[str]
+    clears: list[str]
+
+
+def _contract_from_registry(stage_op: str, args: dict[str, object]) -> _Contract | None:
+    """Return the contract for an importable operator, or None if not importable."""
+    from voxkitchen.operators.registry import UnknownOperatorError, get_operator
+
+    try:
+        op_cls = get_operator(stage_op)
+    except UnknownOperatorError:
+        return None
+    dynamic: list[str] = []
+    try:
+        cfg = op_cls.config_cls.model_validate(args)
+        dynamic = op_cls(cfg, ctx=None).dynamic_reads()  # type: ignore[arg-type]
+    except Exception:
+        # Bad args (e.g. a malformed filter condition) are reported by the
+        # arg-validation pass and at runtime; here we degrade to static reads
+        # rather than crash the pre-flight check.
+        dynamic = []
+    return _Contract(
+        reads=list(op_cls.reads) + dynamic,
+        writes=list(op_cls.writes),
+        optional_reads=list(op_cls.optional_reads),
+        clears=list(op_cls.clears),
+    )
+
+
+def preflight_spec(
+    spec: PipelineSpec,
+    *,
+    contract_lookup: Callable[[str, dict[str, object]], _Contract | None] = _contract_from_registry,
+) -> PreflightResult:
+    """Walk stages forward; report broken chains as errors/warnings.
+
+    Operators with no resolvable contract (out-of-env, or unknown) are skipped
+    conservatively: we stop tracking after them so we never raise false alarms
+    about fields a stage we couldn't inspect might have produced.
+    """
+    result = PreflightResult()
+    available: set[str] = {"audio"}
+    tracking = True
+
+    for stage in spec.stages:
+        contract = contract_lookup(stage.op, stage.args)
+        if contract is None:
+            tracking = False
+            continue
+        if tracking:
+            for token in contract.reads:
+                if not is_satisfied(token, available):
+                    result.errors.append(
+                        f"stage {stage.name!r} (op {stage.op!r}) requires {token!r} "
+                        f"but no upstream stage produces it"
+                    )
+            for token in contract.optional_reads:
+                if not is_satisfied(token, available):
+                    result.warnings.append(
+                        f"stage {stage.name!r} (op {stage.op!r}) can use {token!r} "
+                        f"but no upstream stage produces it (stage will skip/degrade)"
+                    )
+            available = apply_clears(available, contract.clears)
+            available = apply_writes(available, contract.writes)
+
+    return result
