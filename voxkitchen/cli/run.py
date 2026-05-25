@@ -15,7 +15,7 @@ from voxkitchen.pipeline.runner import StageFailedError, run_pipeline
 from voxkitchen.pipeline.spec import PipelineSpec
 
 
-def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> bool:
+def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None, preflight: bool = True) -> bool:
     """Validate the pipeline and print a stage summary. Returns True if valid."""
     from voxkitchen.cli.hints import format_recommended_image_hint, recommend_docker_tag
     from voxkitchen.cli.validate import validate_stage_args
@@ -70,6 +70,19 @@ def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None) -> 
     tag = recommend_docker_tag([r.required_extras for r in validation_results])
     pipeline_hint = str(pipeline_path) if pipeline_path is not None else "<yaml>"
     rprint(f"[dim]{format_recommended_image_hint(tag, pipeline_hint)}[/dim]")
+
+    if preflight:
+        from typing import cast
+
+        from voxkitchen.pipeline.preflight import make_contract_lookup, preflight_spec
+
+        pf = preflight_spec(
+            spec, contract_lookup=make_contract_lookup(cast("dict[str, object] | None", schemas))
+        )
+        for w in pf.warnings:
+            rprint(f"  [yellow]warning:[/yellow] {w}")
+        for e in pf.errors:
+            errors.append(e)
 
     if errors:
         for err in errors:
@@ -138,6 +151,7 @@ def run_command(
     stop_at: str | None = None,
     dry_run: bool = False,
     keep_intermediates: bool = False,
+    no_preflight: bool = False,
 ) -> None:
     """Execute a pipeline."""
     import logging
@@ -165,7 +179,7 @@ def run_command(
         spec = spec.model_copy(update={"work_dir": work_dir})
 
     if dry_run:
-        valid = _print_dry_run(spec, pipeline_path=pipeline)
+        valid = _print_dry_run(spec, pipeline_path=pipeline, preflight=not no_preflight)
         raise typer.Exit(code=0 if valid else 1)
 
     try:

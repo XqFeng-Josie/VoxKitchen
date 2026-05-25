@@ -143,7 +143,7 @@ def validate_stage_args(
     )
 
 
-def validate_command(pipeline: Path) -> None:
+def validate_command(pipeline: Path, *, preflight: bool = True) -> None:
     """Validate a pipeline YAML without executing it."""
     try:
         spec = load_pipeline_spec(pipeline)
@@ -169,6 +169,25 @@ def validate_command(pipeline: Path) -> None:
             "inside the selected image, or `vkit docker doctor` to check it.[/dim]"
         )
         raise typer.Exit(code=1)
+
+    if preflight:
+        from typing import cast
+
+        from voxkitchen.pipeline.preflight import make_contract_lookup, preflight_spec
+
+        pf = preflight_spec(
+            spec, contract_lookup=make_contract_lookup(cast("dict[str, object] | None", schemas))
+        )
+        for w in pf.warnings:
+            rprint(f"[yellow]warning:[/yellow] {w}")
+        if pf.errors:
+            for e in pf.errors:
+                rprint(f"[red]error:[/red] {e}")
+            rprint(
+                "[dim]Tip: chain a stage that produces the missing field, "
+                "or pass --no-preflight to skip this check.[/dim]"
+            )
+            raise typer.Exit(code=1)
 
     mode = "schema" if schemas is not None else "registry"
     rprint(

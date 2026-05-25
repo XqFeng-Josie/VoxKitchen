@@ -96,10 +96,13 @@ def ingest(
 @app.command(help="Parse and validate a pipeline YAML (no execution).")
 def validate(
     pipeline: Path = typer.Argument(..., help="Pipeline YAML path."),
+    no_preflight: bool = typer.Option(
+        False, "--no-preflight", help="Skip static field-contract pre-flight checks."
+    ),
 ) -> None:
     from voxkitchen.cli.validate import validate_command
 
-    validate_command(pipeline)
+    validate_command(pipeline, preflight=not no_preflight)
 
 
 @app.command(
@@ -121,6 +124,9 @@ def run(
     keep_intermediates: bool = typer.Option(
         False, "--keep-intermediates", help="Disable GC; keep all derived files."
     ),
+    no_preflight: bool = typer.Option(
+        False, "--no-preflight", help="Skip static field-contract pre-flight checks."
+    ),
 ) -> None:
     from voxkitchen.cli.run import run_command
 
@@ -133,6 +139,7 @@ def run(
         stop_at=stop_at,
         dry_run=dry_run,
         keep_intermediates=keep_intermediates,
+        no_preflight=no_preflight,
     )
 
 

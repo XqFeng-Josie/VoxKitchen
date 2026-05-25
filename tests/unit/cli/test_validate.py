@@ -50,7 +50,9 @@ stages:
 """,
     )
     runner = CliRunner()
-    result = runner.invoke(app, ["validate", str(yaml_path)])
+    # tts_fish_speech requires supervisions.text but no upstream provides it; pass
+    # --no-preflight to isolate the image-recommendation check from field contracts.
+    result = runner.invoke(app, ["validate", str(yaml_path), "--no-preflight"])
     assert result.exit_code == 0, result.output
     assert "recommended image: fish-speech" in result.output
     assert "vkit docker pull --tag fish-speech" in result.output
