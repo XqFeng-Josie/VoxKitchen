@@ -58,6 +58,17 @@ class Operator(ABC):
     reads_audio_bytes: ClassVar[bool] = True
     required_extras: ClassVar[list[str]] = []
 
+    # ---- Field contract (Workstream A) ---------------------------------
+    # Declarative I/O so the pre-flight validator can reject broken chains
+    # before execution. Tokens come from a fixed field vocabulary
+    # (audio, supervisions.text/language/speaker/gender, metrics.<name>,
+    # custom.<key>, and namespace wildcards like metrics.* used in clears).
+    reads: ClassVar[list[str]] = []  # required inputs; missing -> preflight error
+    writes: ClassVar[list[str]] = []  # fields this op produces
+    optional_reads: ClassVar[list[str]] = []  # used-if-present; missing -> warning
+    clears: ClassVar[list[str]] = []  # fields reset by this op (e.g. VAD re-segment)
+    contract_exempt: ClassVar[bool] = False  # opt out of the completeness meta-test
+
     def __init__(self, config: OperatorConfig, ctx: RunContext) -> None:
         self.config = config
         self.ctx = ctx
@@ -72,6 +83,14 @@ class Operator(ABC):
     @abstractmethod
     def process(self, cuts: CutSet) -> CutSet:
         """Transform a CutSet into a new CutSet. Must be implemented."""
+
+    def dynamic_reads(self) -> list[str]:
+        """Extra required-read tokens derived from this operator's config.
+
+        Override for operators whose inputs depend on YAML args (e.g. a filter
+        whose conditions reference ``metrics.snr``). Default: none.
+        """
+        return []
 
     def teardown(self) -> None:
         """Called once per worker process before the worker exits.
