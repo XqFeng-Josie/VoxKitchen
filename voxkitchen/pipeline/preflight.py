@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-from voxkitchen.pipeline.spec import PipelineSpec
+from voxkitchen.pipeline.spec import IngestSpec, PipelineSpec
 
 
 def _namespace(token: str) -> str | None:
@@ -52,6 +52,28 @@ def apply_clears(available: set[str], clears: list[str]) -> set[str]:
         else:
             out.discard(token)
     return out
+
+
+_SUPERVISION_FIELDS = (
+    "supervisions.text",
+    "supervisions.language",
+    "supervisions.speaker",
+    "supervisions.gender",
+)
+
+
+def _initial_available(ingest: IngestSpec) -> set[str]:
+    """Field tokens present before any stage runs, based on the ingest source.
+
+    ``dir`` scans bare audio files. ``manifest`` and ``recipe`` load CutSets
+    that commonly already carry transcripts/speaker/language, so we assume the
+    supervision fields MAY be present — pre-flight prefers a false negative
+    (missing a real gap) over a false positive (blocking a valid pipeline).
+    """
+    available = {"audio"}
+    if ingest.source in ("manifest", "recipe"):
+        available.update(_SUPERVISION_FIELDS)
+    return available
 
 
 # ---------------------------------------------------------------------------
@@ -110,7 +132,7 @@ def preflight_spec(
     about fields a stage we couldn't inspect might have produced.
     """
     result = PreflightResult()
-    available: set[str] = {"audio"}
+    available: set[str] = _initial_available(spec.ingest)
     tracking = True
 
     for stage in spec.stages:

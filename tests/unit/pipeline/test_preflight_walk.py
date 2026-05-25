@@ -63,3 +63,48 @@ def test_snr_filter_chain_ok():
         StageSpec(name="pack", op="pack_jsonl"),
     )
     assert preflight_spec(spec).errors == []
+
+
+# ---------------------------------------------------------------------------
+# Ingest-source seed tests
+# ---------------------------------------------------------------------------
+
+
+def _spec_with_ingest(source, *stages):
+    kwargs = {}
+    if source == "recipe":
+        kwargs["recipe"] = "ljspeech"
+    return PipelineSpec(
+        version="0.1",
+        name="t",
+        work_dir="./work",
+        ingest=IngestSpec(source=source, args={}, **kwargs),
+        stages=list(stages),
+    )
+
+
+def test_manifest_ingest_supplies_supervision_text():
+    # forced_align needs supervisions.text; with manifest ingest it's assumed present
+    spec = _spec_with_ingest(
+        "manifest",
+        StageSpec(name="align", op="forced_align"),
+        StageSpec(name="pack", op="pack_jsonl"),
+    )
+    assert preflight_spec(spec).errors == []
+
+
+def test_recipe_ingest_supplies_supervision_text():
+    spec = _spec_with_ingest(
+        "recipe",
+        StageSpec(name="tts", op="tts_kokoro"),
+    )
+    assert preflight_spec(spec).errors == []
+
+
+def test_dir_ingest_still_requires_text_for_forced_align():
+    spec = _spec_with_ingest(
+        "dir",
+        StageSpec(name="align", op="forced_align"),
+        StageSpec(name="pack", op="pack_jsonl"),
+    )
+    assert any("supervisions.text" in e for e in preflight_spec(spec).errors)
