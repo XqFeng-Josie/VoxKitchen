@@ -15,7 +15,9 @@ Output JSON structure::
           "required_extras": ["funasr"],
           "device": "gpu",
           "module": "voxkitchen.operators.annotate.paraformer_asr",
-          "doc": "Transcribe Chinese audio using FunASR's Paraformer-large model."
+          "doc": "Transcribe Chinese audio using FunASR's Paraformer-large model.",
+          "contract": {"reads": ["audio"], "writes": ["supervisions.text"],
+                       "optional_reads": [], "clears": []}
         },
         ...
       }
@@ -65,6 +67,12 @@ def dump_current_env(env_name: str, out_path: Path) -> int:
             "device": str(op_cls.device),
             "module": op_cls.__module__,
             "doc": doc,
+            "contract": {
+                "reads": list(op_cls.reads),
+                "writes": list(op_cls.writes),
+                "optional_reads": list(op_cls.optional_reads),
+                "clears": list(op_cls.clears),
+            },
         }
 
     out_path.parent.mkdir(parents=True, exist_ok=True)

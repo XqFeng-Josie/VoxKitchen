@@ -135,3 +135,35 @@ def preflight_spec(
             available = apply_writes(available, contract.writes)
 
     return result
+
+
+def contract_from_schemas(
+    stage_op: str, args: dict[str, object], schemas: dict[str, object]
+) -> _Contract | None:
+    """Build a contract from an op_schemas.json entry (out-of-env operators)."""
+    info = schemas.get(stage_op)
+    if not info or not isinstance(info, dict) or "contract" not in info:
+        return None
+    c = info["contract"]
+    if not isinstance(c, dict):
+        return None
+    return _Contract(
+        reads=list(c.get("reads", [])),
+        writes=list(c.get("writes", [])),
+        optional_reads=list(c.get("optional_reads", [])),
+        clears=list(c.get("clears", [])),
+    )
+
+
+def make_contract_lookup(
+    schemas: dict[str, object] | None,
+) -> Callable[[str, dict[str, object]], _Contract | None]:
+    """Registry first (gets dynamic_reads); op_schemas.json fallback otherwise."""
+    def lookup(stage_op: str, args: dict[str, object]) -> _Contract | None:
+        c = _contract_from_registry(stage_op, args)
+        if c is not None:
+            return c
+        if schemas is not None:
+            return contract_from_schemas(stage_op, args, schemas)
+        return None
+    return lookup
