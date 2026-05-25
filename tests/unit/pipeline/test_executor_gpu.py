@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 from voxkitchen.operators.base import Operator, OperatorConfig
@@ -33,6 +34,7 @@ class _CudaSentinelOperator(Operator):
     name = "_test_cuda_sentinel"
     config_cls = _CudaSentinelConfig
     device = "gpu"
+    contract_exempt: ClassVar[bool] = True
 
     def process(self, cuts: CutSet) -> CutSet:
         cvd = os.environ.get("CUDA_VISIBLE_DEVICES", "UNSET")
@@ -48,6 +50,7 @@ class _BatchCudaSentinelOperator(_CudaSentinelOperator):
 
     name = "_test_batch_cuda_sentinel"
     parallelizable = False
+    contract_exempt: ClassVar[bool] = True
 
     def process(self, cuts: CutSet) -> CutSet:
         cvd = os.environ.get("CUDA_VISIBLE_DEVICES", "UNSET")
@@ -60,6 +63,7 @@ class _BatchFailingCudaSentinelOperator(_CudaSentinelOperator):
 
     name = "_test_batch_failing_cuda_sentinel"
     parallelizable = False
+    contract_exempt: ClassVar[bool] = True
 
     def process(self, cuts: CutSet) -> CutSet:
         if len(cuts) > 1:

@@ -8,7 +8,7 @@ similarity score to ``metrics["speaker_similarity"]`` (0-1).
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -34,6 +34,8 @@ class SpeakerSimilarityOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
+    writes: ClassVar[list[str]] = ["metrics.speaker_similarity"]
+    optional_reads: ClassVar[list[str]] = ["custom.speaker_embedding"]
 
     _ref: Any
 

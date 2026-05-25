@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
@@ -31,6 +33,14 @@ class FixedSegmentOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
+    reads: ClassVar[list[str]] = ["audio"]
+    clears: ClassVar[list[str]] = [
+        "supervisions.text",
+        "supervisions.language",
+        "supervisions.speaker",
+        "supervisions.gender",
+        "metrics.*",
+    ]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, FixedSegmentConfig)

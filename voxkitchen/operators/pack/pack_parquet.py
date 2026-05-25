@@ -54,6 +54,7 @@ class PackParquetOperator(Operator):
     produces_audio = False
     reads_audio_bytes = False
     required_extras: ClassVar[list[str]] = ["pack"]
+    optional_reads: ClassVar[list[str]] = ["supervisions.text"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackParquetConfig)

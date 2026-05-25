@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 import numpy as np
 
 from voxkitchen.operators.base import Operator, OperatorConfig
@@ -33,6 +35,8 @@ class ClippingDetectOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["metrics.clipping_ratio"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, ClippingDetectConfig)

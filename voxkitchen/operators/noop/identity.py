@@ -8,6 +8,8 @@ or any real data.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
@@ -26,6 +28,7 @@ class IdentityOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False  # identity never touches samples
+    contract_exempt: ClassVar[bool] = True
 
     def process(self, cuts: CutSet) -> CutSet:
         return CutSet(list(cuts))

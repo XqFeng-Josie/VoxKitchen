@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import ast
 import operator as op_mod
-from typing import Any
+from typing import Any, ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -61,6 +61,7 @@ class QualityScoreFilterOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
+    contract_exempt: ClassVar[bool] = True  # contract via dynamic_reads (added in a later task)
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, QualityScoreFilterConfig)

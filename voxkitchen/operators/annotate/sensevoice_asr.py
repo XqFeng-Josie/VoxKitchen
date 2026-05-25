@@ -135,6 +135,8 @@ class SenseVoiceAsrOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["funasr"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["supervisions.text", "supervisions.language"]
 
     def setup(self) -> None:
         import torch

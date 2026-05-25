@@ -9,7 +9,7 @@ Used for codec-LM TTS training (VALL-E, CosyVoice, Fish-Speech, etc.).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -36,6 +36,13 @@ class CodecTokenizeOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras = ["codec"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = [
+        "custom.codec_tokens",
+        "custom.codec_backend",
+        "custom.codec_sr",
+        "custom.codec_n_codebooks",
+    ]
 
     _model: Any
     _codec_sr: int

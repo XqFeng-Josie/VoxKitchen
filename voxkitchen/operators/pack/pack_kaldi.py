@@ -9,6 +9,7 @@ Writes three files to the output directory:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -31,6 +32,7 @@ class PackKaldiOperator(Operator):
     parallelizable = False
     produces_audio = False
     reads_audio_bytes = False
+    optional_reads: ClassVar[list[str]] = ["supervisions.text", "supervisions.speaker"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackKaldiConfig)

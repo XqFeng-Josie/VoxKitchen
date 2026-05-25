@@ -45,6 +45,13 @@ class DnsmosScoreOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["dnsmos"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = [
+        "metrics.dnsmos_ovrl",
+        "metrics.dnsmos_sig",
+        "metrics.dnsmos_bak",
+        "metrics.dnsmos_p808",
+    ]
 
     def setup(self) -> None:
         from speechmos import dnsmos  # type: ignore[import-not-found]

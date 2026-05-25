@@ -41,6 +41,8 @@ class UtmosScoreOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["dnsmos"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["metrics.utmos"]
 
     def setup(self) -> None:
         from speechmos import utmos  # type: ignore[import-not-found]

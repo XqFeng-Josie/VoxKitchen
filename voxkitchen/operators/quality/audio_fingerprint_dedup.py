@@ -32,6 +32,7 @@ class AudioFingerprintDedupOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["segment", "quality"]
+    reads: ClassVar[list[str]] = ["audio"]
 
     def setup(self) -> None:
         import librosa  # — validates dependency is installed

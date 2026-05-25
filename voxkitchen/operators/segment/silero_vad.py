@@ -41,6 +41,14 @@ class SileroVadOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["segment"]
+    reads: ClassVar[list[str]] = ["audio"]
+    clears: ClassVar[list[str]] = [
+        "supervisions.text",
+        "supervisions.language",
+        "supervisions.speaker",
+        "supervisions.gender",
+        "metrics.*",
+    ]
 
     def setup(self) -> None:
         import sys

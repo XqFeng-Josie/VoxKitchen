@@ -43,6 +43,12 @@ class PackHuggingFaceOperator(Operator):
     produces_audio = True
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["pack"]
+    optional_reads: ClassVar[list[str]] = [
+        "supervisions.text",
+        "supervisions.speaker",
+        "supervisions.language",
+        "custom.word_alignments",
+    ]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackHuggingFaceConfig)

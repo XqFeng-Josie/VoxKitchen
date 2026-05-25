@@ -10,7 +10,7 @@ then resample back to ``sr``. This is equivalent to ``sox speed factor``.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -45,6 +45,7 @@ class SpeedPerturbOperator(Operator):
     produces_audio = True
     reads_audio_bytes = True
     required_extras = ["audio"]
+    reads: ClassVar[list[str]] = ["audio"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, SpeedPerturbConfig)

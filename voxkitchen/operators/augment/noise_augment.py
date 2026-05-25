@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 import soundfile as sf
@@ -41,6 +41,8 @@ class NoiseAugmentOperator(Operator):
     device = "cpu"
     produces_audio = True
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["custom.noise_snr_db", "custom.noise_file"]
 
     _noise_files: list[Path]
 

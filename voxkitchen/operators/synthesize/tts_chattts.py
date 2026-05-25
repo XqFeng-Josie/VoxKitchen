@@ -11,7 +11,7 @@ can be embedded directly in the input text.
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -45,6 +45,8 @@ class TtsChatTTSOperator(Operator):
     produces_audio = True
     reads_audio_bytes = False
     required_extras = ["tts-chattts"]
+    reads: ClassVar[list[str]] = ["supervisions.text"]
+    writes: ClassVar[list[str]] = ["audio"]
 
     _chat: Any
     _spk: Any

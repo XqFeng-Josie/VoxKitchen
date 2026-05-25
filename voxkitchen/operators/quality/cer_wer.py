@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 import re
 import unicodedata
+from typing import ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -69,6 +70,8 @@ class CerWerOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
+    reads: ClassVar[list[str]] = ["supervisions.text", "custom.reference_text"]
+    writes: ClassVar[list[str]] = ["metrics.cer", "metrics.wer"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, CerWerConfig)

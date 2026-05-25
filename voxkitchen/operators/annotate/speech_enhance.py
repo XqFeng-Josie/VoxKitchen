@@ -7,7 +7,7 @@ to/from 48kHz internally so input can be at any sample rate.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -37,6 +37,8 @@ class SpeechEnhanceOperator(Operator):
     produces_audio = True
     reads_audio_bytes = True
     required_extras = ["enhance"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["custom.speech_enhance_method"]
 
     _model: Any
     _df_state: Any

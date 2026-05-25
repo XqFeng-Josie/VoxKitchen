@@ -36,6 +36,8 @@ class PitchStatsOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["pitch"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["metrics.pitch_mean", "metrics.pitch_std"]
 
     def setup(self) -> None:
         import pyworld  # type: ignore[import-not-found]

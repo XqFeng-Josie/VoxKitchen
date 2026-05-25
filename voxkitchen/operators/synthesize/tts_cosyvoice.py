@@ -12,7 +12,7 @@ Output sample rate is 24kHz. Requires GPU.
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -47,6 +47,8 @@ class TtsCosyVoiceOperator(Operator):
     produces_audio = True
     reads_audio_bytes = False
     required_extras = ["tts-cosyvoice"]
+    reads: ClassVar[list[str]] = ["supervisions.text"]
+    writes: ClassVar[list[str]] = ["audio"]
 
     _model: Any
     _sample_rate: int

@@ -38,6 +38,8 @@ class WenetAsrOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["wenet"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["supervisions.text"]
 
     def setup(self) -> None:
         import wenet

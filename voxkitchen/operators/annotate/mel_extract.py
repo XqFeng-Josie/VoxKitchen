@@ -8,7 +8,7 @@ analysis. Each cut gets a .npy file with the mel spectrogram matrix.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -38,6 +38,13 @@ class MelExtractOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = [
+        "custom.mel_path",
+        "custom.mel_shape",
+        "custom.mel_config",
+        "metrics.mel_frames",
+    ]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, MelExtractConfig)

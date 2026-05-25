@@ -49,6 +49,8 @@ class PyannoteDiarizeOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["diarize"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["supervisions.speaker"]
 
     def setup(self) -> None:
         import torch

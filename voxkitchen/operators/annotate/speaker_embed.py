@@ -10,7 +10,7 @@ floats. Useful for speaker verification, clustering, and deduplication.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -42,6 +42,12 @@ class SpeakerEmbedOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras = ["classify"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = [
+        "custom.speaker_embedding",
+        "custom.speaker_embedding_model",
+        "custom.speaker_embedding_dim",
+    ]
 
     _model: Any
 

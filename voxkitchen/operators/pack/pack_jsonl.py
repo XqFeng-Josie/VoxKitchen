@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -120,6 +121,14 @@ class PackJsonlOperator(Operator):
     parallelizable = False
     produces_audio = False
     reads_audio_bytes = False
+    optional_reads: ClassVar[list[str]] = [
+        "supervisions.text",
+        "supervisions.speaker",
+        "supervisions.language",
+        "supervisions.gender",
+        "metrics.*",
+        "custom.word_alignments",
+    ]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackJsonlConfig)

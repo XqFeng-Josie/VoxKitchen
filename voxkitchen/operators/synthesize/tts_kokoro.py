@@ -9,7 +9,7 @@ Requires system dependency: ``sudo apt-get install espeak-ng``
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -42,6 +42,8 @@ class TtsKokoroOperator(Operator):
     produces_audio = True
     reads_audio_bytes = False
     required_extras = ["tts-kokoro"]
+    reads: ClassVar[list[str]] = ["supervisions.text"]
+    writes: ClassVar[list[str]] = ["audio"]
 
     _pipeline: Any
 

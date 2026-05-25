@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -30,6 +30,7 @@ class LoudnessNormalizeOperator(Operator):
     device = "cpu"
     produces_audio = True
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
 
     def setup(self) -> None:
         import pyloudnorm

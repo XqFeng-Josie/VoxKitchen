@@ -68,6 +68,8 @@ class GenderClassifyOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = []
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["supervisions.gender"]
 
     def setup(self) -> None:
         assert isinstance(self.config, GenderClassifyConfig)

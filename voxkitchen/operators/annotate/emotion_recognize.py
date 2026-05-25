@@ -9,7 +9,7 @@ other, sad, surprised, unknown.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -45,6 +45,13 @@ class EmotionRecognizeOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras = ["funasr"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = [
+        "custom.emotion",
+        "custom.emotion_label_idx",
+        "custom.emotion_scores",
+        "custom.emotion_model",
+    ]
 
     _model: Any
 

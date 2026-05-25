@@ -8,6 +8,7 @@ the same result. Output is clipped to [-1.0, 1.0].
 from __future__ import annotations
 
 import hashlib
+from typing import ClassVar
 
 import numpy as np
 
@@ -34,6 +35,8 @@ class VolumePerturbOperator(Operator):
     device = "cpu"
     produces_audio = True
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["custom.volume_gain_db"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, VolumePerturbConfig)

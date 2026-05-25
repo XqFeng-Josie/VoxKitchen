@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import queue
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -50,6 +50,8 @@ class TtsFishSpeechOperator(Operator):
     produces_audio = True
     reads_audio_bytes = False
     required_extras = ["tts-fish-speech"]
+    reads: ClassVar[list[str]] = ["supervisions.text"]
+    writes: ClassVar[list[str]] = ["audio"]
 
     _inference: Any
     _llama_queue: queue.Queue[Any] | None

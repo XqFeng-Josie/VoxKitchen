@@ -35,6 +35,7 @@ class PackWebDatasetOperator(Operator):
     produces_audio = True
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["pack"]
+    optional_reads: ClassVar[list[str]] = ["supervisions.text"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackWebDatasetConfig)

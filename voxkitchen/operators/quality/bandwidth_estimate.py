@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
@@ -32,6 +34,8 @@ class BandwidthEstimateOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["metrics.bandwidth_khz"]
 
     def setup(self) -> None:
         import torch

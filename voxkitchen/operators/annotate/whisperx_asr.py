@@ -33,6 +33,8 @@ class WhisperxAsrOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["asr"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["supervisions.text", "supervisions.language"]
 
     def setup(self) -> None:
         import torch

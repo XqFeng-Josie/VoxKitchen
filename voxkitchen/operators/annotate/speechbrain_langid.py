@@ -30,6 +30,8 @@ class SpeechBrainLangIdOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["classify"]
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["supervisions.language"]
 
     def setup(self) -> None:
         import torch

@@ -13,7 +13,7 @@ Italian, Japanese, Korean, Portuguese, Russian, Spanish.
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -39,6 +39,8 @@ class ForcedAlignOperator(Operator):
     produces_audio = False
     reads_audio_bytes = True
     required_extras = ["align"]
+    reads: ClassVar[list[str]] = ["audio", "supervisions.text"]
+    writes: ClassVar[list[str]] = ["custom.word_alignments", "custom.forced_align_model"]
 
     _aligner: Any
 

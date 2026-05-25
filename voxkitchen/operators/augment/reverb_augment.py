@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from typing import ClassVar
 
 import numpy as np
 import soundfile as sf
@@ -42,6 +43,8 @@ class ReverbAugmentOperator(Operator):
     device = "cpu"
     produces_audio = True
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["custom.rir_file"]
 
     _rir_files: list[Path]
 

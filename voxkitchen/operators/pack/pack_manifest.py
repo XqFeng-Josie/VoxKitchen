@@ -8,6 +8,8 @@ configs where no format conversion is needed.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
@@ -26,6 +28,7 @@ class PackManifestOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
+    optional_reads: ClassVar[list[str]] = ["supervisions.text"]
 
     def process(self, cuts: CutSet) -> CutSet:
         return CutSet(list(cuts))

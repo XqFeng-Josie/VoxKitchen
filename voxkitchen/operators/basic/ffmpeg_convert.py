@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from typing import ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
@@ -27,6 +28,8 @@ class FfmpegConvertOperator(Operator):
     device = "cpu"
     produces_audio = True
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["custom.origin_start", "custom.origin_end"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, FfmpegConvertConfig)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from voxkitchen.operators.base import Operator, OperatorConfig
 from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cutset import CutSet
@@ -24,6 +26,7 @@ class DurationFilterOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
+    contract_exempt: ClassVar[bool] = True
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, DurationFilterConfig)

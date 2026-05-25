@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 
@@ -31,6 +31,8 @@ class ResampleOperator(Operator):
     device = "cpu"
     produces_audio = True
     reads_audio_bytes = True
+    reads: ClassVar[list[str]] = ["audio"]
+    writes: ClassVar[list[str]] = ["custom.origin_start", "custom.origin_end"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, ResampleConfig)
