@@ -97,6 +97,7 @@ except (ImportError, AttributeError):
 
 from voxkitchen.operators.annotate import gender_classify as _annotate_gender  # noqa: F401
 from voxkitchen.operators.annotate import mel_extract as _annotate_mel  # noqa: F401
+from voxkitchen.operators.annotate import normalize_text as _annotate_normalize_text  # noqa: F401
 
 try:
     from voxkitchen.operators.annotate import speaker_embed as _annotate_spkemb  # noqa: F401
