@@ -11,6 +11,8 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 
+_TRACKED_PREFIXES = ("metrics.", "custom.", "supervisions.")
+
 _OPS = {
     ">": op_mod.gt,
     ">=": op_mod.ge,
@@ -61,7 +63,16 @@ class QualityScoreFilterOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
-    contract_exempt: ClassVar[bool] = True  # contract via dynamic_reads (added in a later task)
+    contract_exempt: ClassVar[bool] = True  # filter: writes nothing; required reads are dynamic (see dynamic_reads)
+
+    def dynamic_reads(self) -> list[str]:
+        assert isinstance(self.config, QualityScoreFilterConfig)
+        fields: list[str] = []
+        for cond in self.config.conditions:
+            field = cond.split()[0]
+            if field.startswith(_TRACKED_PREFIXES) and field not in fields:
+                fields.append(field)
+        return fields
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, QualityScoreFilterConfig)
