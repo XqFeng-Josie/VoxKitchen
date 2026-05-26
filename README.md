@@ -264,7 +264,7 @@ vkit docker doctor --tag latest            # Check image health
 - [Getting Started](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/getting-started.md)
 - [Examples & Use Cases](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/examples.md)
 - [Pipeline YAML](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/pipeline-yaml.md)
-- [Recipes & Download](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/recipes.md)
+- [Dataset Catalog](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/datasets/index.md)
 - [CLI reference](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/cli.md)
 - [Operators reference](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/operators.md)
 - [Docker build guide](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md)

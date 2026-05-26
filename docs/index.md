@@ -37,7 +37,7 @@ vkit init my-project --template speaker   # Speaker analysis
 ## Reference
 
 - [Operators](reference/operators.md) — all 51 operators with config and YAML examples
-- [Recipes & Download](reference/recipes.md) — dataset recipes and `vkit docker download`
+- [Dataset Catalog](datasets/index.md) — dataset recipes and `vkit docker download`
 - [CLI Commands](reference/cli.md) — complete CLI reference
 - [Python Tools API](reference/tools-api.md) — standalone functions for quick tasks
 - [Pipeline YAML](reference/pipeline-yaml.md) — YAML schema and execution model

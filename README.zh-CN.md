@@ -258,7 +258,7 @@ vkit docker doctor --tag latest            # 检查镜像健康状况
 - [入门指南](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/getting-started.md)
 - [示例与用例](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/examples.md)
 - [流水线 YAML](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/pipeline-yaml.md)
-- [Recipe 与下载](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/recipes.md)
+- [数据集目录](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/datasets/index.md)
 - [CLI 参考](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/cli.md)
 - [算子参考](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/operators.md)
 - [Docker 构建指南](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md)

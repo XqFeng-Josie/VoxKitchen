@@ -14,6 +14,7 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Examples & Use Cases: examples.md
+  - Datasets: datasets/index.md
   - Tutorials:
     - TTS Training Data: tutorials/tts-training-data.md
     - Speaker TTS: tutorials/tts-speaker.md
@@ -25,7 +26,6 @@ nav:
     - Data Protocol: concepts/data-protocol.md
   - Reference:
     - Operators: reference/operators.md
-    - Recipes & Download: reference/recipes.md
     - CLI Commands: reference/cli.md
     - Python Tools API: reference/tools-api.md
     - Pipeline YAML: reference/pipeline-yaml.md
@@ -34,6 +34,12 @@ nav:
   - Architecture:
     - Overview: architecture.md
     - Multi-env Docker: architecture/multi-env.md
+
+validation:
+  nav:
+    omitted_files: info
+  links:
+    not_found: warn
 
 markdown_extensions:
   - admonition
