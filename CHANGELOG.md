@@ -8,6 +8,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Dataset catalog (`docs/datasets/`): a decision-support catalog of speech
+  datasets generated from `voxkitchen/datasets/catalog.yaml`, with per-dataset
+  recommendations, access links, and (where available) a download recipe and a
+  suggested processing pipeline. Searchable via the docs site; browse by task.
 - Declarative field contracts (`reads`/`writes`/`optional_reads`/`clears`) on
   every operator, making data-flow dependencies machine-readable.
 - Static pre-flight validation in `vkit validate` and as a fail-fast gate before

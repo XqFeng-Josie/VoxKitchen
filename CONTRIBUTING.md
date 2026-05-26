@@ -256,6 +256,21 @@ Steps (mirrors the `:diarize` env split in the same PR):
      specific integration tests unless the env has unique dispatch
      semantics.
 
+## Adding a dataset to the catalog
+
+1. Append an entry to `voxkitchen/datasets/catalog.yaml` (minimum fields:
+   `id, name, task, languages, license, summary, homepage, recommendation`).
+   Use `recipe: <name>` only if VoxKitchen has a download recipe for it;
+   otherwise add `notes:` explaining how to obtain it. Optionally set
+   `recommended_pipeline:` to an existing pipeline under `examples/pipelines/`
+   or `voxkitchen/templates/pipelines/`.
+2. Regenerate the docs: `python -m voxkitchen.datasets.catalog_gen`
+3. Commit `catalog.yaml` and the generated `docs/datasets/` together.
+
+Do not fabricate license or size figures — cite the official source or leave
+them blank. The catalog only links and describes datasets; it never hosts or
+redistributes data, and users are responsible for license compliance.
+
 ## Adding a New Recipe
 
 1. Create `voxkitchen/ingest/recipes/<name>.py`
@@ -263,6 +278,8 @@ Steps (mirrors the `:diarize` env split in the same PR):
 3. Call `register_recipe(YourRecipe())` at module bottom
 4. Import in `voxkitchen/ingest/recipes/__init__.py`
 5. Add tests in `tests/unit/ingest/recipes/`
+6. Add a matching `recipe:` entry to `voxkitchen/datasets/catalog.yaml` and
+   regenerate the catalog docs (`python -m voxkitchen.datasets.catalog_gen`).
 
 ## Pull Request Process
 
