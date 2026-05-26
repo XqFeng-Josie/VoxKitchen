@@ -24,14 +24,17 @@ def test_good_chain_has_no_errors():
 
 
 def test_missing_text_for_cer_wer_is_error():
+    # supervisions.text (the ASR hypothesis) is a hard required read — missing it
+    # is always an error.  custom.reference_text is now optional_reads, so a
+    # missing one becomes a WARNING, not an error.
     spec = _spec(
         StageSpec(name="cer", op="cer_wer"),
         StageSpec(name="pack", op="pack_jsonl"),
     )
     result = preflight_spec(spec)
     assert any("supervisions.text" in e for e in result.errors)
-    assert any("custom.reference_text" in e for e in result.errors)
     assert any("cer" in e for e in result.errors)
+    assert any("custom.reference_text" in w for w in result.warnings)
 
 
 def test_filter_referencing_absent_metric_is_error():
@@ -110,3 +113,22 @@ def test_dir_ingest_still_requires_text_for_forced_align():
         StageSpec(name="pack", op="pack_jsonl"),
     )
     assert any("supervisions.text" in e for e in preflight_spec(spec).errors)
+
+
+def test_dir_with_reference_glob_seeds_reference_text():
+    # A dir ingest with reference_text_glob set seeds custom.reference_text, so
+    # a dir → faster_whisper_asr → cer_wer → pack_jsonl pipeline must be clean.
+    spec = PipelineSpec(
+        version="0.1",
+        name="t",
+        work_dir="./work",
+        ingest=IngestSpec(source="dir", args={"root": ".", "reference_text_glob": "*.txt"}),
+        stages=[
+            StageSpec(name="asr", op="faster_whisper_asr"),
+            StageSpec(name="cer", op="cer_wer"),
+            StageSpec(name="pack", op="pack_jsonl"),
+        ],
+    )
+    result = preflight_spec(spec)
+    assert result.errors == []
+    assert not any("custom.reference_text" in w for w in result.warnings)

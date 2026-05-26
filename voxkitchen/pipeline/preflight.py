@@ -73,6 +73,8 @@ def _initial_available(ingest: IngestSpec) -> set[str]:
     available = {"audio"}
     if ingest.source in ("manifest", "recipe"):
         available.update(_SUPERVISION_FIELDS)
+    if ingest.source == "dir" and ingest.args.get("reference_text_glob"):
+        available.add("custom.reference_text")
     return available
 
 
@@ -180,7 +182,13 @@ def contract_from_schemas(
 def make_contract_lookup(
     schemas: dict[str, object] | None,
 ) -> Callable[[str, dict[str, object]], _Contract | None]:
-    """Registry first (gets dynamic_reads); op_schemas.json fallback otherwise."""
+    """Registry first (gets dynamic_reads); op_schemas.json fallback otherwise.
+
+    Note: dynamic_reads is intentionally not carried on the schema-fallback path.
+    This is safe because the only operator that uses dynamic_reads is
+    quality_score_filter, which has no required_extras and is always importable
+    in-env, so it is always resolved via the registry path first.
+    """
 
     def lookup(stage_op: str, args: dict[str, object]) -> _Contract | None:
         c = _contract_from_registry(stage_op, args)

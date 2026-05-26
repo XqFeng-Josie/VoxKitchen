@@ -70,7 +70,8 @@ class CerWerOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
-    reads: ClassVar[list[str]] = ["supervisions.text", "custom.reference_text"]
+    reads: ClassVar[list[str]] = ["supervisions.text"]
+    optional_reads: ClassVar[list[str]] = ["custom.reference_text"]
     writes: ClassVar[list[str]] = ["metrics.cer", "metrics.wer"]
 
     def process(self, cuts: CutSet) -> CutSet:
