@@ -137,6 +137,47 @@ Optional deps wrapped in `try/except ImportError` -- missing packages don't cras
 | **Quality** | 11 | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
 | **Pack** | 6 | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
+### Field Contracts
+
+Every operator declares four `ClassVar` lists that describe which Cut fields it
+reads and writes. The pipeline pre-flight validator uses these declarations to
+catch wiring errors before any data is processed.
+
+| ClassVar | Meaning |
+|----------|---------|
+| `reads` | Fields that must be present; stage errors out if absent. |
+| `writes` | Fields this operator populates or updates. |
+| `optional_reads` | Fields consumed when present; a warning is emitted if absent. |
+| `clears` | Fields this operator removes (e.g. VAD re-segmentation resets supervisions). |
+
+For contracts that depend on config values, operators implement
+`dynamic_reads(self) -> list[str]` instead of (or in addition to) `reads`.
+Config is read via `self.config` inside the method.
+`quality_score_filter` uses this: it inspects the `conditions` list at
+pre-flight time and returns the metric tokens those conditions reference.
+
+**Field vocabulary** — the recognised token set:
+
+| Token pattern | Maps to |
+|---------------|---------|
+| `audio` | Raw audio samples (waveform access). |
+| `supervisions.text` | `Supervision.text` across all supervisions. |
+| `supervisions.language` | `Supervision.language`. |
+| `supervisions.speaker` | `Supervision.speaker`. |
+| `supervisions.gender` | `Supervision.gender`. |
+| `metrics.<name>` | `Cut.metrics["<name>"]` (e.g. `metrics.snr`). |
+| `custom.<key>` | `Cut.custom["<key>"]` (e.g. `custom.word_alignments`). |
+| `metrics.*` / `custom.*` | Namespace wildcard, used in `clears`. |
+
+Intrinsic fields (`duration`, `start`, `channel`) are not tracked — every
+stage can rely on them unconditionally.
+
+**Examples:**
+- `snr_estimate`: `reads=[audio]`, `writes=[metrics.snr]`
+- `faster_whisper_asr`: `reads=[audio]`, `writes=[supervisions.text, supervisions.language]`
+- `forced_align`: `reads=[audio, supervisions.text]`, `writes=[custom.word_alignments, custom.forced_align_model]`
+- `silero_vad`: `reads=[audio]`, `clears=[supervisions.text, supervisions.language, supervisions.speaker, supervisions.gender, metrics.*]`
+
 ### Operator Patterns
 
 **Analysis operator** (e.g., `snr_estimate`): reads audio, writes to `metrics`. `produces_audio=False, reads_audio_bytes=True`.

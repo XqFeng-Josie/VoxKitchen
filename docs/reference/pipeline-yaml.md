@@ -123,6 +123,67 @@ vkit docker run pipeline.yaml --stop-at vad     # Stop after VAD stage
 
 By default (`gc_mode: aggressive`), intermediate audio files are cleaned up after downstream stages finish. Use `--keep-intermediates` to preserve all derived audio.
 
+## Pre-flight Validation
+
+Before any data is processed, `vkit validate` and `vkit docker run --dry-run`
+(and the in-container `vkit run --dry-run`) run a **static pre-flight check**
+over the stage chain.
+
+Pre-flight seeds an available-field set from the ingest source — `dir` starts
+with just `audio`; `manifest` and `recipe` also add supervision fields present
+in the manifest — then walks each stage in order, consulting each operator's
+[field contract](../architecture.md#field-contracts).
+
+| Outcome | Trigger | Effect |
+|---------|---------|--------|
+| **ERROR** | A stage's `reads` (or `dynamic_reads`) reference a field no upstream stage produces. | Printed with stage name and missing field; exits with code 1. |
+| **WARNING** | A stage's `optional_reads` field is absent from the available set. | Printed; pipeline is not blocked (the stage will skip or degrade gracefully). |
+
+After each stage, its `writes` tokens are added to the available set and its
+`clears` tokens are removed.
+
+**Example error — filtering on a metric nothing produces:**
+
+```yaml
+stages:
+  - name: vad
+    op: silero_vad
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions: ["metrics.snr > 20"]   # ERROR: metrics.snr never written
+```
+
+Pre-flight reports:
+
+```
+error: stage 'filter' (op 'quality_score_filter') requires 'metrics.snr' but no upstream stage produces it
+```
+
+**Fix:** add the producing stage before the filter:
+
+```yaml
+stages:
+  - name: vad
+    op: silero_vad
+  - name: snr
+    op: snr_estimate          # writes metrics.snr
+  - name: filter
+    op: quality_score_filter
+    args:
+      conditions: ["metrics.snr > 20"]   # OK
+```
+
+**Skipping pre-flight:** pass `--no-preflight` to `vkit validate` or
+`vkit run --dry-run` if you need to bypass the check (e.g., while iterating on
+a partial pipeline). Note: `vkit docker run` does not accept `--no-preflight`;
+use `vkit validate --no-preflight` on the host to skip the check before
+launching the container.
+
+Pre-flight uses the live operator registry where possible, falling back to
+`op_schemas.json` (bundled inside Docker images) for operators not importable
+in the current environment.
+
 ## Stage Execution
 
 Stages execute sequentially. Each stage:

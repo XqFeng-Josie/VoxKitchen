@@ -111,7 +111,22 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
            ...
    ```
 
-3. **Register** in `voxkitchen/operators/__init__.py`:
+3. **Declare the field contract.** Add `reads`, `writes`, `optional_reads`,
+   and `clears` ClassVars to your operator. The contract-completeness test
+   fails if any of these are missing. For contracts that depend on config
+   values, implement `dynamic_reads(self) -> list[str]` instead of (or in
+   addition to) `reads`; access config via `self.config` inside the method.
+   See [Field Contracts](docs/architecture.md#field-contracts) for the full
+   token vocabulary.
+
+   ```python
+   reads: ClassVar[list[str]] = ["audio"]
+   writes: ClassVar[list[str]] = ["metrics.snr"]
+   optional_reads: ClassVar[list[str]] = []
+   clears: ClassVar[list[str]] = []
+   ```
+
+4. **Register** in `voxkitchen/operators/__init__.py`:
 
    ```python
    from voxkitchen.operators.<category> import <module> as _alias  # noqa: F401
@@ -119,7 +134,7 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
 
    For optional dependencies, wrap in `try/except ImportError`.
 
-4. **Map the operator's `required_extras` to a Docker env**. If the
+5. **Map the operator's `required_extras` to a Docker env**. If the
    operator declares any `required_extras = [...]`, every listed extras
    group must appear in `EXTRA_TO_ENV` in
    [`voxkitchen/runtime/env_resolver.py`](voxkitchen/runtime/env_resolver.py).
@@ -149,24 +164,24 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
    an `EXTRA_TO_ENV` entry so the runner knows where to dispatch it,
    even though no matching pyproject group exists.
 
-5. **Add to expected set** in
+6. **Add to expected set** in
    [`voxkitchen/cli/doctor.py`](voxkitchen/cli/doctor.py)'s
    `EXPECTED_OPERATORS[<env>]` — this is what the `vkit doctor --expect <env>`
    smoke test at the end of each Docker build stage checks. If your
    operator is in the image, it must be in the expected set, or the
    build-time smoke test will flag it as "extra" (harmless but noisy).
 
-6. **Write tests** in `tests/unit/operators/<category>/test_<name>.py`.
+7. **Write tests** in `tests/unit/operators/<category>/test_<name>.py`.
 
-7. **Create an example** in `examples/pipelines/` (optional but appreciated).
+8. **Create an example** in `examples/pipelines/` (optional but appreciated).
 
-8. **Regenerate operator docs**:
+9. **Regenerate operator docs**:
 
    ```bash
    python scripts/gen_operator_docs.py -o docs/reference/operators.md
    ```
 
-9. **Regenerate the pipeline JSON Schema** so editors flag the new operator
+10. **Regenerate the pipeline JSON Schema** so editors flag the new operator
    correctly:
 
    ```bash

@@ -5,6 +5,13 @@ VoxKitchen ships with **51 built-in operators** across 8 categories.
 !!! tip
     Run `vkit operators` to see this list in your terminal, or `vkit operators show <name>` for details.
 
+Every operator declares a **field contract** — four `ClassVar` lists (`reads`,
+`writes`, `optional_reads`, `clears`) that describe which Cut fields it
+consumes and produces. The pipeline pre-flight validator reads these contracts
+to detect missing dependencies before any data is processed. See
+[Field Contracts](../architecture.md#field-contracts) in the architecture docs
+for the full vocabulary and how pre-flight uses them.
+
 ## Categories
 
 - [Audio Processing](#basic) (4 operators)
