@@ -13,7 +13,7 @@ def test_format_size_range_single():
 
 def test_format_size_range_spread():
     out = format_size_range({"a": 1_048_576, "b": 2_000_000_000})
-    # original _format_size_column uses " - " (hyphen-minus), not " – " (en-dash)
+    # original _format_size_column uses a hyphen-minus separator, not an en-dash
     assert " - " in out
 
 
