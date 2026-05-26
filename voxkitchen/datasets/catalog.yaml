@@ -1,0 +1,347 @@
+entries:
+  # ── Recipe-backed datasets (9) ─────────────────────────────────────────────
+
+  - id: librispeech
+    name: LibriSpeech
+    task: [asr]
+    languages: [en]
+    hours: 960
+    license: CC BY 4.0
+    domain: audiobook
+    summary: Read English audiobooks; the standard English ASR benchmark.
+    recommendation: >
+      The default starting point for English ASR — clean, well-segmented read
+      speech with transcripts. Prototype on train-clean-100; use the full 960 h
+      for production. Not representative of conversational or noisy audio.
+    homepage: https://www.openslr.org/12
+    recipe: librispeech
+    recommended_pipeline: examples/pipelines/librispeech-asr.yaml
+    paper: https://www.danielpovey.com/files/2015_icassp_librispeech.pdf
+
+  - id: libritts
+    name: LibriTTS
+    task: [tts]
+    languages: [en]
+    hours: 585
+    license: CC BY 4.0
+    domain: audiobook
+    summary: >
+      High-fidelity (24 kHz) read English audiobooks derived from LibriSpeech,
+      with normalised transcriptions; the standard baseline for English TTS.
+    recommendation: >
+      Best first choice for English TTS training. Audio is clean and
+      well-segmented; train-clean-360 is a solid single-subset starting point.
+      Use train-other-500 to add acoustic diversity. Lacks spontaneous or
+      expressive speech — supplement with VCTK or Emilia for prosody range.
+    homepage: https://www.openslr.org/60
+    recipe: libritts
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    paper: https://arxiv.org/abs/1904.02882
+
+  - id: ljspeech
+    name: LJSpeech
+    task: [tts]
+    languages: [en]
+    hours: 24
+    license: Public Domain
+    domain: audiobook
+    summary: >
+      Single-speaker English TTS corpus (24 h, 13,100 clips) recorded from
+      LibriVox readings. Universally used as a single-speaker TTS baseline.
+    recommendation: >
+      Ideal for single-speaker TTS experiments and for quickly checking a
+      pipeline end-to-end due to its small size. Because it is a single speaker
+      it is not suitable for multi-speaker or voice-cloning experiments. Prefer
+      LibriTTS or VCTK when speaker diversity matters.
+    homepage: https://keithito.com/LJ-Speech-Dataset/
+    recipe: ljspeech
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+
+  - id: aishell
+    name: AISHELL-1
+    task: [asr]
+    languages: [zh]
+    hours: 170
+    license: CC BY-NC-ND 4.0
+    domain: read speech
+    summary: >
+      170-hour open Mandarin speech corpus recorded in clean studio conditions;
+      the standard Chinese ASR benchmark.
+    recommendation: >
+      The go-to starting point for Mandarin ASR. Clean studio recordings with
+      full transcripts. Non-commercial license — check before production use.
+      Not representative of spontaneous or accented Mandarin; supplement with
+      WenetSpeech for broader coverage.
+    homepage: https://www.openslr.org/33
+    recipe: aishell
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/1709.05522
+
+  - id: aishell3
+    name: AISHELL-3
+    task: [tts]
+    languages: [zh]
+    hours: 85
+    license: CC BY-NC-ND 4.0
+    domain: read speech
+    summary: >
+      85-hour multi-speaker Mandarin TTS corpus with 218 speakers in clean
+      recording conditions; the standard Chinese multi-speaker TTS baseline.
+    recommendation: >
+      Best starting point for multi-speaker Mandarin TTS. Clean studio
+      conditions and a large speaker pool make it suitable for voice cloning
+      research. Non-commercial license — check before production use.
+    homepage: https://www.openslr.org/93
+    recipe: aishell3
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    paper: https://arxiv.org/abs/2010.11567
+
+  - id: cnceleb
+    name: CN-Celeb
+    task: [speaker]
+    languages: [zh]
+    hours: 1200
+    license: see source terms
+    domain: celebrity speech (in-the-wild)
+    summary: >
+      1,200-hour multi-genre Mandarin speaker recognition corpus spanning
+      11 real-world scenarios collected from Chinese celebrities.
+    recommendation: >
+      The primary benchmark for Mandarin speaker verification and
+      identification in realistic, in-the-wild conditions. Wide acoustic
+      diversity across genres (interview, singing, entertainment) is valuable
+      but also makes it challenging. Check the source terms carefully — the
+      data is free for research but redistribution is restricted.
+    homepage: https://www.openslr.org/82
+    recipe: cnceleb
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    paper: https://arxiv.org/abs/1911.01799
+
+  - id: commonvoice
+    name: Common Voice
+    task: [asr, multilingual]
+    languages: [multi]
+    license: CC0 1.0
+    domain: crowdsourced read speech
+    summary: >
+      Mozilla's crowd-sourced multilingual ASR corpus covering 100+ languages;
+      size, quality, and demographics vary widely by language.
+    recommendation: >
+      Best choice when you need a permissively-licensed ASR corpus for a
+      low-resource language — likely the only freely available option for many
+      languages. English and a handful of major languages have hundreds of
+      hours; smaller languages may have only a few hours. Download a specific
+      version/language snapshot for reproducibility.
+    homepage: https://commonvoice.mozilla.org/en/datasets
+    recipe: commonvoice
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+
+  - id: fleurs
+    name: FLEURS
+    task: [asr, multilingual]
+    languages: [multi]
+    license: CC BY 4.0
+    domain: read speech (FLoRes translations)
+    summary: >
+      Few-shot Learning Evaluation of Universal Representations of Speech —
+      standardised ASR/LID evaluation set covering 102 languages derived from
+      the FLoRes-200 text corpus.
+    recommendation: >
+      The standard multilingual ASR evaluation benchmark. Use it to measure
+      cross-lingual ASR quality consistently across languages rather than as a
+      training corpus (each language only has ~10 h). Available via HuggingFace
+      datasets — VoxKitchen's recipe handles the streaming download.
+    homepage: https://huggingface.co/datasets/google/fleurs
+    recipe: fleurs
+    recommended_pipeline: examples/pipelines/fleurs-multilingual.yaml
+    paper: https://arxiv.org/abs/2205.12446
+
+  - id: musan
+    name: MUSAN
+    task: [augmentation]
+    languages: [en]
+    hours: 109
+    license: CC BY 4.0
+    domain: music, speech, noise
+    summary: >
+      109-hour corpus of music, speech, and environmental noise designed for
+      data augmentation in speech and speaker recognition experiments.
+    recommendation: >
+      The standard noise/music augmentation bank for speaker verification and
+      robust ASR training. Combine with RIR-based room simulation for a full
+      augmentation pipeline. Small enough to keep fully in RAM during training.
+      No VoxKitchen pipeline template — augmentation is embedded in task-specific
+      pipelines such as examples/pipelines/noise-augment.yaml.
+    homepage: https://www.openslr.org/17
+    recipe: musan
+    paper: https://arxiv.org/abs/1510.08484
+
+  # ── Manual datasets (no recipe; download from homepage) ───────────────────
+
+  - id: gigaspeech
+    name: GigaSpeech
+    task: [asr]
+    languages: [en]
+    hours: 10000
+    license: see source terms
+    domain: audiobook, podcast, youtube
+    summary: 10,000-hour multi-domain English ASR corpus spanning audiobooks, podcasts, and YouTube.
+    recommendation: >
+      Choose when you need scale and domain diversity beyond LibriSpeech
+      (podcasts, YouTube). Requires accepting terms and an access request, and
+      is large — plan storage carefully. No VoxKitchen recipe; download manually
+      then point a dir-ingest ASR pipeline at your local copy.
+    homepage: https://github.com/SpeechColab/GigaSpeech
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Request access via the GigaSpeech GitHub repository and follow the
+      download instructions there. The XL split (10,000 h) requires ~1 TB of
+      storage; the M/L splits are more manageable for prototyping.
+
+  - id: wenetspeech
+    name: WenetSpeech
+    task: [asr]
+    languages: [zh]
+    hours: 10000
+    license: see source terms
+    domain: in-the-wild (YouTube, podcasts, audiobooks)
+    summary: >
+      10,000-hour large-scale Mandarin ASR corpus collected from YouTube and
+      podcasts with automatic labelling.
+    recommendation: >
+      Go-to corpus for large-scale Mandarin ASR where AISHELL-1 is too clean
+      or too small. Automatic labels introduce noise — expect to filter with
+      the data-cleaning pipeline. Non-commercial restrictions apply; check the
+      source terms before production use.
+    homepage: https://github.com/wenet-e2e/WenetSpeech
+    recommended_pipeline: voxkitchen/templates/pipelines/data-cleaning.yaml
+    notes: >
+      Register for access and download via the WenetSpeech toolkit. The full
+      corpus requires several TB of storage. Quality varies by subset —
+      the "L" training set has the most automatic-label noise.
+    paper: https://arxiv.org/abs/2110.03370
+
+  - id: mls
+    name: Multilingual LibriSpeech
+    task: [asr, multilingual]
+    languages: [multi]
+    hours: 50000
+    license: CC BY 4.0
+    domain: audiobook
+    summary: >
+      50,000-hour multilingual audiobook ASR corpus derived from LibriVox
+      recordings covering 8 languages (English, German, Dutch, French, Spanish,
+      Italian, Portuguese, Polish).
+    recommendation: >
+      Best choice for large-scale multilingual ASR training with a permissive
+      license. English component alone is 44,500 h. Non-English languages range
+      from 500–2,400 h — enough for competitive baselines. Audiobook domain only;
+      supplement with conversational data if needed.
+    homepage: https://www.openslr.org/94
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/2012.03411
+
+  - id: vctk
+    name: VCTK
+    task: [tts, speaker]
+    languages: [en]
+    hours: 44
+    license: CC BY 4.0
+    domain: read sentences (accent-diverse)
+    summary: >
+      44-hour English multi-speaker corpus with 110 speakers covering a wide
+      range of UK and US accents; widely used for multi-speaker TTS and speaker
+      adaptation research.
+    recommendation: >
+      First choice for multi-speaker English TTS experiments and accent-aware
+      speaker embedding research. The diversity of accents is its main
+      advantage over LJSpeech. Recording quality is very clean. Hours per
+      speaker are limited (~30 min), which constrains voice-cloning fine-tuning.
+    homepage: https://datashare.ed.ac.uk/handle/10283/3443
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+
+  - id: voxceleb2
+    name: VoxCeleb2
+    task: [speaker]
+    languages: [multi]
+    hours: 2442
+    license: see source terms
+    domain: celebrity speech (in-the-wild)
+    summary: >
+      2,442-hour large-scale speaker recognition corpus with 6,112 celebrities
+      collected from YouTube across many languages.
+    recommendation: >
+      The standard pre-training corpus for speaker verification models. Large
+      scale and in-the-wild diversity make it near-mandatory for production
+      speaker embeddings. Academic use only — commercial use requires a separate
+      agreement. Download requires requesting access via the VoxCeleb website.
+    homepage: https://www.robots.ox.ac.uk/~vgg/data/voxceleb/vox2.html
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    notes: >
+      Download requires registration and acceptance of terms at the VoxCeleb
+      website. Audio must be downloaded from YouTube using the provided scripts.
+    paper: https://arxiv.org/abs/1806.05622
+
+  - id: tedlium3
+    name: TED-LIUM 3
+    task: [asr]
+    languages: [en]
+    hours: 452
+    license: CC BY-NC-ND 3.0
+    domain: TED talks
+    summary: >
+      452-hour English ASR corpus of TED talks with manual and automatic
+      transcriptions; suitable for lecture/talk domain ASR research.
+    recommendation: >
+      Good choice for spontaneous (but well-articulated) English ASR,
+      contrasting with the read-speech style of LibriSpeech. Non-commercial
+      license. Use the SPH or WAV releases — the SPH format needs conversion.
+      Useful for domain-shift experiments alongside LibriSpeech.
+    homepage: https://www.openslr.org/51
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/1805.04699
+
+  - id: emilia
+    name: Emilia
+    task: [tts, multilingual]
+    languages: [multi]
+    license: see source terms
+    domain: in-the-wild (diverse)
+    summary: >
+      Large-scale multilingual in-the-wild speech dataset designed for
+      expressive and diverse TTS training, covering 6 languages.
+    recommendation: >
+      Best choice when you need expressive, diverse multi-lingual TTS training
+      data that goes beyond clean audiobook recordings. Collected from in-the-wild
+      audio so prosody and speaking style are varied — ideal for natural-sounding
+      TTS. Check the source terms; access requires registration.
+    homepage: https://huggingface.co/datasets/amphion/Emilia-Dataset
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    notes: >
+      Request access via the HuggingFace repository page. The dataset is
+      available in processed (Emilia) and unprocessed (Emilia-Pipe) variants;
+      use the processed variant unless you are doing your own quality filtering.
+    paper: https://arxiv.org/abs/2407.05361
+
+  - id: peoples_speech
+    name: "People's Speech"
+    task: [asr]
+    languages: [en]
+    hours: 30000
+    license: CC BY-SA 4.0
+    domain: diverse (radio, court, conference, podcast)
+    summary: >
+      30,000-hour English ASR corpus assembled from diverse internet sources
+      including radio broadcasts, court hearings, and conferences.
+    recommendation: >
+      A large permissively-licensed English corpus that adds domain diversity
+      beyond audiobooks. Automatic labels vary in quality — apply the
+      data-cleaning pipeline to filter low-confidence segments before training.
+      Good complement to LibriSpeech/GigaSpeech in a multi-dataset training mix.
+    homepage: https://huggingface.co/datasets/MLCommons/peoples_speech
+    recommended_pipeline: voxkitchen/templates/pipelines/data-cleaning.yaml
+    notes: >
+      Available via HuggingFace datasets. The full 30,000 h "dirty" split has
+      more noise; use the "clean" split or apply quality filtering for best
+      ASR training results.
+    paper: https://arxiv.org/abs/2111.09344
