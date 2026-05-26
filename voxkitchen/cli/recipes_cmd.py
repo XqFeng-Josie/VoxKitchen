@@ -2,58 +2,37 @@
 
 from __future__ import annotations
 
-from urllib.parse import urlparse
-
 import typer
 from rich.console import Console
 from rich.table import Table
+
+from voxkitchen.datasets.recipe_meta import download_source_label as _plain_source_label
+from voxkitchen.datasets.recipe_meta import format_size_range as _plain_size_range
 
 console = Console()
 
 
 def _format_size_column(download_sizes: dict[str, int]) -> str:
-    """Render the Size column entry for one recipe.
+    """Render the Size column entry for one recipe with Rich markup.
 
-    - Empty dict (manual / HuggingFace-streaming recipes) → "[dim]—[/dim]".
+    Delegates plain formatting to :func:`voxkitchen.datasets.recipe_meta.format_size_range`
+    and wraps the empty/unknown case in ``[dim]``…``[/dim]``.
+
+    - Empty dict (manual / HuggingFace-streaming recipes) → "[dim]-[/dim]".
     - Single-subset dict → exact size (e.g. "11.0 GB").
-    - Multi-subset dict → range across subsets ("330 MB - 28.5 GB"), so the
-      user can tell at a glance both the smallest dev subset they could
-      grab to kick the tires and the largest train subset they should
-      avoid on a laptop.
+    - Multi-subset dict → range across subsets ("330 MB - 28.5 GB").
     """
-    from voxkitchen.utils.download import format_bytes
-
-    if not download_sizes:
-        return "[dim]-[/dim]"
-    values = list(download_sizes.values())
-    lo, hi = min(values), max(values)
-    if lo == hi:
-        return format_bytes(lo)
-    return f"{format_bytes(lo)} - {format_bytes(hi)}"
+    plain = _plain_size_range(download_sizes)
+    return "[dim]-[/dim]" if plain == "—" else plain
 
 
 def _download_source_label(download_urls: dict[str, list[str]]) -> str:
     """Pick a short, accurate source label from a recipe's download URLs.
 
-    Inspects the host of the first URL: openslr.org → ``openslr``,
-    keithito.com / data.keithito.com → ``keithito``, anything else falls
-    back to the bare hostname. This keeps `vkit recipes` honest when a
-    new recipe pulls from a non-OpenSLR mirror.
+    Delegates to :func:`voxkitchen.datasets.recipe_meta.download_source_label`.
+    The caller (``list_recipes``) wraps the result in Rich colour markup.
     """
-    for urls in download_urls.values():
-        if not urls:
-            continue
-        host = urlparse(urls[0]).hostname or ""
-        host = host.lower()
-        if "openslr" in host:
-            return "openslr"
-        if "keithito" in host:
-            return "keithito"
-        if "huggingface" in host or "hf.co" in host:
-            return "HuggingFace"
-        # Strip a leading "www." for a tidier label.
-        return host.removeprefix("www.")
-    return "url"
+    return _plain_source_label(download_urls)
 
 
 recipes_app = typer.Typer(
