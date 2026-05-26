@@ -13,8 +13,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Static pre-flight validation in `vkit validate` and `vkit docker run --dry-run`:
   broken operator chains — a stage requiring a field no upstream stage produces,
   or a `quality_score_filter` condition referencing an absent metric — are
-  reported before execution starts. Pass `--no-preflight` to `vkit validate` or
-  `vkit run` to skip the check.
+  reported before execution starts. Pass `--no-preflight` to `vkit validate`,
+  `vkit run`, or `vkit docker run` (forwarded to the in-container run) to skip
+  the check.
 - `normalize_text` operator: strips model-specific markup (e.g. SenseVoice
   emotion/language tags) and collapses whitespace (e.g. Paraformer
   inter-character spaces) in ASR transcripts before downstream use.

@@ -240,6 +240,9 @@ def run_cmd(
     resume_from: str | None = typer.Option(None, "--resume-from", help="Resume from this stage."),
     stop_at: str | None = typer.Option(None, "--stop-at", help="Stop after this stage."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Validate only, do not execute."),
+    no_preflight: bool = typer.Option(
+        False, "--no-preflight", help="Skip static field-contract pre-flight checks."
+    ),
     keep_intermediates: bool = typer.Option(
         False, "--keep-intermediates", help="Keep derived audio from every stage."
     ),
@@ -258,6 +261,7 @@ def run_cmd(
         resume_from=resume_from,
         stop_at=stop_at,
         dry_run=dry_run,
+        no_preflight=no_preflight,
         keep_intermediates=keep_intermediates,
     )
     cmd = [
@@ -285,6 +289,7 @@ def _run_command_args(
     resume_from: str | None,
     stop_at: str | None,
     dry_run: bool,
+    no_preflight: bool,
     keep_intermediates: bool,
 ) -> list[str]:
     """Build arguments forwarded to ``vkit run`` inside the container."""
@@ -301,6 +306,8 @@ def _run_command_args(
         args += ["--stop-at", stop_at]
     if dry_run:
         args.append("--dry-run")
+    if no_preflight:
+        args.append("--no-preflight")
     if keep_intermediates:
         args.append("--keep-intermediates")
     return args

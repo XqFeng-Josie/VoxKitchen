@@ -230,6 +230,20 @@ def test_run_forwards_vkit_run_flags(fake_docker) -> None:
     ]
 
 
+def test_run_forwards_no_preflight(fake_docker) -> None:
+    _, cmd = _invoke(["docker", "run", "foo.yaml", "--dry-run", "--no-preflight"])
+    assert cmd is not None
+    # forwarded into the in-container `vkit run` args (after the pipeline path)
+    assert "--no-preflight" in cmd
+    assert cmd.index("--no-preflight") > cmd.index("foo.yaml")
+
+
+def test_run_omits_no_preflight_by_default(fake_docker) -> None:
+    _, cmd = _invoke(["docker", "run", "foo.yaml"])
+    assert cmd is not None
+    assert "--no-preflight" not in cmd
+
+
 # ---------------------------------------------------------------------------
 # download
 # ---------------------------------------------------------------------------

@@ -174,11 +174,10 @@ stages:
       conditions: ["metrics.snr > 20"]   # OK
 ```
 
-**Skipping pre-flight:** pass `--no-preflight` to `vkit validate` or
-`vkit run --dry-run` if you need to bypass the check (e.g., while iterating on
-a partial pipeline). Note: `vkit docker run` does not accept `--no-preflight`;
-use `vkit validate --no-preflight` on the host to skip the check before
-launching the container.
+**Skipping pre-flight:** pass `--no-preflight` to `vkit validate`,
+`vkit run --dry-run`, or `vkit docker run` if you need to bypass the check
+(e.g., while iterating on a partial pipeline). `vkit docker run --no-preflight`
+forwards the flag to the in-container run.
 
 Pre-flight uses the live operator registry where possible, falling back to
 `op_schemas.json` (bundled inside Docker images) for operators not importable
