@@ -132,3 +132,29 @@ def test_dir_with_reference_glob_seeds_reference_text():
     result = preflight_spec(spec)
     assert result.errors == []
     assert not any("custom.reference_text" in w for w in result.warnings)
+
+
+def test_manifest_ingest_seeds_metrics_and_custom():
+    # A manifest loads a previously-built CutSet that may already carry computed
+    # metrics/custom; re-filtering on them must NOT false-error.
+    spec = _spec_with_ingest(
+        "manifest",
+        StageSpec(
+            name="filter", op="quality_score_filter", args={"conditions": ["metrics.snr > 10"]}
+        ),
+        StageSpec(name="pack", op="pack_jsonl"),
+    )
+    assert preflight_spec(spec).errors == []
+
+
+def test_recipe_ingest_does_not_seed_metrics():
+    # Recipes parse datasets (text/speaker/language) but never produce computed
+    # metrics, so filtering on an unproduced metric IS a real broken chain.
+    spec = _spec_with_ingest(
+        "recipe",
+        StageSpec(
+            name="filter", op="quality_score_filter", args={"conditions": ["metrics.snr > 10"]}
+        ),
+        StageSpec(name="pack", op="pack_jsonl"),
+    )
+    assert any("metrics.snr" in e for e in preflight_spec(spec).errors)

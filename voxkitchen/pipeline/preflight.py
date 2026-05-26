@@ -65,14 +65,23 @@ _SUPERVISION_FIELDS = (
 def _initial_available(ingest: IngestSpec) -> set[str]:
     """Field tokens present before any stage runs, based on the ingest source.
 
-    ``dir`` scans bare audio files. ``manifest`` and ``recipe`` load CutSets
-    that commonly already carry transcripts/speaker/language, so we assume the
-    supervision fields MAY be present — pre-flight prefers a false negative
-    (missing a real gap) over a false positive (blocking a valid pipeline).
+    Pre-flight prefers a false negative (missing a real gap) over a false
+    positive (blocking a valid pipeline), so seeds err on the generous side:
+
+    - ``dir`` scans bare audio files → only ``audio`` (plus ``custom.reference_text``
+      when a ``reference_text_glob`` is configured).
+    - ``recipe`` parses a dataset → known supervision fields (text/speaker/
+      language), but never computed metrics or operator custom fields.
+    - ``manifest`` loads a previously-built CutSet that may already carry ANY
+      computed metric or operator custom field from an earlier run, so we
+      additionally assume the ``metrics.*`` / ``custom.*`` namespaces may be
+      present — otherwise re-processing pipelines would be falsely blocked.
     """
     available = {"audio"}
     if ingest.source in ("manifest", "recipe"):
         available.update(_SUPERVISION_FIELDS)
+    if ingest.source == "manifest":
+        available.update({"metrics.*", "custom.*"})
     if ingest.source == "dir" and ingest.args.get("reference_text_glob"):
         available.add("custom.reference_text")
     return available
