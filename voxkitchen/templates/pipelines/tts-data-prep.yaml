@@ -62,13 +62,24 @@ stages:
         - "duration < 15"
         - "metrics.snr > 15"
 
-  # 7. Transcribe + word-level alignment
+  # 7. Transcribe (timestamps come from the dedicated align stage below,
+  #    so this just produces text — no redundant internal alignment pass)
   - name: asr
     op: qwen3_asr
     args:
       model: Qwen/Qwen3-ASR-0.6B
-      return_timestamps: true
+      return_timestamps: false
 
-  # 8. Pack results
+  # 8. Normalize transcript (strip model tags, collapse whitespace)
+  - name: normalize
+    op: normalize_text
+    args: {strip_tags: true, collapse_spaces: true}
+
+  # 9. Word-level forced alignment (aligns against the normalized text)
+  - name: align
+    op: forced_align
+    args: {}
+
+  # 10. Pack results
   - name: pack
     op: pack_jsonl
