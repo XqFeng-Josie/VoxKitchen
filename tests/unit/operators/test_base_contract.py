@@ -1,4 +1,5 @@
 """Contract attributes on the Operator base class."""
+
 from __future__ import annotations
 
 from voxkitchen.operators.base import Operator, OperatorConfig

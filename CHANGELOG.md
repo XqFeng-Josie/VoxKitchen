@@ -8,6 +8,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Declarative field contracts (`reads`/`writes`/`optional_reads`/`clears`) on
+  every operator, making data-flow dependencies machine-readable.
+- Static pre-flight validation in `vkit validate` and `vkit docker run --dry-run`:
+  broken operator chains — a stage requiring a field no upstream stage produces,
+  or a `quality_score_filter` condition referencing an absent metric — are
+  reported before execution starts. Pass `--no-preflight` to `vkit validate` or
+  `vkit run` to skip the check.
+- `normalize_text` operator: strips model-specific markup (e.g. SenseVoice
+  emotion/language tags) and collapses whitespace (e.g. Paraformer
+  inter-character spaces) in ASR transcripts before downstream use.
+- `pack_jsonl` now exports `word_alignments` when present on a cut.
 - Simplified Chinese README (`README.zh-CN.md`), a full translation of
   the top-level README. The English and Chinese READMEs cross-link each
   other in the header; all deeper docs remain English-only.
@@ -40,6 +51,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- `tts-data-prep` template now normalizes text and performs forced alignment as
+  its documentation claims; previously it declared word-level alignment but ran
+  neither step. The ASR stage no longer performs a redundant internal alignment
+  pass.
 - Capped `numpy<2.3` in the `dev` optional-dependency group. `numba`
   (pulled in by `librosa` via the `segment` extra) supports `numpy<=2.2`,
   so a fresh `pip install -e .[dev]` on a host with a newer NumPy failed

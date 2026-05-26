@@ -74,6 +74,10 @@ def test_asr_align_export_runs(tmp_path: Path) -> None:
     assert manifests, "no manifest.jsonl found under work_dir"
 
     manifest = manifests[0]
-    rows = [json.loads(line) for line in manifest.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in manifest.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     assert rows, "manifest.jsonl is empty"
     assert any(r.get("text") for r in rows), "no row has non-empty text"

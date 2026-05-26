@@ -12,18 +12,26 @@ from voxkitchen.operators.annotate.normalize_text import (
 
 
 def test_strips_sensevoice_tags():
-    assert _normalize("<|zh|><|HAPPY|><|Speech|>你好", strip_tags=True,
-                       collapse_spaces=True, lowercase=False) == "你好"
+    assert (
+        _normalize(
+            "<|zh|><|HAPPY|><|Speech|>你好", strip_tags=True, collapse_spaces=True, lowercase=False
+        )
+        == "你好"
+    )
 
 
 def test_collapses_paraformer_inter_char_spaces():
-    assert _normalize("你 好 世 界", strip_tags=True, collapse_spaces=True,
-                      lowercase=False) == "你好世界"
+    assert (
+        _normalize("你 好 世 界", strip_tags=True, collapse_spaces=True, lowercase=False)
+        == "你好世界"
+    )
 
 
 def test_lowercase_english_keeps_word_spaces():
-    assert _normalize("Hello  World", strip_tags=True, collapse_spaces=True,
-                      lowercase=True) == "hello world"
+    assert (
+        _normalize("Hello  World", strip_tags=True, collapse_spaces=True, lowercase=True)
+        == "hello world"
+    )
 
 
 def test_operator_rewrites_supervision_text(make_run_context):

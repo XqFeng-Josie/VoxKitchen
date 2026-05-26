@@ -181,6 +181,7 @@ def make_contract_lookup(
     schemas: dict[str, object] | None,
 ) -> Callable[[str, dict[str, object]], _Contract | None]:
     """Registry first (gets dynamic_reads); op_schemas.json fallback otherwise."""
+
     def lookup(stage_op: str, args: dict[str, object]) -> _Contract | None:
         c = _contract_from_registry(stage_op, args)
         if c is not None:
@@ -188,4 +189,5 @@ def make_contract_lookup(
         if schemas is not None:
             return contract_from_schemas(stage_op, args, schemas)
         return None
+
     return lookup

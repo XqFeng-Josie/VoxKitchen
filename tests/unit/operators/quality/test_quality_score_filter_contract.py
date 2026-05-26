@@ -12,9 +12,13 @@ def test_dynamic_reads_extracts_metric_paths():
 
 
 def test_dynamic_reads_dedupes_and_keeps_custom_and_supervisions():
-    cfg = QualityScoreFilterConfig(conditions=[
-        "metrics.snr > 10", "metrics.snr < 40",
-        "custom.reference_text != x", "supervisions.text == y",
-    ])
+    cfg = QualityScoreFilterConfig(
+        conditions=[
+            "metrics.snr > 10",
+            "metrics.snr < 40",
+            "custom.reference_text != x",
+            "supervisions.text == y",
+        ]
+    )
     op = QualityScoreFilterOperator(cfg, ctx=None)
     assert op.dynamic_reads() == ["metrics.snr", "custom.reference_text", "supervisions.text"]

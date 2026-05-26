@@ -36,8 +36,9 @@ def test_missing_text_for_cer_wer_is_error():
 
 def test_filter_referencing_absent_metric_is_error():
     spec = _spec(
-        StageSpec(name="filter", op="quality_score_filter",
-                  args={"conditions": ["metrics.snr > 10"]}),
+        StageSpec(
+            name="filter", op="quality_score_filter", args={"conditions": ["metrics.snr > 10"]}
+        ),
         StageSpec(name="pack", op="pack_jsonl"),
     )
     result = preflight_spec(spec)
@@ -58,8 +59,9 @@ def test_forced_align_without_text_is_error():
 def test_snr_filter_chain_ok():
     spec = _spec(
         StageSpec(name="snr", op="snr_estimate"),
-        StageSpec(name="filter", op="quality_score_filter",
-                  args={"conditions": ["metrics.snr > 10"]}),
+        StageSpec(
+            name="filter", op="quality_score_filter", args={"conditions": ["metrics.snr > 10"]}
+        ),
         StageSpec(name="pack", op="pack_jsonl"),
     )
     assert preflight_spec(spec).errors == []

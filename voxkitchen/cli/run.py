@@ -15,7 +15,9 @@ from voxkitchen.pipeline.runner import StageFailedError, run_pipeline
 from voxkitchen.pipeline.spec import PipelineSpec
 
 
-def _print_dry_run(spec: PipelineSpec, *, pipeline_path: Path | None = None, preflight: bool = True) -> bool:
+def _print_dry_run(
+    spec: PipelineSpec, *, pipeline_path: Path | None = None, preflight: bool = True
+) -> bool:
     """Validate the pipeline and print a stage summary. Returns True if valid."""
     from voxkitchen.cli.hints import format_recommended_image_hint, recommend_docker_tag
     from voxkitchen.cli.validate import validate_stage_args

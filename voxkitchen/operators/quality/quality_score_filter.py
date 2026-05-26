@@ -63,7 +63,9 @@ class QualityScoreFilterOperator(Operator):
     device = "cpu"
     produces_audio = False
     reads_audio_bytes = False
-    contract_exempt: ClassVar[bool] = True  # filter: writes nothing; required reads are dynamic (see dynamic_reads)
+    contract_exempt: ClassVar[bool] = (
+        True  # filter: writes nothing; required reads are dynamic (see dynamic_reads)
+    )
 
     def dynamic_reads(self) -> list[str]:
         assert isinstance(self.config, QualityScoreFilterConfig)

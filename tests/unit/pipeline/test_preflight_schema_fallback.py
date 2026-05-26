@@ -4,8 +4,12 @@ from voxkitchen.pipeline.preflight import contract_from_schemas, make_contract_l
 def test_contract_from_schemas_reads_block():
     schemas = {
         "faster_whisper_asr": {
-            "contract": {"reads": ["audio"], "writes": ["supervisions.text"],
-                          "optional_reads": [], "clears": []}
+            "contract": {
+                "reads": ["audio"],
+                "writes": ["supervisions.text"],
+                "optional_reads": [],
+                "clears": [],
+            }
         }
     }
     c = contract_from_schemas("faster_whisper_asr", {}, schemas)

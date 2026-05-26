@@ -1,4 +1,5 @@
 """Every registered operator must declare a field contract (or opt out)."""
+
 from __future__ import annotations
 
 import voxkitchen.operators  # noqa: F401  (populates the registry)
