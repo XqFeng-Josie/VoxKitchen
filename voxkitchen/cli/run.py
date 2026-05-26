@@ -184,6 +184,26 @@ def run_command(
         valid = _print_dry_run(spec, pipeline_path=pipeline, preflight=not no_preflight)
         raise typer.Exit(code=0 if valid else 1)
 
+    # Fail fast on broken stage chains BEFORE spinning up models / the executor.
+    if not no_preflight:
+        from typing import cast
+
+        from voxkitchen.pipeline.preflight import make_contract_lookup, preflight_spec
+        from voxkitchen.runtime.schemas import load_op_schemas
+
+        schemas = cast("dict[str, object] | None", load_op_schemas())
+        pf = preflight_spec(spec, contract_lookup=make_contract_lookup(schemas))
+        for warning in pf.warnings:
+            rprint(f"[yellow]warning:[/yellow] {warning}")
+        if pf.errors:
+            for err in pf.errors:
+                rprint(f"[red]error:[/red] {err}")
+            rprint(
+                "[dim]Pre-flight found broken stage chains; fix them or pass "
+                "--no-preflight to run anyway.[/dim]"
+            )
+            raise typer.Exit(code=1)
+
     try:
         run_pipeline(
             spec,

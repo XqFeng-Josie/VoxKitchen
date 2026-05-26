@@ -125,14 +125,16 @@ By default (`gc_mode: aggressive`), intermediate audio files are cleaned up afte
 
 ## Pre-flight Validation
 
-Before any data is processed, `vkit validate` and `vkit docker run --dry-run`
-(and the in-container `vkit run --dry-run`) run a **static pre-flight check**
-over the stage chain.
+Before any data is processed — by `vkit validate`, by `vkit run` /
+`vkit docker run` (as a fail-fast gate ahead of the executor), and in
+`--dry-run` mode — a **static pre-flight check** runs over the stage chain.
 
 Pre-flight seeds an available-field set from the ingest source — `dir` starts
-with just `audio`; `manifest` and `recipe` also add supervision fields present
-in the manifest — then walks each stage in order, consulting each operator's
-[field contract](../architecture.md#field-contracts).
+with just `audio` (plus `custom.reference_text` when a `reference_text_glob` is
+set); `recipe` adds supervision fields; `manifest` additionally assumes the
+`metrics.*` / `custom.*` namespaces may be present, since it loads a
+previously-built CutSet — then walks each stage in order, consulting each
+operator's [field contract](../architecture.md#field-contracts).
 
 | Outcome | Trigger | Effect |
 |---------|---------|--------|
