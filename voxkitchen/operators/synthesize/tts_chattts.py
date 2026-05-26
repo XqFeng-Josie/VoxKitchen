@@ -93,8 +93,7 @@ class TtsChatTTSOperator(Operator):
                 logger.warning("cut %s produced no audio, skipping", cut.id)
                 continue
 
-            audio = np.asarray(wavs[0], dtype=np.float32).flatten()
-            audio = np.clip(audio, -1.0, 1.0)
+            audio = np.clip(np.asarray(wavs[0], dtype=np.float32).flatten(), -1.0, 1.0)
 
             out_path = derived_dir / f"{cut.id}__chattts.wav"
             save_audio(out_path, audio, CHATTTS_SR)
