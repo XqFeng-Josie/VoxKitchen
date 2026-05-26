@@ -2485,6 +2485,12 @@
 <p class="admonition-title">Tip</p>
 <p>Run <code>vkit operators</code> to see this list in your terminal, or <code>vkit operators show &lt;name&gt;</code> for details.</p>
 </div>
+<p>Every operator declares a <strong>field contract</strong> — four <code>ClassVar</code> lists (<code>reads</code>,
+<code>writes</code>, <code>optional_reads</code>, <code>clears</code>) that describe which Cut fields it
+consumes and produces. The pipeline pre-flight validator reads these contracts
+to detect missing dependencies before any data is processed. See
+<a href="../../architecture/#field-contracts">Field Contracts</a> in the architecture docs
+for the full vocabulary and how pre-flight uses them.</p>
 <h2 id="categories">Categories</h2>
 <ul>
 <li><a href="#basic">Audio Processing</a> (4 operators)</li>

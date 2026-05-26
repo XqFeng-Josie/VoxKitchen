@@ -958,6 +958,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pre-flight-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-flight Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stage-execution" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1299,6 +1310,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pre-flight-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-flight Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stage-execution" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1445,6 +1467,69 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 </code></pre></div>
 <h3 id="garbage-collection">Garbage Collection</h3>
 <p>By default (<code>gc_mode: aggressive</code>), intermediate audio files are cleaned up after downstream stages finish. Use <code>--keep-intermediates</code> to preserve all derived audio.</p>
+<h2 id="pre-flight-validation">Pre-flight Validation</h2>
+<p>Before any data is processed — by <code>vkit validate</code>, by <code>vkit run</code> /
+<code>vkit docker run</code> (as a fail-fast gate ahead of the executor), and in
+<code>--dry-run</code> mode — a <strong>static pre-flight check</strong> runs over the stage chain.</p>
+<p>Pre-flight seeds an available-field set from the ingest source — <code>dir</code> starts
+with just <code>audio</code> (plus <code>custom.reference_text</code> when a <code>reference_text_glob</code> is
+set); <code>recipe</code> adds supervision fields; <code>manifest</code> additionally assumes the
+<code>metrics.*</code> / <code>custom.*</code> namespaces may be present, since it loads a
+previously-built CutSet — then walks each stage in order, consulting each
+operator's <a href="../../architecture/#field-contracts">field contract</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Trigger</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ERROR</strong></td>
+<td>A stage's <code>reads</code> (or <code>dynamic_reads</code>) reference a field no upstream stage produces.</td>
+<td>Printed with stage name and missing field; exits with code 1.</td>
+</tr>
+<tr>
+<td><strong>WARNING</strong></td>
+<td>A stage's <code>optional_reads</code> field is absent from the available set.</td>
+<td>Printed; pipeline is not blocked (the stage will skip or degrade gracefully).</td>
+</tr>
+</tbody>
+</table>
+<p>After each stage, its <code>writes</code> tokens are added to the available set and its
+<code>clears</code> tokens are removed.</p>
+<p><strong>Example error — filtering on a metric nothing produces:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">20&quot;</span><span class="p p-Indicator">]</span><span class="w">   </span><span class="c1"># ERROR: metrics.snr never written</span>
+</code></pre></div>
+<p>Pre-flight reports:</p>
+<div class="highlight"><pre><span></span><code>error: stage &#39;filter&#39; (op &#39;quality_score_filter&#39;) requires &#39;metrics.snr&#39; but no upstream stage produces it
+</code></pre></div>
+<p><strong>Fix:</strong> add the producing stage before the filter:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vad</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">silero_vad</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">snr_estimate</span><span class="w">          </span><span class="c1"># writes metrics.snr</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
+<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
+<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">20&quot;</span><span class="p p-Indicator">]</span><span class="w">   </span><span class="c1"># OK</span>
+</code></pre></div>
+<p><strong>Skipping pre-flight:</strong> pass <code>--no-preflight</code> to <code>vkit validate</code>,
+<code>vkit run --dry-run</code>, or <code>vkit docker run</code> if you need to bypass the check
+(e.g., while iterating on a partial pipeline). <code>vkit docker run --no-preflight</code>
+forwards the flag to the in-container run.</p>
+<p>Pre-flight uses the live operator registry where possible, falling back to
+<code>op_schemas.json</code> (bundled inside Docker images) for operators not importable
+in the current environment.</p>
 <h2 id="stage-execution">Stage Execution</h2>
 <p>Stages execute sequentially. Each stage:</p>
 <ol>

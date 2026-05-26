@@ -1113,6 +1113,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#field-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#operator-patterns" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1543,6 +1554,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#field-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#operator-patterns" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1916,6 +1938,91 @@ Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (
 </tr>
 </tbody>
 </table>
+<h3 id="field-contracts">Field Contracts</h3>
+<p>Every operator declares four <code>ClassVar</code> lists that describe which Cut fields it
+reads and writes. The pipeline pre-flight validator uses these declarations to
+catch wiring errors before any data is processed.</p>
+<table>
+<thead>
+<tr>
+<th>ClassVar</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reads</code></td>
+<td>Fields that must be present; stage errors out if absent.</td>
+</tr>
+<tr>
+<td><code>writes</code></td>
+<td>Fields this operator populates or updates.</td>
+</tr>
+<tr>
+<td><code>optional_reads</code></td>
+<td>Fields consumed when present; a warning is emitted if absent.</td>
+</tr>
+<tr>
+<td><code>clears</code></td>
+<td>Fields this operator removes (e.g. VAD re-segmentation resets supervisions).</td>
+</tr>
+</tbody>
+</table>
+<p>For contracts that depend on config values, operators implement
+<code>dynamic_reads(self) -&gt; list[str]</code> instead of (or in addition to) <code>reads</code>.
+Config is read via <code>self.config</code> inside the method.
+<code>quality_score_filter</code> uses this: it inspects the <code>conditions</code> list at
+pre-flight time and returns the metric tokens those conditions reference.</p>
+<p><strong>Field vocabulary</strong> — the recognised token set:</p>
+<table>
+<thead>
+<tr>
+<th>Token pattern</th>
+<th>Maps to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>audio</code></td>
+<td>Raw audio samples (waveform access).</td>
+</tr>
+<tr>
+<td><code>supervisions.text</code></td>
+<td><code>Supervision.text</code> across all supervisions.</td>
+</tr>
+<tr>
+<td><code>supervisions.language</code></td>
+<td><code>Supervision.language</code>.</td>
+</tr>
+<tr>
+<td><code>supervisions.speaker</code></td>
+<td><code>Supervision.speaker</code>.</td>
+</tr>
+<tr>
+<td><code>supervisions.gender</code></td>
+<td><code>Supervision.gender</code>.</td>
+</tr>
+<tr>
+<td><code>metrics.&lt;name&gt;</code></td>
+<td><code>Cut.metrics["&lt;name&gt;"]</code> (e.g. <code>metrics.snr</code>).</td>
+</tr>
+<tr>
+<td><code>custom.&lt;key&gt;</code></td>
+<td><code>Cut.custom["&lt;key&gt;"]</code> (e.g. <code>custom.word_alignments</code>).</td>
+</tr>
+<tr>
+<td><code>metrics.*</code> / <code>custom.*</code></td>
+<td>Namespace wildcard, used in <code>clears</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Intrinsic fields (<code>duration</code>, <code>start</code>, <code>channel</code>) are not tracked — every
+stage can rely on them unconditionally.</p>
+<p><strong>Examples:</strong>
+- <code>snr_estimate</code>: <code>reads=[audio]</code>, <code>writes=[metrics.snr]</code>
+- <code>faster_whisper_asr</code>: <code>reads=[audio]</code>, <code>writes=[supervisions.text, supervisions.language]</code>
+- <code>forced_align</code>: <code>reads=[audio, supervisions.text]</code>, <code>writes=[custom.word_alignments, custom.forced_align_model]</code>
+- <code>silero_vad</code>: <code>reads=[audio]</code>, <code>clears=[supervisions.text, supervisions.language, supervisions.speaker, supervisions.gender, metrics.*]</code></p>
 <h3 id="operator-patterns">Operator Patterns</h3>
 <p><strong>Analysis operator</strong> (e.g., <code>snr_estimate</code>): reads audio, writes to <code>metrics</code>. <code>produces_audio=False, reads_audio_bytes=True</code>.</p>
 <p><strong>Audio-producing operator</strong> (e.g., <code>resample</code>, <code>speech_enhance</code>): reads audio, writes new WAV to <code>derived/</code>, creates new Recording + Cut. <code>produces_audio=True, reads_audio_bytes=True</code>.</p>
