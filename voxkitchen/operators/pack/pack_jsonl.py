@@ -101,6 +101,9 @@ def _flatten_cut(cut: Cut) -> dict[str, object]:
     }
     for k, v in cut.metrics.items():
         row[k] = round(v, 3) if isinstance(v, float) else v
+    word_alignments = (cut.custom or {}).get("word_alignments")
+    if word_alignments is not None:
+        row["word_alignments"] = word_alignments
     return row
 
 
