@@ -564,3 +564,277 @@ entries:
       Gated: requires signing the Kensho research download agreement. A newer
       SPGISpeech 2.0 (~3,780 h, speaker-tagged) also exists.
     paper: https://arxiv.org/abs/2104.02014
+
+  - id: ravdess
+    name: RAVDESS
+    task: [emotion, speaker]
+    languages: [en]
+    license: CC BY-NC-SA 4.0
+    domain: acted emotional
+    summary: >
+      Acted emotional speech and song from 24 professional actors across 8
+      emotions at two intensity levels (1,440 speech audio files).
+    recommendation: >
+      A clean, balanced, widely-used benchmark for speech emotion recognition —
+      good for reproducible, controlled experiments and quick baselines.
+      Emotions are acted (not naturalistic), the corpus is small, and the
+      non-commercial license prohibits commercial use.
+    homepage: https://zenodo.org/records/1188976
+    recommended_pipeline: examples/pipelines/emotion-recognize.yaml
+    notes: Open access on Zenodo; non-commercial license.
+    paper: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0196391
+
+  - id: crema_d
+    name: CREMA-D
+    task: [emotion, speaker]
+    languages: [en]
+    license: ODbL 1.0 (database) + DbCL 1.0 (contents)
+    domain: acted emotional
+    summary: >
+      7,442 acted audio-visual emotional clips from 91 demographically diverse
+      actors speaking 12 sentences in 6 emotions at 4 intensity levels.
+    recommendation: >
+      Good for demographically diverse acted emotion recognition and
+      audio-visual affect work, with crowd-sourced perceptual ratings included.
+      Choose it when speaker/ethnic diversity matters; emotion is acted and the
+      corpus is modest in size.
+    homepage: https://github.com/CheyneyComputerScience/CREMA-D
+    recommended_pipeline: examples/pipelines/emotion-recognize.yaml
+    notes: Openly available on GitHub under Open Data Commons licenses.
+    paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4313618/
+
+  - id: iemocap
+    name: IEMOCAP
+    task: [emotion, speaker]
+    languages: [en]
+    hours: 12
+    license: see source terms
+    domain: scripted dyadic
+    summary: >
+      ~12 h of acted audio-visual dyadic interactions from 10 actors (scripted
+      and improvised), with categorical and dimensional (valence/activation/
+      dominance) emotion labels.
+    recommendation: >
+      A foundational benchmark for conversational/dyadic emotion recognition and
+      multimodal affect modeling — choose it when you need dialog context and
+      both categorical and dimensional labels. Emotion is acted, access is gated
+      behind a signed license, and class distributions are imbalanced.
+    homepage: https://sail.usc.edu/iemocap/
+    recommended_pipeline: examples/pipelines/emotion-recognize.yaml
+    notes: Requires a signed academic release form from USC SAIL; not freely downloadable.
+    paper: https://sail.usc.edu/iemocap/Busso_2008_iemocap.pdf
+
+  - id: esd
+    name: Emotional Speech Database (ESD)
+    task: [tts, emotion]
+    languages: [en, zh]
+    hours: 29
+    license: see source terms
+    domain: acted emotional (parallel, bilingual)
+    summary: >
+      >29 h of parallel emotional speech from 20 speakers (10 English, 10
+      Mandarin), each reading 350 parallel utterances across 5 emotions.
+    recommendation: >
+      The go-to corpus for emotional voice conversion and cross-lingual /
+      multi-speaker emotional TTS thanks to its parallel bilingual design.
+      Emotion is acted, only 5 classes, and 20 speakers limit speaker diversity.
+    homepage: https://hltsingapore.github.io/ESD/
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    notes: >
+      Released by NUS/SUTD for research use; the project page gives no formal
+      license, only a citation request — treat as research-only.
+    paper: https://arxiv.org/abs/2105.14762
+
+  - id: msp_podcast
+    name: MSP-Podcast
+    task: [emotion, speaker]
+    languages: [en]
+    license: see source terms
+    domain: podcast (natural/spontaneous)
+    summary: >
+      Large-scale naturalistic emotional speech mined from Creative-Commons
+      podcasts, multi-rater annotated with categorical emotions and valence/
+      arousal/dominance attributes.
+    recommendation: >
+      Best for realistic, in-the-wild speech emotion recognition at scale and
+      the standard benchmark for recent SER challenges. Size is version-dependent
+      and grows per release; natural emotion yields lower inter-rater agreement;
+      access is gated behind a signed institutional agreement.
+    homepage: https://www.lab-msp.com/MSP/MSP-Podcast.html
+    recommended_pipeline: examples/pipelines/emotion-recognize.yaml
+    notes: >
+      Requires an institution-signed academic license (free); released by
+      UT Dallas MSP Lab. Continually expanding, so size grows per release.
+    paper: https://arxiv.org/abs/2509.09791
+
+  - id: reazonspeech
+    name: ReazonSpeech
+    task: [asr]
+    languages: [ja]
+    hours: 35000
+    license: CDLA-Sharing-1.0
+    domain: tv/broadcast
+    summary: >
+      ~35,000 h open Japanese speech corpus collected from terrestrial TV
+      broadcast streams with aligned Japanese transcriptions.
+    recommendation: >
+      The best choice for large-scale Japanese ASR pretraining or fine-tuning,
+      given its scale and natural broadcast speech. Use is legally constrained
+      to Japanese Copyright Act Art. 30-4 (text/data-mining R&D), so commercial
+      deployment terms are restrictive; the dataset is gated.
+    homepage: https://research.reazon.jp/projects/ReazonSpeech/
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      HF dataset gated by agreement to use solely under Japanese Copyright Act
+      Art. 30-4; sizes range 8.5 h to 35,000 h. Creation toolkit is Apache-2.0.
+    paper: https://research.reazon.jp/_static/reazonspeech_nlp2023.pdf
+
+  - id: golos
+    name: Golos
+    task: [asr]
+    languages: [ru]
+    hours: 1240
+    license: see source terms
+    domain: crowdsourced + farfield
+    summary: >
+      ~1,240 h of manually annotated open Russian speech split between
+      crowd-sourced (~1,106 h) and farfield/smart-device (~134 h) recordings.
+    recommendation: >
+      A strong default for Russian ASR training and benchmarking, especially for
+      farfield/voice-assistant conditions alongside clean crowd speech. Licensing
+      is a custom Sber document (not a standard identifier) — review before
+      commercial use.
+    homepage: https://github.com/sberdevices/golos
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      License is the Sber document in the repo; also mirrored on OpenSLR #114
+      and HuggingFace (SberDevices/Golos).
+    paper: https://arxiv.org/abs/2106.10161
+
+  - id: gigaspeech2
+    name: GigaSpeech 2
+    task: [asr, multilingual]
+    languages: [th, id, vi]
+    hours: 30000
+    license: see source terms
+    domain: youtube
+    summary: >
+      Large-scale multi-domain ASR for low-resource Southeast Asian languages
+      (Thai, Indonesian, Vietnamese), built by automated YouTube crawling and
+      transcription (~30k h raw, ~22k h refined).
+    recommendation: >
+      Pick this for low-resource SE Asian ASR where labeled data is scarce; the
+      refined splits give usable labels plus professional dev/test sets. Audio is
+      gated and restricted to non-commercial research/education, and labels are
+      machine-generated/auto-refined, so quality varies by split.
+    homepage: https://github.com/SpeechColab/GigaSpeech2
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      HF tags Apache-2.0 but access is gated with non-commercial
+      research/education terms; SpeechColab does not own the audio copyright.
+    paper: https://arxiv.org/abs/2406.11546
+
+  - id: earnings22
+    name: Earnings-22
+    task: [asr]
+    languages: [en]
+    hours: 119
+    license: CC BY-SA 4.0
+    domain: earnings calls
+    summary: >
+      119 h benchmark of real-world English corporate earnings calls featuring
+      diverse global accents across many countries.
+    recommendation: >
+      Use as an evaluation benchmark for accented, real-world long-form English
+      ASR rather than a large training set — ideal to stress-test robustness
+      across non-native and regional accents. Small (~125 files) and
+      benchmark-oriented, with rich per-file metadata.
+    homepage: https://github.com/revdotcom/speech-datasets/tree/main/earnings22
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: Released by Rev.com; speakers span 7 language regions / 27 countries.
+    paper: https://arxiv.org/abs/2203.15591
+
+  - id: aishell4
+    name: AISHELL-4
+    task: [asr, speaker]
+    languages: [zh]
+    hours: 120
+    license: CC BY-SA 4.0
+    domain: meetings
+    summary: >
+      Real-recorded Mandarin conference-meeting corpus (8-channel circular mic
+      array), 211 sessions with 4-8 speakers each, annotated for transcription
+      and speaker activity.
+    recommendation: >
+      Choose for Mandarin meeting/conference scenarios needing realistic
+      far-field, multi-speaker, overlapping speech — supports ASR, diarization,
+      separation, and enhancement. 120 h is modest and array-based far-field, so
+      it suits meeting-domain work more than general ASR.
+    homepage: https://www.openslr.org/111/
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    notes: 211 sessions, 8-channel circular mic array; distributed via OpenSLR #111.
+    paper: https://arxiv.org/abs/2104.03603
+
+  - id: expresso
+    name: Expresso
+    task: [tts, emotion]
+    languages: [en]
+    hours: 40
+    license: CC BY-NC 4.0
+    domain: expressive read + improvised studio
+    summary: >
+      High-quality multi-speaker English expressive speech at 48 kHz (11 h read
+      + 30 h improvised) across many spontaneous expressive styles, for
+      expressive speech resynthesis.
+    recommendation: >
+      Best for expressive/style-controlled TTS and discrete speech-resynthesis
+      research where studio-clean, style-labeled English audio matters. Only 4
+      speakers and a non-commercial license, so it is unsuitable for commercial
+      training and limited for speaker-diversity work.
+    homepage: https://speechbot.github.io/expresso/
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    notes: Distributed via Meta's facebookresearch/textlesslib repo; NonCommercial.
+    paper: https://arxiv.org/abs/2308.05725
+
+  - id: daps
+    name: DAPS (Device and Produced Speech)
+    task: [tts]
+    languages: [en]
+    hours: 4.5
+    license: CC BY-NC 4.0
+    domain: clean studio + device-recorded
+    summary: >
+      Professional studio-quality speech with time-aligned recordings of the
+      same speech captured on consumer devices (tablet, smartphone) in
+      real-world environments; 20 speakers.
+    recommendation: >
+      Ideal as clean reference / parallel data for speech enhancement,
+      dereverberation, and device-channel robustness, and as a high-quality
+      reference for TTS evaluation. Small (~14 min per speaker, ~4.5 h of unique
+      content) and non-commercial, so not a training-scale corpus.
+    homepage: https://ccrma.stanford.edu/~gautham/Site/daps.html
+    notes: >
+      Mirrored on Zenodo (record 4660670). 15 versions (3 produced + 12
+      device/environment); ~4.5 h of unique speech replicated across versions.
+    paper: https://doi.org/10.1109/LSP.2015.2438544
+
+  - id: voxforge
+    name: VoxForge
+    task: [asr, multilingual]
+    languages: [multi]
+    license: GNU GPL
+    domain: crowdsourced read
+    summary: >
+      Community-contributed crowdsourced corpus of transcribed read speech
+      collected to build free, open acoustic models for open-source ASR engines.
+    recommendation: >
+      Good for free, copyleft-licensed ASR acoustic-model training and as a
+      multilingual baseline, especially where GPL licensing is acceptable.
+      Crowdsourced quality and per-language volume vary widely, and the strong
+      copyleft can complicate combining it with differently-licensed data.
+    homepage: https://www.voxforge.org/
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      English is the largest of several languages (also de, ru, es, fr, it,
+      ...). GPL applies to submitted audio; exact GPL version not authoritatively
+      stated.
