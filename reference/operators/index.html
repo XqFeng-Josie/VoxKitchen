@@ -1023,6 +1023,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#normalize_text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        normalize_text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#paraformer_asr" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2023,6 +2034,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#normalize_text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        normalize_text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#paraformer_asr" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2479,23 +2501,17 @@
 
 
 <h1 id="operator-reference">Operator Reference</h1>
-<p>VoxKitchen ships with <strong>51 built-in operators</strong> across 8 categories.</p>
+<p>VoxKitchen ships with <strong>52 built-in operators</strong> across 8 categories.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Run <code>vkit operators</code> to see this list in your terminal, or <code>vkit operators show &lt;name&gt;</code> for details.</p>
 </div>
-<p>Every operator declares a <strong>field contract</strong> — four <code>ClassVar</code> lists (<code>reads</code>,
-<code>writes</code>, <code>optional_reads</code>, <code>clears</code>) that describe which Cut fields it
-consumes and produces. The pipeline pre-flight validator reads these contracts
-to detect missing dependencies before any data is processed. See
-<a href="../../architecture/#field-contracts">Field Contracts</a> in the architecture docs
-for the full vocabulary and how pre-flight uses them.</p>
 <h2 id="categories">Categories</h2>
 <ul>
 <li><a href="#basic">Audio Processing</a> (4 operators)</li>
 <li><a href="#segment">Segmentation</a> (4 operators)</li>
 <li><a href="#augment">Data Augmentation</a> (4 operators)</li>
-<li><a href="#annotate">Annotation</a> (17 operators)</li>
+<li><a href="#annotate">Annotation</a> (18 operators)</li>
 <li><a href="#quality">Quality &amp; Filtering</a> (11 operators)</li>
 <li><a href="#synthesize">Synthesis</a> (4 operators)</li>
 <li><a href="#pack">Output / Packing</a> (6 operators)</li>
@@ -3305,6 +3321,51 @@ the published Docker images because it pulls in TensorFlow.</p>
 <span class="w">    </span><span class="nt">fmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000.0</span>
 <span class="w">    </span><span class="nt">ref_db</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20.0</span>
 <span class="w">    </span><span class="nt">output_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+</code></pre></div>
+<hr />
+<h3 id="normalize_text"><code>normalize_text</code></h3>
+<p><strong>Normalize <code>supervisions[].text</code> in place: strip tags, collapse spaces.</strong></p>
+<ul>
+<li><strong>Device:</strong> cpu</li>
+<li><strong>Runtime:</strong> <code>vkit docker run --tag slim &lt;yaml&gt;</code></li>
+<li><strong>Produces audio:</strong> No</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>strip_tags</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>collapse_spaces</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>lowercase</code></td>
+<td>bool</td>
+<td><code>False</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_normalize_text</span>
+<span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">normalize_text</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">strip_tags</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">collapse_spaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">lowercase</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
 <hr />
 <h3 id="paraformer_asr"><code>paraformer_asr</code></h3>

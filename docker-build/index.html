@@ -1486,7 +1486,7 @@ and can be ignored on CPU-only hosts.</p>
 wheels into its <code>core</code> venv and is runnable without a GPU; the base image's
 CUDA libraries are unused there.</p>
 <h2 id="why-one-image-with-multiple-envs">Why one image with multiple envs?</h2>
-<p>A single Python environment cannot host all 51 operators — <code>pyannote.audio&gt;=4.0</code>
+<p>A single Python environment cannot host all 52 operators — <code>pyannote.audio&gt;=4.0</code>
 wants <code>torch&gt;=2.8 + numpy&gt;=2.1</code>, <code>funasr + modelscope</code> are capped at the
 <code>transformers&lt;5 / numpy&lt;2</code> stack, and the four TTS engines each pull transitive
 deps that fight the ASR stack on <code>transformers</code> / <code>ctranslate2</code> versions.</p>

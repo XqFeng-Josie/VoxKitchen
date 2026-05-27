@@ -1101,10 +1101,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#operator-catalog-51-operators-8-categories" class="md-nav__link">
+  <a href="#operator-catalog-52-operators-8-categories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Operator Catalog (51 operators, 8 categories)
+        Operator Catalog (52 operators, 8 categories)
       
     </span>
   </a>
@@ -1542,10 +1542,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#operator-catalog-51-operators-8-categories" class="md-nav__link">
+  <a href="#operator-catalog-52-operators-8-categories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Operator Catalog (51 operators, 8 categories)
+        Operator Catalog (52 operators, 8 categories)
       
     </span>
   </a>
@@ -1806,7 +1806,7 @@
 
 <h1 id="system-architecture">System Architecture</h1>
 <blockquote>
-<p>Operators: 51 across 8 categories.</p>
+<p>Operators: 52 across 8 categories.</p>
 </blockquote>
 <h2 id="overview">Overview</h2>
 <p>VoxKitchen is a Docker-first speech data pipeline toolkit. Users write a YAML
@@ -1821,7 +1821,7 @@ provenance tracking.</p>
     |
 Pipeline Layer      (pipeline/)      Orchestration, execution, GC
     |
-Operator Layer      (operators/)     51 built-in transformations
+Operator Layer      (operators/)     52 built-in transformations
     |
 Schema Layer        (schema/)        Pydantic v2 data models
 </code></pre></div>
@@ -1890,7 +1890,7 @@ Schema Layer        (schema/)        Pydantic v2 data models
 <p>Built-in operators: <code>@register_operator</code> decorator + import in <code>operators/__init__.py</code>.
 Third-party: <code>entry_points</code> group <code>voxkitchen.operators</code> (lazy discovery on first access).</p>
 <p>Optional deps wrapped in <code>try/except ImportError</code> -- missing packages don't crash the core.</p>
-<h3 id="operator-catalog-51-operators-8-categories">Operator Catalog (51 operators, 8 categories)</h3>
+<h3 id="operator-catalog-52-operators-8-categories">Operator Catalog (52 operators, 8 categories)</h3>
 <table>
 <thead>
 <tr>
@@ -2385,7 +2385,7 @@ lightweight launcher; operator dependencies live in prebuilt images.</p>
 <h2 id="project-structure">Project Structure</h2>
 <div class="highlight"><pre><span></span><code>voxkitchen/
   cli/                  # Typer CLI app
-  operators/            # 51 operators across 8 categories
+  operators/            # 52 operators across 8 categories
     basic/              #   resample, ffmpeg_convert, ...
     segment/            #   silero_vad, webrtc_vad, ...
     augment/            #   speed_perturb, noise_augment, ...
@@ -2424,7 +2424,7 @@ tests/integration/      # End-to-end pipeline tests
 <h3 id="completed">Completed</h3>
 <ul>
 <li>Core framework (schema, pipeline engine, CLI)</li>
-<li>51 operators across 8 categories</li>
+<li>52 operators across 8 categories</li>
 <li>9 ingest recipes (LibriSpeech, LibriTTS, LJSpeech, AISHELL-1, AISHELL-3, CN-Celeb 1, CommonVoice, FLEURS, MUSAN)</li>
 <li>Visualization (Rich CLI, HTML report, Gradio panel)</li>
 <li>Plugin system (entry_points)</li>
