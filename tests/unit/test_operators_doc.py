@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 
 import voxkitchen.operators  # noqa: F401  (import populates the registry)
-from voxkitchen.operators.registry import list_operators
+from voxkitchen.operators.registry import get_operator, list_operators
 
 _DOC = Path(__file__).resolve().parents[2] / "docs" / "reference" / "operators.md"
 
@@ -25,9 +25,23 @@ def _doc_text() -> str:
     return _DOC.read_text(encoding="utf-8")
 
 
+def _builtin_operator_names() -> list[str]:
+    """Registered operators that ship inside the voxkitchen package.
+
+    Excludes third-party plugins and test-only sentinel operators (e.g. those
+    registered by ``tests/unit/pipeline/test_executor_gpu.py``) — only built-in
+    operators belong in ``docs/reference/operators.md``.
+    """
+    return [
+        name
+        for name in list_operators()
+        if get_operator(name).__module__.startswith("voxkitchen.operators.")
+    ]
+
+
 def test_every_registered_operator_is_documented():
     text = _doc_text()
-    missing = [name for name in list_operators() if f"### `{name}`" not in text]
+    missing = [name for name in _builtin_operator_names() if f"### `{name}`" not in text]
     assert not missing, (
         f"operators missing from docs/reference/operators.md: {missing} — "
         "regenerate with `python scripts/gen_operator_docs.py -o docs/reference/operators.md`"
