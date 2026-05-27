@@ -144,13 +144,15 @@ def _detect_image_kind() -> str | None:
 
 
 def _collect_available() -> set[str]:
-    """Import the operators package and return the names that registered."""
+    """Import the operators package + plugins, return registered names."""
     # Importing voxkitchen.operators has the side effect of running each
     # optional-import try/except block, so operators whose extras are
     # installed will end up in the registry.
     importlib.import_module("voxkitchen.operators")
     from voxkitchen.operators.registry import list_operators
+    from voxkitchen.plugins.discovery import load_plugins
 
+    load_plugins()  # include third-party operators in availability
     return set(list_operators())
 
 
@@ -307,6 +309,14 @@ def _emit_table(
             f"Available operators: {len(available)} "
             "[dim](set VKIT_IMAGE_KIND or pass --expect for pass/fail verdict)[/dim]"
         )
+
+    from voxkitchen.operators import OPERATOR_API_VERSION
+    from voxkitchen.plugins.discovery import discovered_operators
+
+    api_line = f"Operator API version: {OPERATOR_API_VERSION}"
+    if discovered_operators:
+        api_line += f"   Third-party operators: {len(discovered_operators)}"
+    console.print(api_line)
 
     if missing:
         t = Table(title="Missing operators")
