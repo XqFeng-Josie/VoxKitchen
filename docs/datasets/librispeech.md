@@ -16,7 +16,6 @@ Read English audiobooks; the standard English ASR benchmark.
 
 The default starting point for English ASR — clean, well-segmented read speech with transcripts. Prototype on train-clean-100; use the full 960 h for production. Not representative of conversational or noisy audio.
 
-
 ## Getting the data
 
 Downloadable via VoxKitchen (`librispeech`, source: openslr, size: 299 MB - 28.5 GB):

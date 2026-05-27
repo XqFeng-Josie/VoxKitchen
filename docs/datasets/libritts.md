@@ -4,7 +4,6 @@
 
 High-fidelity (24 kHz) read English audiobooks derived from LibriSpeech, with normalised transcriptions; the standard baseline for English TTS.
 
-
 - **Task:** tts
 - **Languages:** en
 - **Hours:** 585
@@ -16,7 +15,6 @@ High-fidelity (24 kHz) read English audiobooks derived from LibriSpeech, with no
 ## Recommendation
 
 Best first choice for English TTS training. Audio is clean and well-segmented; train-clean-360 is a solid single-subset starting point. Use train-other-500 to add acoustic diversity. Lacks spontaneous or expressive speech — supplement with VCTK or Emilia for prosody range.
-
 
 ## Getting the data
 

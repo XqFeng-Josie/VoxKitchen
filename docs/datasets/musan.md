@@ -4,7 +4,6 @@
 
 109-hour corpus of music, speech, and environmental noise designed for data augmentation in speech and speaker recognition experiments.
 
-
 - **Task:** augmentation
 - **Languages:** en
 - **Hours:** 109
@@ -16,7 +15,6 @@
 ## Recommendation
 
 The standard noise/music augmentation bank for speaker verification and robust ASR training. Combine with RIR-based room simulation for a full augmentation pipeline. Small enough to keep fully in RAM during training. No VoxKitchen pipeline template — augmentation is embedded in task-specific pipelines such as examples/pipelines/noise-augment.yaml.
-
 
 ## Getting the data
 

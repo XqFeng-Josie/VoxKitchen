@@ -4,7 +4,6 @@
 
 10,000-hour large-scale Mandarin ASR corpus collected from YouTube and podcasts with automatic labelling.
 
-
 - **Task:** asr
 - **Languages:** zh
 - **Hours:** 10000
@@ -17,13 +16,11 @@
 
 Go-to corpus for large-scale Mandarin ASR where AISHELL-1 is too clean or too small. Automatic labels introduce noise — expect to filter with the data-cleaning pipeline. Non-commercial restrictions apply; check the source terms before production use.
 
-
 ## Getting the data
 
 Obtain from the [dataset homepage](https://github.com/wenet-e2e/WenetSpeech).
 
 Register for access and download via the WenetSpeech toolkit. The full corpus requires several TB of storage. Quality varies by subset — the "L" training set has the most automatic-label noise.
-
 
 ## Suggested processing
 

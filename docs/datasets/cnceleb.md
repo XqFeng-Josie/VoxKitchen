@@ -4,7 +4,6 @@
 
 1,200-hour multi-genre Mandarin speaker recognition corpus spanning 11 real-world scenarios collected from Chinese celebrities.
 
-
 - **Task:** speaker
 - **Languages:** zh
 - **Hours:** 1200
@@ -16,7 +15,6 @@
 ## Recommendation
 
 The primary benchmark for Mandarin speaker verification and identification in realistic, in-the-wild conditions. Wide acoustic diversity across genres (interview, singing, entertainment) is valuable but also makes it challenging. Check the source terms carefully — the data is free for research but redistribution is restricted.
-
 
 ## Getting the data
 

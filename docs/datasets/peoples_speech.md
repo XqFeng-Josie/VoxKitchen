@@ -4,7 +4,6 @@
 
 30,000-hour English ASR corpus assembled from diverse internet sources including radio broadcasts, court hearings, and conferences.
 
-
 - **Task:** asr
 - **Languages:** en
 - **Hours:** 30000
@@ -17,13 +16,11 @@
 
 A large permissively-licensed English corpus that adds domain diversity beyond audiobooks. Automatic labels vary in quality — apply the data-cleaning pipeline to filter low-confidence segments before training. Good complement to LibriSpeech/GigaSpeech in a multi-dataset training mix.
 
-
 ## Getting the data
 
 Obtain from the [dataset homepage](https://huggingface.co/datasets/MLCommons/peoples_speech).
 
 Available via HuggingFace datasets. The full 30,000 h "dirty" split has more noise; use the "clean" split or apply quality filtering for best ASR training results.
-
 
 ## Suggested processing
 

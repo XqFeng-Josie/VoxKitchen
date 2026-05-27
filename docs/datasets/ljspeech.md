@@ -4,7 +4,6 @@
 
 Single-speaker English TTS corpus (24 h, 13,100 clips) recorded from LibriVox readings. Universally used as a single-speaker TTS baseline.
 
-
 - **Task:** tts
 - **Languages:** en
 - **Hours:** 24
@@ -15,7 +14,6 @@ Single-speaker English TTS corpus (24 h, 13,100 clips) recorded from LibriVox re
 ## Recommendation
 
 Ideal for single-speaker TTS experiments and for quickly checking a pipeline end-to-end due to its small size. Because it is a single speaker it is not suitable for multi-speaker or voice-cloning experiments. Prefer LibriTTS or VCTK when speaker diversity matters.
-
 
 ## Getting the data
 

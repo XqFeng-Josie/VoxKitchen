@@ -4,7 +4,6 @@
 
 85-hour multi-speaker Mandarin TTS corpus with 218 speakers in clean recording conditions; the standard Chinese multi-speaker TTS baseline.
 
-
 - **Task:** tts
 - **Languages:** zh
 - **Hours:** 85
@@ -16,7 +15,6 @@
 ## Recommendation
 
 Best starting point for multi-speaker Mandarin TTS. Clean studio conditions and a large speaker pool make it suitable for voice cloning research. Non-commercial license — check before production use.
-
 
 ## Getting the data
 

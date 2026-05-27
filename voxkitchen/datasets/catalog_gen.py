@@ -69,13 +69,13 @@ def _render_index(entries: list[DatasetEntry]) -> str:
         lines.append(f"### {task}\n")
         for e in _sorted(entries):
             if task in e.task:
-                lines.append(f"- [{e.name}](./{e.id}.md) — {e.summary}")
+                lines.append(f"- [{e.name}](./{e.id}.md) — {e.summary.strip()}")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
 
 def _render_page(e: DatasetEntry, dl: RecipeDownloadInfo | None) -> str:
-    lines = [_HEADER, f"# {e.name}\n", e.summary, ""]
+    lines = [_HEADER, f"# {e.name}\n", e.summary.strip(), ""]
     lines.append(f"- **Task:** {', '.join(e.task)}")
     lines.append(f"- **Languages:** {', '.join(e.languages)}")
     if e.hours is not None:
@@ -88,7 +88,7 @@ def _render_page(e: DatasetEntry, dl: RecipeDownloadInfo | None) -> str:
         lines.append(f"- **Paper:** [{e.paper}]({e.paper})")
     lines.append("")
     lines.append("## Recommendation\n")
-    lines.append(e.recommendation)
+    lines.append(e.recommendation.strip())
     lines.append("")
     lines.append("## Getting the data\n")
     if e.recipe and dl is not None:
@@ -104,7 +104,7 @@ def _render_page(e: DatasetEntry, dl: RecipeDownloadInfo | None) -> str:
     else:
         lines.append(f"Obtain from the [dataset homepage]({e.homepage}).")
     if e.notes:
-        lines.append(f"\n{e.notes}")
+        lines.append(f"\n{e.notes.strip()}")
     lines.append("")
     if e.recommended_pipeline:
         lines.append("## Suggested processing\n")

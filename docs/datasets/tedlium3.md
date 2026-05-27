@@ -4,7 +4,6 @@
 
 452-hour English ASR corpus of TED talks with manual and automatic transcriptions; suitable for lecture/talk domain ASR research.
 
-
 - **Task:** asr
 - **Languages:** en
 - **Hours:** 452
@@ -16,7 +15,6 @@
 ## Recommendation
 
 Good choice for spontaneous (but well-articulated) English ASR, contrasting with the read-speech style of LibriSpeech. Non-commercial license. Use the SPH or WAV releases — the SPH format needs conversion. Useful for domain-shift experiments alongside LibriSpeech.
-
 
 ## Getting the data
 

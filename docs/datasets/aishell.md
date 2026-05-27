@@ -4,7 +4,6 @@
 
 170-hour open Mandarin speech corpus recorded in clean studio conditions; the standard Chinese ASR benchmark.
 
-
 - **Task:** asr
 - **Languages:** zh
 - **Hours:** 170
@@ -16,7 +15,6 @@
 ## Recommendation
 
 The go-to starting point for Mandarin ASR. Clean studio recordings with full transcripts. Non-commercial license — check before production use. Not representative of spontaneous or accented Mandarin; supplement with WenetSpeech for broader coverage.
-
 
 ## Getting the data
 

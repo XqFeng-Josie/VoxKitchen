@@ -4,7 +4,6 @@
 
 Few-shot Learning Evaluation of Universal Representations of Speech — standardised ASR/LID evaluation set covering 102 languages derived from the FLoRes-200 text corpus.
 
-
 - **Task:** asr, multilingual
 - **Languages:** multi
 - **Domain:** read speech (FLoRes translations)
@@ -15,7 +14,6 @@ Few-shot Learning Evaluation of Universal Representations of Speech — standard
 ## Recommendation
 
 The standard multilingual ASR evaluation benchmark. Use it to measure cross-lingual ASR quality consistently across languages rather than as a training corpus (each language only has ~10 h). Available via HuggingFace datasets — VoxKitchen's recipe handles the streaming download.
-
 
 ## Getting the data
 

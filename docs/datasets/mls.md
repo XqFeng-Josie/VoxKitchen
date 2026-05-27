@@ -4,7 +4,6 @@
 
 50,000-hour multilingual audiobook ASR corpus derived from LibriVox recordings covering 8 languages (English, German, Dutch, French, Spanish, Italian, Portuguese, Polish).
 
-
 - **Task:** asr, multilingual
 - **Languages:** multi
 - **Hours:** 50000
@@ -16,7 +15,6 @@
 ## Recommendation
 
 Best choice for large-scale multilingual ASR training with a permissive license. English component alone is 44,500 h. Non-English languages range from 500–2,400 h — enough for competitive baselines. Audiobook domain only; supplement with conversational data if needed.
-
 
 ## Getting the data
 

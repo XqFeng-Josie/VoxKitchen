@@ -4,7 +4,6 @@
 
 44-hour English multi-speaker corpus with 110 speakers covering a wide range of UK and US accents; widely used for multi-speaker TTS and speaker adaptation research.
 
-
 - **Task:** tts, speaker
 - **Languages:** en
 - **Hours:** 44
@@ -15,7 +14,6 @@
 ## Recommendation
 
 First choice for multi-speaker English TTS experiments and accent-aware speaker embedding research. The diversity of accents is its main advantage over LJSpeech. Recording quality is very clean. Hours per speaker are limited (~30 min), which constrains voice-cloning fine-tuning.
-
 
 ## Getting the data
 
