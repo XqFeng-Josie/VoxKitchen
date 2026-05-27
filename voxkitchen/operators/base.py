@@ -32,6 +32,13 @@ from voxkitchen.schema.cutset import CutSet
 if TYPE_CHECKING:
     from voxkitchen.pipeline.context import RunContext
 
+# The third-party operator API version. Bump the major component only on a
+# BREAKING change to the operator contract (process() signature, removal/rename
+# of a required ClassVar, or a change to field-contract token semantics).
+# Adding new *optional* ClassVars with safe defaults is backward-compatible and
+# does NOT bump this. Informational: not enforced at runtime.
+OPERATOR_API_VERSION = 1
+
 
 class OperatorConfig(BaseModel):
     """Base class for operator parameter models. Forbids unknown fields."""

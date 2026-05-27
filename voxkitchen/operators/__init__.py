@@ -1,6 +1,6 @@
 """VoxKitchen operators: transformations from CutSet to CutSet."""
 
-from voxkitchen.operators.base import Operator, OperatorConfig
+from voxkitchen.operators.base import OPERATOR_API_VERSION, Operator, OperatorConfig
 from voxkitchen.operators.basic import channel_merge as _basic_channel_merge  # noqa: F401
 
 # --- basic (core deps) ---
@@ -175,6 +175,7 @@ from voxkitchen.operators.registry import (
 )
 
 __all__ = [
+    "OPERATOR_API_VERSION",
     "MissingExtrasError",
     "Operator",
     "OperatorConfig",
