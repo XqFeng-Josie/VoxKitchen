@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../asr-training-data/">
+        <link rel="prev" href="../../tutorials/speaker-analysis/">
       
       
-        <link rel="next" href="../speaker-analysis/">
+        <link rel="next" href="../../concepts/data-protocol/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Data Cleaning - VoxKitchen</title>
+        <title>Operator Plugins - VoxKitchen</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#data-cleaning" class="md-skip">
+        <a href="#operator-plugins" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Data Cleaning
+              Operator Plugins
             
           </span>
         </div>
@@ -335,20 +335,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -369,7 +367,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -387,7 +385,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tts-training-data/" class="md-nav__link">
+      <a href="../../tutorials/tts-training-data/" class="md-nav__link">
         
   
   
@@ -415,7 +413,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tts-speaker/" class="md-nav__link">
+      <a href="../../tutorials/tts-speaker/" class="md-nav__link">
         
   
   
@@ -443,7 +441,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tts-voice-cloning/" class="md-nav__link">
+      <a href="../../tutorials/tts-voice-cloning/" class="md-nav__link">
         
   
   
@@ -471,7 +469,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../asr-training-data/" class="md-nav__link">
+      <a href="../../tutorials/asr-training-data/" class="md-nav__link">
         
   
   
@@ -496,37 +494,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data Cleaning
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../tutorials/data-cleaning/" class="md-nav__link">
         
   
   
@@ -542,148 +513,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Start
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-the-pipeline-does" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the Pipeline Does
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#understanding-the-metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding the Metrics
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Understanding the Metrics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#snr-signal-to-noise-ratio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SNR (Signal-to-Noise Ratio)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#clipping-ratio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Clipping Ratio
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bandwidth" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bandwidth
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Customization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Customization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#add-dnsmos-quality-scoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Add DNSMOS quality scoring
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#keep-only-long-form-audio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Keep only long-form audio
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stricter-deduplication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Stricter deduplication
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -696,7 +525,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../speaker-analysis/" class="md-nav__link">
+      <a href="../../tutorials/speaker-analysis/" class="md-nav__link">
         
   
   
@@ -728,18 +557,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -760,7 +591,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -775,10 +606,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../guides/operator-plugins/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Plugins
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -794,6 +652,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-a-plugin-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What a plugin is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-write-the-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Write the operator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-package-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Package it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-install-and-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Install and verify
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-stable-surface-and-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Stable surface and compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Worked example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-current-limitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Current limitation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1247,10 +1202,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#1-what-a-plugin-is" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        1. What a plugin is
       
     </span>
   </a>
@@ -1258,10 +1213,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-the-pipeline-does" class="md-nav__link">
+  <a href="#2-write-the-operator" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What the Pipeline Does
+        2. Write the operator
       
     </span>
   </a>
@@ -1269,102 +1224,57 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#understanding-the-metrics" class="md-nav__link">
+  <a href="#3-package-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Understanding the Metrics
+        3. Package it
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Understanding the Metrics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#snr-signal-to-noise-ratio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SNR (Signal-to-Noise Ratio)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#clipping-ratio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Clipping Ratio
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bandwidth" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bandwidth
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
+  <a href="#4-install-and-verify" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Customization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Customization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#add-dnsmos-quality-scoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Add DNSMOS quality scoring
+        4. Install and verify
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#keep-only-long-form-audio" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#5-stable-surface-and-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Keep only long-form audio
+        5. Stable surface and compatibility
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#stricter-deduplication" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#6-worked-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stricter deduplication
+        6. Worked example
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#7-current-limitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Current limitation
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1388,171 +1298,191 @@
   
 
 
-<h1 id="data-cleaning">Data Cleaning</h1>
-<p>Clean up raw audio data: measure quality, remove duplicates, filter out bad files.</p>
-<h2 id="quick-start">Quick Start</h2>
-<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>init<span class="w"> </span>my-cleaning-project<span class="w"> </span>--template<span class="w"> </span>cleaning
-<span class="nb">cd</span><span class="w"> </span>my-cleaning-project
-<span class="c1"># Put your raw audio files in ./data/</span>
-vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>pipeline.yaml<span class="w"> </span>--dry-run
-vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>pipeline.yaml
-vkit<span class="w"> </span>inspect<span class="w"> </span>cuts<span class="w"> </span>work/*/05_filter/cuts.jsonl.gz
-</code></pre></div>
-<h2 id="what-the-pipeline-does">What the Pipeline Does</h2>
+<h1 id="operator-plugins">Operator Plugins</h1>
+<p>A third-party operator plugin is a regular pip-installable Python package
+that exposes one or more operators to VoxKitchen through the
+<code>voxkitchen.operators</code> <a href="https://packaging.python.org/en/latest/specifications/entry-points/">entry-point group</a>.  VoxKitchen discovers plugins
+lazily at runtime — no source changes to the core are required.</p>
+<hr />
+<h2 id="1-what-a-plugin-is">1. What a plugin is</h2>
+<p>When VoxKitchen's operator registry is first accessed (on <code>vkit operators</code>,
+<code>vkit doctor</code>, <code>vkit run</code>, etc.) it calls
+<code>importlib.metadata.entry_points(group="voxkitchen.operators")</code> and loads
+every advertised class into the same registry that holds the built-in
+operators.  Any operator name that is unique and satisfies the base contract
+is usable in <code>pipeline.yaml</code> stages exactly like a built-in.</p>
+<hr />
+<h2 id="2-write-the-operator">2. Write the operator</h2>
+<p>Subclass <code>voxkitchen.operators.Operator</code> and satisfy three requirements:</p>
+<ol>
+<li>Set <code>name</code> to a unique string (the key used in <code>pipeline.yaml</code>).</li>
+<li>Set <code>config_cls</code> to a subclass of <code>OperatorConfig</code> (a Pydantic model
+   describing the operator's YAML-configurable parameters).</li>
+<li>Implement <code>process(self, cuts: CutSet) -&gt; CutSet</code>.</li>
+</ol>
+<p>Declare the field contract with four <code>ClassVar</code> lists (all required; the
+pre-flight validator checks them before a run starts):</p>
 <table>
 <thead>
 <tr>
-<th>Stage</th>
-<th>Operator</th>
-<th>What it measures/does</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Resample</td>
-<td><code>resample</code> → 16kHz</td>
-<td>Normalize all audio to the same format</td>
-</tr>
-<tr>
-<td>SNR</td>
-<td><code>snr_estimate</code></td>
-<td>Signal-to-noise ratio (dB)</td>
-</tr>
-<tr>
-<td>Clipping</td>
-<td><code>clipping_detect</code></td>
-<td>Ratio of clipped samples (0.0 = no clipping)</td>
-</tr>
-<tr>
-<td>Bandwidth</td>
-<td><code>bandwidth_estimate</code></td>
-<td>Effective bandwidth in kHz (detects upsampled audio)</td>
-</tr>
-<tr>
-<td>Dedup</td>
-<td><code>audio_fingerprint_dedup</code></td>
-<td>Remove near-duplicate audio via MFCC + SimHash</td>
-</tr>
-<tr>
-<td>Filter</td>
-<td><code>quality_score_filter</code></td>
-<td>Drop files that fail quality thresholds</td>
-</tr>
-<tr>
-<td>Pack</td>
-<td><code>pack_jsonl</code></td>
-<td>Output manifest with all quality metrics</td>
-</tr>
-</tbody>
-</table>
-<h2 id="understanding-the-metrics">Understanding the Metrics</h2>
-<h3 id="snr-signal-to-noise-ratio">SNR (Signal-to-Noise Ratio)</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: center;">SNR</th>
-<th>Quality</th>
-<th>Typical source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: center;">&lt; 5 dB</td>
-<td>Unusable</td>
-<td>Street recording, heavy background</td>
-</tr>
-<tr>
-<td style="text-align: center;">5–15 dB</td>
-<td>Noisy</td>
-<td>Meeting room, casual recording</td>
-</tr>
-<tr>
-<td style="text-align: center;">15–25 dB</td>
-<td>Clean</td>
-<td>Studio with some ambient noise</td>
-</tr>
-<tr>
-<td style="text-align: center;">&gt; 25 dB</td>
-<td>Very clean</td>
-<td>Professional studio</td>
-</tr>
-</tbody>
-</table>
-<h3 id="clipping-ratio">Clipping Ratio</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: center;">Ratio</th>
+<th>ClassVar</th>
 <th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;">0.0</td>
-<td>No clipping — good</td>
+<td><code>reads</code></td>
+<td>Fields that must be present on each cut.</td>
 </tr>
 <tr>
-<td style="text-align: center;">&lt; 0.01</td>
-<td>Minimal clipping — acceptable</td>
+<td><code>writes</code></td>
+<td>Fields this operator populates or updates.</td>
 </tr>
 <tr>
-<td style="text-align: center;">&gt; 0.01</td>
-<td>Significant clipping — likely audible distortion</td>
+<td><code>optional_reads</code></td>
+<td>Fields consumed when present; emits a warning if absent.</td>
+</tr>
+<tr>
+<td><code>clears</code></td>
+<td>Fields this operator removes.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="bandwidth">Bandwidth</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: center;">kHz</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: center;">&lt; 4</td>
-<td>Telephone quality (8kHz sample rate equivalent)</td>
-</tr>
-<tr>
-<td style="text-align: center;">4–7</td>
-<td>Wideband telephony</td>
-</tr>
-<tr>
-<td style="text-align: center;">&gt; 7</td>
-<td>Full-band — genuine high-quality recording</td>
-</tr>
-</tbody>
-</table>
-<p>A file saved as 16kHz WAV but with bandwidth 3.5 kHz was <strong>upsampled from 8kHz</strong> — the extra samples contain no real information.</p>
-<h2 id="customization">Customization</h2>
-<h3 id="add-dnsmos-quality-scoring">Add DNSMOS quality scoring</h3>
-<p>For a perceptual quality score (1–5 MOS scale):</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dnsmos</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dnsmos_score</span>
+<p>See <a href="../../architecture/#field-contracts">Field Contracts</a> for the full token
+vocabulary (<code>audio</code>, <code>supervisions.text</code>, <code>metrics.&lt;name&gt;</code>, <code>custom.&lt;key&gt;</code>,
+namespace wildcards, etc.).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.snr</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;metrics.dnsmos_ovrl</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">3.0&quot;</span><span class="w">   </span><span class="c1"># perceptual quality &gt; 3.0/5.0</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">OperatorConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.schema.cutset</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutSet</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WordCountConfig</span><span class="p">(</span><span class="n">OperatorConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;No parameters.&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WordCountOperator</span><span class="p">(</span><span class="n">Operator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Count words in each cut&#39;s first transcribed supervision.</span>
+
+<span class="sd">    Writes the count to ``metrics.word_count``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;word_count&quot;</span>
+    <span class="n">config_cls</span> <span class="o">=</span> <span class="n">WordCountConfig</span>
+
+    <span class="c1"># Execution ClassVars (base-class defaults shown; override as needed)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>              <span class="c1"># &quot;cpu&quot; | &quot;gpu&quot;</span>
+    <span class="n">produces_audio</span> <span class="o">=</span> <span class="kc">False</span>      <span class="c1"># creates new audio files on disk?</span>
+    <span class="n">reads_audio_bytes</span> <span class="o">=</span> <span class="kc">True</span>    <span class="c1"># default True; set False if your op ignores audio</span>
+    <span class="n">required_extras</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parallelizable</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Field contract</span>
+    <span class="n">reads</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;supervisions.text&quot;</span><span class="p">]</span>
+    <span class="n">writes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;metrics.word_count&quot;</span><span class="p">]</span>
+    <span class="n">optional_reads</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">clears</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cuts</span><span class="p">:</span> <span class="n">CutSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CutSet</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cut</span><span class="o">.</span><span class="n">supervisions</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">cut</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="s2">&quot;word_count&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()))}</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cut</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">}))</span>
+        <span class="k">return</span> <span class="n">CutSet</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="keep-only-long-form-audio">Keep only long-form audio</h3>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">filter</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quality_score_filter</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">10&quot;</span><span class="w">     </span><span class="c1"># minimum 10 seconds</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;duration</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">300&quot;</span><span class="w">    </span><span class="c1"># maximum 5 minutes</span>
+<div class="admonition warning">
+<p class="admonition-title">Do NOT use <code>@register_operator</code></p>
+<p>The <code>@register_operator</code> decorator is the built-in registration mechanism
+(used inside <code>voxkitchen/operators/</code>).  For plugins the entry point <strong>is</strong>
+the registration mechanism — applying the decorator as well would
+double-register the operator and raise a <code>ValueError</code> ("already registered").</p>
+</div>
+<hr />
+<h2 id="3-package-it">3. Package it</h2>
+<p>A minimal <code>pyproject.toml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[build-system]</span>
+<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;hatchling&quot;</span><span class="p">]</span>
+<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hatchling.build&quot;</span>
+
+<span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;voxkitchen-my-plugin&quot;</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span>
+<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.10&quot;</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;voxkitchen&quot;</span><span class="p">]</span>
+
+<span class="k">[project.entry-points.</span><span class="s2">&quot;voxkitchen.operators&quot;</span><span class="k">]</span>
+<span class="n">word_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;voxkitchen_my_plugin.operator:WordCountOperator&quot;</span>
+
+<span class="k">[tool.hatch.build.targets.wheel]</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;voxkitchen_my_plugin&quot;</span><span class="p">]</span>
 </code></pre></div>
-<h3 id="stricter-deduplication">Stricter deduplication</h3>
-<p>Lower threshold = stricter (fewer false negatives, more false positives):</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dedup</span>
-<span class="w">    </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audio_fingerprint_dedup</span>
-<span class="w">    </span><span class="nt">args</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">similarity_threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">   </span><span class="c1"># default is 3</span>
+<p>The entry-point key (<code>word_count</code> above) is only a label; the registry uses
+the <code>name</code> ClassVar on the operator class.  Use a descriptive label that
+matches your operator name to avoid confusion.</p>
+<p>You may register multiple operators from a single package by adding one entry
+per operator under <code>[project.entry-points."voxkitchen.operators"]</code>.</p>
+<hr />
+<h2 id="4-install-and-verify">4. Install and verify</h2>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>./voxkitchen-my-plugin<span class="w">    </span><span class="c1"># or any pip-installable path / URL</span>
+
+<span class="c1"># The operator now appears in the list</span>
+vkit<span class="w"> </span>operators
+
+<span class="c1"># Third-party operators are listed under an &quot;Other&quot; category unless their</span>
+<span class="c1"># module path matches a built-in category prefix.</span>
+vkit<span class="w"> </span>operators<span class="w"> </span>show<span class="w"> </span>word_count
+
+<span class="c1"># doctor reports the operator API version and the number of third-party</span>
+<span class="c1"># operators discovered in the active environment</span>
+vkit<span class="w"> </span>doctor
 </code></pre></div>
+<hr />
+<h2 id="5-stable-surface-and-compatibility">5. Stable surface and compatibility</h2>
+<p>Plugins may depend on the following elements of the operator contract:</p>
+<ul>
+<li><strong>Identity</strong>: <code>name</code>, <code>config_cls</code></li>
+<li><strong>Runtime method</strong>: <code>process(cuts: CutSet) -&gt; CutSet</code></li>
+<li><strong>Execution ClassVars</strong>: <code>device</code>, <code>required_extras</code>, <code>produces_audio</code>,
+  <code>reads_audio_bytes</code>, <code>parallelizable</code></li>
+<li><strong>Field-contract ClassVars</strong>: <code>reads</code>, <code>writes</code>, <code>optional_reads</code>, <code>clears</code></li>
+<li><strong>API version constant</strong>:
+  <code>from voxkitchen.operators import OPERATOR_API_VERSION</code> (currently <code>1</code>)</li>
+</ul>
+<p><strong>Compatibility policy:</strong></p>
+<ul>
+<li>New <em>optional</em> ClassVars with safe defaults (e.g. a new execution hint)
+  are backward-compatible and do not bump <code>OPERATOR_API_VERSION</code>.</li>
+<li>Renaming or removing existing ClassVars, changing the signature of
+  <code>process()</code>, or any other breaking change bumps the <em>major</em> version of
+  VoxKitchen and increments <code>OPERATOR_API_VERSION</code>.</li>
+</ul>
+<p>If your package needs to guard against a future breaking change, check:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">voxkitchen.operators</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPERATOR_API_VERSION</span>
+<span class="k">assert</span> <span class="n">OPERATOR_API_VERSION</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unsupported API version: </span><span class="si">{</span><span class="n">OPERATOR_API_VERSION</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="6-worked-example">6. Worked example</h2>
+<p>A complete, installable example is at
+<a href="../../examples/plugin-operator/"><code>examples/plugin-operator/</code></a>.  It
+implements the <code>word_count</code> operator shown above and is structured exactly
+as a real third-party package would be.</p>
+<hr />
+<h2 id="7-current-limitation">7. Current limitation</h2>
+<p>A plugin runs in the Python environment where it is installed.  The
+multi-environment Docker images (<code>asr</code>, <code>diarize</code>, <code>tts</code>, etc.) do not yet
+automatically map a third-party operator to a specific inner env — the
+runner does not know which env satisfies the plugin's dependencies.</p>
+<p><strong>Today:</strong> single-environment local <code>vkit run</code> and container-internal
+<code>vkit run</code> both work fine as long as the plugin is installed in the active
+environment.</p>
+<p><strong>Workaround for multi-env images:</strong> install the plugin inside the target env
+in your Dockerfile and set <code>required_extras</code> to an existing extras group that
+maps to the desired env via <code>EXTRA_TO_ENV</code> in
+<code>voxkitchen/runtime/env_resolver.py</code>.  Full first-class multi-env dispatch for
+third-party operators is planned.</p>
 
 
 
