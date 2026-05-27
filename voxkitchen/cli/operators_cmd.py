@@ -91,6 +91,9 @@ def _render_table(*, category: str | None = None, keyword: str | None = None) ->
     text. Interactive callers see a styled message either way.
     """
     from voxkitchen.operators.registry import get_operator, list_operators
+    from voxkitchen.plugins.discovery import load_plugins
+
+    load_plugins()  # ensure third-party operators appear in the listing
 
     if category is not None and category not in _CATEGORY_LABELS:
         console.print(
