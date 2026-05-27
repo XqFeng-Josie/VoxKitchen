@@ -19,7 +19,7 @@
   <a href="https://pypi.org/project/voxkitchen/"><img src="https://img.shields.io/pypi/v/voxkitchen.svg" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
   <img src="https://img.shields.io/badge/runtime-Docker--first-2496ED" alt="Docker-first">
-  <img src="https://img.shields.io/badge/operators-51-brightgreen" alt="51 operators">
+  <img src="https://img.shields.io/badge/operators-52-brightgreen" alt="52 operators">
   <a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
@@ -42,7 +42,7 @@ that chain explicit and repeatable:
 
 - **Docker-first execution**: prebuilt runtimes avoid local dependency conflicts.
 - **One YAML pipeline**: define ingest, stages, filters, and output packs in one file.
-- **51 built-in operators**: audio prep, VAD, ASR, diarization, TTS, quality metrics, and packing.
+- **52 built-in operators**: audio prep, VAD, ASR, diarization, TTS, quality metrics, and packing.
 - **Resumable by design**: every stage checkpoints under `./work`.
 - **Inspectable outputs**: reports, cut statistics, provenance, and per-stage errors.
 

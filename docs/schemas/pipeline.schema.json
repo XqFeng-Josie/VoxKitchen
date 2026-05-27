@@ -102,7 +102,7 @@
             "whisper_openai_asr",
             "whisperx_asr"
           ],
-          "description": "Name of one of the 51 registered operators. Run `vkit operators` for a categorized list, or `vkit operators search <kw>` to find one by keyword."
+          "description": "Name of one of the 52 registered operators. Run `vkit operators` for a categorized list, or `vkit operators search <kw>` to find one by keyword."
         },
         "args": {
           "additionalProperties": true,

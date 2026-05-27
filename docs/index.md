@@ -8,7 +8,7 @@ Turn raw speech recordings into clean, inspectable training datasets. Write one
 Docker-backed YAML pipeline, run it with `vkit docker`, and get checkpoints,
 reports, and exported datasets.
 
-**51 operators** across 8 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, utility, and output packing.
+**52 operators** across 8 categories: audio processing, segmentation, augmentation, annotation (ASR/diarization/alignment/emotion), quality metrics, TTS synthesis, utility, and output packing.
 
 ## Get Started
 
@@ -36,7 +36,7 @@ vkit init my-project --template speaker   # Speaker analysis
 
 ## Reference
 
-- [Operators](reference/operators.md) — all 51 operators with config and YAML examples
+- [Operators](reference/operators.md) — all 52 operators with config and YAML examples
 - [Dataset Catalog](datasets/index.md) — dataset recipes and `vkit docker download`
 - [CLI Commands](reference/cli.md) — complete CLI reference
 - [Python Tools API](reference/tools-api.md) — standalone functions for quick tasks

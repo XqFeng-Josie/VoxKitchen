@@ -47,7 +47,7 @@ CUDA libraries are unused there.
 
 ## Why one image with multiple envs?
 
-A single Python environment cannot host all 51 operators — `pyannote.audio>=4.0`
+A single Python environment cannot host all 52 operators — `pyannote.audio>=4.0`
 wants `torch>=2.8 + numpy>=2.1`, `funasr + modelscope` are capped at the
 `transformers<5 / numpy<2` stack, and the four TTS engines each pull transitive
 deps that fight the ASR stack on `transformers` / `ctranslate2` versions.

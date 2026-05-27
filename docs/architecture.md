@@ -1,6 +1,6 @@
 # System Architecture
 
-> Operators: 51 across 8 categories.
+> Operators: 52 across 8 categories.
 
 ## Overview
 
@@ -23,7 +23,7 @@ CLI Layer           (cli/)           User-facing commands
     |
 Pipeline Layer      (pipeline/)      Orchestration, execution, GC
     |
-Operator Layer      (operators/)     51 built-in transformations
+Operator Layer      (operators/)     52 built-in transformations
     |
 Schema Layer        (schema/)        Pydantic v2 data models
 ```
@@ -125,7 +125,7 @@ Third-party: `entry_points` group `voxkitchen.operators` (lazy discovery on firs
 
 Optional deps wrapped in `try/except ImportError` -- missing packages don't crash the core.
 
-### Operator Catalog (51 operators, 8 categories)
+### Operator Catalog (52 operators, 8 categories)
 
 | Category | Count | Operators |
 |----------|-------|-----------|
@@ -425,7 +425,7 @@ Image env groups:
 ```
 voxkitchen/
   cli/                  # Typer CLI app
-  operators/            # 51 operators across 8 categories
+  operators/            # 52 operators across 8 categories
     basic/              #   resample, ffmpeg_convert, ...
     segment/            #   silero_vad, webrtc_vad, ...
     augment/            #   speed_perturb, noise_augment, ...
@@ -468,7 +468,7 @@ tests/integration/      # End-to-end pipeline tests
 ### Completed
 
 - Core framework (schema, pipeline engine, CLI)
-- 51 operators across 8 categories
+- 52 operators across 8 categories
 - 9 ingest recipes (LibriSpeech, LibriTTS, LJSpeech, AISHELL-1, AISHELL-3, CN-Celeb 1, CommonVoice, FLEURS, MUSAN)
 - Visualization (Rich CLI, HTML report, Gradio panel)
 - Plugin system (entry_points)

@@ -18,7 +18,7 @@
   <a href="https://pypi.org/project/voxkitchen/"><img src="https://img.shields.io/pypi/v/voxkitchen.svg" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
   <img src="https://img.shields.io/badge/runtime-Docker--first-2496ED" alt="Docker-first">
-  <img src="https://img.shields.io/badge/operators-51-brightgreen" alt="51 operators">
+  <img src="https://img.shields.io/badge/operators-52-brightgreen" alt="52 operators">
   <a href="https://github.com/XqFeng-Josie/VoxKitchen/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
@@ -40,7 +40,7 @@
 
 - **Docker 优先执行**：预构建的运行时镜像，避免本地依赖冲突。
 - **一份 YAML 流水线**：在同一个文件里定义 ingest、stages、filters 和输出打包。
-- **51 个内置算子**：音频预处理、VAD、ASR、说话人分离、TTS、质量指标与打包。
+- **52 个内置算子**：音频预处理、VAD、ASR、说话人分离、TTS、质量指标与打包。
 - **天生可恢复**：每个 stage 都在 `./work` 下落盘 checkpoint。
 - **可检视的产出**：报告、切分统计、来源追溯（provenance）和按 stage 的错误记录。
 

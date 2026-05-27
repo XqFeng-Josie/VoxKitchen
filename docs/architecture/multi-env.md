@@ -5,7 +5,7 @@ current runtime shape.
 
 ## Why
 
-A single Python environment cannot host all 51 operators. Concrete conflicts verified
+A single Python environment cannot host all 52 operators. Concrete conflicts verified
 against wheel metadata:
 
 - `pyannote-audio>=4.0` ⇒ `torch>=2.8` and `numpy>=2.1`

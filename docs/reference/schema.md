@@ -34,7 +34,7 @@ pick it up automatically:
 
 You'll see:
 
-- Autocomplete on `op:` — all 51 operator names show up
+- Autocomplete on `op:` — all 52 operator names show up
 - Errors for unknown `op:` values
 - Errors for unknown top-level keys (`extra="forbid"` is honored)
 - Hover docs for fields like `gc_mode`, `num_gpus`, etc.
@@ -47,7 +47,7 @@ vkit schema export --out docs/schemas/pipeline.schema.json
 
 The exported document captures whichever operators are registered in the
 running Python environment. From a source checkout with the `[dev]` extras
-installed, that's already 51 operators. To regenerate a fully-loaded schema
+installed, that's already 52 operators. To regenerate a fully-loaded schema
 that includes operator-specific defaults for every env, run the command
 inside the `:latest` Docker image:
 
