@@ -8,6 +8,10 @@ logger = logging.getLogger(__name__)
 
 _loaded = False
 
+# Names of operators successfully registered from third-party entry points.
+# Read by `vkit doctor` to report third-party operator availability.
+discovered_operators: list[str] = []
+
 
 def load_plugins() -> None:
     global _loaded
@@ -23,6 +27,7 @@ def load_plugins() -> None:
         try:
             op_cls = ep.load()
             register_operator(op_cls)
+            discovered_operators.append(op_cls.name)
             logger.debug("loaded operator plugin: %s", ep.name)
         except Exception:
             logger.warning("failed to load operator plugin: %s", ep.name, exc_info=True)
