@@ -345,3 +345,222 @@ entries:
       more noise; use the "clean" split or apply quality filtering for best
       ASR training results.
     paper: https://arxiv.org/abs/2111.09344
+
+  - id: voxpopuli
+    name: VoxPopuli
+    task: [asr, multilingual]
+    languages: [multi]
+    license: CC0
+    domain: parliament
+    summary: >
+      Multilingual corpus from 2009-2020 European Parliament recordings: a large
+      unlabelled set across 23 languages plus transcribed speech and aligned
+      interpretations.
+    recommendation: >
+      Best for multilingual self-supervised pretraining and European-language
+      ASR fine-tuning in a formal/parliamentary register. The unlabelled vs
+      transcribed subsets differ enormously in size, so total hours depend on
+      which subset you ingest. Formal political speech transfers poorly to
+      conversational or noisy audio.
+    homepage: https://github.com/facebookresearch/voxpopuli
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      CC0 release; raw audio subject to the European Parliament legal notice.
+      Mirrored at huggingface.co/datasets/facebook/voxpopuli.
+    paper: https://arxiv.org/abs/2101.00390
+
+  - id: libri_light
+    name: Libri-Light
+    task: [asr]
+    languages: [en]
+    hours: 60000
+    license: public domain (LibriVox)
+    domain: audiobook
+    summary: >
+      ~60k h of unlabelled English read speech from LibriVox audiobooks, with
+      small labelled subsets (10h, 1h, 10min) for limited-supervision ASR.
+    recommendation: >
+      The standard corpus for self-supervised and low-resource English ASR and
+      for reproducing the 10h/1h/10min limited-supervision benchmarks. Read
+      audiobook speech only, so it is poor for conversational or multilingual
+      targets.
+    homepage: https://github.com/facebookresearch/libri-light
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Underlying LibriVox audio is public domain; the dataset tooling/repo is
+      MIT-licensed.
+    paper: https://arxiv.org/abs/1912.07875
+
+  - id: ami
+    name: AMI Meeting Corpus
+    task: [asr, speaker]
+    languages: [en]
+    hours: 100
+    license: CC BY 4.0
+    domain: meetings
+    summary: >
+      ~100 h of recorded English meetings with synchronized audio, video, and
+      rich annotations including transcripts and speaker labels.
+    recommendation: >
+      A standard benchmark for meeting-domain ASR, speaker diarization, and
+      overlapping speech, with headset and far-field mic conditions. Choose it
+      when you need multi-party conversational audio. Only ~100 h and largely
+      non-native English, so it is small for training from scratch.
+    homepage: https://groups.inf.ed.ac.uk/ami/corpus/
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    notes: >
+      Also accessible via OpenSLR (openslr.org/16) and the HF mirror
+      edinburghcstr/ami.
+    paper: https://dl.acm.org/doi/10.1007/11677482_3
+
+  - id: switchboard
+    name: Switchboard-1 Release 2
+    task: [asr, speaker]
+    languages: [en]
+    hours: 260
+    license: see source terms
+    domain: conversational telephone
+    summary: >
+      ~2,400 two-sided spontaneous English telephone conversations among 543 US
+      speakers (~260 h), separated into two channels.
+    recommendation: >
+      A classic benchmark for conversational telephone ASR (Hub5/SWBD) and
+      speaker recognition; choose it for spontaneous narrowband (8 kHz) two-party
+      dialogue or to compare against decades of published WER. It is a paid LDC
+      corpus, and telephone-bandwidth audio differs from modern wideband data.
+    homepage: https://catalog.ldc.upenn.edu/LDC97S62
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Requires an LDC license / paid membership (catalog ID LDC97S62); not
+      openly downloadable.
+
+  - id: ksponspeech
+    name: KsponSpeech
+    task: [asr]
+    languages: [ko]
+    hours: 969
+    license: see source terms
+    domain: conversational
+    summary: >
+      ~969 h of Korean spontaneous open-domain dialogue from ~2,000 native
+      speakers, with dual orthographic + pronunciation transcription.
+    recommendation: >
+      The standard large-scale corpus for Korean spontaneous-speech ASR and the
+      reference for Korean ASR toolkits. Distributed via the Korean government
+      AIHub portal under custom terms requiring registration/approval, which can
+      be a barrier for non-Korean users.
+    homepage: https://aihub.or.kr/aidata/105
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Requires an AIHub account and agreement to AIHub usage terms; not a
+      standard open license.
+    paper: https://www.mdpi.com/2076-3417/10/19/6936
+
+  - id: css10
+    name: CSS10
+    task: [tts]
+    languages: [de, el, es, fi, fr, hu, ja, nl, ru, zh]
+    hours: 99
+    license: see source terms
+    domain: audiobook
+    summary: >
+      Single-speaker speech datasets for 10 languages built from aligned
+      public-domain LibriVox clips, intended for TTS.
+    recommendation: >
+      A lightweight starting point for non-English single-speaker TTS, useful as
+      a baseline or for low-resource prototyping. Per-language coverage is uneven
+      (~10-20 h each), so it suits small or fine-tuning experiments. The license
+      is reported inconsistently across sources — verify before redistribution.
+    homepage: https://github.com/Kyubyong/css10
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    notes: >
+      Underlying LibriVox audio is public domain, but the repo declares
+      Apache-2.0 and some mirrors label it CC BY-SA 4.0; confirm before
+      commercial use.
+    paper: https://arxiv.org/abs/1903.11269
+
+  - id: hifitts
+    name: Hi-Fi Multi-Speaker English TTS (Hi-Fi TTS)
+    task: [tts]
+    languages: [en]
+    hours: 292
+    license: CC BY 4.0
+    domain: audiobook
+    summary: >
+      ~291.6 h high-quality English multi-speaker TTS from 10 LibriVox speakers
+      (>=17 h each), 44.1 kHz, with Project Gutenberg text.
+    recommendation: >
+      A strong choice for high-fidelity English multi-speaker or single-speaker
+      TTS — clean 44.1 kHz audio with generous per-speaker hours, and
+      CC BY 4.0 / public-domain sourcing safe for commercial use. Prefer it over
+      CSS10 for English. Distinct from the much larger HiFiTTS-2 (~36.7k h).
+    homepage: https://www.openslr.org/109/
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    notes: NVIDIA release on OpenSLR (SLR109). Do not confuse with HiFiTTS-2.
+    paper: https://arxiv.org/abs/2104.01497
+
+  - id: voxlingua107
+    name: VoxLingua107
+    task: [multilingual]
+    languages: [multi]
+    hours: 6628
+    license: CC BY 4.0
+    domain: youtube
+    summary: >
+      ~6,628 h across 107 languages of short segments automatically extracted
+      from YouTube and labelled by video metadata, for spoken language ID.
+    recommendation: >
+      The go-to dataset for training and evaluating spoken language
+      identification across many languages. Best for language-ID/embedding
+      models rather than ASR or TTS, since labels are automatic (~98% accurate)
+      and per-language hours vary widely. Use the human-validated dev set (33
+      languages) for evaluation.
+    homepage: https://cs.taltech.ee/staff/tanel.alumae/data/voxlingua107/
+    notes: >
+      CC BY 4.0 distribution, but copyright remains with the original video
+      owners.
+    paper: https://arxiv.org/abs/2011.12998
+
+  - id: kespeech
+    name: KeSpeech
+    task: [asr, multilingual]
+    languages: [zh]
+    hours: 1542
+    license: see source terms
+    domain: dialect
+    summary: >
+      1,542 h from 27,237 speakers across 34 cities, covering standard Mandarin
+      and its 8 subdialects with transcription, speaker, and subdialect labels.
+    recommendation: >
+      Excellent for Mandarin ASR, accent/subdialect identification, and speaker
+      recognition, with parallel Mandarin-vs-subdialect recordings. Choose it
+      when dialectal robustness or large speaker diversity matters. Download
+      requires accepting a custom usage agreement.
+    homepage: https://github.com/KeSpeech/KeSpeech
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      NeurIPS 2021 Datasets & Benchmarks. Download requires accepting a usage
+      agreement; covers 8 subdialects.
+    paper: https://openreview.net/forum?id=b3Zoeq2sCLq
+
+  - id: spgispeech
+    name: SPGISpeech
+    task: [asr]
+    languages: [en]
+    hours: 5000
+    license: see source terms
+    domain: earnings calls
+    summary: >
+      5,000 h of professionally transcribed English company earnings-call audio,
+      fully formatted with punctuation and capitalization.
+    recommendation: >
+      A strong pick for English ASR on spontaneous, accented, real-world
+      business speech with high-quality fully-formatted (punctuated,
+      denormalized) transcripts. Access is gated behind a Kensho research
+      agreement, so it is not freely redistributable.
+    homepage: https://datasets.kensho.com/datasets/spgispeech
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Gated: requires signing the Kensho research download agreement. A newer
+      SPGISpeech 2.0 (~3,780 h, speaker-tagged) also exists.
+    paper: https://arxiv.org/abs/2104.02014
