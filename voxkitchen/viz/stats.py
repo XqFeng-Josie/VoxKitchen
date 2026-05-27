@@ -17,12 +17,16 @@ def compute_cutset_stats(cuts: CutSet) -> dict[str, Any]:
     speakers: set[str] = set()
     metrics_keys: set[str] = set()
 
+    genders: Counter[str] = Counter()
+
     for c in cuts:
         for s in c.supervisions:
             if s.language:
                 languages[s.language] += 1
             if s.speaker:
                 speakers.add(s.speaker)
+            if s.gender:
+                genders[s.gender] += 1
         metrics_keys.update(c.metrics.keys())
 
     return {
@@ -35,6 +39,8 @@ def compute_cutset_stats(cuts: CutSet) -> dict[str, Any]:
             k: _percentile_stats([c.metrics[k] for c in cuts if k in c.metrics])
             for k in sorted(metrics_keys)
         },
+        "genders": dict(genders.most_common()),
+        "metric_keys": sorted(metrics_keys),
     }
 
 

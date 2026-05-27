@@ -59,6 +59,8 @@ def test_empty_cutset_stats() -> None:
     assert stats["duration_stats"] == {}
     assert stats["languages"] == {}
     assert stats["speaker_count"] == 0
+    assert stats["genders"] == {}
+    assert stats["metric_keys"] == []
 
 
 def test_basic_stats() -> None:
@@ -90,3 +92,32 @@ def test_metrics_summary() -> None:
     snr_stats = stats["metrics_summary"]["snr"]
     assert snr_stats["min"] == 10.0
     assert snr_stats["max"] == 30.0
+
+
+def test_stats_genders_and_metric_keys() -> None:
+    def _cut_g(cid: str, gender: str, snr: float) -> Cut:
+        return Cut(
+            id=cid,
+            recording_id="r",
+            start=0.0,
+            duration=1.0,
+            supervisions=[
+                Supervision(
+                    id=f"{cid}-s",
+                    recording_id="r",
+                    start=0.0,
+                    duration=1.0,
+                    speaker="spk1",
+                    language="en",
+                    gender=gender,
+                )
+            ],
+            metrics={"snr": snr},
+            provenance=_prov(),
+        )
+
+    stats = compute_cutset_stats(
+        CutSet([_cut_g("a", "m", 10.0), _cut_g("b", "f", 20.0), _cut_g("c", "m", 30.0)])
+    )
+    assert stats["genders"] == {"m": 2, "f": 1}
+    assert stats["metric_keys"] == ["snr"]
