@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "voxkitchen-example-plugin"
+version = "0.1.0"
+description = "Example third-party VoxKitchen operator plugin (word_count)."
+requires-python = ">=3.10"
+dependencies = ["voxkitchen"]
+
+[project.entry-points."voxkitchen.operators"]
+word_count = "voxkitchen_example_plugin.operator:WordCountOperator"
+
+[tool.hatch.build.targets.wheel]
+packages = ["voxkitchen_example_plugin"]
