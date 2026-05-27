@@ -8,6 +8,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Third-party operator plugins: install a package exposing operators via the
+  `voxkitchen.operators` entry-point group and they are discovered, listed by
+  `vkit operators` / `vkit doctor`, and usable in pipelines. Added
+  `OPERATOR_API_VERSION`, a plugin authoring guide, and an example package
+  (`examples/plugin-operator/`).
 - Dataset catalog (`docs/datasets/`): a decision-support catalog of speech
   datasets generated from `voxkitchen/datasets/catalog.yaml`, with per-dataset
   recommendations, access links, and (where available) a download recipe and a

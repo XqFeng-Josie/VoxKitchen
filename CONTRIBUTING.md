@@ -191,6 +191,26 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
    Commit the result alongside the operator change. CI does not do this
    automatically.
 
+## Third-party operator plugins
+
+A plugin is a separate pip package that registers operators through the
+`voxkitchen.operators` entry-point group.  It is **not** a contribution to
+the core repository — ship it as its own package.
+
+| | Built-in operator | Third-party plugin |
+|--|-------------------|--------------------|
+| **Location** | `voxkitchen/operators/<category>/` | Separate pip package |
+| **Registration** | `@register_operator` + import in `voxkitchen/operators/__init__.py` | `[project.entry-points."voxkitchen.operators"]` in `pyproject.toml` |
+| **Decorator** | Required | **Do NOT use** — the entry point is the registration mechanism; decorating too would double-register |
+| **Discovery** | Eager (imported at package load) | Lazy (discovered at first registry access) |
+
+For the full authoring workflow — operator skeleton, `pyproject.toml` shape,
+install/verify steps, stable API surface, and compatibility policy — see
+[docs/guides/operator-plugins.md](docs/guides/operator-plugins.md).
+
+A runnable example lives at
+[`examples/plugin-operator/`](examples/plugin-operator/).
+
 ## Adding a New Docker Env
 
 Do this only when a new operator's dependencies genuinely cannot share a

@@ -22,6 +22,8 @@ nav:
     - ASR Training Data: tutorials/asr-training-data.md
     - Data Cleaning: tutorials/data-cleaning.md
     - Speaker Analysis: tutorials/speaker-analysis.md
+  - Guides:
+    - Operator Plugins: guides/operator-plugins.md
   - Concepts:
     - Data Protocol: concepts/data-protocol.md
   - Reference:
