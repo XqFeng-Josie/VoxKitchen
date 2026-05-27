@@ -15,7 +15,7 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, ConfigDict
 
-Task = Literal["asr", "tts", "speaker", "multilingual", "augmentation"]
+Task = Literal["asr", "tts", "speaker", "multilingual", "augmentation", "emotion"]
 
 
 class DatasetEntry(BaseModel):

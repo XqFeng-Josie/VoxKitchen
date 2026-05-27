@@ -38,6 +38,11 @@ def test_bad_task_rejected():
         _minimal(task=["transcription"])  # not in enum
 
 
+def test_emotion_task_accepted():
+    e = _minimal(task=["emotion"])
+    assert e.task == ["emotion"]
+
+
 def test_extra_field_rejected():
     with pytest.raises(ValidationError):
         _minimal(downloadable=True)  # unknown field
