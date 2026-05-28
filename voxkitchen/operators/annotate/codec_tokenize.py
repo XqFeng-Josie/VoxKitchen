@@ -95,7 +95,9 @@ class CodecTokenizeOperator(Operator):
             with torch.no_grad():
                 wav = torch.from_numpy(audio_resampled).float().unsqueeze(0).unsqueeze(0)
                 encoded = self._model.encode(wav)
-                codes = torch.cat([frame.codes for frame in encoded], dim=-1)
+                # encodec's EncodedFrame is `Tuple[Tensor, Optional[Tensor]]`
+                # (codes, scale) — a plain tuple, NOT a namedtuple, so use [0].
+                codes = torch.cat([frame[0] for frame in encoded], dim=-1)
                 tokens: list[list[int]] = codes.squeeze(0).tolist()
 
             custom = dict(cut.custom) if cut.custom else {}
