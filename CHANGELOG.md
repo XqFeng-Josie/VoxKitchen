@@ -11,6 +11,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - `vkit card <cuts.jsonl.gz>`: generate a standalone, shareable HTML dataset
   card (quality distributions, language/gender breakdowns, metrics summary, and
   sample utterances) from a processed CutSet. Uses the `viz` extra.
+  Pass `--catalog-id <id>` to auto-fill title, description, and a Source section
+  (license, homepage, paper, recommendation) from `voxkitchen/datasets/catalog.yaml`.
 - Third-party operator plugins: install a package exposing operators via the
   `voxkitchen.operators` entry-point group and they are discovered, listed by
   `vkit operators` / `vkit doctor`, and usable in pipelines. Added

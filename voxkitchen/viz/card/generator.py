@@ -16,8 +16,14 @@ def generate_dataset_card(
     *,
     title: str = "",
     description: str = "",
+    source: dict[str, str] | None = None,
 ) -> Path:
-    """Render an HTML dataset card to ``output_path`` and return it."""
+    """Render an HTML dataset card to ``output_path`` and return it.
+
+    ``source`` is an optional dataset-catalog block (``license``/``homepage``/
+    ``paper``/``recommendation`` keys); when provided the template renders a
+    "Source" section sourced from the catalog.
+    """
     import jinja2
 
     stats = compute_cutset_stats(cuts)
@@ -47,6 +53,7 @@ def generate_dataset_card(
         language_chart=charts.category_bar(stats["languages"], "Language"),
         gender_chart=charts.category_bar(stats["genders"], "Gender"),
         samples=samples,
+        source=source,
     )
     output_path.write_text(html, encoding="utf-8")
     return output_path

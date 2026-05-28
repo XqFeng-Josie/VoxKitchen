@@ -320,6 +320,8 @@ sharing.
 vkit card work/01_pack/cuts.jsonl.gz
 vkit card work/01_pack/cuts.jsonl.gz --out my_dataset_card.html
 vkit card work/01_pack/cuts.jsonl.gz --out card.html --title "My Dataset" --description "ASR training set"
+# Auto-fill from the dataset catalog (license/homepage/recommendation):
+vkit card work/01_pack/cuts.jsonl.gz --catalog-id librispeech
 ```
 
 | Flag | Default | Meaning |
@@ -327,6 +329,7 @@ vkit card work/01_pack/cuts.jsonl.gz --out card.html --title "My Dataset" --desc
 | `--out`, `-o` | `dataset_card.html` | Output HTML file path. |
 | `--title` | `""` | Card title (shown at the top of the HTML). |
 | `--description` | `""` | Short dataset description. |
+| `--catalog-id` | _(none)_ | Pre-fill title/description and a Source section (license, homepage, paper, recommendation) from the matching entry in `voxkitchen/datasets/catalog.yaml`. Explicit `--title`/`--description` still override. |
 
 Requires the `viz` extra. If Jinja2 is not installed, the command exits with a
 friendly message:

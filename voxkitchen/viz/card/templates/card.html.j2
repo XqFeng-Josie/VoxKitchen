@@ -15,6 +15,19 @@
   {% if description %}<p>{{ description }}</p>{% endif %}
   <p class="muted">Generated {{ generated_at }} by VoxKitchen.</p>
 
+  {% if source %}
+  <h2>Source</h2>
+  <ul>
+    <li><strong>License:</strong> {{ source.license }}</li>
+    <li><strong>Homepage:</strong> <a href="{{ source.homepage }}">{{ source.homepage }}</a></li>
+    {% if source.paper %}<li><strong>Paper:</strong> <a href="{{ source.paper }}">{{ source.paper }}</a></li>{% endif %}
+  </ul>
+  {% if source.recommendation %}
+  <h3>Recommendation</h3>
+  <p>{{ source.recommendation }}</p>
+  {% endif %}
+  {% endif %}
+
   <h2>Overview</h2>
   <ul>
     <li>Cuts: {{ stats.count }}</li>

@@ -72,3 +72,30 @@ def test_card_command_friendly_error_when_viz_extra_missing(tmp_path, monkeypatc
     assert exc.value.exit_code == 1
     out = capsys.readouterr().out
     assert "viz" in out and "[viz]" in out  # the extra name survives Rich markup
+
+
+def test_card_command_with_catalog_id(tmp_path):
+    """`--catalog-id` pre-fills title/description and renders a Source section."""
+    from voxkitchen.cli.card_cmd import card_command
+
+    manifest = _write_manifest(tmp_path / "cuts.jsonl.gz")
+    out = tmp_path / "card.html"
+    card_command(manifest, out=out, catalog_id="librispeech")
+    html = out.read_text(encoding="utf-8")
+    # Pre-filled title from catalog entry name; Source section with license + homepage.
+    assert "LibriSpeech" in html
+    assert "CC BY 4.0" in html
+    assert "openslr.org/12" in html
+    assert "Source" in html  # section heading
+    assert "Recommendation" in html  # the curated guidance block
+
+
+def test_card_command_catalog_id_not_found(tmp_path):
+    import pytest
+    import typer
+    from voxkitchen.cli.card_cmd import card_command
+
+    manifest = _write_manifest(tmp_path / "cuts.jsonl.gz")
+    with pytest.raises(typer.Exit) as exc:
+        card_command(manifest, out=tmp_path / "card.html", catalog_id="not_a_real_id")
+    assert exc.value.exit_code == 1

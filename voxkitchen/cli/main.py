@@ -183,10 +183,22 @@ def card(
     ),
     title: str = typer.Option("", "--title", help="Card title."),
     description: str = typer.Option("", "--description", help="Short dataset description."),
+    catalog_id: str | None = typer.Option(
+        None,
+        "--catalog-id",
+        help="Pre-fill title/description and a Source section from "
+        "voxkitchen/datasets/catalog.yaml (e.g. --catalog-id librispeech).",
+    ),
 ) -> None:
     from voxkitchen.cli.card_cmd import card_command
 
-    card_command(manifest, out=out, title=title, description=description)
+    card_command(
+        manifest,
+        out=out,
+        title=title,
+        description=description,
+        catalog_id=catalog_id,
+    )
 
 
 if __name__ == "__main__":
