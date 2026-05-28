@@ -1076,6 +1076,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#vkit-card" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit card
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1561,6 +1572,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#vkit-card" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit card
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1998,6 +2020,45 @@ vkit<span class="w"> </span>docker<span class="w"> </span>shell<span class="w"> 
 </code></pre></div>
 <p><code>vkit viz</code> is an optional local developer UI; it is separate from the
 Docker-first pipeline execution path.</p>
+<h3 id="vkit-card"><code>vkit card</code></h3>
+<p>Generate a standalone, shareable HTML dataset card from a processed CutSet
+manifest. The card includes quality distributions, language/gender breakdowns,
+a metrics summary, and sample utterances — useful for dataset documentation and
+sharing.</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz
+vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz<span class="w"> </span>--out<span class="w"> </span>my_dataset_card.html
+vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz<span class="w"> </span>--out<span class="w"> </span>card.html<span class="w"> </span>--title<span class="w"> </span><span class="s2">&quot;My Dataset&quot;</span><span class="w"> </span>--description<span class="w"> </span><span class="s2">&quot;ASR training set&quot;</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--out</code>, <code>-o</code></td>
+<td><code>dataset_card.html</code></td>
+<td>Output HTML file path.</td>
+</tr>
+<tr>
+<td><code>--title</code></td>
+<td><code>""</code></td>
+<td>Card title (shown at the top of the HTML).</td>
+</tr>
+<tr>
+<td><code>--description</code></td>
+<td><code>""</code></td>
+<td>Short dataset description.</td>
+</tr>
+</tbody>
+</table>
+<p>Requires the <code>viz</code> extra. If Jinja2 is not installed, the command exits with a
+friendly message:</p>
+<div class="highlight"><pre><span></span><code>error: the dataset card needs the &#39;viz&#39; extra. Install it with `pip install voxkitchen[viz]`.
+</code></pre></div>
 
 
 
