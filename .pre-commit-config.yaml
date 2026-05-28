@@ -1,8 +1,11 @@
 default_install_hook_types: [pre-commit, pre-push]
 
 repos:
+  # Match the ruff version used by CI / dev (`ruff --version` shows 0.15.x).
+  # When the hook pin lags behind, commit-time formatting differs from CI and
+  # newly-formatted-on-CI files slip into the tree as "needs reformat" later.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.10
+    rev: v0.15.10
     hooks:
       - id: ruff
         args: [--fix]
