@@ -175,5 +175,19 @@ def viz(
         raise typer.Exit(code=1) from None
 
 
+@app.command(help="Generate a shareable HTML dataset card from a CutSet manifest.")
+def card(
+    manifest: Path = typer.Argument(..., help="Path to a cuts.jsonl.gz manifest."),
+    out: Path | None = typer.Option(
+        None, "--out", "-o", help="Output HTML path (default: dataset_card.html)."
+    ),
+    title: str = typer.Option("", "--title", help="Card title."),
+    description: str = typer.Option("", "--description", help="Short dataset description."),
+) -> None:
+    from voxkitchen.cli.card_cmd import card_command
+
+    card_command(manifest, out=out, title=title, description=description)
+
+
 if __name__ == "__main__":
     app()

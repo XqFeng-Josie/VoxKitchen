@@ -308,3 +308,29 @@ vkit viz work/01_pack/cuts.jsonl.gz --port 7860
 
 `vkit viz` is an optional local developer UI; it is separate from the
 Docker-first pipeline execution path.
+
+### `vkit card`
+
+Generate a standalone, shareable HTML dataset card from a processed CutSet
+manifest. The card includes quality distributions, language/gender breakdowns,
+a metrics summary, and sample utterances — useful for dataset documentation and
+sharing.
+
+```bash
+vkit card work/01_pack/cuts.jsonl.gz
+vkit card work/01_pack/cuts.jsonl.gz --out my_dataset_card.html
+vkit card work/01_pack/cuts.jsonl.gz --out card.html --title "My Dataset" --description "ASR training set"
+```
+
+| Flag | Default | Meaning |
+|------|---------|---------|
+| `--out`, `-o` | `dataset_card.html` | Output HTML file path. |
+| `--title` | `""` | Card title (shown at the top of the HTML). |
+| `--description` | `""` | Short dataset description. |
+
+Requires the `viz` extra. If Jinja2 is not installed, the command exits with a
+friendly message:
+
+```
+error: the dataset card needs the 'viz' extra. Install it with `pip install voxkitchen[viz]`.
+```
