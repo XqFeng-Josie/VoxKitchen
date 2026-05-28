@@ -5,8 +5,12 @@ from voxkitchen.datasets.catalog import DatasetEntry
 
 def _minimal(**over):
     base = dict(
-        id="librispeech", name="LibriSpeech", task=["asr"], languages=["en"],
-        license="CC BY 4.0", summary="Read English audiobooks.",
+        id="librispeech",
+        name="LibriSpeech",
+        task=["asr"],
+        languages=["en"],
+        license="CC BY 4.0",
+        summary="Read English audiobooks.",
         homepage="https://www.openslr.org/12",
         recommendation="Standard English ASR benchmark; clean read speech.",
     )
@@ -21,16 +25,22 @@ def test_minimal_entry_parses():
 
 
 def test_optional_fields_accepted():
-    e = _minimal(hours=960.0, recipe="librispeech",
-                 recommended_pipeline="examples/pipelines/librispeech-asr.yaml",
-                 domain="audiobook", paper="https://x", notes="big")
+    e = _minimal(
+        hours=960.0,
+        recipe="librispeech",
+        recommended_pipeline="examples/pipelines/librispeech-asr.yaml",
+        domain="audiobook",
+        paper="https://x",
+        notes="big",
+    )
     assert e.hours == 960.0 and e.recipe == "librispeech"
 
 
 def test_missing_recommendation_rejected():
     with pytest.raises(ValidationError):
-        DatasetEntry(id="x", name="X", task=["asr"], languages=["en"],
-                     license="L", summary="s", homepage="h")  # no recommendation
+        DatasetEntry(
+            id="x", name="X", task=["asr"], languages=["en"], license="L", summary="s", homepage="h"
+        )  # no recommendation
 
 
 def test_bad_task_rejected():

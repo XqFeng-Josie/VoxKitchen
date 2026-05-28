@@ -6,19 +6,28 @@ GENERATED_HEADER = "AUTO-GENERATED"
 
 def _recipe_entry():
     return DatasetEntry(
-        id="librispeech", name="LibriSpeech", task=["asr"], languages=["en"],
-        license="CC BY 4.0", summary="Read English audiobooks.",
+        id="librispeech",
+        name="LibriSpeech",
+        task=["asr"],
+        languages=["en"],
+        license="CC BY 4.0",
+        summary="Read English audiobooks.",
         homepage="https://www.openslr.org/12",
         recommendation="Standard English ASR benchmark.",
-        hours=960.0, recipe="librispeech",
+        hours=960.0,
+        recipe="librispeech",
         recommended_pipeline="examples/pipelines/librispeech-asr.yaml",
     )
 
 
 def _info_entry():
     return DatasetEntry(
-        id="gigaspeech", name="GigaSpeech", task=["asr"], languages=["en"],
-        license="see source terms", summary="10k h English ASR corpus.",
+        id="gigaspeech",
+        name="GigaSpeech",
+        task=["asr"],
+        languages=["en"],
+        license="see source terms",
+        summary="10k h English ASR corpus.",
         homepage="https://github.com/SpeechColab/GigaSpeech",
         recommendation="Large diverse English ASR; needs access request.",
         notes="Request access on the project page.",
@@ -27,8 +36,13 @@ def _info_entry():
 
 def _render():
     entries = [_recipe_entry(), _info_entry()]
-    dl = {"librispeech": RecipeDownloadInfo(source="openslr", size_range="337 MB - 28.5 GB",
-                                            subsets=["dev-clean", "train-clean-100"])}
+    dl = {
+        "librispeech": RecipeDownloadInfo(
+            source="openslr",
+            size_range="337 MB - 28.5 GB",
+            subsets=["dev-clean", "train-clean-100"],
+        )
+    }
     return render_all(entries, dl)
 
 

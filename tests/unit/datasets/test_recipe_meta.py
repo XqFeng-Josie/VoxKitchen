@@ -18,7 +18,9 @@ def test_format_size_range_spread():
 
 
 def test_source_label_openslr():
-    assert download_source_label({"s": ["https://www.openslr.org/resources/12/x.tar.gz"]}) == "openslr"
+    assert (
+        download_source_label({"s": ["https://www.openslr.org/resources/12/x.tar.gz"]}) == "openslr"
+    )
 
 
 def test_source_label_huggingface():

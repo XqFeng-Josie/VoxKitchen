@@ -8,12 +8,23 @@ from voxkitchen.viz import charts
 
 def _cut(cid, snr):
     return Cut(
-        id=cid, recording_id="r", start=0.0, duration=1.5,
-        supervisions=[Supervision(id=f"{cid}-s", recording_id="r", start=0.0,
-                                  duration=1.5, text="hi", language="en")],
+        id=cid,
+        recording_id="r",
+        start=0.0,
+        duration=1.5,
+        supervisions=[
+            Supervision(
+                id=f"{cid}-s", recording_id="r", start=0.0, duration=1.5, text="hi", language="en"
+            )
+        ],
         metrics={"snr": snr},
-        provenance=Provenance(source_cut_id=cid, generated_by="t", stage_name="t",
-                              created_at=now_utc(), pipeline_run_id="run"),
+        provenance=Provenance(
+            source_cut_id=cid,
+            generated_by="t",
+            stage_name="t",
+            created_at=now_utc(),
+            pipeline_run_id="run",
+        ),
     )
 
 

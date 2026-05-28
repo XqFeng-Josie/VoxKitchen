@@ -39,7 +39,9 @@ def test_loads_valid_catalog(tmp_path):
 
 
 def test_duplicate_id_rejected(tmp_path):
-    dup = _VALID + """
+    dup = (
+        _VALID
+        + """
   - id: librispeech
     name: Dup
     task: [asr]
@@ -49,6 +51,7 @@ def test_duplicate_id_rejected(tmp_path):
     homepage: h
     recommendation: r
 """
+    )
     with pytest.raises(CatalogError, match="duplicate"):
         load_catalog(_write(tmp_path, dup))
 
@@ -60,7 +63,9 @@ def test_unknown_recipe_rejected(tmp_path):
 
 
 def test_missing_pipeline_file_rejected(tmp_path):
-    bad = _VALID + """
+    bad = (
+        _VALID
+        + """
   - id: ljspeech
     name: LJSpeech
     task: [tts]
@@ -71,5 +76,6 @@ def test_missing_pipeline_file_rejected(tmp_path):
     recommendation: r
     recommended_pipeline: examples/pipelines/does-not-exist.yaml
 """
+    )
     with pytest.raises(CatalogError, match="recommended_pipeline"):
         load_catalog(_write(tmp_path, bad))

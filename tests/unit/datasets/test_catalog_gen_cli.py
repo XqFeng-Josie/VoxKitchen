@@ -3,10 +3,19 @@ from voxkitchen.datasets.catalog_gen import build_download_info, check_docs, wri
 
 
 def _entries():
-    return [DatasetEntry(
-        id="librispeech", name="LibriSpeech", task=["asr"], languages=["en"],
-        license="CC BY 4.0", summary="s", homepage="h",
-        recommendation="r", recipe="librispeech")]
+    return [
+        DatasetEntry(
+            id="librispeech",
+            name="LibriSpeech",
+            task=["asr"],
+            languages=["en"],
+            license="CC BY 4.0",
+            summary="s",
+            homepage="h",
+            recommendation="r",
+            recipe="librispeech",
+        )
+    ]
 
 
 def test_build_download_info_pulls_from_registry():

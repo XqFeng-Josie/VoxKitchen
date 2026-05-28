@@ -11,8 +11,17 @@ _REPO = Path(__file__).resolve().parents[3]
 def test_real_catalog_loads_and_has_recipe_coverage():
     entries = load_catalog()
     ids = {e.id for e in entries}
-    for r in ["librispeech", "libritts", "ljspeech", "aishell", "aishell3",
-              "cnceleb", "commonvoice", "fleurs", "musan"]:
+    for r in [
+        "librispeech",
+        "libritts",
+        "ljspeech",
+        "aishell",
+        "aishell3",
+        "cnceleb",
+        "commonvoice",
+        "fleurs",
+        "musan",
+    ]:
         assert r in ids, f"recipe {r} missing from catalog"
     assert len(entries) >= 15
 
