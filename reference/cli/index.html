@@ -2028,6 +2028,8 @@ sharing.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz
 vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz<span class="w"> </span>--out<span class="w"> </span>my_dataset_card.html
 vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz<span class="w"> </span>--out<span class="w"> </span>card.html<span class="w"> </span>--title<span class="w"> </span><span class="s2">&quot;My Dataset&quot;</span><span class="w"> </span>--description<span class="w"> </span><span class="s2">&quot;ASR training set&quot;</span>
+<span class="c1"># Auto-fill from the dataset catalog (license/homepage/recommendation):</span>
+vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.gz<span class="w"> </span>--catalog-id<span class="w"> </span>librispeech
 </code></pre></div>
 <table>
 <thead>
@@ -2052,6 +2054,11 @@ vkit<span class="w"> </span>card<span class="w"> </span>work/01_pack/cuts.jsonl.
 <td><code>--description</code></td>
 <td><code>""</code></td>
 <td>Short dataset description.</td>
+</tr>
+<tr>
+<td><code>--catalog-id</code></td>
+<td><em>(none)</em></td>
+<td>Pre-fill title/description and a Source section (license, homepage, paper, recommendation) from the matching entry in <code>voxkitchen/datasets/catalog.yaml</code>. Explicit <code>--title</code>/<code>--description</code> still override.</td>
 </tr>
 </tbody>
 </table>
