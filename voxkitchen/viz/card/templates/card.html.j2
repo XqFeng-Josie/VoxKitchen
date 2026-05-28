@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  {{ plotly_script | safe }}
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    table { border-collapse: collapse; } th, td { border: 1px solid #ddd; padding: 4px 8px; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  {% if description %}<p>{{ description }}</p>{% endif %}
+  <p class="muted">Generated {{ generated_at }} by VoxKitchen.</p>
+
+  <h2>Overview</h2>
+  <ul>
+    <li>Cuts: {{ stats.count }}</li>
+    <li>Total duration: {{ stats.total_duration_s }} s</li>
+    <li>Speakers: {{ stats.speaker_count }}</li>
+    <li>Languages: {{ stats.languages | length }}</li>
+  </ul>
+
+  <h2>Duration distribution</h2>
+  {% if duration_chart %}{{ duration_chart | safe }}{% else %}<p class="muted">No chart.</p>{% endif %}
+
+  {% for key, chart in metric_charts %}
+  <h2>Metric: {{ key }}</h2>
+  {% if chart %}{{ chart | safe }}{% else %}<p class="muted">No chart.</p>{% endif %}
+  {% endfor %}
+
+  <h2>Languages</h2>
+  {% if language_chart %}{{ language_chart | safe }}{% endif %}
+  <table><tr><th>Language</th><th>Count</th></tr>
+  {% for lang, n in stats.languages.items() %}<tr><td>{{ lang }}</td><td>{{ n }}</td></tr>{% endfor %}
+  </table>
+
+  {% if stats.genders %}
+  <h2>Gender</h2>
+  {% if gender_chart %}{{ gender_chart | safe }}{% endif %}
+  <table><tr><th>Gender</th><th>Count</th></tr>
+  {% for g, n in stats.genders.items() %}<tr><td>{{ g }}</td><td>{{ n }}</td></tr>{% endfor %}
+  </table>
+  {% endif %}
+
+  <h2>Metrics summary</h2>
+  <table><tr><th>Metric</th><th>min</th><th>mean</th><th>p50</th><th>p95</th><th>max</th></tr>
+  {% for k, m in stats.metrics_summary.items() %}
+  <tr><td>{{ k }}</td><td>{{ m.min }}</td><td>{{ m.mean }}</td><td>{{ m.p50 }}</td><td>{{ m.p95 }}</td><td>{{ m.max }}</td></tr>
+  {% endfor %}
+  </table>
+
+  <h2>Sample utterances</h2>
+  <table><tr><th>Text</th><th>Speaker</th><th>Language</th></tr>
+  {% for s in samples %}<tr><td>{{ s.text }}</td><td>{{ s.speaker }}</td><td>{{ s.language }}</td></tr>{% endfor %}
+  </table>
+
+  <p class="muted"><a href="https://github.com/XqFeng-Josie/VoxKitchen">VoxKitchen</a></p>
+</body>
+</html>
