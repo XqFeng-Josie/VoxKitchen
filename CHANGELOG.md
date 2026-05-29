@@ -22,6 +22,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   datasets generated from `voxkitchen/datasets/catalog.yaml`, with per-dataset
   recommendations, access links, and (where available) a download recipe and a
   suggested processing pipeline. Searchable via the docs site; browse by task.
+  Now 50 entries — added THCHS-30, MagicData-RAMC, Shrutilipi, AISHELL-2, JSUT,
+  Thorsten-Voice, LibriTTS-R, MELD, MSP-IMPROV, IMDA NSC (zh/Indic/ja/de ASR + TTS
+  + paralinguistic + accented English).
 - Declarative field contracts (`reads`/`writes`/`optional_reads`/`clears`) on
   every operator, making data-flow dependencies machine-readable.
 - Static pre-flight validation in `vkit validate` and as a fail-fast gate before

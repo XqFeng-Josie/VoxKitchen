@@ -838,3 +838,233 @@ entries:
       English is the largest of several languages (also de, ru, es, fr, it,
       ...). GPL applies to submitted audio; exact GPL version not authoritatively
       stated.
+
+  # ── B2 batch 3 (added 2026-05-28): zh/Indic ASR + ja/de/en TTS + paralinguistic + accented ──
+
+  - id: thchs30
+    name: THCHS-30 (Tsinghua Chinese 30-hour Database)
+    task: [asr]
+    languages: [zh]
+    hours: 30
+    license: Apache-2.0
+    domain: read
+    summary: >
+      A 30-hour Mandarin read-speech corpus from CSLT Tsinghua, 16 kHz, with
+      word/syllable/phone-level transcriptions and 50 speakers in a quiet office.
+    recommendation: >
+      Great lightweight baseline for Mandarin ASR experiments, recipe smoke-tests,
+      and teaching/demo pipelines — small size, permissive Apache-2.0. Pair with
+      AISHELL-1/2 or WenetSpeech for production scale.
+    homepage: https://www.openslr.org/18/
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/1512.01882
+    notes: Distributed via OpenSLR mirrors; ~6.4 GB compressed.
+
+  - id: magicdata_ramc
+    name: MagicData-RAMC (Rich Annotated Mandarin Conversational)
+    task: [asr, speaker]
+    languages: [zh]
+    hours: 180
+    license: see source terms
+    domain: conversational
+    summary: >
+      180 hours of Mandarin two-party conversational telephone-style speech from
+      663 speakers across Chinese accent regions, with speaker-turn and topic
+      annotations spanning daily-life to technology topics.
+    recommendation: >
+      Strong fit for conversational Mandarin ASR, speaker diarization, and
+      turn-taking research where read-speech corpora fall short. Choose when you
+      need spontaneous dialogue with speaker-attributed transcripts.
+    homepage: https://www.openslr.org/123/
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    paper: https://arxiv.org/abs/2203.16844
+    notes: >
+      OpenSLR distribution is CC BY-NC-ND 4.0 — research-only, non-commercial,
+      no derivatives. Verify before integrating into derivative datasets.
+
+  - id: shrutilipi
+    name: Shrutilipi
+    task: [asr, multilingual]
+    languages: [multi]
+    hours: 6400
+    license: CC BY 4.0
+    domain: broadcast/news
+    summary: >
+      A 6400+ hour labelled ASR corpus across 12 Indian languages mined from
+      All India Radio news bulletins by AI4Bharat, with document-level
+      audio-text alignment.
+    recommendation: >
+      Best-in-class scale for Indic ASR pretraining and low-resource fine-tuning
+      — Bengali, Hindi, Tamil, Telugu, and other Indian languages underserved by
+      Western corpora. Broadcast-news domain skews formal/read-aloud register, so
+      complement with conversational data for spoken-dialogue use cases.
+    homepage: https://ai4bharat.iitm.ac.in/datasets/shrutilipi
+    recommended_pipeline: examples/pipelines/fleurs-multilingual.yaml
+    paper: https://arxiv.org/abs/2208.12666
+    notes: >
+      12 languages — bn, gu, hi, kn, ml, mr, or, pa, sa, ta, te, ur. Also
+      mirrored on Hugging Face as ai4bharat/Shrutilipi.
+
+  - id: aishell2
+    name: AISHELL-2
+    task: [asr]
+    languages: [zh]
+    hours: 1000
+    license: see source terms
+    domain: read
+    summary: >
+      1000 hours of clean Mandarin read-speech from ~1991 speakers covering
+      entertainment, finance, technology, sports, and place-of-interest commands,
+      recorded over iOS/Android/microphone channels.
+    recommendation: >
+      A standard industrial-scale Mandarin ASR training set — pick it for a
+      serious read-speech baseline beyond AISHELL-1 or THCHS-30. Distribution is
+      gated (free for academic use after a signed agreement with Shell Shell
+      Technology); not redistributable.
+    homepage: http://www.aishelltech.com/aishell_2
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/1808.10583
+    notes: >
+      Apply to AISHELL/Shell Shell with an institutional agreement. iOS channel
+      is the free academic release; Android/Mic channels are dev/test only.
+
+  - id: jsut
+    name: JSUT (Japanese speech corpus of Saruwatari-lab, U-Tokyo)
+    task: [tts]
+    languages: [ja]
+    hours: 10
+    license: see source terms
+    domain: read (studio, single female speaker)
+    summary: >
+      A ~10-hour single-speaker Japanese read-speech corpus designed for
+      end-to-end TTS, covering the main pronunciations of daily-use Japanese
+      characters.
+    recommendation: >
+      Strong default for Japanese single-speaker TTS baselines and research
+      prototypes — the canonical reference corpus alongside JVS. Pick when you
+      need a clean, well-known ja-JP voice for studio-quality TTS.
+    homepage: https://sites.google.com/site/shinnosuketakamichi/publication/jsut
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    paper: https://arxiv.org/abs/1711.00354
+    notes: >
+      License is split — text is CC BY-SA 4.0, audio is research-only by
+      default; commercial audio use requires emailing Takamichi / U-Tokyo TLO
+      for permission.
+
+  - id: thorsten_voice
+    name: Thorsten-Voice (German Neutral TTS)
+    task: [tts]
+    languages: [de]
+    hours: 23
+    license: CC0-1.0
+    domain: read (home-studio, single male speaker)
+    summary: >
+      A free single-speaker German read-speech corpus (~22,668 phrases,
+      22.05 kHz mono) recorded by Thorsten Müller for open TTS training, with
+      neutral and emotional variants released over multiple years.
+    recommendation: >
+      The go-to open German TTS dataset — pick for any de-DE single-speaker
+      pipeline where licensing must be unencumbered (used by Coqui, Piper, Home
+      Assistant). Default to the 2021.02 Neutral release (23 h, CC0). Note
+      sample rate is 22.05 kHz, not 24 kHz.
+    homepage: https://www.thorsten-voice.de/en/datasets-2/
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    notes: >
+      Mirrored on OpenSLR-95 (neutral) and OpenSLR-110 (emotional). The 2022.10
+      Zenodo release (DOI 10.5281/zenodo.7265581) is metadata-tagged CC BY 4.0
+      despite the project's CC0 mission — prefer the 2021.02 OpenSLR release for
+      clean CC0 provenance.
+
+  - id: libritts_r
+    name: LibriTTS-R
+    task: [tts]
+    languages: [en]
+    hours: 585
+    license: CC BY 4.0
+    domain: audiobook (restored, multi-speaker read)
+    summary: >
+      A sound-quality-restored version of LibriTTS — 585 hours of 24 kHz English
+      read speech from 2456 speakers, identical samples/texts to LibriTTS but
+      enhanced via Google's Miipher speech restoration model.
+    recommendation: >
+      The current default large-scale multi-speaker English TTS corpus — pick
+      over plain LibriTTS whenever audio fidelity matters (zero-shot TTS, neural
+      codec training, voice cloning baselines). Drop-in compatible with any
+      LibriTTS pipeline; same speaker IDs, splits, and transcripts.
+    homepage: https://www.openslr.org/141/
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    paper: https://arxiv.org/abs/2305.18802
+    notes: >
+      Still derived from LibriVox audiobooks, so prosody is narrative/literary;
+      expect domain shift if your target is conversational.
+
+  - id: meld
+    name: MELD (Multimodal EmotionLines Dataset)
+    task: [emotion, speaker]
+    languages: [en]
+    hours: 13
+    license: GPL-3.0
+    domain: tv dialog
+    summary: >
+      Multimodal (audio, video, text) emotion recognition corpus of ~13k
+      utterances from ~1.4k multi-party dialogues sampled from the Friends TV
+      series, labelled with seven emotions and three-way sentiment.
+    recommendation: >
+      Strong choice for benchmarking emotion recognition in conversation,
+      especially multi-party dialog with speaker turns; useful when you need
+      aligned audio+text+visual modalities. TV-acted English only, modest scale
+      (~13 h), class imbalance (Neutral dominant); audio carries music/laugh-track
+      artifacts from broadcast tracks.
+    homepage: https://affective-meld.github.io
+    recommended_pipeline: examples/pipelines/emotion-recognize.yaml
+    paper: https://aclanthology.org/P19-1050/
+    notes: >
+      Distributed via the declare-lab/MELD GitHub repo; raw .mp4 splits are
+      downloadable without gating. GPL-3.0 license applies to the corpus.
+
+  - id: msp_improv
+    name: MSP-IMPROV
+    task: [emotion, speaker]
+    languages: [en]
+    license: see source terms
+    domain: dyadic improvised
+    summary: >
+      Acted dyadic emotional speech corpus from UT Dallas with 12 actors across
+      six dyad sessions producing 8438 speaking turns (652 target sentences)
+      labelled for happiness, sadness, anger, and neutral.
+    recommendation: >
+      Use for emotion recognition where you want controlled lexical content but
+      more naturalistic delivery than fully scripted corpora, and for studying
+      perception/elicitation strategies. Good companion to IEMOCAP for
+      cross-corpus generalization. Small speaker pool (12), acted (not in-the-wild).
+    homepage: https://lab-msp.com/MSP/MSP-Improv.html
+    recommended_pipeline: examples/pipelines/emotion-recognize.yaml
+    paper: https://ieeexplore.ieee.org/document/7374697/
+    notes: >
+      Academic access requires a signed agreement with Prof. Carlos Busso;
+      commercial license is paid (priced at US$8000 per the official page).
+      Total hours not officially published.
+
+  - id: national_speech_corpus
+    name: IMDA National Speech Corpus (NSC)
+    task: [asr]
+    languages: [en]
+    hours: 3000
+    license: see source terms
+    domain: read + conversational accented
+    summary: >
+      Large-scale Singapore-English speech corpus from IMDA — ~2000 hours of
+      orthographically transcribed read speech plus ~1000 hours of conversational
+      speech, designed for ASR research on Singapore-accented English.
+    recommendation: >
+      Top pick for Singapore-English / Southeast-Asian-accented ASR training and
+      adaptation, and one of the largest openly available accented-English
+      corpora. Choose when you need locally-relevant vocabulary, code-mixing
+      patterns, or non-US/UK English coverage.
+    homepage: https://www.imda.gov.sg/how-we-can-help/national-speech-corpus
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://www.isca-archive.org/interspeech_2019/koh19_interspeech.html
+    notes: >
+      Distributed under IMDA's licence (often referenced as Singapore Open Data
+      Licence v1.0); request-based access via nsc@imda.gov.sg; multi-part
+      release (Parts 1-6) with substantial storage requirements.
