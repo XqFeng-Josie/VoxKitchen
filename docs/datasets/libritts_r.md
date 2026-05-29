@@ -18,7 +18,13 @@ The current default large-scale multi-speaker English TTS corpus — pick over p
 
 ## Getting the data
 
-Obtain from the [dataset homepage](https://www.openslr.org/141/).
+Downloadable via VoxKitchen (`libritts_r`, source: openslr, size: 930 MB - 43.6 GB):
+
+```bash
+vkit docker download --tag slim libritts_r --root ./data/libritts_r
+```
+
+Subsets: dev-clean, dev-other, test-clean, test-other, train-clean-100, train-clean-360, train-other-500.
 
 Still derived from LibriVox audiobooks, so prosody is narrative/literary; expect domain shift if your target is conversational.
 

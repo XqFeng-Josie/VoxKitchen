@@ -30,10 +30,14 @@ def _load_builtin_recipes() -> None:
         aishell3,
         cnceleb,
         commonvoice,
+        hifitts,
         librispeech,
         libritts,
+        libritts_r,
         ljspeech,
         musan,
+        thchs30,
+        thorsten,
     )
 
     try:

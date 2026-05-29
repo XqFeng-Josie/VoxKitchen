@@ -28,7 +28,7 @@
 | [GigaSpeech](./gigaspeech.md) | asr | en | 10000 | see source terms | manual |
 | [GigaSpeech 2](./gigaspeech2.md) | asr, multilingual | th, id, vi | 30000 | see source terms | manual |
 | [Golos](./golos.md) | asr | ru | 1240 | see source terms | manual |
-| [Hi-Fi Multi-Speaker English TTS (Hi-Fi TTS)](./hifitts.md) | tts | en | 292 | CC BY 4.0 | manual |
+| [Hi-Fi Multi-Speaker English TTS (Hi-Fi TTS)](./hifitts.md) | tts | en | 292 | CC BY 4.0 | recipe |
 | [IEMOCAP](./iemocap.md) | emotion, speaker | en | 12 | see source terms | manual |
 | [JSUT (Japanese speech corpus of Saruwatari-lab, U-Tokyo)](./jsut.md) | tts | ja | 10 | see source terms | manual |
 | [KeSpeech](./kespeech.md) | asr, multilingual | zh | 1542 | see source terms | manual |
@@ -36,7 +36,7 @@
 | [Libri-Light](./libri_light.md) | asr | en | 60000 | public domain (LibriVox) | manual |
 | [LibriSpeech](./librispeech.md) | asr | en | 960 | CC BY 4.0 | recipe |
 | [LibriTTS](./libritts.md) | tts | en | 585 | CC BY 4.0 | recipe |
-| [LibriTTS-R](./libritts_r.md) | tts | en | 585 | CC BY 4.0 | manual |
+| [LibriTTS-R](./libritts_r.md) | tts | en | 585 | CC BY 4.0 | recipe |
 | [LJSpeech](./ljspeech.md) | tts | en | 24 | Public Domain | recipe |
 | [MagicData-RAMC (Rich Annotated Mandarin Conversational)](./magicdata_ramc.md) | asr, speaker | zh | 180 | see source terms | manual |
 | [MELD (Multimodal EmotionLines Dataset)](./meld.md) | emotion, speaker | en | 13 | GPL-3.0 | manual |
@@ -57,8 +57,8 @@
 | [SPGISpeech](./spgispeech.md) | asr | en | 5000 | see source terms | manual |
 | [Switchboard-1 Release 2](./switchboard.md) | asr, speaker | en | 260 | see source terms | manual |
 | [TED-LIUM 3](./tedlium3.md) | asr | en | 452 | CC BY-NC-ND 3.0 | manual |
-| [THCHS-30 (Tsinghua Chinese 30-hour Database)](./thchs30.md) | asr | zh | 30 | Apache-2.0 | manual |
-| [Thorsten-Voice (German Neutral TTS)](./thorsten_voice.md) | tts | de | 23 | CC0-1.0 | manual |
+| [THCHS-30 (Tsinghua Chinese 30-hour Database)](./thchs30.md) | asr | zh | 30 | Apache-2.0 | recipe |
+| [Thorsten-Voice (German Neutral TTS)](./thorsten_voice.md) | tts | de | 23 | CC0-1.0 | recipe |
 | [TIMIT Acoustic-Phonetic Continuous Speech Corpus](./timit.md) | asr | en | 5 | see source terms | manual |
 | [VCTK](./vctk.md) | tts, speaker | en | 44 | CC BY 4.0 | manual |
 | [VoxCeleb1](./voxceleb1.md) | speaker | multi | 352 | CC BY-SA 4.0 | manual |

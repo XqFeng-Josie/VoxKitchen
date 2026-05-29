@@ -18,7 +18,13 @@ A strong choice for high-fidelity English multi-speaker or single-speaker TTS â€
 
 ## Getting the data
 
-Obtain from the [dataset homepage](https://www.openslr.org/109/).
+Downloadable via VoxKitchen (`hifitts`, source: openslr, size: 38.5 GB):
+
+```bash
+vkit docker download --tag slim hifitts --root ./data/hifitts
+```
+
+Subsets: default.
 
 NVIDIA release on OpenSLR (SLR109). Do not confuse with HiFiTTS-2.
 

@@ -18,7 +18,13 @@ Great lightweight baseline for Mandarin ASR experiments, recipe smoke-tests, and
 
 ## Getting the data
 
-Obtain from the [dataset homepage](https://www.openslr.org/18/).
+Downloadable via VoxKitchen (`thchs30`, source: openslr, size: 23 MB - 6.0 GB):
+
+```bash
+vkit docker download --tag slim thchs30 --root ./data/thchs30
+```
+
+Subsets: main, resource, test-noise.
 
 Distributed via OpenSLR mirrors; ~6.4 GB compressed.
 

@@ -46,6 +46,15 @@ class LibriTTSRecipe(Recipe):
     """Parse LibriTTS into a CutSet."""
 
     name = "libritts"
+    # Top-level directory name inside the extracted tarballs. Overridden by
+    # ``LibriTTS-R`` (which produces ``LibriTTS_R/``) — the per-subset
+    # layout, ``speakers.tsv`` schema, and ``*.normalized.txt`` /
+    # ``*.original.txt`` filenames are identical, so the subclass reuses
+    # everything else.
+    _top_dir: str = "LibriTTS"
+    # Recipe identity tag baked into ``provenance.generated_by`` so a Cut
+    # set can be traced back to which LibriTTS-family recipe produced it.
+    _provenance_tag: str = "libritts_recipe@1"
     # Same OpenSLR mirror as LibriSpeech; resource 60.
     download_urls = {
         "dev-clean": ["https://www.openslr.org/resources/60/dev-clean.tar.gz"],
@@ -69,9 +78,9 @@ class LibriTTSRecipe(Recipe):
     }
 
     def prepare(self, root: Path, subsets: list[str] | None, ctx: RunContext) -> CutSet:
-        # Tarballs extract to <root>/LibriTTS/<subset>/.... Tolerate both
+        # Tarballs extract to <root>/<_top_dir>/<subset>/.... Tolerate both
         # "user pointed at parent" and "user pointed at inner directory".
-        lt_dir = root / "LibriTTS"
+        lt_dir = root / self._top_dir
         effective_root = lt_dir if lt_dir.is_dir() else root
 
         spk_gender = self._parse_speakers_tsv(effective_root / "speakers.tsv")
@@ -114,7 +123,7 @@ class LibriTTSRecipe(Recipe):
                         ],
                         provenance=Provenance(
                             source_cut_id=None,
-                            generated_by="libritts_recipe@1",
+                            generated_by=self._provenance_tag,
                             stage_name=ctx.stage_name,
                             created_at=datetime.now(timezone.utc),
                             pipeline_run_id=ctx.pipeline_run_id,

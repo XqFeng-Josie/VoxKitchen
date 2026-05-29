@@ -17,7 +17,13 @@ The go-to open German TTS dataset — pick for any de-DE single-speaker pipeline
 
 ## Getting the data
 
-Obtain from the [dataset homepage](https://www.thorsten-voice.de/en/datasets-2/).
+Downloadable via VoxKitchen (`thorsten_voice`, source: openslr, size: 2.8 GB):
+
+```bash
+vkit docker download --tag slim thorsten_voice --root ./data/thorsten_voice
+```
+
+Subsets: default.
 
 Mirrored on OpenSLR-95 (neutral) and OpenSLR-110 (emotional). The 2022.10 Zenodo release (DOI 10.5281/zenodo.7265581) is metadata-tagged CC BY 4.0 despite the project's CC0 mission — prefer the 2021.02 OpenSLR release for clean CC0 provenance.
 

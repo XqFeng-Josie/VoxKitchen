@@ -495,6 +495,7 @@ entries:
       CC BY 4.0 / public-domain sourcing safe for commercial use. Prefer it over
       CSS10 for English. Distinct from the much larger HiFiTTS-2 (~36.7k h).
     homepage: https://www.openslr.org/109/
+    recipe: hifitts
     recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
     notes: NVIDIA release on OpenSLR (SLR109). Do not confuse with HiFiTTS-2.
     paper: https://arxiv.org/abs/2104.01497
@@ -856,6 +857,7 @@ entries:
       and teaching/demo pipelines — small size, permissive Apache-2.0. Pair with
       AISHELL-1/2 or WenetSpeech for production scale.
     homepage: https://www.openslr.org/18/
+    recipe: thchs30
     recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
     paper: https://arxiv.org/abs/1512.01882
     notes: Distributed via OpenSLR mirrors; ~6.4 GB compressed.
@@ -968,6 +970,7 @@ entries:
       Assistant). Default to the 2021.02 Neutral release (23 h, CC0). Note
       sample rate is 22.05 kHz, not 24 kHz.
     homepage: https://www.thorsten-voice.de/en/datasets-2/
+    recipe: thorsten_voice
     recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
     notes: >
       Mirrored on OpenSLR-95 (neutral) and OpenSLR-110 (emotional). The 2022.10
@@ -992,6 +995,7 @@ entries:
       codec training, voice cloning baselines). Drop-in compatible with any
       LibriTTS pipeline; same speaker IDs, splits, and transcripts.
     homepage: https://www.openslr.org/141/
+    recipe: libritts_r
     recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
     paper: https://arxiv.org/abs/2305.18802
     notes: >

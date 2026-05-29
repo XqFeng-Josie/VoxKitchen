@@ -243,3 +243,188 @@ def mock_cnceleb(tmp_path: Path) -> Path:
     )
 
     return tmp_path
+
+
+@pytest.fixture
+def mock_libritts_r(tmp_path: Path) -> Path:
+    """Create a tiny LibriTTS-R-like directory under <tmp>/LibriTTS_R/.
+
+    Layout mirrors LibriTTS (same subset names, same per-utterance
+    ``.normalized.txt`` / ``.original.txt`` files, same
+    ``speakers.tsv``) — the only difference is the top dir name. One
+    utterance with both texts, one with only the original, to exercise
+    the same fallback paths as the LibriTTS fixture.
+    """
+    ltr_root = tmp_path / "LibriTTS_R"
+    subset_dir = ltr_root / "train-clean-100"
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+
+    ch1 = subset_dir / "1089" / "134686"
+    ch1.mkdir(parents=True)
+    sf.write(ch1 / "1089_134686_000001_000000.wav", audio, 16000)
+    (ch1 / "1089_134686_000001_000000.normalized.txt").write_text("Hello, world.", encoding="utf-8")
+    (ch1 / "1089_134686_000001_000000.original.txt").write_text("HELLO WORLD", encoding="utf-8")
+
+    ch2 = subset_dir / "2289" / "200000"
+    ch2.mkdir(parents=True)
+    sf.write(ch2 / "2289_200000_000001_000000.wav", audio, 16000)
+    (ch2 / "2289_200000_000001_000000.original.txt").write_text("Goodbye world.", encoding="utf-8")
+
+    (ltr_root / "speakers.tsv").write_text(
+        "READER\tGENDER\tSUBSET\tNAME\n"
+        "1089\tF\ttrain-clean-100\tFirst Reader\n"
+        "2289\tM\ttrain-clean-100\tSecond Reader\n",
+        encoding="utf-8",
+    )
+    return tmp_path
+
+
+@pytest.fixture
+def mock_thorsten_voice(tmp_path: Path) -> Path:
+    """Create a tiny Thorsten-Voice-like directory under <tmp>/thorsten-de_v02/.
+
+    Two utterances: one with matching raw / normalized text (so
+    ``custom`` stays empty), one with different normalized text (so the
+    fallback path that keeps ``raw_text`` in ``custom`` is exercised).
+    """
+    ds_root = tmp_path / "thorsten-de_v02"
+    wavs = ds_root / "wavs"
+    wavs.mkdir(parents=True)
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+    for utt in ["sample_0001", "sample_0002"]:
+        sf.write(wavs / f"{utt}.wav", audio, 16000)
+    (ds_root / "metadata.csv").write_text(
+        "sample_0001|Hallo Welt.|Hallo Welt.\nsample_0002|Hi Dr. Meier.|Hi Doktor Meier.\n",
+        encoding="utf-8",
+    )
+    return tmp_path
+
+
+@pytest.fixture
+def mock_thchs30(tmp_path: Path) -> Path:
+    """Create a tiny THCHS-30-like directory under <tmp>/data_thchs30/.
+
+    Two utterances in ``train/``, one in ``test/``. Each ``*.wav`` has a
+    matching ``*.wav.trn`` (three lines: text / pinyin / phonemes). One
+    train utterance has a 3-line transcript; the other only has the text
+    line so the "short trn" tolerance path is exercised.
+    """
+    ds_root = tmp_path / "data_thchs30"
+    train = ds_root / "train"
+    test = ds_root / "test"
+    train.mkdir(parents=True)
+    test.mkdir(parents=True)
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+
+    # Speaker "A11" — two utterances, one with full trn, one short.
+    sf.write(train / "A11_0.wav", audio, 16000)
+    (train / "A11_0.wav.trn").write_text(
+        "你 好 世 界\nni3 hao3 shi4 jie4\nn i3 h ao3 sh i4 j ie4\n",
+        encoding="utf-8",
+    )
+    sf.write(train / "A11_1.wav", audio, 16000)
+    (train / "A11_1.wav.trn").write_text("再 见\n", encoding="utf-8")
+
+    # Speaker "B22" in test.
+    sf.write(test / "B22_0.wav", audio, 16000)
+    (test / "B22_0.wav.trn").write_text(
+        "早 上 好\nzao3 shang4 hao3\nz ao3 sh ang4 h ao3\n",
+        encoding="utf-8",
+    )
+    return tmp_path
+
+
+@pytest.fixture
+def mock_hifitts(tmp_path: Path) -> Path:
+    """Create a tiny Hi-Fi-TTS-like directory under <tmp>/hi_fi_tts_v0/.
+
+    Two readers (``92`` and ``6097``), two utterances each in the
+    ``clean-train`` partition, one in ``clean-dev`` for reader 92, and a
+    manifest that references a missing audio file so the recipe's
+    "skip-missing-rather-than-abort" path is exercised.
+    """
+    import json as _json
+
+    root = tmp_path / "hi_fi_tts_v0"
+    root.mkdir(parents=True)
+    audio = np.sin(np.linspace(0, 1, 16000)).astype(np.float32) * 0.5
+
+    # Reader 92, book "alice", 2 train utts + 1 dev utt.
+    book92 = root / "audio" / "92" / "alice"
+    book92.mkdir(parents=True)
+    for utt in ["92_alice_0001", "92_alice_0002", "92_alice_dev_0001"]:
+        sf.write(book92 / f"{utt}.flac", audio, 16000, format="FLAC")
+
+    # Reader 6097, book "moby", 2 train utts.
+    book6097 = root / "audio" / "6097" / "moby"
+    book6097.mkdir(parents=True)
+    for utt in ["6097_moby_0001", "6097_moby_0002"]:
+        sf.write(book6097 / f"{utt}.flac", audio, 16000, format="FLAC")
+
+    def _jsonl(rows: list[dict]) -> str:
+        return "\n".join(_json.dumps(r) for r in rows) + "\n"
+
+    (root / "92_manifest_clean_train.json").write_text(
+        _jsonl(
+            [
+                {
+                    "audio_filepath": "audio/92/alice/92_alice_0001.flac",
+                    "duration": 1.0,
+                    "text": "hello alice",
+                    "text_normalized": "Hello, Alice.",
+                    "speaker": "92",
+                },
+                {
+                    "audio_filepath": "audio/92/alice/92_alice_0002.flac",
+                    "duration": 1.0,
+                    "text": "goodbye alice",
+                    # No text_normalized: fall back to text.
+                    "speaker": "92",
+                },
+                # Reference a file we didn't write — should be skipped.
+                {
+                    "audio_filepath": "audio/92/alice/missing.flac",
+                    "duration": 1.0,
+                    "text": "ghost",
+                    "speaker": "92",
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (root / "92_manifest_clean_dev.json").write_text(
+        _jsonl(
+            [
+                {
+                    "audio_filepath": "audio/92/alice/92_alice_dev_0001.flac",
+                    "duration": 1.0,
+                    "text": "dev one",
+                    "text_normalized": "Dev one.",
+                    "speaker": "92",
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (root / "6097_manifest_clean_train.json").write_text(
+        _jsonl(
+            [
+                {
+                    "audio_filepath": "audio/6097/moby/6097_moby_0001.flac",
+                    "duration": 1.0,
+                    "text": "call me ishmael",
+                    "text_normalized": "Call me Ishmael.",
+                    "speaker": "6097",
+                },
+                {
+                    "audio_filepath": "audio/6097/moby/6097_moby_0002.flac",
+                    "duration": 1.0,
+                    "text": "ahab",
+                    "text_normalized": "Ahab.",
+                    "speaker": "6097",
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return tmp_path

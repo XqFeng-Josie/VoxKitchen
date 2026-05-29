@@ -8,6 +8,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Four new ingest recipes (catalog count of recipe-backed datasets grows
+  9 → 13): `libritts_r` (LibriTTS-R, en, CC BY 4.0), `hifitts` (Hi-Fi TTS,
+  en multi-speaker, CC BY 4.0), `thchs30` (THCHS-30, zh, Apache-2.0),
+  `thorsten_voice` (Thorsten-Voice 2021.02 neutral, de, CC0-1.0). All four
+  are now downloadable via `vkit docker download <name> --root <dir>` and
+  parseable via `vkit ingest --source recipe --recipe <name>`. The matching
+  catalog entries flip from `manual` to `recipe-backed`; the docs index now
+  shows "Access: recipe" with the OpenSLR size range.
 - `vkit card <cuts.jsonl.gz>`: generate a standalone, shareable HTML dataset
   card (quality distributions, language/gender breakdowns, metrics summary, and
   sample utterances) from a processed CutSet. Uses the `viz` extra.
