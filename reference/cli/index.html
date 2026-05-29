@@ -972,6 +972,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#vkit-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit datasets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#vkit-doctor" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1468,6 +1479,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#vkit-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vkit datasets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#vkit-doctor" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1850,6 +1872,47 @@ render as a dash.</p>
 to reference inside a pipeline, use
 <code>ingest: { source: recipe, recipe: &lt;name&gt;, args: { root: &lt;dir&gt; } }</code>.
 Recipe-specific subset names are listed in <a href="../recipes/">Recipes &amp; Download</a>.</p>
+<h3 id="vkit-datasets"><code>vkit datasets</code></h3>
+<p>Browse the dataset catalog from the terminal — same data that's shown on
+the <a href="../../datasets/">docs site dataset catalog</a>, without leaving your
+shell. Three modes:</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>datasets<span class="w">                                </span><span class="c1"># all 60 entries as a table</span>
+vkit<span class="w"> </span>datasets<span class="w"> </span>--task<span class="w"> </span>asr<span class="w"> </span>--language<span class="w"> </span>zh<span class="w">       </span><span class="c1"># filter</span>
+vkit<span class="w"> </span>datasets<span class="w"> </span>--recipe-only<span class="w">                  </span><span class="c1"># only downloadable-via-VoxKitchen</span>
+vkit<span class="w"> </span>datasets<span class="w"> </span>--query<span class="w"> </span>libri<span class="w">                  </span><span class="c1"># substring across id/name/summary</span>
+vkit<span class="w"> </span>datasets<span class="w"> </span>show<span class="w"> </span>librispeech<span class="w">               </span><span class="c1"># full record (one entry)</span>
+vkit<span class="w"> </span>datasets<span class="w"> </span>search<span class="w"> </span><span class="s1">&#39;code-switch&#39;</span><span class="w">           </span><span class="c1"># substring search across all fields</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--task</code>, <code>-t</code></td>
+<td>Filter by task tag (<code>asr</code> / <code>tts</code> / <code>speaker</code> / <code>multilingual</code> / <code>emotion</code> / <code>augmentation</code>).</td>
+</tr>
+<tr>
+<td><code>--language</code>, <code>-l</code></td>
+<td>Filter by ISO language code (<code>en</code> / <code>zh</code> / <code>multi</code> / <code>ja</code> / ...).</td>
+</tr>
+<tr>
+<td><code>--recipe-only</code></td>
+<td>Only show entries downloadable via <code>vkit docker download</code>.</td>
+</tr>
+<tr>
+<td><code>--query</code>, <code>-q</code></td>
+<td>Substring match (case-insensitive) across id / name / summary.</td>
+</tr>
+</tbody>
+</table>
+<p>Filters compose with AND. The <code>show</code> subcommand prints a Rich panel with
+all fields (license, homepage, paper, recipe hint, recommended pipeline,
+summary, recommendation, notes); when the entry is recipe-backed the
+panel surfaces the exact <code>vkit docker download</code> invocation.</p>
 <h3 id="vkit-doctor"><code>vkit doctor</code></h3>
 <p>Report per-env operator availability and warmup-model status.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>doctor<span class="w">                          </span><span class="c1"># Single-env report (dev install or :slim image)</span>
