@@ -1140,7 +1140,10 @@
 <h2 id="recommendation">Recommendation</h2>
 <p>Great lightweight baseline for Mandarin ASR experiments, recipe smoke-tests, and teaching/demo pipelines — small size, permissive Apache-2.0. Pair with AISHELL-1/2 or WenetSpeech for production scale.</p>
 <h2 id="getting-the-data">Getting the data</h2>
-<p>Obtain from the <a href="https://www.openslr.org/18/">dataset homepage</a>.</p>
+<p>Downloadable via VoxKitchen (<code>thchs30</code>, source: openslr, size: 23 MB - 6.0 GB):</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>thchs30<span class="w"> </span>--root<span class="w"> </span>./data/thchs30
+</code></pre></div>
+<p>Subsets: main, resource, test-noise.</p>
 <p>Distributed via OpenSLR mirrors; ~6.4 GB compressed.</p>
 <h2 id="suggested-processing">Suggested processing</h2>
 <p>A recommended VoxKitchen pipeline ships in the repository at <code>voxkitchen/templates/pipelines/asr-training-data.yaml</code> — run it with <code>vkit docker run</code>.</p>

@@ -1139,7 +1139,10 @@
 <h2 id="recommendation">Recommendation</h2>
 <p>The go-to open German TTS dataset — pick for any de-DE single-speaker pipeline where licensing must be unencumbered (used by Coqui, Piper, Home Assistant). Default to the 2021.02 Neutral release (23 h, CC0). Note sample rate is 22.05 kHz, not 24 kHz.</p>
 <h2 id="getting-the-data">Getting the data</h2>
-<p>Obtain from the <a href="https://www.thorsten-voice.de/en/datasets-2/">dataset homepage</a>.</p>
+<p>Downloadable via VoxKitchen (<code>thorsten_voice</code>, source: openslr, size: 2.8 GB):</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>thorsten_voice<span class="w"> </span>--root<span class="w"> </span>./data/thorsten_voice
+</code></pre></div>
+<p>Subsets: default.</p>
 <p>Mirrored on OpenSLR-95 (neutral) and OpenSLR-110 (emotional). The 2022.10 Zenodo release (DOI 10.5281/zenodo.7265581) is metadata-tagged CC BY 4.0 despite the project's CC0 mission — prefer the 2021.02 OpenSLR release for clean CC0 provenance.</p>
 <h2 id="suggested-processing">Suggested processing</h2>
 <p>A recommended VoxKitchen pipeline ships in the repository at <code>voxkitchen/templates/pipelines/tts-data-prep.yaml</code> — run it with <code>vkit docker run</code>.</p>

@@ -1140,7 +1140,10 @@
 <h2 id="recommendation">Recommendation</h2>
 <p>A strong choice for high-fidelity English multi-speaker or single-speaker TTS — clean 44.1 kHz audio with generous per-speaker hours, and CC BY 4.0 / public-domain sourcing safe for commercial use. Prefer it over CSS10 for English. Distinct from the much larger HiFiTTS-2 (~36.7k h).</p>
 <h2 id="getting-the-data">Getting the data</h2>
-<p>Obtain from the <a href="https://www.openslr.org/109/">dataset homepage</a>.</p>
+<p>Downloadable via VoxKitchen (<code>hifitts</code>, source: openslr, size: 38.5 GB):</p>
+<div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>docker<span class="w"> </span>download<span class="w"> </span>--tag<span class="w"> </span>slim<span class="w"> </span>hifitts<span class="w"> </span>--root<span class="w"> </span>./data/hifitts
+</code></pre></div>
+<p>Subsets: default.</p>
 <p>NVIDIA release on OpenSLR (SLR109). Do not confuse with HiFiTTS-2.</p>
 <h2 id="suggested-processing">Suggested processing</h2>
 <p>A recommended VoxKitchen pipeline ships in the repository at <code>voxkitchen/templates/pipelines/tts-data-prep.yaml</code> — run it with <code>vkit docker run</code>.</p>
