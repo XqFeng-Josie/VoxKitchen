@@ -7,6 +7,7 @@ from pathlib import Path
 import typer
 from rich import print as rprint
 
+from voxkitchen.cli.datasets_cmd import datasets_app
 from voxkitchen.cli.docker_cmd import docker_app
 from voxkitchen.cli.doctor import doctor_app
 from voxkitchen.cli.inspect import inspect_app
@@ -24,6 +25,7 @@ app = typer.Typer(
 app.add_typer(inspect_app, name="inspect")
 app.add_typer(operators_app, name="operators")
 app.add_typer(recipes_app, name="recipes")
+app.add_typer(datasets_app, name="datasets")
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(docker_app, name="docker")
 app.add_typer(schema_app, name="schema")

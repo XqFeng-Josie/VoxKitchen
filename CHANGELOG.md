@@ -8,6 +8,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- `vkit datasets`: terminal browser for the dataset catalog — `vkit datasets`
+  (filterable table; `--task` / `--language` / `--recipe-only` / `--query` compose),
+  `vkit datasets show <id>` (Rich panel with all fields + download hint when
+  recipe-backed), `vkit datasets search <substring>` (id/name/summary match).
+  `load_catalog()` now skips the repo-relative pipeline existence check in
+  installed (wheel) mode so the CLI works outside the source checkout.
+- Weekly `extras-ci` GitHub Actions workflow that installs the heavy operator
+  extras (`asr` / `diarize` / `codec` / `tts-kokoro`) the main `ci` workflow
+  doesn't install, and runs the previously-SKIPPED tests against them. Surfaces
+  upstream version drift like the encodec EncodedFrame change that previously
+  hid for an unknown stretch. Matrix is `fail-fast: false` so one broken
+  cluster doesn't block the others; also `workflow_dispatch`-triggerable.
 - Four new ingest recipes (catalog count of recipe-backed datasets grows
   9 → 13): `libritts_r` (LibriTTS-R, en, CC BY 4.0), `hifitts` (Hi-Fi TTS,
   en multi-speaker, CC BY 4.0), `thchs30` (THCHS-30, zh, Apache-2.0),

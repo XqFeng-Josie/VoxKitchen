@@ -170,6 +170,33 @@ to reference inside a pipeline, use
 `ingest: { source: recipe, recipe: <name>, args: { root: <dir> } }`.
 Recipe-specific subset names are listed in [Recipes & Download](recipes.md).
 
+### `vkit datasets`
+
+Browse the dataset catalog from the terminal — same data that's shown on
+the [docs site dataset catalog](../datasets/index.md), without leaving your
+shell. Three modes:
+
+```bash
+vkit datasets                                # all 60 entries as a table
+vkit datasets --task asr --language zh       # filter
+vkit datasets --recipe-only                  # only downloadable-via-VoxKitchen
+vkit datasets --query libri                  # substring across id/name/summary
+vkit datasets show librispeech               # full record (one entry)
+vkit datasets search 'code-switch'           # substring search across all fields
+```
+
+| Flag | Meaning |
+|------|---------|
+| `--task`, `-t` | Filter by task tag (`asr` / `tts` / `speaker` / `multilingual` / `emotion` / `augmentation`). |
+| `--language`, `-l` | Filter by ISO language code (`en` / `zh` / `multi` / `ja` / ...). |
+| `--recipe-only` | Only show entries downloadable via `vkit docker download`. |
+| `--query`, `-q` | Substring match (case-insensitive) across id / name / summary. |
+
+Filters compose with AND. The `show` subcommand prints a Rich panel with
+all fields (license, homepage, paper, recipe hint, recommended pipeline,
+summary, recommendation, notes); when the entry is recipe-backed the
+panel surfaces the exact `vkit docker download` invocation.
+
 ### `vkit doctor`
 
 Report per-env operator availability and warmup-model status.

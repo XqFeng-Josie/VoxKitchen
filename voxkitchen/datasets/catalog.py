@@ -70,6 +70,18 @@ def load_catalog(path: Path | None = None) -> list[DatasetEntry]:
 def _cross_validate(entries: list[DatasetEntry]) -> None:
     from voxkitchen.ingest.recipes import get_recipe
 
+    # The pipeline-existence check is repo-relative and only meaningful
+    # when this module runs from a checkout (build, CI, tests). In an
+    # installed wheel ``_REPO_ROOT`` points at ``site-packages/`` and the
+    # ``examples/pipelines/*.yaml`` paths in catalog entries are *not*
+    # shipped, which would make every ``load_catalog()`` call from end-
+    # user code (``vkit datasets``, the card command's ``--catalog-id``,
+    # any downstream importer) crash. We detect "is this a checkout?" by
+    # looking for ``pyproject.toml`` next to ``_REPO_ROOT``; otherwise we
+    # skip the existence check. The catalog has already been validated
+    # at build time, so paths can't be wrong in a wheel that we shipped.
+    check_pipeline_paths = (_REPO_ROOT / "pyproject.toml").is_file()
+
     seen: set[str] = set()
     for e in entries:
         if e.id in seen:
@@ -82,7 +94,7 @@ def _cross_validate(entries: list[DatasetEntry]) -> None:
                 raise CatalogError(
                     f"entry {e.id!r}: recipe {e.recipe!r} is not a registered recipe"
                 ) from exc
-        if e.recommended_pipeline is not None:
+        if e.recommended_pipeline is not None and check_pipeline_paths:
             if not (_REPO_ROOT / e.recommended_pipeline).is_file():
                 raise CatalogError(
                     f"entry {e.id!r}: recommended_pipeline "

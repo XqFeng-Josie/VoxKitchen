@@ -1,0 +1,109 @@
+name: extras-ci
+
+# Weekly + on-demand smoke test of operator extras that the main `ci`
+# workflow does NOT install. Without this, upstream version drift in
+# faster-whisper / encodec / pyannote / kokoro / etc. only surfaces when
+# someone runs the affected test locally — like the `codec_tokenize` bug
+# that hid for an unknown stretch under "encodec not available" SKIPs.
+#
+# Strategy: matrix the heavy extras into independent clusters. A break
+# in one cluster (e.g. funasr fails to install on Python 3.13) does not
+# block the others — fail-fast is off and the run is informational, not
+# release-blocking. Job-level status surfaces in the Actions tab and the
+# nightly summary email.
+#
+# Triggers:
+#   - Monday 06:17 UTC (weekly, off-peak)
+#   - workflow_dispatch (manual — handy after upgrading torch/numpy etc.)
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      python-version:
+        description: "Python version to use"
+        required: false
+        type: choice
+        default: "3.11"
+        options: ["3.10", "3.11", "3.12", "3.13"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  extras:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        cluster:
+          # Each cluster's extras list MUST be mutually compatible — we
+          # don't want one bad transitive pin to make the whole job red
+          # for unrelated extras. Group by capability so a failure points
+          # straight at the broken upstream.
+          - name: asr
+            extras: "asr,whisper,funasr,align"
+            description: "faster-whisper / openai-whisper / funasr / qwen-asr"
+          - name: diarize
+            extras: "diarize"
+            description: "pyannote.audio (speaker diarization)"
+          - name: codec
+            extras: "codec"
+            description: "encodec + descript-audio-codec (neural codec TTS)"
+          - name: tts
+            extras: "tts-kokoro"
+            description: "kokoro (open TTS engines via misaki tokenizer)"
+    name: ${{ matrix.cluster.name }} (${{ matrix.cluster.description }})
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version || '3.11' }}
+          cache: pip
+
+      - name: Free disk space
+        # GitHub-hosted runners have ~14 GB free; heavy ML wheels
+        # (torch + faster-whisper + funasr) push past that without the
+        # prune. Mirrors the main `ci` workflow.
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          df -h /
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg libsndfile1 sox
+
+      - name: Install package + ${{ matrix.cluster.name }} extras
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION_FOR_VOXKITCHEN: "0.0.0.dev0"
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install pytest scipy
+          # Install the core cluster (what main CI already covers) +
+          # this cluster's heavy extras on top. If `pip install` itself
+          # fails this step is what the early-warning is about.
+          pip install -e ".[audio,segment,quality,pack,${{ matrix.cluster.extras }}]"
+
+      - name: List installed extras (for failure forensics)
+        run: |
+          python -m pip list | grep -iE 'whisper|funasr|pyannote|encodec|descript|kokoro|qwen|misaki' || true
+
+      - name: Run previously-SKIPPED tests
+        # Run the whole non-slow / non-gpu suite. Tests that depend on
+        # extras not installed for this cluster stay SKIPPED (and that's
+        # fine — they'll be caught by a sibling cluster). The point is:
+        # in each cluster, the relevant tests must now run and pass.
+        run: |
+          pytest -v -m "not slow and not gpu" \
+            --deselect tests/unit/operators/pack/test_pack_huggingface.py \
+            --deselect tests/unit/operators/pack/test_pack_parquet.py \
+            --deselect tests/unit/viz/test_report.py
