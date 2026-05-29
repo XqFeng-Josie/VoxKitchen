@@ -1068,3 +1068,230 @@ entries:
       Distributed under IMDA's licence (often referenced as Singapore Open Data
       Licence v1.0); request-based access via nsc@imda.gov.sg; multi-part
       release (Parts 1-6) with substantial storage requirements.
+
+  # ── B2 batch 4 (added 2026-05-28): low-resource + code-switching + kids + far-field + AV + singing + SLU ──
+
+  - id: voxceleb1
+    name: VoxCeleb1
+    task: [speaker]
+    languages: [multi]
+    hours: 352
+    license: CC BY-SA 4.0
+    domain: celebrity interviews (YouTube)
+    summary: >
+      Speaker identification/verification corpus of 153,516 utterances from
+      1251 celebrities extracted from YouTube interview videos.
+    recommendation: >
+      Default in-the-wild speaker-verification benchmark — pick when you want
+      a public, well-comparable baseline before scaling to VoxCeleb2. Speakers
+      are multi-nationality (speech predominantly English); YouTube provenance
+      means clip-level quality varies and some links rot.
+    homepage: https://www.robots.ox.ac.uk/~vgg/data/voxceleb/vox1.html
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    paper: https://arxiv.org/abs/1706.08612
+    notes: >
+      Same VGG distribution model as VoxCeleb2; requires accepting the access
+      terms on the VGG site even though the corpus itself is CC BY-SA 4.0.
+
+  - id: timit
+    name: TIMIT Acoustic-Phonetic Continuous Speech Corpus
+    task: [asr]
+    languages: [en]
+    hours: 5
+    license: see source terms
+    domain: phonetic read
+    summary: >
+      630 American English speakers across 8 dialect regions, each reading 10
+      phonetically rich sentences, with time-aligned phonetic and word
+      transcriptions.
+    recommendation: >
+      Canonical benchmark for phonetic recognition, acoustic-phonetic studies,
+      and dialect/phoneme analysis — pick for small-scale academic work where
+      standard comparability matters. Avoid for modern large-scale ASR training
+      (only ~5h, read, dated 1993, paid LDC license).
+    homepage: https://catalog.ldc.upenn.edu/LDC93S1
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: Paid LDC distribution (LDC93S1); DOI 10.35111/17gk-bn40.
+
+  - id: mgb2
+    name: MGB-2 Challenge (Arabic Multi-Dialect Broadcast Media Recognition)
+    task: [asr, multilingual]
+    languages: [ar]
+    hours: 1200
+    license: see source terms
+    domain: Arabic TV broadcast (Al Jazeera)
+    summary: >
+      1200 hours of lightly supervised Arabic broadcast speech from 19 Al
+      Jazeera Arabic TV programmes (2005-2015) — conversations, interviews,
+      reports — with multi-dialect coverage.
+    recommendation: >
+      The strongest publicly known Arabic broadcast ASR resource — pick for
+      Arabic ASR or multi-dialect acoustic modeling at scale. Transcriptions
+      are lightly supervised (not gold) and access is gated through the MGB
+      organizers (QCRI); dialect labels are not exhaustive.
+    homepage: http://www.mgb-challenge.org/MGB-2.html
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/1609.05625
+    notes: Includes ~110M-word LM text from aljazeera.net.
+
+  - id: seame
+    name: SEAME (Mandarin-English Code-Switching Speech Corpus)
+    task: [asr, multilingual]
+    languages: [multi]
+    hours: 192
+    license: see source terms
+    domain: code-switching conversational
+    summary: >
+      ~192 hours of spontaneous Mandarin-English code-switching conversations
+      and interviews from 156 Singaporean and Malaysian speakers on everyday
+      topics.
+    recommendation: >
+      The de facto benchmark for Mandarin-English code-switching ASR — pick
+      when you need intra-sentence code-switching with realistic Southeast
+      Asian accents. Modest size by modern standards; accent distribution
+      (Singapore/Malaysia) may not transfer to mainland-China Mandarin or US
+      English.
+    homepage: https://catalog.ldc.upenn.edu/LDC2015S04
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Paid LDC distribution (LDC2015S04); 16 kHz FLAC; UTF-8 transcripts with
+      per-token language labels.
+
+  - id: earnings21
+    name: Earnings-21
+    task: [asr]
+    languages: [en]
+    hours: 39
+    license: CC BY-SA 4.0
+    domain: earnings call
+    summary: >
+      39 hours of 44 English-language earnings calls from 2020 across nine
+      financial sectors, professionally transcribed by Rev.com for benchmarking
+      ASR on named-entity-dense speech.
+    recommendation: >
+      Use as an entity-dense ASR evaluation benchmark for long-form
+      financial/business audio, especially when testing proper-noun and ticker
+      handling. Small at 39h — best as an eval/probe set, not for large-scale
+      training.
+    homepage: https://github.com/revdotcom/speech-datasets
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/2104.11348
+
+  - id: myst
+    name: MyST Children's Conversational Speech
+    task: [asr]
+    languages: [en]
+    hours: 470
+    license: see source terms
+    domain: children grades 3-5 STEM tutoring
+    summary: >
+      ~470 hours of English conversational speech from 1371 students in
+      grades 3-5 interacting with a virtual science tutor across eight
+      FOSS-curriculum science topics, produced by Boulder Learning.
+    recommendation: >
+      Pick for child-speech ASR where conversational, open-ended tutoring
+      dialogue is needed — one of the largest English children's-speech
+      corpora available. Caveats — paid LDC distribution, only ~45% of
+      utterances are transcribed, and the grade range is 3-5 (not K-2).
+    homepage: https://catalog.ldc.upenn.edu/LDC2021S05
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    notes: >
+      Distributed via LDC under the MyST Children's Conversational Speech
+      Agreement; commercial use requires contacting Boulder Learning Inc.
+
+  - id: avspeech
+    name: AVSpeech
+    task: [asr, speaker]
+    languages: [multi]
+    hours: 4700
+    license: see source terms
+    domain: youtube audio-visual
+    summary: >
+      A large-scale audio-visual dataset of ~4700 hours of 3-10 second clips
+      drawn from ~290k YouTube videos, each segment featuring a single visible
+      speaker with clean speech, released for the "Looking to Listen at the
+      Cocktail Party" speech-separation work.
+    recommendation: >
+      Pick for audio-visual speech separation, speaker-conditioned source
+      separation, and lip-sync / talking-face research where clean
+      single-speaker reference segments are needed; useful as a pretraining
+      source for AV speech models. Distributed as CSV segment lists referencing
+      YouTube — expect link rot and YouTube ToS constraints.
+    homepage: https://looking-to-listen.github.io/avspeech/
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    paper: https://arxiv.org/abs/1804.03619
+    notes: >
+      No transcripts; users must download clips from YouTube themselves under
+      Google research terms + YouTube ToS.
+
+  - id: opencpop
+    name: Opencpop
+    task: [tts]
+    languages: [zh]
+    hours: 5.2
+    license: CC BY-NC-ND 4.0
+    domain: mandarin pop singing
+    summary: >
+      High-quality Mandarin singing-voice synthesis corpus of 100 popular
+      Chinese pop songs (3756 utterances) sung by a single female professional
+      vocalist, 44.1 kHz, with phoneme/note boundary and pitch annotations.
+    recommendation: >
+      Default open benchmark for Mandarin singing-voice synthesis (SVS) —
+      pick for SVS prototyping, F0/note-conditional TTS, and karaoke
+      experiments. Single-singer female vocal limits speaker generalization,
+      and the CC BY-NC-ND license blocks commercial use and derivative
+      redistribution.
+    homepage: https://wenet-e2e.github.io/opencpop/
+    recommended_pipeline: voxkitchen/templates/pipelines/tts-data-prep.yaml
+    paper: https://arxiv.org/abs/2201.07429
+    notes: Non-commercial, no-derivatives license; single-singer corpus.
+
+  - id: dipco
+    name: DiPCo (Dinner Party Corpus)
+    task: [asr, speaker]
+    languages: [en]
+    license: CDLA-Permissive-1.0
+    domain: far-field dinner party
+    summary: >
+      English far-field conversational corpus of 10 dinner-party sessions
+      (4 participants each, 15-45 minutes per session) recorded with one
+      close-talk microphone plus five 7-mic far-field array devices, designed
+      for noise-robust distant ASR and diarization.
+    recommendation: >
+      Pick for benchmarking far-field multi-microphone ASR, speaker
+      diarization, and source separation ("cocktail-party") in informal
+      conversational English. The corpus is small (~5h total) — use as an
+      evaluation set, not primary training data.
+    homepage: https://www.amazon.science/publications/dipco-dinner-party-corpus
+    recommended_pipeline: voxkitchen/templates/pipelines/speaker-analysis.yaml
+    paper: https://arxiv.org/abs/1909.13447
+    notes: >
+      Zenodo mirror at https://zenodo.org/records/8122551; verify array
+      geometry expectations before plugging into a pipeline.
+
+  - id: slue
+    name: SLUE (Spoken Language Understanding Evaluation)
+    task: [asr]
+    languages: [en]
+    hours: 27.3
+    license: see source terms
+    domain: spoken language understanding
+    summary: >
+      English SLU benchmark on natural (not read) speech — Phase-1 adds ASR,
+      named-entity recognition, and sentiment annotations over subsets of
+      VoxPopuli and VoxCeleb; Phase-2 adds dialog act classification, QA,
+      summarization, and named-entity localization.
+    recommendation: >
+      Use SLUE to benchmark end-to-end and pipeline SLU systems on real-world
+      English speech with consistent annotations — Phase-1 for short-utterance
+      NER/SA/ASR, Phase-2 for longer-form discourse tasks. Licensing is
+      inherited from upstream VoxPopuli (CC0) and VoxCeleb (research-only),
+      so downstream redistribution must respect both source terms.
+    homepage: https://asappresearch.github.io/slue-toolkit/
+    recommended_pipeline: voxkitchen/templates/pipelines/asr-training-data.yaml
+    paper: https://arxiv.org/abs/2111.10367
+    notes: >
+      Phase-1 fine-tune split totals 27.3h (VoxPopuli 14.5h + VoxCeleb 12.8h).
+      Phase-2 paper at https://arxiv.org/abs/2212.10525. Toolkit (MIT) at
+      https://github.com/asappresearch/slue-toolkit; HF datasets `asapp/slue`
+      and `asapp/slue-phase-2`.
