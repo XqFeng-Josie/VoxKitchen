@@ -59,9 +59,15 @@ def _parse_sensevoice_output(raw_text: str) -> tuple[str, str | None, str | None
 
         <|zh|><|HAPPY|><|Speech|><|withitn|>参观海洋馆。
 
-    Tags are order-independent and optional. Falls back to
-    ``funasr.utils.postprocess_utils.rich_transcription_postprocess`` for the
-    text cleaning step when FunASR is available.
+    Tags are order-independent and optional.
+
+    We deliberately do NOT route through
+    ``funasr.utils.postprocess_utils.rich_transcription_postprocess``: newer
+    FunASR releases turn that into a *rich* renderer that appends emotion
+    emojis (e.g. ``参观海洋馆。😊``) — useful for human display but the wrong
+    contract for an internal helper called "clean text". The regex strip below
+    is canonical: tags off, body preserved, no insertions. Caught by
+    ``extras-ci`` (asr cluster) after a FunASR upgrade.
 
     Returns a 4-tuple:
         clean_text  - transcript with all tags removed
@@ -89,26 +95,18 @@ def _parse_sensevoice_output(raw_text: str) -> tuple[str, str | None, str | None
             if normalized is not None:
                 language = normalized
 
-    # Strip all tags to get clean transcript
-    try:
-        from funasr.utils.postprocess_utils import rich_transcription_postprocess
-
-        clean_text = rich_transcription_postprocess(raw_text)
-    except Exception:
-        clean_text = _SENSEVOICE_TAG_RE.sub("", raw_text)
-
-    return clean_text.strip(), language, emotion, audio_event
+    clean_text = _SENSEVOICE_TAG_RE.sub("", raw_text).strip()
+    return clean_text, language, emotion, audio_event
 
 
 def _strip_sensevoice_tags(text: str) -> str:
-    """Remove SenseVoice tags from output text (public helper for tests/external use)."""
-    _, _, _, _ = _parse_sensevoice_output(text)  # parse and discard metadata
-    try:
-        from funasr.utils.postprocess_utils import rich_transcription_postprocess
+    """Remove SenseVoice tags from output text (public helper for tests/external use).
 
-        return str(rich_transcription_postprocess(text))
-    except Exception:
-        return _SENSEVOICE_TAG_RE.sub("", text)
+    Same rationale as :func:`_parse_sensevoice_output`: we don't delegate to
+    FunASR's ``rich_transcription_postprocess`` because that function now
+    appends emotion emojis instead of stripping cleanly.
+    """
+    return _SENSEVOICE_TAG_RE.sub("", text)
 
 
 class SenseVoiceAsrConfig(OperatorConfig):

@@ -91,7 +91,12 @@ jobs:
           # Install the core cluster (what main CI already covers) +
           # this cluster's heavy extras on top. If `pip install` itself
           # fails this step is what the early-warning is about.
-          pip install -e ".[audio,segment,quality,pack,${{ matrix.cluster.extras }}]"
+          # The base set MUST mirror what the main ci job installs — otherwise
+          # tests for already-covered extras (viz/plotly etc.) flap red here
+          # for a reason that has nothing to do with the cluster under test.
+          # Mirror ci.yml's `[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,viz]`
+          # and add this cluster on top.
+          pip install -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,viz,${{ matrix.cluster.extras }}]"
 
       - name: List installed extras (for failure forensics)
         run: |
