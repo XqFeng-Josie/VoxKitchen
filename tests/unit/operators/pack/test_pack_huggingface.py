@@ -74,13 +74,14 @@ def test_pack_hf_creates_dataset(mono_wav_16k: Path, tmp_path: Path) -> None:
 def test_pack_hf_executor_writes_all_cuts_with_multiple_workers(
     mono_wav_16k: Path, tmp_path: Path
 ) -> None:
-    from datasets import Audio, load_from_disk
     from voxkitchen.operators.pack.pack_huggingface import (
         PackHuggingFaceConfig,
         PackHuggingFaceOperator,
     )
     from voxkitchen.pipeline.context import RunContext
     from voxkitchen.pipeline.executor import CpuPoolExecutor
+
+    from datasets import Audio, load_from_disk
 
     ctx = RunContext(
         work_dir=tmp_path,
