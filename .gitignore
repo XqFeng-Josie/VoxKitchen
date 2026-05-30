@@ -45,3 +45,12 @@ experiments/
 # Original demo source (large files — demo_data/ has the curated copy)
 demo/
 get_audio_pitch_by_pyworld.py
+
+# Local ChatTTS model weights cached at repo root — not source, not shipped.
+# (Real distribution path is the Docker image / HF hub.)
+asset/
+
+# Brainstorming / spec / plan artifacts produced by the superpowers skills.
+# Per the project's "no planning commits" rule these stay local-only;
+# the implementation that lands in the codebase is the source of truth.
+docs/superpowers/

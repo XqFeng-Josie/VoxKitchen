@@ -45,8 +45,16 @@ jobs:
           # for unrelated extras. Group by capability so a failure points
           # straight at the broken upstream.
           - name: asr
-            extras: "asr,whisper,funasr,align"
-            description: "faster-whisper / openai-whisper / funasr / qwen-asr"
+            extras: "asr,whisper,align"
+            description: "faster-whisper / openai-whisper / qwen-asr"
+          - name: funasr
+            # Split out from the asr cluster: FunASR is the largest install
+            # in this matrix and the most likely to break independently
+            # (caught a real bug on day-1, see commit 61b4a3c). Isolating
+            # it keeps a FunASR regression from also blacking out the
+            # faster-whisper / openai-whisper coverage.
+            extras: "funasr"
+            description: "FunASR / Paraformer / SenseVoice"
           - name: diarize
             extras: "diarize"
             description: "pyannote.audio (speaker diarization)"
@@ -58,12 +66,12 @@ jobs:
             description: "kokoro (open TTS engines via misaki tokenizer)"
     name: ${{ matrix.cluster.name }} (${{ matrix.cluster.description }})
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ inputs.python-version || '3.11' }}
           cache: pip
