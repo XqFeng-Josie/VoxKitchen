@@ -197,3 +197,87 @@ stages:
     result = runner.invoke(app, ["validate", str(yaml_path)])
     assert result.exit_code == 1
     assert "missing_threshold" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Pydantic error humanisation — the multi-line ``errors.pydantic.dev`` dump
+# is replaced with a short bullet list, and ``extra_forbidden`` rows get a
+# ``did you mean`` suggestion via ``difflib`` when one of the operator's
+# known fields is close enough.
+# ---------------------------------------------------------------------------
+
+
+def test_validate_pydantic_errors_bulletised(tmp_path: Path) -> None:
+    """Missing-required + unknown-arg shows two clean bullets; no pydantic URLs."""
+    yaml_path = _write(
+        tmp_path,
+        """
+version: "0.1"
+name: demo
+work_dir: /tmp/work
+ingest: { source: dir, args: { root: /tmp } }
+stages:
+  - name: q
+    op: quality_score_filter
+    args:
+      filter_name: foo
+""",
+    )
+    runner = CliRunner()
+    result = runner.invoke(app, ["validate", str(yaml_path)])
+    assert result.exit_code == 1, result.output
+    # Bulletised format.
+    assert "missing required arg: conditions" in result.output
+    assert "unknown arg: filter_name" in result.output
+    # And the noise is gone.
+    assert "errors.pydantic.dev" not in result.output
+    assert "validation errors for" not in result.output  # no "2 validation errors for X"
+
+
+def test_validate_extra_forbidden_suggests_close_match(tmp_path: Path) -> None:
+    """A typo (``target_channel``) for an existing field (``target_channels``)
+    surfaces a ``did you mean`` hint from stdlib difflib."""
+    yaml_path = _write(
+        tmp_path,
+        """
+version: "0.1"
+name: demo
+work_dir: /tmp/work
+ingest: { source: dir, args: { root: /tmp } }
+stages:
+  - name: r
+    op: resample
+    args:
+      target_sr: 16000
+      target_channel: 1
+""",
+    )
+    runner = CliRunner()
+    result = runner.invoke(app, ["validate", str(yaml_path)])
+    assert result.exit_code == 1, result.output
+    assert "unknown arg: target_channel" in result.output
+    assert "did you mean: target_channels?" in result.output
+
+
+def test_validate_extra_forbidden_no_suggestion_when_no_close_match(tmp_path: Path) -> None:
+    """If the typo isn't close to any allowed field we don't make one up."""
+    yaml_path = _write(
+        tmp_path,
+        """
+version: "0.1"
+name: demo
+work_dir: /tmp/work
+ingest: { source: dir, args: { root: /tmp } }
+stages:
+  - name: r
+    op: resample
+    args:
+      target_sr: 16000
+      zzzzzzzz: nope
+""",
+    )
+    runner = CliRunner()
+    result = runner.invoke(app, ["validate", str(yaml_path)])
+    assert result.exit_code == 1, result.output
+    assert "unknown arg: zzzzzzzz" in result.output
+    assert "did you mean" not in result.output

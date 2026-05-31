@@ -12,6 +12,7 @@ schema exported at image-build time.
 
 from __future__ import annotations
 
+import difflib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -39,6 +40,54 @@ class StageValidation:
     required_extras: list[str]
 
 
+def _format_pydantic_errors(exc: Exception, allowed_fields: list[str] | None = None) -> str:
+    """Convert a Pydantic ``ValidationError`` into a short bullet list.
+
+    Plain ``str(ValidationError)`` dumps multi-line noise with
+    ``errors.pydantic.dev`` URLs that mean nothing to a user editing a
+    pipeline YAML. Pydantic v2's ``.errors()`` gives us structured rows
+    (``type`` / ``loc`` / ``msg``) which we can turn into a short, bullet-
+    per-mistake list. When ``allowed_fields`` is provided, ``extra_forbidden``
+    rows also get a ``did you mean`` suggestion via ``difflib``.
+
+    Falls back to ``str(exc)`` if ``.errors()`` isn't usable (e.g. a plain
+    ``ValueError`` from a custom validator).
+    """
+    if not hasattr(exc, "errors"):
+        return str(exc)
+    try:
+        errs = exc.errors()
+    except Exception:
+        return str(exc)
+    if not isinstance(errs, list) or not errs:
+        return str(exc)
+
+    lines: list[str] = []
+    for e in errs:
+        loc = ".".join(str(p) for p in e.get("loc", ())) or "<root>"
+        kind = str(e.get("type", ""))
+        msg = str(e.get("msg", "invalid value"))
+        if kind == "missing":
+            lines.append(f"missing required arg: {loc}")
+        elif kind == "extra_forbidden":
+            line = f"unknown arg: {loc}"
+            if allowed_fields:
+                # Match against the leaf field name, not the dotted path —
+                # nested fields shouldn't be suggested for a top-level typo.
+                leaf = loc.split(".")[-1]
+                close = difflib.get_close_matches(leaf, allowed_fields, n=1, cutoff=0.6)
+                if close:
+                    line += f"  (did you mean: {close[0]}?)"
+            lines.append(line)
+        elif kind.startswith("type") or "type" in kind:
+            # type_error.*, string_type, int_parsing, etc.
+            lines.append(f"wrong type for {loc}: {msg.lower()}")
+        else:
+            lines.append(f"{loc}: {msg.lower()}")
+
+    return "\n  • " + "\n  • ".join(lines)
+
+
 def _validate_args_via_registry(op_name: str, args: dict[str, Any]) -> str | None:
     """Try the fast path. Returns an error message, ``"__not_registered__"``
     if the op is not importable here, or ``None`` on success."""
@@ -49,7 +98,10 @@ def _validate_args_via_registry(op_name: str, args: dict[str, Any]) -> str | Non
     try:
         op_cls.config_cls.model_validate(args)
     except Exception as exc:
-        return f"invalid args — {exc}"
+        # Pass the allowed fields so ``extra_forbidden`` errors can suggest
+        # the closest match — by far the most common pipeline-YAML mistake.
+        allowed = list(op_cls.config_cls.model_fields.keys())
+        return f"invalid args:{_format_pydantic_errors(exc, allowed_fields=allowed)}"
     return None
 
 
