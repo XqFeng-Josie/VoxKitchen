@@ -150,6 +150,30 @@ def test_inspect_cuts_missing_manifest_exits_1(tmp_path: Path) -> None:
     assert "manifest does not exist" in result.output
 
 
+def test_inspect_cuts_empty_path_exits_1_without_traceback() -> None:
+    """An empty path was previously routed through ``from_jsonl_gz(Path("."))`` —
+    ``Path("")`` becomes ``Path(".")``, ``exists()`` returns True but it is a
+    directory, so the gzip loader crashed with a traceback. Now it short-
+    circuits with a friendly message.
+    """
+    result = CliRunner().invoke(app, ["inspect", "cuts", ""])
+    assert result.exit_code == 1
+    assert "error:" in result.output
+    assert "no manifest path provided" in result.output
+    # Crucial: no Python traceback in the output (previously had one).
+    assert "Traceback" not in result.output
+    assert "from_jsonl_gz" not in result.output
+
+
+def test_inspect_cuts_directory_path_exits_1(tmp_path: Path) -> None:
+    """Pointing at an existing directory (e.g. forgot to append the filename)
+    must explain the mistake rather than crash inside the gzip loader."""
+    result = CliRunner().invoke(app, ["inspect", "cuts", str(tmp_path)])
+    assert result.exit_code == 1
+    assert "is a directory" in result.output
+    assert "Traceback" not in result.output
+
+
 def test_inspect_cuts_corrupt_manifest_exits_1(tmp_path: Path) -> None:
     """An empty (or otherwise invalid) gzip file is reported as a manifest error."""
     bad = tmp_path / "corrupt.jsonl.gz"

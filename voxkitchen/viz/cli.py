@@ -25,8 +25,25 @@ console = Console()
 
 def render_cuts_stats(manifest_path: Path) -> bool:
     """Print CutSet statistics. Returns False on missing or unreadable manifest."""
-    if not manifest_path.exists():
-        console.print(f"[red]error:[/red] manifest does not exist: {manifest_path}")
+    # Use is_file() rather than exists() to fail fast on three user mistakes
+    # that all need different hints — and that the old exists() check
+    # silently let through to from_jsonl_gz(), which then crashed with a
+    # traceback because Path("") == Path(".") and a directory isn't a valid
+    # gzip stream.
+    if not manifest_path.is_file():
+        if not str(manifest_path).strip() or str(manifest_path) == ".":
+            console.print("[red]error:[/red] no manifest path provided.")
+        elif manifest_path.is_dir():
+            console.print(
+                f"[red]error:[/red] expected a CutSet manifest file but "
+                f"{manifest_path} is a directory."
+            )
+        else:
+            console.print(f"[red]error:[/red] manifest does not exist: {manifest_path}")
+        console.print(
+            "[dim]hint: pass a path like work/<stage>/cuts.jsonl.gz "
+            "(see `vkit inspect run <work_dir>` for stage names).[/dim]"
+        )
         return False
     try:
         cuts = CutSet.from_jsonl_gz(manifest_path)
