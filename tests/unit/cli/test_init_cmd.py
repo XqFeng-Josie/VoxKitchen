@@ -41,6 +41,53 @@ def test_init_template_writes_packaged_pipeline(tmp_path: Path) -> None:
     assert "vkit run pipeline.yaml" not in readme
 
 
+def test_init_scaffolds_data_dir_with_gitkeep(tmp_path: Path) -> None:
+    """data/ is created with a .gitkeep so it survives `git add` for users
+    who commit the scaffolded project."""
+    target = tmp_path / "p"
+    CliRunner().invoke(app, ["init", str(target)])
+    assert (target / "data").is_dir()
+    assert (target / "data" / ".gitkeep").is_file()
+
+
+def test_init_default_pipeline_has_inline_comments(tmp_path: Path) -> None:
+    """The default pipeline must include comments explaining what each
+    stage does and pointing at the discovery commands. Without them the
+    first-time user is just reading raw YAML."""
+    target = tmp_path / "p"
+    CliRunner().invoke(app, ["init", str(target)])
+    text = (target / "pipeline.yaml").read_text()
+    assert "vkit operators" in text  # discovery hint
+    assert "16k mono" in text  # the why for the resample step
+
+
+def test_init_readme_points_at_show_validate_card(tmp_path: Path) -> None:
+    """README guides the iteration loop: show → validate → run → inspect → card."""
+    target = tmp_path / "p"
+    CliRunner().invoke(app, ["init", str(target)])
+    readme = (target / "README.md").read_text()
+    for needle in [
+        "vkit show pipeline.yaml",
+        "vkit validate pipeline.yaml",
+        "vkit inspect cuts",
+        "vkit card",
+        "vkit operators",
+        "vkit datasets",
+    ]:
+        assert needle in readme, f"README missing iteration hint: {needle}"
+
+
+def test_init_next_steps_output_lists_show_and_validate(tmp_path: Path) -> None:
+    """The CLI 'Next steps' echo now includes the show + validate commands
+    so users see the iteration loop without having to open the README."""
+    target = tmp_path / "p"
+    result = CliRunner().invoke(app, ["init", str(target)])
+    assert result.exit_code == 0
+    assert "vkit show pipeline.yaml" in result.output
+    assert "vkit validate pipeline.yaml" in result.output
+    assert "vkit operators search" in result.output
+
+
 def test_init_rejects_non_empty_dir(tmp_path: Path) -> None:
     (tmp_path / "existing.txt").write_text("x")
     runner = CliRunner()

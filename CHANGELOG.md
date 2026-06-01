@@ -8,6 +8,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- `vkit show <pipeline.yaml>`: pretty-print a pipeline as an operator
+  chain with each stage's declarative field contract (reads / writes /
+  optional_reads / clears) inline — same data the pre-flight uses,
+  surfaced so users can see what a pipeline does without scanning raw
+  YAML. Distinguishes "operator not importable here" from "operator
+  declares no static contract" so the visualisation reads as
+  intentional.
+- `vkit init` now scaffolds a richer starter: `data/.gitkeep` so the
+  directory survives `git add`, inline comments in the default
+  `pipeline.yaml` explaining each stage and pointing at
+  `vkit operators` for discovery, a step-numbered "Next steps"
+  output that walks users through `show → validate → docker run`,
+  and a README listing the full iteration loop including
+  `vkit card` and `vkit datasets`.
+
+### Changed
+
+- `vkit inspect cuts`: empty / directory paths now produce a friendly
+  error with a hint instead of a Python traceback. Previously
+  `Path("")` collapsed to `Path(".")` whose `.exists()` returned True
+  but isn't a valid gzip stream, so the loader crashed.
+- `vkit validate`: Pydantic config errors are rendered as a short
+  bullet list rather than the raw `errors.pydantic.dev` multi-line
+  dump; `extra_forbidden` rows get a `did you mean` hint via stdlib
+  `difflib` when one of the operator's known fields is close enough
+  (e.g. `target_channel` → `target_channels`).
+
 - `vkit datasets`: terminal browser for the dataset catalog — `vkit datasets`
   (filterable table; `--task` / `--language` / `--recipe-only` / `--query` compose),
   `vkit datasets show <id>` (Rich panel with all fields + download hint when

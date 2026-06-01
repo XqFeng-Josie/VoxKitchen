@@ -65,11 +65,23 @@ def init(
         msg += f" (template: {template})"
     rprint(msg)
     rprint("\n[bold]Next steps[/bold]")
-    rprint(f"  cd {path}")
-    rprint("  cp /path/to/audio/* data/")
+    rprint(f"  [dim]1.[/dim] cd {path}")
+    rprint("  [dim]2.[/dim] cp /path/to/audio/* data/")
+    rprint("  [dim]3.[/dim] vkit show pipeline.yaml         [dim]# preview the chain[/dim]")
+    rprint("  [dim]4.[/dim] vkit validate pipeline.yaml     [dim]# catch typos[/dim]")
     tag = recommended_docker_tag(template)
-    rprint(f"  vkit docker run --tag {tag} pipeline.yaml --dry-run")
-    rprint(f"  vkit docker run --tag {tag} pipeline.yaml")
+    rprint(
+        f"  [dim]5.[/dim] vkit docker run --tag {tag} pipeline.yaml --dry-run  "
+        "[dim]# dry-run inside the image[/dim]"
+    )
+    rprint(
+        f"  [dim]6.[/dim] vkit docker run --tag {tag} pipeline.yaml            "
+        "[dim]# do the work[/dim]"
+    )
+    rprint(
+        "\n[dim]Tip:[/dim] `vkit operators search <keyword>` discovers built-ins; "
+        "`vkit datasets --recipe-only` lists ingest-ready public datasets."
+    )
 
 
 @app.command(help="Build an initial CutSet from a data source.")
