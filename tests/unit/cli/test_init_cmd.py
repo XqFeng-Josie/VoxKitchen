@@ -115,9 +115,6 @@ def test_init_template_pipeline_starts_with_schema_directive(tmp_path: Path) -> 
 
 def test_init_tts_template_next_steps_uses_asr_tag(tmp_path: Path) -> None:
     """tts template's pipeline only needs the asr image — Next Steps must match."""
-    from typer.testing import CliRunner
-    from voxkitchen.cli.main import app
-
     target = tmp_path / "proj-tts"
     result = CliRunner().invoke(app, ["init", str(target), "--template", "tts"])
     assert result.exit_code == 0, result.output

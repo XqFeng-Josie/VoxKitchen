@@ -117,7 +117,7 @@ def recommended_docker_tag(template: str | None) -> str:
     per_template = {
         "asr": "asr",
         "cleaning": "slim",
-        "tts": "asr",  # tts-data-prep uses faster_whisper_asr + forced_align — no synthesis ops
+        "tts": "asr",  # tts-data-prep uses qwen3_asr + forced_align (both in align→asr env) — no synthesis ops
         "speaker": "latest",  # speaker-analysis spans diarize + asr + speaker_embed + langid
     }
     if template is None:
