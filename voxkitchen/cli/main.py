@@ -107,6 +107,15 @@ def validate(
     validate_command(pipeline, preflight=not no_preflight)
 
 
+@app.command(help="Pretty-print a pipeline YAML with each stage's field contracts.")
+def show(
+    pipeline: Path = typer.Argument(..., help="Pipeline YAML path."),
+) -> None:
+    from voxkitchen.cli.show_cmd import show_command
+
+    show_command(pipeline)
+
+
 @app.command(
     help=(
         "Execute a pipeline in the current environment. "

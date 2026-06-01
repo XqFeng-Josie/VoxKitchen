@@ -59,6 +59,34 @@ recommended Docker image without executing.
 vkit validate pipeline.yaml
 ```
 
+Pydantic config errors are rendered as a short bullet list rather than the
+raw multi-line dump; `extra_forbidden` errors get a `did you mean` hint
+from stdlib `difflib` when one of the operator's known fields is close enough:
+
+```
+error: stage 'q': invalid args:
+  • missing required arg: conditions
+  • unknown arg: target_channel  (did you mean: target_channels?)
+```
+
+### `vkit show`
+
+Pretty-print a pipeline YAML as an operator chain with each stage's
+declarative field contract (`reads` / `writes` / `optional_reads` / `clears`)
+inline — the same data that `vkit validate`'s pre-flight uses, surfaced so
+you can *see* what a pipeline does without scanning raw YAML.
+
+```bash
+vkit show pipeline.yaml
+```
+
+Stage rows show the operator's runtime device (`cpu` / `gpu`), the args you
+configured, and four colour-coded contract rows. Filter / config-driven
+operators that declare no static contract render with a soft note rather
+than empty space; operators not importable in the current env render with
+a clear "contract not available" note. Pure presentation — no validation,
+no execution.
+
 ### `vkit download` (current-env helper)
 
 Download a dataset using its recipe in the current environment. For the
