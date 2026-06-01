@@ -111,3 +111,44 @@ def test_init_template_pipeline_starts_with_schema_directive(tmp_path: Path) -> 
     CliRunner().invoke(app, ["init", str(target), "--template", "asr"])
     first_line = (target / "pipeline.yaml").read_text().splitlines()[0]
     assert first_line.startswith("# yaml-language-server: $schema=")
+
+
+def test_init_tts_template_next_steps_uses_asr_tag(tmp_path: Path) -> None:
+    """tts template's pipeline only needs the asr image — Next Steps must match."""
+    from typer.testing import CliRunner
+    from voxkitchen.cli.main import app
+
+    target = tmp_path / "proj-tts"
+    result = CliRunner().invoke(app, ["init", str(target), "--template", "tts"])
+    assert result.exit_code == 0, result.output
+    # Next Steps prints `vkit docker run --tag <X> pipeline.yaml`
+    # — that <X> must agree with `vkit validate`'s recommended image (asr).
+    assert "--tag asr pipeline.yaml" in result.output, (
+        f"expected `--tag asr` in next-steps output but got:\n{result.output}"
+    )
+    assert "--tag latest" not in result.output, (
+        f"tts template should not recommend `latest` — found in:\n{result.output}"
+    )
+
+
+def test_recommended_docker_tag_matches_template_recommendation() -> None:
+    """The init hint and the validate recommendation must agree per template."""
+    from voxkitchen.cli.init_cmd import recommended_docker_tag
+
+    # Each pair: (template-name, image the bundled pipeline actually needs).
+    # `speaker` is the one template that genuinely needs `latest` because its
+    # bundled pipeline spans diarize + asr + speaker_embed + whisper_langid
+    # — no single image other than `latest` covers all four. Verified manually
+    # via `vkit validate` against the scaffolded yaml.
+    expectations = [
+        ("asr", "asr"),
+        ("cleaning", "slim"),
+        ("tts", "asr"),
+        ("speaker", "latest"),
+        (None, "slim"),
+    ]
+    for template, expected_tag in expectations:
+        assert recommended_docker_tag(template) == expected_tag, (
+            f"template={template!r}: got {recommended_docker_tag(template)!r}, "
+            f"expected {expected_tag!r}"
+        )

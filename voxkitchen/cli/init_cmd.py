@@ -106,12 +106,23 @@ vkit card <work_dir>/<final_stage>/cuts.jsonl.gz --out card.html
 
 
 def recommended_docker_tag(template: str | None) -> str:
-    """Return the recommended prebuilt Docker image tag for a scaffolded project."""
-    if template == "asr":
-        return "asr"
-    if template == "cleaning" or template is None:
+    """Return the recommended prebuilt Docker image tag for a scaffolded project.
+
+    Keep in sync with each template's bundled pipeline YAML and what
+    ``vkit validate`` would print for that yaml. The truth-source is the
+    yaml's operator set; this hint is the user-visible shortcut.
+    """
+    # Map kept short on purpose — a template missing here defaults to
+    # ``latest`` which is always safe (it's the union image).
+    per_template = {
+        "asr": "asr",
+        "cleaning": "slim",
+        "tts": "asr",  # tts-data-prep uses faster_whisper_asr + forced_align — no synthesis ops
+        "speaker": "latest",  # speaker-analysis spans diarize + asr + speaker_embed + langid
+    }
+    if template is None:
         return "slim"
-    return "latest"
+    return per_template.get(template, "latest")
 
 
 def list_templates() -> None:
