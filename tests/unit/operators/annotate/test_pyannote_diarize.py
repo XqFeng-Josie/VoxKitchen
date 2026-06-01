@@ -106,3 +106,42 @@ def test_pyannote_diarize_adds_speakers(mono_wav_16k: Path) -> None:
     for sup in out_cuts[0].supervisions:
         assert sup.speaker is not None
         assert sup.duration > 0
+
+
+# ---------------------------------------------------------------------------
+# Gated-model error handling (no model download required)
+# ---------------------------------------------------------------------------
+
+
+def test_setup_raises_friendly_error_when_pipeline_is_none(monkeypatch) -> None:
+    """When pyannote returns None (gated model), surface a fix-action error
+    instead of crashing with `'NoneType' object has no attribute 'to'`."""
+    import pytest
+
+    pytest.importorskip("voxkitchen.operators.annotate.pyannote_diarize")
+    from pyannote.audio import Pipeline as _RealPipeline  # noqa: F401  ensure importable
+    from voxkitchen.operators.annotate.pyannote_diarize import (
+        PyannoteDiarizeConfig,
+        PyannoteDiarizeOperator,
+    )
+
+    # Stub Pipeline.from_pretrained to return None (the gated-model failure mode).
+    monkeypatch.setattr(
+        "pyannote.audio.Pipeline.from_pretrained",
+        staticmethod(lambda *a, **kw: None),
+    )
+
+    op = PyannoteDiarizeOperator(
+        PyannoteDiarizeConfig(model="pyannote/speaker-diarization-3.1"), ctx=object()
+    )  # type: ignore[arg-type]
+    with pytest.raises(RuntimeError) as excinfo:
+        op.setup()
+
+    msg = str(excinfo.value)
+    # Must name both gated models so the user knows exactly which two pages to visit.
+    assert "speaker-diarization-3.1" in msg
+    assert "segmentation-3.0" in msg
+    # Must surface the actionable instruction.
+    assert "accept" in msg.lower() and "hf.co" in msg
+    # Must NOT be the original cryptic AttributeError.
+    assert "NoneType" not in msg
