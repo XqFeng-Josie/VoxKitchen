@@ -45,6 +45,8 @@ console = Console(stderr=True)
 _IMAGE_TAG_TO_GROUP: dict[str, str] = {
     "slim": "core",
     # `asr`, `diarize`, `tts`, `fish-speech` already match group names 1:1.
+    # `latest` is intentionally absent — it is the union image and has no
+    # single group contract to validate against.
 }
 
 # Operator-name sets each published image is contractually expected to
@@ -290,7 +292,7 @@ def doctor(
         if not json_out:
             console.print(
                 f"\n[red]FAIL:[/red] {len(missing)} operator(s) expected for "
-                f"image group {expect!r} but not importable."
+                f"image group {image_kind!r} but not importable."
             )
         raise typer.Exit(code=1)
 

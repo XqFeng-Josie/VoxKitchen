@@ -85,7 +85,8 @@ def test_doctor_expect_slim_aliases_to_core() -> None:
     assert result.exit_code == 0, f"got exit {result.exit_code}: {result.output}"
     # Output should report it as `image: core` (the canonical group name);
     # the alias is only an input convenience.
-    assert "image: core" in result.output or "image: slim" in result.output
+    assert "image: core" in result.output
+    assert "image: slim" not in result.output  # alias is input-only; output uses canonical name
 
 
 def test_doctor_expect_unknown_tag_still_errors() -> None:
