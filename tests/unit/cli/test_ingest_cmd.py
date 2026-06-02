@@ -128,3 +128,35 @@ def test_ingest_unknown_recipe_emits_friendly_error_not_traceback(
     assert "no_such_recipe_xyz" in result.output
     assert "librispeech" in result.output  # at least one known recipe in the suggestions
     assert "error:" in result.output.lower()
+    # CliRunner with catch_exceptions=True stores leaked exceptions in
+    # result.exception. The fix ensures we exit via typer.Exit, not by
+    # propagating the raw KeyError.
+    assert result.exception is None or isinstance(result.exception, SystemExit), (
+        f"expected SystemExit, got: {result.exception!r}"
+    )
+
+
+def test_ingest_missing_manifest_file_emits_friendly_error(tmp_path: Path) -> None:
+    """A --source manifest --path that points at a non-existent file should
+    render the same friendly error shape as bad-recipe, not a Python traceback."""
+    ghost = tmp_path / "ghost.jsonl.gz"
+    out = tmp_path / "out.jsonl.gz"
+    result = CliRunner().invoke(
+        app,
+        [
+            "ingest",
+            "--source",
+            "manifest",
+            "--path",
+            str(ghost),
+            "--out",
+            str(out),
+        ],
+    )
+    assert result.exit_code == 1, f"got exit {result.exit_code}: {result.output}"
+    assert "Traceback" not in result.output
+    assert "error:" in result.output.lower()
+    assert "ghost.jsonl.gz" in result.output
+    assert result.exception is None or isinstance(result.exception, SystemExit), (
+        f"expected SystemExit, got: {result.exception!r}"
+    )

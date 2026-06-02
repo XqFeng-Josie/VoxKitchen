@@ -81,8 +81,10 @@ def ingest_command(
         rprint(f"[red]error:[/red] {msg}")
         raise typer.Exit(code=1) from exc
     except FileNotFoundError as exc:
-        # `manifest_import.run` raises this when --path doesn't exist.
-        # Wrap for consistency with --source recipe handling above.
+        # Covers all three sources: manifest (missing --path file), dir
+        # (missing root), and recipe (missing subset dir / archive).
+        # All sources raise self-descriptive FileNotFoundError messages,
+        # so we just surface them with the standard error prefix.
         rprint(f"[red]error:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 
