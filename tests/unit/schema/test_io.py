@@ -148,7 +148,7 @@ def test_read_cuts_warns_on_skipped_non_cut_lines(tmp_path: Path) -> None:
     import warnings
 
     p = tmp_path / "bad.jsonl.gz"
-    with gzip.open(p, "wt") as f:
+    with gzip.open(p, "wt", encoding="utf-8") as f:
         # Valid header.
         f.write(
             json.dumps(
@@ -177,7 +177,7 @@ def test_read_cuts_warns_on_skipped_non_cut_lines(tmp_path: Path) -> None:
         f"expected 1 'skipped' warning, got {len(matching)}: {[str(w.message) for w in captured]}"
     )
     msg = str(matching[0].message)
-    assert "2" in msg, msg  # the skip count
+    assert "skipped 2" in msg, msg  # the skip count
     assert "bad.jsonl.gz" in msg, msg  # the file path
 
 

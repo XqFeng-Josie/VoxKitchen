@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import warnings
 from collections.abc import Iterable, Iterator
 from datetime import datetime
 from pathlib import Path
@@ -112,8 +113,11 @@ def read_cuts(path: Path) -> Iterator[Cut]:
     compatibility with future record kinds), but a warning is emitted on
     exhaustion if any were skipped — so hand-built manifests that forget
     the ``__type__: cut`` marker don't silently produce 0 cuts.
+
+    The warning fires only when the generator is fully exhausted. If the caller
+    breaks early or an exception propagates through the generator body, skipped
+    lines are silently dropped and no warning is emitted.
     """
-    import warnings
 
     skipped = 0
     with gzip.open(path, "rt", encoding="utf-8") as f:
