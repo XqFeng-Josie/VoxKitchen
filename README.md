@@ -210,11 +210,11 @@ Every `vkit docker` command accepts `--tag <name>`:
 | Tag | Use when | GPU | Approx. size |
 |---|---|---|---|
 | `slim` | CPU-friendly cleaning, VAD, quality, pack, enhancement | no | ~13 GB |
-| `asr` | Faster-Whisper, FunASR, Qwen3-ASR, forced alignment | yes | ~48 GB |
-| `diarize` | Pyannote speaker diarization | yes | ~32 GB |
-| `tts` | Kokoro, ChatTTS, CosyVoice | yes | ~44 GB |
-| `fish-speech` | Fish-Speech isolated runtime | yes | ~57 GB |
-| `latest` | Mixed pipelines across ASR, diarization, TTS, or Fish-Speech | yes | ~123 GB |
+| `asr` | Faster-Whisper, FunASR, Qwen3-ASR, forced alignment | yes | ~36 GB |
+| `diarize` | Pyannote speaker diarization | yes | ~20 GB |
+| `tts` | Kokoro, ChatTTS, CosyVoice | yes | ~32 GB |
+| `fish-speech` | Fish-Speech isolated runtime | yes | ~44 GB |
+| `latest` | Mixed pipelines across ASR, diarization, TTS, or Fish-Speech | yes | ~85 GB |
 
 Use `latest` when one pipeline mixes multiple runtime families, such as ASR
 plus diarization or ASR plus TTS. Otherwise, prefer the smallest image that
