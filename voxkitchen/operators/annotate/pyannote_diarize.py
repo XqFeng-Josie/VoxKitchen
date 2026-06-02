@@ -84,12 +84,14 @@ class PyannoteDiarizeOperator(Operator):
             # (the diarization pipeline depends on segmentation-3.0).
             raise RuntimeError(
                 f"pyannote model {self.config.model!r} could not be downloaded. "
-                "This usually means the HuggingFace gated-model agreement is "
-                "not yet accepted. Visit BOTH of the following pages and click "
-                "'Agree and access repository':\n"
-                f"  1. https://hf.co/{self.config.model}\n"
-                "  2. https://hf.co/pyannote/segmentation-3.0\n"
-                "Then re-run with HF_TOKEN set (in .env or environment)."
+                "This usually means the HuggingFace gated-model agreement has "
+                "not been accepted, or HF_TOKEN is unset / expired.\n"
+                "Steps to fix:\n"
+                f"  1. Visit https://hf.co/{self.config.model} and click "
+                "'Agree and access repository'.\n"
+                "  2. If using speaker-diarization-3.1, also accept: "
+                "https://hf.co/pyannote/segmentation-3.0\n"
+                "  3. Ensure HF_TOKEN is set (in .env or environment) and re-run."
             )
         self._pipeline.to(self._device)
 

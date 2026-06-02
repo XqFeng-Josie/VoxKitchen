@@ -116,9 +116,6 @@ def test_pyannote_diarize_adds_speakers(mono_wav_16k: Path) -> None:
 def test_setup_raises_friendly_error_when_pipeline_is_none(monkeypatch) -> None:
     """When pyannote returns None (gated model), surface a fix-action error
     instead of crashing with `'NoneType' object has no attribute 'to'`."""
-    import pytest
-
-    pytest.importorskip("voxkitchen.operators.annotate.pyannote_diarize")
     from pyannote.audio import Pipeline as _RealPipeline  # noqa: F401  ensure importable
     from voxkitchen.operators.annotate.pyannote_diarize import (
         PyannoteDiarizeConfig,
@@ -143,5 +140,5 @@ def test_setup_raises_friendly_error_when_pipeline_is_none(monkeypatch) -> None:
     assert "segmentation-3.0" in msg
     # Must surface the actionable instruction.
     assert "accept" in msg.lower() and "hf.co" in msg
-    # Must NOT be the original cryptic AttributeError.
-    assert "NoneType" not in msg
+    # Must NOT contain AttributeError-style language from the friendly message.
+    assert "attribute" not in msg.lower()
