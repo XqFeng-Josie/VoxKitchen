@@ -351,3 +351,49 @@ def test_pack_huggingface_output_hint_uses_stage_default(tmp_path: Path) -> None
     assert run_module._pack_huggingface_output_dir(spec, max_stage_idx=0) == (
         tmp_path / "work" / "00_pack" / "hf_output"
     )
+
+
+def test_run_warns_when_all_input_cuts_were_dropped(tmp_path: Path) -> None:
+    """A pipeline that ingests N > 0 cuts and outputs 0 must surface a
+    prominent warning before 'pipeline complete'. Otherwise users get a
+    green success message with no signal that every operator failed."""
+    input_manifest = tmp_path / "in.jsonl.gz"
+    _seed_manifest(input_manifest, n=3)
+    work_dir = tmp_path / "work"
+
+    yaml_path = tmp_path / "p.yaml"
+    yaml_path.write_text(
+        f"""\
+version: "0.1"
+name: drop-all
+work_dir: {work_dir}
+num_cpu_workers: 1
+ingest:
+  source: manifest
+  args:
+    path: {input_manifest}
+stages:
+  - name: filter
+    op: duration_filter
+    args:
+      min_duration: 9999999
+  - name: identity
+    op: identity
+""",
+        encoding="utf-8",
+    )
+    result = CliRunner().invoke(app, ["run", str(yaml_path)])
+    # exit code must remain 0 — an empty output is allowed by design
+    assert result.exit_code == 0, result.output
+    # The warning must appear before 'pipeline complete'
+    output = result.output
+    assert "all 3 input cuts were dropped" in output or "all 3 cuts were dropped" in output, (
+        f"expected an all-cuts-dropped warning, got:\n{output}"
+    )
+    # Warning must precede the completion line
+    if "all 3 input cuts were dropped" in output:
+        warn_idx = output.index("all 3 input cuts were dropped")
+    else:
+        warn_idx = output.index("all 3 cuts were dropped")
+    complete_idx = output.index("pipeline complete")
+    assert warn_idx < complete_idx, "warning must appear before 'pipeline complete'"

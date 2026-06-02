@@ -221,6 +221,19 @@ def run_command(
     _print_completion(spec, stop_at=stop_at)
 
 
+def _read_stage_stats(stage_dir: Path) -> dict[str, int] | None:
+    """Read cuts_in/cuts_out from a stage's _stats.json. Returns None on missing/unreadable."""
+    import json
+
+    stats_path = stage_dir / "_stats.json"
+    if not stats_path.exists():
+        return None
+    try:
+        return json.loads(stats_path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
 def _print_completion(spec: PipelineSpec, *, stop_at: str | None) -> None:
     """Print the useful next paths after a successful run."""
     work_dir = Path(spec.work_dir)
@@ -230,6 +243,26 @@ def _print_completion(spec: PipelineSpec, *, stop_at: str | None) -> None:
     final_stage_dir = work_dir / stage_dir_name(final_idx, final_stage)
     final_manifest = final_stage_dir / "cuts.jsonl.gz"
     report = work_dir / "report.html"
+
+    # Detect the 100%-drop case: ingest produced cuts but the final stage
+    # output zero. Almost always means an operator silently swallowed every
+    # cut (try/except in process()) — surface it before the green banner
+    # so users don't get a misleading "complete" with no data.
+    first_stage_dir = work_dir / stage_dir_name(0, stage_names[0])
+    first_stats = _read_stage_stats(first_stage_dir)
+    final_stats = _read_stage_stats(final_stage_dir)
+    if (
+        first_stats is not None
+        and final_stats is not None
+        and first_stats.get("cuts_in", 0) > 0
+        and final_stats.get("cuts_out", 0) == 0
+    ):
+        cuts_in = first_stats["cuts_in"]
+        rprint(
+            f"[yellow]⚠ warning:[/yellow] all {cuts_in} input cuts were "
+            f"dropped — likely an operator silently failed. Check "
+            f"`vkit inspect errors {work_dir}` and per-stage `_stats.json`."
+        )
 
     if stop_at:
         rprint(f"[green]stopped after stage[/green] {stop_at}")
