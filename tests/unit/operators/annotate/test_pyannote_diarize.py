@@ -116,7 +116,6 @@ def test_pyannote_diarize_adds_speakers(mono_wav_16k: Path) -> None:
 def test_setup_raises_friendly_error_when_pipeline_is_none(monkeypatch) -> None:
     """When pyannote returns None (gated model), surface a fix-action error
     instead of crashing with `'NoneType' object has no attribute 'to'`."""
-    from pyannote.audio import Pipeline as _RealPipeline  # noqa: F401  ensure importable
     from voxkitchen.operators.annotate.pyannote_diarize import (
         PyannoteDiarizeConfig,
         PyannoteDiarizeOperator,

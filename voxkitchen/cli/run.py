@@ -232,7 +232,9 @@ def _read_stage_stats(stage_dir: Path) -> dict[str, object] | None:
     if not stats_path.exists():
         return None
     try:
-        return json.loads(stats_path.read_text())
+        from typing import cast
+
+        return cast("dict[str, object]", json.loads(stats_path.read_text()))
     except (OSError, json.JSONDecodeError):
         return None
 
@@ -254,18 +256,20 @@ def _print_completion(spec: PipelineSpec, *, stop_at: str | None) -> None:
     first_stage_dir = work_dir / stage_dir_name(0, stage_names[0])
     first_stats = _read_stage_stats(first_stage_dir)
     final_stats = _read_stage_stats(final_stage_dir)
-    if (
-        first_stats is not None
-        and final_stats is not None
-        and first_stats.get("cuts_in", 0) > 0
-        and final_stats.get("cuts_out", 0) == 0
-    ):
-        cuts_in = first_stats["cuts_in"]
-        rprint(
-            f"[yellow]⚠ warning:[/yellow] all {cuts_in} input cuts were "
-            f"dropped — likely an operator silently failed. Check "
-            f"`vkit inspect errors {work_dir}` and per-stage `_stats.json`."
-        )
+    if first_stats is not None and final_stats is not None:
+        cuts_in_raw = first_stats.get("cuts_in", 0)
+        cuts_out_raw = final_stats.get("cuts_out", 0)
+        if (
+            isinstance(cuts_in_raw, int)
+            and isinstance(cuts_out_raw, int)
+            and cuts_in_raw > 0
+            and cuts_out_raw == 0
+        ):
+            rprint(
+                f"[yellow]⚠ warning:[/yellow] all {cuts_in_raw} input cuts were "
+                f"dropped — likely an operator silently failed. Check "
+                f"`vkit inspect errors {work_dir}` and per-stage `_stats.json`."
+            )
 
     if stop_at:
         rprint(f"[green]stopped after stage[/green] {stop_at}")
