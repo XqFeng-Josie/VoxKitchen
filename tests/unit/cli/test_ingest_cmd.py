@@ -98,3 +98,33 @@ def test_ingest_error_messages_use_error_prefix(tmp_path: Path) -> None:
     bad_source = runner.invoke(app, ["ingest", "--source", "alien", "--out", out])
     assert "error:" in bad_source.output
     assert "unknown source" in bad_source.output
+
+
+def test_ingest_unknown_recipe_emits_friendly_error_not_traceback(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """A typo'd --recipe should print one-line error + available list, not
+    a full Python KeyError traceback."""
+    monkeypatch.setenv("VKIT_ALLOW_LOCAL_RUN", "1")  # silence the host-runtime warning
+    result = CliRunner().invoke(
+        app,
+        [
+            "ingest",
+            "--source",
+            "recipe",
+            "--recipe",
+            "no_such_recipe_xyz",
+            "--root",
+            str(tmp_path),
+            "--out",
+            str(tmp_path / "out.jsonl.gz"),
+        ],
+    )
+    assert result.exit_code == 1, f"expected exit 1, got {result.exit_code}: {result.output}"
+    # Should not be a Python traceback panel.
+    assert "Traceback" not in result.output, result.output
+    assert "KeyError" not in result.output, result.output
+    # Should be the friendly form, naming the bad recipe and listing alternatives.
+    assert "no_such_recipe_xyz" in result.output
+    assert "librispeech" in result.output  # at least one known recipe in the suggestions
+    assert "error:" in result.output.lower()

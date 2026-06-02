@@ -69,7 +69,22 @@ def ingest_command(
     )
 
     source_obj = source_cls(config, ctx)
-    cuts = source_obj.run()
+    try:
+        cuts = source_obj.run()
+    except KeyError as exc:
+        # `get_recipe()` raises KeyError("recipe 'X' not found. Available: [...]")
+        # for unknown recipe names. Strip the surrounding quotes and re-render
+        # so the user sees one error line + the available list, not a full
+        # Python traceback panel (peer commands like `vkit validate` already
+        # render lookup failures this way).
+        msg = exc.args[0] if exc.args else str(exc)
+        rprint(f"[red]error:[/red] {msg}")
+        raise typer.Exit(code=1) from exc
+    except FileNotFoundError as exc:
+        # `manifest_import.run` raises this when --path doesn't exist.
+        # Wrap for consistency with --source recipe handling above.
+        rprint(f"[red]error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
 
     header = HeaderRecord(
         schema_version=SCHEMA_VERSION,
