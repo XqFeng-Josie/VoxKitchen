@@ -74,6 +74,28 @@ def test_doctor_aggregates_multi_env_layout(tmp_path: Path) -> None:
         assert env in result.output
 
 
+def test_doctor_expect_slim_aliases_to_core() -> None:
+    """`--expect slim` (the image tag) should be accepted as an alias for
+    the internal operator group `core` so users don't need to know about
+    the tag-vs-group naming distinction."""
+    runner = CliRunner()
+    with patch.object(env_resolver, "ENVS_DIR", Path("/nonexistent")):
+        result = runner.invoke(app, ["doctor", "--expect", "slim"])
+    # Should be valid; in dev env all core ops are present so exit 0.
+    assert result.exit_code == 0, f"got exit {result.exit_code}: {result.output}"
+    # Output should report it as `image: core` (the canonical group name);
+    # the alias is only an input convenience.
+    assert "image: core" in result.output or "image: slim" in result.output
+
+
+def test_doctor_expect_unknown_tag_still_errors() -> None:
+    """Truly unknown values still get the existing error path."""
+    with patch.object(env_resolver, "ENVS_DIR", Path("/nonexistent")):
+        result = CliRunner().invoke(app, ["doctor", "--expect", "not-an-image-tag"])
+    assert result.exit_code == 2, result.output
+    assert "unknown image group" in result.output.lower()
+
+
 def test_doctor_multi_env_json_mode(tmp_path: Path) -> None:
     """Cross-env aggregation with --json emits a structured envs: [...] payload."""
     envs_dir = _make_fake_envs(tmp_path, ["core", "asr", "tts"])

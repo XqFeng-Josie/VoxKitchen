@@ -241,6 +241,8 @@ vkit doctor --json                   # Machine-readable output on stdout
 | `--expect ENV` | Image env to validate against (`core`, `asr`, `diarize`, `tts`, `fish-speech`). Exits non-zero if any expected operator fails to import. Used by the Dockerfile's per-stage smoke test. |
 | `--json` | Emit a JSON report on stdout (rich table still goes to stderr). |
 
+`--expect` accepts either an internal group name (`core`, `asr`, `diarize`, `tts`, `fish-speech`) or the GHCR image tag (`slim` aliases to `core`).
+
 Inside the `voxkitchen:latest` multi-env image, `vkit doctor` with no `--expect` aggregates a table across every env under `/opt/voxkitchen/envs/`, re-invoking each env's own `vkit doctor --expect <env>`.
 
 ### `vkit docker`

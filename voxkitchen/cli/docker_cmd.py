@@ -350,7 +350,9 @@ def doctor_cmd(
     tag: str = typer.Option(DEFAULT_TAG, "--tag", help="Image tag."),
     image: str | None = typer.Option(None, "--image", help="Full image name override."),
     expect: str | None = typer.Option(
-        None, "--expect", help="Env name to validate (core|asr|diarize|tts|fish-speech)."
+        None,
+        "--expect",
+        help="Env name to validate (core/slim | asr | diarize | tts | fish-speech).",
     ),
     json_out: bool = typer.Option(False, "--json", help="Emit JSON on stdout."),
     gpus: str = typer.Option("none", "--gpus", help="GPU mode (doctor does not need GPU)."),

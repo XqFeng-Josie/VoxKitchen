@@ -39,6 +39,14 @@ from voxkitchen.runtime import env_resolver
 # Rich console on stderr so --json can emit pure JSON on stdout without pollution.
 console = Console(stderr=True)
 
+# Image tags published to GHCR map to internal operator groups. They differ
+# in one place: tag `slim` → group `core`. Accept tags as aliases for
+# --expect so users don't need to know the distinction.
+_IMAGE_TAG_TO_GROUP: dict[str, str] = {
+    "slim": "core",
+    # `asr`, `diarize`, `tts`, `fish-speech` already match group names 1:1.
+}
+
 # Operator-name sets each published image is contractually expected to
 # provide. If a Dockerfile installs new extras, update this table so the
 # build-time smoke test catches regressions.
@@ -260,7 +268,9 @@ def doctor(
 
     # Single-env mode (dev, slim image, or explicit --expect in any env).
     available = _collect_available()
-    image_kind = expect or _detect_image_kind()
+    raw_kind = expect or _detect_image_kind()
+    # Apply tag→group alias so `--expect slim` works as well as `--expect core`.
+    image_kind = _IMAGE_TAG_TO_GROUP.get(raw_kind, raw_kind) if raw_kind else None
     warmup = _load_warmup_status(image_kind)
 
     if image_kind and image_kind not in EXPECTED_OPERATORS:
