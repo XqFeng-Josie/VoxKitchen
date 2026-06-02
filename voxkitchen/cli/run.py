@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import typer
@@ -221,10 +222,12 @@ def run_command(
     _print_completion(spec, stop_at=stop_at)
 
 
-def _read_stage_stats(stage_dir: Path) -> dict[str, int] | None:
-    """Read cuts_in/cuts_out from a stage's _stats.json. Returns None on missing/unreadable."""
-    import json
+def _read_stage_stats(stage_dir: Path) -> dict[str, object] | None:
+    """Read cuts_in/cuts_out from a stage's _stats.json. Returns None on missing/unreadable.
 
+    Values may be int (counts) or float (timings, e.g. wall_time_seconds,
+    throughput_cuts_per_sec).  Callers should use .get() with a typed default.
+    """
     stats_path = stage_dir / "_stats.json"
     if not stats_path.exists():
         return None

@@ -387,13 +387,10 @@ stages:
     assert result.exit_code == 0, result.output
     # The warning must appear before 'pipeline complete'
     output = result.output
-    assert "all 3 input cuts were dropped" in output or "all 3 cuts were dropped" in output, (
+    assert "all 3 input cuts were dropped" in output, (
         f"expected an all-cuts-dropped warning, got:\n{output}"
     )
     # Warning must precede the completion line
-    if "all 3 input cuts were dropped" in output:
-        warn_idx = output.index("all 3 input cuts were dropped")
-    else:
-        warn_idx = output.index("all 3 cuts were dropped")
+    warn_idx = output.index("all 3 input cuts were dropped")
     complete_idx = output.index("pipeline complete")
     assert warn_idx < complete_idx, "warning must appear before 'pipeline complete'"
