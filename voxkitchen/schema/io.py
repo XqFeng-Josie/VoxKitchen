@@ -107,7 +107,15 @@ def read_cuts(path: Path) -> Iterator[Cut]:
     gzip stream (e.g. from a crashed writer) is treated as incompatible,
     not as a valid empty manifest — callers must write at least the header
     for a manifest to be legal.
+
+    Lines whose ``__type__`` is not ``"cut"`` are skipped (forward
+    compatibility with future record kinds), but a warning is emitted on
+    exhaustion if any were skipped — so hand-built manifests that forget
+    the ``__type__: cut`` marker don't silently produce 0 cuts.
     """
+    import warnings
+
+    skipped = 0
     with gzip.open(path, "rt", encoding="utf-8") as f:
         first = f.readline()
         if not first:
@@ -128,6 +136,14 @@ def read_cuts(path: Path) -> Iterator[Cut]:
                 continue
             obj = json.loads(line)
             if obj.get("__type__") != "cut":
+                skipped += 1
                 continue
             cut_payload = {k: v for k, v in obj.items() if k != "__type__"}
             yield Cut.model_validate(cut_payload)
+
+    if skipped > 0:
+        warnings.warn(
+            f"read_cuts({path}): skipped {skipped} line(s) without "
+            "`__type__: cut` — hand-built manifests must include the marker",
+            stacklevel=2,
+        )

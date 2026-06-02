@@ -141,3 +141,67 @@ def test_read_header_rejects_incompatible_schema_version(tmp_path: Path) -> None
         )
     with pytest.raises(IncompatibleSchemaError):
         read_header(path)
+
+
+def test_read_cuts_warns_on_skipped_non_cut_lines(tmp_path: Path) -> None:
+    """Lines lacking `__type__: cut` are silently skipped today — should warn."""
+    import warnings
+
+    p = tmp_path / "bad.jsonl.gz"
+    with gzip.open(p, "wt") as f:
+        # Valid header.
+        f.write(
+            json.dumps(
+                {
+                    "__type__": "voxkitchen.header",
+                    "schema_version": "0.1",
+                    "created_at": "2026-01-01T00:00:00Z",
+                    "pipeline_run_id": "x",
+                    "stage_name": "ingest",
+                }
+            )
+            + "\n"
+        )
+        # Two malformed lines (no __type__) — what users hit when they
+        # hand-roll a manifest from Python dicts.
+        f.write(json.dumps({"id": "a", "duration": 1.0}) + "\n")
+        f.write(json.dumps({"id": "b", "duration": 1.0}) + "\n")
+
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        cuts = list(read_cuts(p))
+    assert cuts == []
+    # Exactly one warning naming the skip count and the file path.
+    matching = [w for w in captured if "skipped" in str(w.message).lower()]
+    assert len(matching) == 1, (
+        f"expected 1 'skipped' warning, got {len(matching)}: {[str(w.message) for w in captured]}"
+    )
+    msg = str(matching[0].message)
+    assert "2" in msg, msg  # the skip count
+    assert "bad.jsonl.gz" in msg, msg  # the file path
+
+
+def test_read_cuts_emits_no_warning_when_all_lines_are_cuts(tmp_path: Path) -> None:
+    """Don't warn on well-formed manifests."""
+    import warnings
+
+    p = tmp_path / "good.jsonl.gz"
+    now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    prov = Provenance(
+        source_cut_id=None,
+        generated_by="x",
+        stage_name="ingest",
+        created_at=now,
+        pipeline_run_id="r",
+    )
+    cut = Cut(id="c", recording_id="c", start=0.0, duration=1.0, supervisions=[], provenance=prov)
+    header = HeaderRecord(
+        schema_version="0.1", created_at=now, pipeline_run_id="r", stage_name="ingest"
+    )
+    write_cuts(p, header, iter([cut]))
+
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        cuts = list(read_cuts(p))
+    assert len(cuts) == 1
+    assert not [w for w in captured if "skipped" in str(w.message).lower()]
