@@ -1980,6 +1980,7 @@ vkit<span class="w"> </span>doctor<span class="w"> </span>--json<span class="w">
 </tr>
 </tbody>
 </table>
+<p><code>--expect</code> accepts either an internal group name (<code>core</code>, <code>asr</code>, <code>diarize</code>, <code>tts</code>, <code>fish-speech</code>) or the GHCR image tag (<code>slim</code> aliases to <code>core</code>).</p>
 <p>Inside the <code>voxkitchen:latest</code> multi-env image, <code>vkit doctor</code> with no <code>--expect</code> aggregates a table across every env under <code>/opt/voxkitchen/envs/</code>, re-invoking each env's own <code>vkit doctor --expect &lt;env&gt;</code>.</p>
 <h3 id="vkit-docker"><code>vkit docker</code></h3>
 <p>Run any of the commands above inside a published Docker image instead of the local Python env. Also has three image-management helpers (<code>build</code>, <code>pull</code>, <code>shell</code>).</p>
