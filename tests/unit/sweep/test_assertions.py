@@ -204,6 +204,20 @@ def test_normalize_text_strips_markup(tmp_path: Path) -> None:
     assert "markup" in msg.lower() or "double" in msg.lower()
 
 
+def test_loudness_normalize_uses_smoke_assertion() -> None:
+    """The sweep pipeline plan called for assert_metric_written('loudness_lufs')
+    but the operator doesn't write that metric — verified in commit 23afe82.
+    Pin the smoke fallback so an accidental "upgrade" doesn't slip through."""
+    from scripts.sweep.assertions import ASSERTIONS, default_smoke_assertion
+
+    assert ASSERTIONS["loudness_normalize"] is default_smoke_assertion, (
+        "loudness_normalize must use default_smoke_assertion until the "
+        "operator actually writes a loudness metric. If you're upgrading "
+        "this, also confirm voxkitchen/operators/basic/loudness_normalize.py "
+        "writes a loudness_lufs entry to cut.metrics."
+    )
+
+
 def test_assertion_returns_false_on_missing_manifest(tmp_path: Path) -> None:
     """If the pipeline somehow produced no pack stage, assertion fails cleanly."""
     from scripts.sweep.assertions import default_smoke_assertion
