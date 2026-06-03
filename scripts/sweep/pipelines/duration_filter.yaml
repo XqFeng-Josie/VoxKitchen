@@ -1,0 +1,20 @@
+# scripts/sweep/pipelines/duration_filter.yaml
+# Operator under test: duration_filter (keep cuts within a duration range).
+version: "0.1"
+name: sweep-duration-filter
+work_dir: /app/work/vkit-sweep/duration_filter
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: duration_filter
+    args:
+      min_duration: 0.1
+      max_duration: 600.0
+  - name: pack
+    op: pack_jsonl

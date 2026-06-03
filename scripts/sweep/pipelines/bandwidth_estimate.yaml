@@ -1,0 +1,18 @@
+# scripts/sweep/pipelines/bandwidth_estimate.yaml
+# Operator under test: bandwidth_estimate (detect effective bandwidth to catch upsampled audio).
+# NOTE: The operator writes `bandwidth_khz` (not `bandwidth_hz`).
+version: "0.1"
+name: sweep-bandwidth-estimate
+work_dir: /app/work/vkit-sweep/bandwidth_estimate
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: bandwidth_estimate
+  - name: pack
+    op: pack_jsonl

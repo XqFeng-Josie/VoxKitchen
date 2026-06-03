@@ -1,0 +1,17 @@
+# scripts/sweep/pipelines/clipping_detect.yaml
+# Operator under test: clipping_detect (measure the ratio of clipped samples).
+version: "0.1"
+name: sweep-clipping-detect
+work_dir: /app/work/vkit-sweep/clipping_detect
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: clipping_detect
+  - name: pack
+    op: pack_jsonl

@@ -219,4 +219,17 @@ ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
     "speechbrain_langid": default_smoke_assertion,
     "mel_extract": default_smoke_assertion,
     "codec_tokenize": default_smoke_assertion,
+    # Quality
+    "audio_fingerprint_dedup": default_smoke_assertion,
+    # NOTE: operator writes `bandwidth_khz`, not `bandwidth_hz` (plan table error).
+    "bandwidth_estimate": assert_metric_written("bandwidth_khz"),
+    "cer_wer": assert_metric_written("cer"),
+    "clipping_detect": assert_metric_written("clipping_ratio"),
+    "dnsmos_score": assert_metric_written("dnsmos_ovrl"),
+    "duration_filter": default_smoke_assertion,
+    "pitch_stats": assert_metric_written("pitch_mean"),
+    "quality_score_filter": default_smoke_assertion,
+    "snr_estimate": assert_metric_written("snr"),
+    "speaker_similarity": assert_speaker_similarity,
+    "utmos_score": assert_metric_written("utmos"),
 }

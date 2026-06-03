@@ -4,3 +4,4 @@ audio/demo1.opus
 noise/*
 rir/*
 manifests/*
+embeddings/*

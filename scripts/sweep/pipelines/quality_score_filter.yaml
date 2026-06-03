@@ -1,0 +1,22 @@
+# scripts/sweep/pipelines/quality_score_filter.yaml
+# Operator under test: quality_score_filter (drop cuts that fail expression conditions).
+version: "0.1"
+name: sweep-quality-score-filter
+work_dir: /app/work/vkit-sweep/quality_score_filter
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: quality_score_filter
+    args:
+      # Filter on built-in cut field (not metrics.*) so it works without any
+      # upstream metric-writing stage.
+      conditions:
+        - "duration > 0.1"
+  - name: pack
+    op: pack_jsonl

@@ -1,0 +1,17 @@
+# scripts/sweep/pipelines/pitch_stats.yaml
+# Operator under test: pitch_stats (fundamental frequency statistics via PyWorld).
+version: "0.1"
+name: sweep-pitch-stats
+work_dir: /app/work/vkit-sweep/pitch_stats
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: pitch_stats
+  - name: pack
+    op: pack_jsonl

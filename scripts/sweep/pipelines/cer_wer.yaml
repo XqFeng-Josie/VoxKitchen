@@ -1,0 +1,24 @@
+# scripts/sweep/pipelines/cer_wer.yaml
+# Operator under test: cer_wer (compute CER/WER vs reference text).
+#
+# The operator reads:
+#   - hypothesis text from supervisions[].text (set as ASR output in the fixture)
+#   - reference text from cut.custom["reference_text"] (set in the fixture)
+#
+# This design avoids needing faster_whisper_asr (asr image) in the slim sweep.
+# The fixture manifests/cer-wer-1cut.jsonl.gz provides both fields pre-populated.
+version: "0.1"
+name: sweep-cer-wer
+work_dir: /app/work/vkit-sweep/cer_wer
+num_cpu_workers: 1
+ingest:
+  source: manifest
+  args:
+    path: /app/scripts/sweep/fixtures/manifests/cer-wer-1cut.jsonl.gz
+stages:
+  - name: target
+    op: cer_wer
+    # Default config_field names: hypothesis_field="text", reference_field="reference_text"
+    # Both match what is stored in the fixture cut.
+  - name: pack
+    op: pack_jsonl
