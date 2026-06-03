@@ -10,14 +10,25 @@ Operators without an entry fall through to ``default_smoke_assertion`` (cuts > 0
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from pathlib import Path
+
+from voxkitchen.schema.cutset import CutSet
+
+_logger = logging.getLogger(__name__)
 
 # ---- Helpers ----
 
 
 def _read_final_cuts(work_dir: Path) -> list:
-    """Locate and load the final pack stage's manifest. Returns [] on missing."""
+    """Locate and load the final pack stage's manifest. Returns [] on missing.
+
+    Deserialization errors (schema mismatch, malformed cut record, etc.) are
+    logged at WARNING level and converted to ``[]`` so the assertion contract
+    (must-not-raise) is preserved. The log entry lets a developer see the
+    real cause without re-running the pipeline.
+    """
     pack_dirs = sorted(work_dir.glob("*_pack"))
     if not pack_dirs:
         return []
@@ -25,10 +36,9 @@ def _read_final_cuts(work_dir: Path) -> list:
     if not manifest.exists():
         return []
     try:
-        from voxkitchen.schema.cutset import CutSet
-
         return list(CutSet.from_jsonl_gz(manifest))
-    except Exception:
+    except Exception as exc:
+        _logger.warning("_read_final_cuts(%s): %s: %s", manifest, type(exc).__name__, exc)
         return []
 
 
@@ -146,20 +156,18 @@ def assert_metric_written(metric_name: str) -> Callable[[Path, str], tuple[bool,
     return check
 
 
-def assert_duration_scaled(
-    min_ratio: float = 0.8,
-    max_ratio: float = 1.3,
-) -> Callable[[Path, str], tuple[bool, str]]:
-    """speed_perturb shifts duration — expect ≥1 cut whose duration is plausibly scaled."""
+def assert_speed_perturb_produces_cuts(work_dir: Path, _log: str) -> tuple[bool, str]:
+    """speed_perturb fans out each cut into multiple speed variants.
 
-    def check(work_dir: Path, _log: str) -> tuple[bool, str]:
-        cuts = _read_final_cuts(work_dir)
-        if not cuts:
-            return False, "no cuts"
-        durations = [c.duration for c in cuts]
-        return True, f"{len(cuts)} cuts, mean dur {sum(durations) / len(cuts):.1f}s"
-
-    return check
+    Without a reference input duration we can't validate the actual scaling
+    ratios from work_dir alone, so this assertion only confirms the operator
+    produced cuts. Tighter validation belongs in tests/unit/operators/augment/.
+    """
+    cuts = _read_final_cuts(work_dir)
+    if not cuts:
+        return False, "no cuts"
+    durations = [c.duration for c in cuts]
+    return True, f"{len(cuts)} cuts, mean dur {sum(durations) / len(cuts):.1f}s"
 
 
 def assert_pack_file_exists(
@@ -170,11 +178,11 @@ def assert_pack_file_exists(
     def check(work_dir: Path, _log: str) -> tuple[bool, str]:
         path = work_dir / stage_name / "cuts.jsonl.gz"
         if not path.exists():
-            return False, f"{path.name} not written"
+            return False, f"{stage_name}/{path.name} not written"
         size = path.stat().st_size
         if size < 100:
-            return False, f"manifest suspiciously small: {size} bytes"
-        return True, f"manifest written: {size} bytes"
+            return False, f"{stage_name}/{path.name} suspiciously small: {size} bytes"
+        return True, f"{stage_name}/{path.name} written: {size} bytes"
 
     return check
 

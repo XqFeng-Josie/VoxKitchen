@@ -5,6 +5,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
 
 def _write_pack_stage(
     work_dir: Path, *, stage_name: str = "01_pack", cuts: list[dict] | None = None
@@ -209,3 +211,27 @@ def test_assertion_returns_false_on_missing_manifest(tmp_path: Path) -> None:
     ok, msg = default_smoke_assertion(tmp_path, "")
     assert not ok
     assert "0 cuts" in msg
+
+
+def test_read_final_cuts_logs_warning_on_corrupt_manifest(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A corrupt manifest must produce a WARNING log entry and []."""
+    from scripts.sweep.assertions import _read_final_cuts
+
+    # Build a stage dir with a gzip file that's NOT a valid header+cut stream.
+    stage_dir = tmp_path / "01_pack"
+    stage_dir.mkdir()
+    bad = stage_dir / "cuts.jsonl.gz"
+    with gzip.open(bad, "wt") as f:
+        f.write("not a valid voxkitchen manifest line\n")
+
+    with caplog.at_level("WARNING", logger="scripts.sweep.assertions"):
+        result = _read_final_cuts(tmp_path)
+
+    assert result == []
+    # The warning must name the manifest path and the exception type.
+    matching = [r for r in caplog.records if r.name == "scripts.sweep.assertions"]
+    assert matching, f"expected a WARNING from scripts.sweep.assertions, got: {caplog.records}"
+    msg = str(matching[0].getMessage())
+    assert str(bad) in msg or "cuts.jsonl.gz" in msg
