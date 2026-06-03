@@ -1,0 +1,17 @@
+# scripts/sweep/pipelines/pack_webdataset.yaml
+# Operator under test: pack_webdataset (export CutSet as WebDataset tar shards).
+version: "0.1"
+name: sweep-pack-webdataset
+work_dir: /app/work/vkit-sweep/pack_webdataset
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: pack_webdataset
+    args:
+      output_dir: /app/output/vkit-sweep/webdataset
+  - name: pack
+    op: pack_jsonl

@@ -232,4 +232,11 @@ ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
     "snr_estimate": assert_metric_written("snr"),
     "speaker_similarity": assert_speaker_similarity,
     "utmos_score": assert_metric_written("utmos"),
+    # Pack
+    "pack_huggingface": default_smoke_assertion,
+    "pack_jsonl": assert_pack_file_exists("00_target"),
+    "pack_kaldi": default_smoke_assertion,
+    "pack_manifest": assert_pack_file_exists("00_target"),
+    "pack_parquet": default_smoke_assertion,
+    "pack_webdataset": default_smoke_assertion,
 }

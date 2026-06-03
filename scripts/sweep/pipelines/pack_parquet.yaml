@@ -1,0 +1,18 @@
+# scripts/sweep/pipelines/pack_parquet.yaml
+# Operator under test: pack_parquet (export CutSet metadata to Parquet).
+# NOTE: arg is output_dir (writes metadata.parquet inside it), not output_path.
+version: "0.1"
+name: sweep-pack-parquet
+work_dir: /app/work/vkit-sweep/pack_parquet
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: pack_parquet
+    args:
+      output_dir: /app/output/vkit-sweep/parquet
+  - name: pack
+    op: pack_jsonl

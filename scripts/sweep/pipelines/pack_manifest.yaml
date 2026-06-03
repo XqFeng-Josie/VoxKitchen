@@ -1,0 +1,13 @@
+# scripts/sweep/pipelines/pack_manifest.yaml
+# Operator under test: pack_manifest (passthrough — writes cuts.jsonl.gz with no conversion).
+# Single-stage yaml: pack_manifest IS the pack stage; assertion looks at 00_target.
+version: "0.1"
+name: sweep-pack-manifest
+work_dir: /app/work/vkit-sweep/pack_manifest
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - { name: target, op: pack_manifest }

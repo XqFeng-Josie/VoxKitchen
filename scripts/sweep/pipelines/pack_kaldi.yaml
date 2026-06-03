@@ -1,0 +1,17 @@
+# scripts/sweep/pipelines/pack_kaldi.yaml
+# Operator under test: pack_kaldi (export CutSet in Kaldi format).
+version: "0.1"
+name: sweep-pack-kaldi
+work_dir: /app/work/vkit-sweep/pack_kaldi
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: pack_kaldi
+    args:
+      output_dir: /app/output/vkit-sweep/kaldi
+  - name: pack
+    op: pack_jsonl

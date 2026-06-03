@@ -1,0 +1,13 @@
+# scripts/sweep/pipelines/pack_jsonl.yaml
+# Operator under test: pack_jsonl (write flat JSONL manifest).
+# Single-stage yaml: pack_jsonl IS the pack stage; assertion looks at 00_target.
+version: "0.1"
+name: sweep-pack-jsonl
+work_dir: /app/work/vkit-sweep/pack_jsonl
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - { name: target, op: pack_jsonl }

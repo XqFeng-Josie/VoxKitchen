@@ -227,6 +227,39 @@ def test_assertion_returns_false_on_missing_manifest(tmp_path: Path) -> None:
     assert "0 cuts" in msg
 
 
+def test_speaker_similarity_passes_in_range(tmp_path: Path) -> None:
+    """Similarity in [-1, 1] PASSes."""
+    from scripts.sweep.assertions import assert_speaker_similarity
+
+    cut = _make_cut(metrics={"speaker_similarity": 0.83})
+    _write_pack_stage(tmp_path, cuts=[cut])
+    ok, msg = assert_speaker_similarity(tmp_path, "")
+    assert ok
+    assert "1 similarities" in msg or "1 similarit" in msg
+
+
+def test_speaker_similarity_fails_out_of_range(tmp_path: Path) -> None:
+    """Similarity >1.0 FAILs (cosine cannot exceed 1)."""
+    from scripts.sweep.assertions import assert_speaker_similarity
+
+    cut = _make_cut(metrics={"speaker_similarity": 1.5})
+    _write_pack_stage(tmp_path, cuts=[cut])
+    ok, msg = assert_speaker_similarity(tmp_path, "")
+    assert not ok
+    assert "out of" in msg.lower() or "[-1" in msg
+
+
+def test_speaker_similarity_fails_with_no_metric(tmp_path: Path) -> None:
+    """No similarity metric at all FAILs."""
+    from scripts.sweep.assertions import assert_speaker_similarity
+
+    cut = _make_cut(metrics={})
+    _write_pack_stage(tmp_path, cuts=[cut])
+    ok, msg = assert_speaker_similarity(tmp_path, "")
+    assert not ok
+    assert "no" in msg.lower() and "similarity" in msg.lower()
+
+
 def test_read_final_cuts_logs_warning_on_corrupt_manifest(
     tmp_path: Path, caplog: pytest.LogCaptureFixture
 ) -> None:

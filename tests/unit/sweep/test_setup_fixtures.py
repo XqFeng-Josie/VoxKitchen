@@ -27,6 +27,9 @@ def test_setup_creates_all_generated_fixtures(tmp_path: Path) -> None:
     assert (fixtures_dir / "rir" / "synthetic-rir.wav").is_file()
     assert (fixtures_dir / "manifests" / "text-en-1cut.jsonl.gz").is_file()
     assert (fixtures_dir / "manifests" / "text-zh-1cut.jsonl.gz").is_file()
+    # Added in Task 7 (cer_wer fixture-based approach + speaker_similarity .npy)
+    assert (fixtures_dir / "manifests" / "cer-wer-1cut.jsonl.gz").is_file()
+    assert (fixtures_dir / "embeddings" / "ref-speaker.npy").is_file()
 
 
 def test_setup_is_idempotent(tmp_path: Path) -> None:
@@ -58,7 +61,7 @@ def test_tiny_english_is_5s_16khz_mono(tmp_path: Path) -> None:
     repo_root = Path(__file__).resolve().parents[3]
     fixtures_dir = tmp_path / "fixtures"
     fixtures_dir.mkdir()
-    for sub in ("audio", "noise", "rir", "manifests"):
+    for sub in ("audio", "noise", "rir", "manifests", "embeddings"):
         (fixtures_dir / sub).mkdir()
 
     generate_fixtures(repo_root=repo_root, fixtures_dir=fixtures_dir)
