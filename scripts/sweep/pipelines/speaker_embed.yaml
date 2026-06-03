@@ -1,0 +1,20 @@
+# scripts/sweep/pipelines/speaker_embed.yaml
+# Operator under test: speaker_embed (SpeechBrain ECAPA-TDNN embeddings).
+version: "0.1"
+name: sweep-speaker_embed
+work_dir: /app/work/vkit-sweep/speaker_embed
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: speaker_embed
+    args:
+      method: speechbrain
+      speechbrain_model: speechbrain/spkrec-ecapa-voxceleb
+  - name: pack
+    op: pack_jsonl

@@ -1,0 +1,20 @@
+# scripts/sweep/pipelines/noise_augment.yaml
+# Operator under test: noise_augment (mix in random noise at random SNR).
+version: "0.1"
+name: sweep-noise_augment
+work_dir: /app/work/vkit-sweep/noise_augment
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: noise_augment
+    args:
+      noise_dir: /app/scripts/sweep/fixtures/noise
+      snr_range: [10.0, 20.0]
+  - name: pack
+    op: pack_jsonl

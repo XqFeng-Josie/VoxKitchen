@@ -207,4 +207,16 @@ ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
     "webrtc_vad": assert_vad_segments,
     "fixed_segment": assert_vad_segments,
     "silence_split": assert_vad_segments,
+    # Augmentation
+    "noise_augment": default_smoke_assertion,
+    "reverb_augment": default_smoke_assertion,
+    "speed_perturb": assert_speed_perturb_produces_cuts,
+    "volume_perturb": default_smoke_assertion,
+    # Annotation (slim subset — heavy models live in asr image)
+    "gender_classify": default_smoke_assertion,
+    "speaker_embed": assert_speaker_embed_dim,
+    "speech_enhance": default_smoke_assertion,
+    "speechbrain_langid": default_smoke_assertion,
+    "mel_extract": default_smoke_assertion,
+    "codec_tokenize": default_smoke_assertion,
 }

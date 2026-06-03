@@ -1,0 +1,19 @@
+# scripts/sweep/pipelines/reverb_augment.yaml
+# Operator under test: reverb_augment (convolve with room impulse responses).
+version: "0.1"
+name: sweep-reverb_augment
+work_dir: /app/work/vkit-sweep/reverb_augment
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: reverb_augment
+    args:
+      rir_dir: /app/scripts/sweep/fixtures/rir
+  - name: pack
+    op: pack_jsonl
