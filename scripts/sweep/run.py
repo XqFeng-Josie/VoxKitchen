@@ -179,7 +179,7 @@ def _run_one(
             "--work-dir",
             str(work_dir),
             "--mount",
-            str(FIXTURES_DIR),
+            f"{FIXTURES_DIR}:/app/scripts/sweep/fixtures",
         ],
         capture_output=True,
         text=True,
