@@ -437,3 +437,41 @@ def test_resolve_image_tag_applied() -> None:
 
 def test_resolve_image_override_wins() -> None:
     assert docker_cmd._resolve_image("latest", "custom:tag") == "custom:tag"
+
+
+# ---------------------------------------------------------------------------
+# _extra_mounts — HOST:CONTAINER syntax
+# ---------------------------------------------------------------------------
+
+
+def test_extra_mounts_plain_path_mirrors_host(tmp_path) -> None:
+    """A plain path mounts at the same absolute path inside the container."""
+    from voxkitchen.cli.docker_cmd import _extra_mounts
+
+    p = tmp_path / "demo"
+    p.mkdir()
+    flags = _extra_mounts([p])
+    abs_p = str(p.resolve())
+    assert flags == ["-v", f"{abs_p}:{abs_p}:ro"]
+
+
+def test_extra_mounts_host_colon_container_form(tmp_path) -> None:
+    """A HOST:CONTAINER string mounts at the explicit container path."""
+    from voxkitchen.cli.docker_cmd import _extra_mounts
+
+    p = tmp_path / "demo"
+    p.mkdir()
+    flags = _extra_mounts([f"{p}:/app/sweep/fixtures"])
+    abs_p = str(p.resolve())
+    assert flags == ["-v", f"{abs_p}:/app/sweep/fixtures:ro"]
+
+
+def test_extra_mounts_string_without_colon_is_plain_path(tmp_path) -> None:
+    """A bare string path (no colon) still works as plain mount."""
+    from voxkitchen.cli.docker_cmd import _extra_mounts
+
+    p = tmp_path / "demo"
+    p.mkdir()
+    flags = _extra_mounts([str(p)])
+    abs_p = str(p.resolve())
+    assert flags == ["-v", f"{abs_p}:{abs_p}:ro"]

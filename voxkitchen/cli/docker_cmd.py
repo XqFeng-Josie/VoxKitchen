@@ -169,12 +169,35 @@ def _pipeline_mount(pipeline_arg: str) -> tuple[list[str], str]:
     return (["-v", f"{abs_p}:{abs_p}:ro"], str(abs_p))
 
 
-def _extra_mounts(paths: list[Path]) -> list[str]:
-    """Expand ``--mount`` flags into ``-v HOST:HOST:ro`` pairs."""
+def _extra_mounts(paths: list[Path | str]) -> list[str]:
+    """Expand ``--mount`` flags into ``-v HOST:CONTAINER:ro`` pairs.
+
+    Two accepted forms:
+    - Plain path (``Path`` or simple string) → mounted at the same absolute
+      host path inside the container (host:host mirror). Useful when
+      in-container code references files by host absolute path.
+    - String of the form ``HOST:CONTAINER`` (container side must be an
+      absolute path, i.e. start with ``/``) → mounted at the explicit
+      container path. Use when in-container code expects a stable path
+      independent of the user's host layout.
+
+    Both forms are mounted read-only.
+    """
     out: list[str] = []
-    for p in paths:
-        abs_p = p.resolve()
-        out += ["-v", f"{abs_p}:{abs_p}:ro"]
+    for raw in paths:
+        s = str(raw)
+        # Detect explicit HOST:CONTAINER form: contains ':' and the part
+        # AFTER the first ':' is an absolute path. A bare absolute host path
+        # like ``/foo/bar`` has no second-half-starting-with-/, so it falls
+        # through to host:host mirror.
+        if ":" in s:
+            host_str, container_str = s.split(":", 1)
+            if host_str and container_str.startswith("/"):
+                host_p = Path(host_str).resolve()
+                out += ["-v", f"{host_p}:{container_str}:ro"]
+                continue
+        host_p = Path(s).resolve()
+        out += ["-v", f"{host_p}:{host_p}:ro"]
     return out
 
 
@@ -229,8 +252,15 @@ def run_cmd(
     env_file: Path | None = typer.Option(
         None, "--env-file", help="Docker --env-file path. Default: ./.env if it exists."
     ),
-    mount: list[Path] = typer.Option(
-        [], "--mount", "-m", help="Extra bind mount (repeatable). Host path, mounted read-only."
+    mount: list[str] = typer.Option(
+        [],
+        "--mount",
+        "-m",
+        help=(
+            "Extra bind mount (repeatable). Two forms: a host path (mounted "
+            "at the same absolute path inside the container) or HOST:CONTAINER "
+            "(mounted at the explicit container path). Always read-only."
+        ),
     ),
     num_gpus: int | None = typer.Option(None, "--num-gpus", help="Override pipeline GPU count."),
     num_workers: int | None = typer.Option(
