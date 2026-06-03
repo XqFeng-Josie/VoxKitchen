@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/mel_extract.yaml
 # Operator under test: mel_extract (80-bin log-mel spectrogram via torchaudio/librosa).
 version: "0.1"
-name: sweep-mel_extract
+name: sweep-mel-extract
 work_dir: /app/work/vkit-sweep/mel_extract
 num_cpu_workers: 1
 ingest:

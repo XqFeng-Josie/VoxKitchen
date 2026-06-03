@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/speechbrain_langid.yaml
 # Operator under test: speechbrain_langid (VoxLingua107 language identification).
 version: "0.1"
-name: sweep-speechbrain_langid
+name: sweep-speechbrain-langid
 work_dir: /app/work/vkit-sweep/speechbrain_langid
 num_cpu_workers: 1
 ingest:

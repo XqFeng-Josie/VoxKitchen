@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/noise_augment.yaml
 # Operator under test: noise_augment (mix in random noise at random SNR).
 version: "0.1"
-name: sweep-noise_augment
+name: sweep-noise-augment
 work_dir: /app/work/vkit-sweep/noise_augment
 num_cpu_workers: 1
 ingest:
@@ -13,6 +13,8 @@ ingest:
 stages:
   - name: target
     op: noise_augment
+    # NOTE: the plan table said `noise_root` + `snr_db_min/max`; actual
+    # Config fields are `noise_dir` + a single `snr_range: [min, max]` list.
     args:
       noise_dir: /app/scripts/sweep/fixtures/noise
       snr_range: [10.0, 20.0]

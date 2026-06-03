@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/codec_tokenize.yaml
 # Operator under test: codec_tokenize (EnCodec discrete token extraction).
 version: "0.1"
-name: sweep-codec_tokenize
+name: sweep-codec-tokenize
 work_dir: /app/work/vkit-sweep/codec_tokenize
 num_cpu_workers: 1
 ingest:
@@ -13,6 +13,9 @@ ingest:
 stages:
   - name: target
     op: codec_tokenize
+    # NOTE: the plan table said `model: encodec`; actual Config field for
+    # selecting the backend is `backend: encodec`. The `model:` field is a
+    # separate variant selector (e.g. encodec_24khz).
     args:
       backend: encodec
   - name: pack

@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/volume_perturb.yaml
 # Operator under test: volume_perturb (random gain within a dB range).
 version: "0.1"
-name: sweep-volume_perturb
+name: sweep-volume-perturb
 work_dir: /app/work/vkit-sweep/volume_perturb
 num_cpu_workers: 1
 ingest:

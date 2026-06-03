@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/speaker_embed.yaml
 # Operator under test: speaker_embed (SpeechBrain ECAPA-TDNN embeddings).
 version: "0.1"
-name: sweep-speaker_embed
+name: sweep-speaker-embed
 work_dir: /app/work/vkit-sweep/speaker_embed
 num_cpu_workers: 1
 ingest:

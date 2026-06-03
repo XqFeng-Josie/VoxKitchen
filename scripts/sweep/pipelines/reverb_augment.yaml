@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/reverb_augment.yaml
 # Operator under test: reverb_augment (convolve with room impulse responses).
 version: "0.1"
-name: sweep-reverb_augment
+name: sweep-reverb-augment
 work_dir: /app/work/vkit-sweep/reverb_augment
 num_cpu_workers: 1
 ingest:
@@ -13,6 +13,7 @@ ingest:
 stages:
   - name: target
     op: reverb_augment
+    # NOTE: the plan table said `rir_root`; actual Config field is `rir_dir`.
     args:
       rir_dir: /app/scripts/sweep/fixtures/rir
   - name: pack

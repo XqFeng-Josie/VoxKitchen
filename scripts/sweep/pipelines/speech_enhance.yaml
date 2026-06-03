@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/speech_enhance.yaml
 # Operator under test: speech_enhance (DeepFilterNet neural denoiser; defaults only).
 version: "0.1"
-name: sweep-speech_enhance
+name: sweep-speech-enhance
 work_dir: /app/work/vkit-sweep/speech_enhance
 num_cpu_workers: 1
 ingest:

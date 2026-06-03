@@ -1,7 +1,7 @@
 # scripts/sweep/pipelines/gender_classify.yaml
 # Operator under test: gender_classify (pitch-based F0 method; no model download).
 version: "0.1"
-name: sweep-gender_classify
+name: sweep-gender-classify
 work_dir: /app/work/vkit-sweep/gender_classify
 num_cpu_workers: 1
 ingest:
