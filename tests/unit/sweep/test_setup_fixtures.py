@@ -10,10 +10,6 @@ def test_setup_creates_all_generated_fixtures(tmp_path: Path) -> None:
     repo_root = Path(__file__).resolve().parents[3]
     fixtures_dir = tmp_path / "fixtures"
     fixtures_dir.mkdir()
-    (fixtures_dir / "audio").mkdir()
-    (fixtures_dir / "noise").mkdir()
-    (fixtures_dir / "rir").mkdir()
-    (fixtures_dir / "manifests").mkdir()
 
     generate_fixtures(
         repo_root=repo_root,
@@ -21,7 +17,12 @@ def test_setup_creates_all_generated_fixtures(tmp_path: Path) -> None:
     )
 
     assert (fixtures_dir / "audio" / "tiny-english.wav").is_file()
-    assert (fixtures_dir / "audio" / "demo1.opus").exists()
+    link = fixtures_dir / "audio" / "demo1.opus"
+    # On Linux/macOS this should always be a symlink. is_symlink() does not
+    # follow the link; is_file() does, so the conjunction proves both that
+    # the link exists AND that the target is reachable.
+    assert link.is_symlink(), "expected a symlink to demo1.opus (copy fallback fired silently)"
+    assert link.is_file(), "symlink target unreachable"
     assert (fixtures_dir / "noise" / "white-5s.wav").is_file()
     assert (fixtures_dir / "rir" / "synthetic-rir.wav").is_file()
     assert (fixtures_dir / "manifests" / "text-en-1cut.jsonl.gz").is_file()
@@ -29,22 +30,24 @@ def test_setup_creates_all_generated_fixtures(tmp_path: Path) -> None:
 
 
 def test_setup_is_idempotent(tmp_path: Path) -> None:
-    """Running --setup twice must not change file sizes or mtimes inconsistently."""
+    """Running --setup twice must produce byte-identical files."""
     from scripts.sweep.setup_fixtures import generate_fixtures
 
     repo_root = Path(__file__).resolve().parents[3]
     fixtures_dir = tmp_path / "fixtures"
     fixtures_dir.mkdir()
-    for sub in ("audio", "noise", "rir", "manifests"):
-        (fixtures_dir / sub).mkdir()
 
     generate_fixtures(repo_root=repo_root, fixtures_dir=fixtures_dir)
-    sizes_first = {p: p.stat().st_size for p in fixtures_dir.rglob("*") if p.is_file()}
+    content_first = {
+        p.relative_to(fixtures_dir): p.read_bytes() for p in fixtures_dir.rglob("*") if p.is_file()
+    }
 
     generate_fixtures(repo_root=repo_root, fixtures_dir=fixtures_dir)
-    sizes_second = {p: p.stat().st_size for p in fixtures_dir.rglob("*") if p.is_file()}
+    content_second = {
+        p.relative_to(fixtures_dir): p.read_bytes() for p in fixtures_dir.rglob("*") if p.is_file()
+    }
 
-    assert sizes_first == sizes_second, "fixture sizes drifted between two --setup runs"
+    assert content_first == content_second, "fixture bytes drifted between two --setup runs"
 
 
 def test_tiny_english_is_5s_16khz_mono(tmp_path: Path) -> None:

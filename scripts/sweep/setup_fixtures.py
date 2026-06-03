@@ -17,8 +17,11 @@ Outputs (gitignored, regenerated each --setup):
 from __future__ import annotations
 
 import gzip
+import io
 import json
+import shutil
 import subprocess
+import warnings
 import wave
 from datetime import datetime, timezone
 from pathlib import Path
@@ -56,9 +59,17 @@ def _make_demo_symlink(repo_root: Path, audio_dir: Path) -> None:
         dst.unlink()
     try:
         dst.symlink_to(src)
-    except OSError:
-        import shutil
-
+    except OSError as exc:
+        # Filesystem doesn't support symlinks (FAT32) or the user lacks the
+        # privilege (Windows non-admin) — fall back to copy. Warn so a real
+        # misconfiguration doesn't hide silently behind a working-but-wrong
+        # fixture state.
+        warnings.warn(
+            f"symlink_to({dst}) failed ({type(exc).__name__}: {exc}); "
+            "falling back to shutil.copy. Subsequent operator-sweep runs will "
+            "not reflect source-audio updates until --setup is re-run.",
+            stacklevel=2,
+        )
         shutil.copy(src, dst)
 
 
@@ -176,6 +187,14 @@ def _write_text_manifest(path: Path, *, cut_id: str, text: str) -> None:
         },
         "custom": {},
     }
-    with gzip.open(path, "wt", encoding="utf-8") as f:
+    # Use GzipFile with mtime=0 so the output bytes are deterministic — the
+    # default gzip.open embeds the current wall-clock mtime in the header
+    # bytes, which breaks the "byte-identical across runs" idempotency
+    # contract in the module docstring.
+    with (
+        open(path, "wb") as raw,
+        gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as gz,
+        io.TextIOWrapper(gz, encoding="utf-8") as f,
+    ):
         f.write(json.dumps(header, sort_keys=True) + "\n")
         f.write(json.dumps(cut, sort_keys=True) + "\n")
