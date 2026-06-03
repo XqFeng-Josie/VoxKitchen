@@ -194,7 +194,17 @@ def assert_pack_file_exists(
 # is sufficient for pure-transform ops.
 
 ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
-    # Populated in subsequent tasks. Keep this section ordered by operator
-    # category for readability: Audio → Segmentation → Augmentation → Quality
-    # → Annotation → Synthesize → Pack.
+    # Audio
+    "resample": assert_resample_target_sr,
+    "ffmpeg_convert": default_smoke_assertion,
+    "channel_merge": default_smoke_assertion,
+    # loudness_normalize normalises audio in-place but does NOT write a
+    # loudness_lufs metric entry; smoke assertion (cuts > 0) is correct here.
+    "loudness_normalize": default_smoke_assertion,
+    "identity": default_smoke_assertion,
+    # Segmentation
+    "silero_vad": assert_vad_segments,
+    "webrtc_vad": assert_vad_segments,
+    "fixed_segment": assert_vad_segments,
+    "silence_split": assert_vad_segments,
 }

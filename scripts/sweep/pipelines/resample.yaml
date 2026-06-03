@@ -1,9 +1,8 @@
-# scripts/sweep/pipelines/identity.yaml
-# Operator under test: identity (no-op, passes cuts through unchanged).
-# Verifies the sweep driver end-to-end against the slim image.
+# scripts/sweep/pipelines/resample.yaml
+# Operator under test: resample (downsample to 16 kHz mono).
 version: "0.1"
-name: sweep-identity
-work_dir: /app/work/vkit-sweep/identity
+name: sweep-resample
+work_dir: /app/work/vkit-sweep/resample
 num_cpu_workers: 1
 ingest:
   source: dir
@@ -13,6 +12,9 @@ ingest:
     root: /app/scripts/sweep/fixtures/audio
 stages:
   - name: target
-    op: identity
+    op: resample
+    args:
+      target_sr: 16000
+      target_channels: 1
   - name: pack
     op: pack_jsonl

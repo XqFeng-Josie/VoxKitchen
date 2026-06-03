@@ -19,7 +19,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PIPELINES_DIR = REPO_ROOT / "scripts" / "sweep" / "pipelines"
 FIXTURES_DIR = REPO_ROOT / "scripts" / "sweep" / "fixtures"
-WORK_BASE = Path("/tmp/vkit-sweep")
+# vkit docker run always mounts CWD/work → /app/work inside the container.
+# We put sweep output under /app/work/vkit-sweep/<op> (container path) so
+# the assertion can read from WORK_BASE/<op> = CWD/work/vkit-sweep/<op>
+# on the host.  The container-side path is /app/work/vkit-sweep/<op>.
+WORK_BASE = REPO_ROOT / "work" / "vkit-sweep"
+_CONTAINER_WORK_BASE = "/app/work/vkit-sweep"
 REPORT_FILE = REPO_ROOT / "scripts" / "sweep" / "last-run.md"
 
 IMAGE_ORDER = ["slim", "asr", "diarize", "tts", "fish-speech"]
@@ -152,7 +157,9 @@ def _run_one(
     """Run a single op pipeline and apply its assertion."""
     from scripts.sweep.assertions import ASSERTIONS, default_smoke_assertion
 
+    # host path for assertion reads; container path for --work-dir override
     work_dir = WORK_BASE / op
+    container_work_dir = f"{_CONTAINER_WORK_BASE}/{op}"
     if work_dir.exists():
         shutil.rmtree(work_dir)
 
@@ -177,7 +184,7 @@ def _run_one(
             image,
             str(yaml_path),
             "--work-dir",
-            str(work_dir),
+            container_work_dir,
             "--mount",
             f"{FIXTURES_DIR}:/app/scripts/sweep/fixtures",
         ],

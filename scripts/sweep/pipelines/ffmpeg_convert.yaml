@@ -1,9 +1,8 @@
-# scripts/sweep/pipelines/identity.yaml
-# Operator under test: identity (no-op, passes cuts through unchanged).
-# Verifies the sweep driver end-to-end against the slim image.
+# scripts/sweep/pipelines/ffmpeg_convert.yaml
+# Operator under test: ffmpeg_convert (re-wrap to WAV).
 version: "0.1"
-name: sweep-identity
-work_dir: /app/work/vkit-sweep/identity
+name: sweep-ffmpeg-convert
+work_dir: /app/work/vkit-sweep/ffmpeg_convert
 num_cpu_workers: 1
 ingest:
   source: dir
@@ -13,6 +12,8 @@ ingest:
     root: /app/scripts/sweep/fixtures/audio
 stages:
   - name: target
-    op: identity
+    op: ffmpeg_convert
+    args:
+      target_format: wav
   - name: pack
     op: pack_jsonl

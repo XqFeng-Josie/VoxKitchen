@@ -1,0 +1,22 @@
+# scripts/sweep/pipelines/silence_split.yaml
+# Operator under test: silence_split (split on silence via librosa).
+# NOTE: The plan table listed the arg as "min_segment_seconds" but the actual
+# SilenceSplitConfig field is "min_duration". Corrected here.
+version: "0.1"
+name: sweep-silence-split
+work_dir: /app/work/vkit-sweep/silence_split
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # /app is the WORKDIR inside vkit images; the sweep driver mounts
+    # scripts/sweep/fixtures there so every yaml is host-path-independent.
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: silence_split
+    args:
+      top_db: 30
+      min_duration: 1.0
+  - name: pack
+    op: pack_jsonl
