@@ -1,0 +1,15 @@
+# scripts/sweep/pipelines/emotion_recognize.yaml
+# Operator under test: emotion_recognize (emotion2vec via FunASR, 9-class).
+version: "0.1"
+name: sweep-emotion-recognize
+work_dir: /app/work/vkit-sweep/emotion_recognize
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: emotion_recognize
+  - name: pack
+    op: pack_jsonl

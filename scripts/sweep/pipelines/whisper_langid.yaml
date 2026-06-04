@@ -1,0 +1,19 @@
+# scripts/sweep/pipelines/whisper_langid.yaml
+# Operator under test: whisper_langid (language detection via Whisper).
+version: "0.1"
+name: sweep-whisper-langid
+work_dir: /app/work/vkit-sweep/whisper_langid
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: whisper_langid
+    args:
+      model: tiny
+      # NOTE: plan says backend: openai; verified against WhisperLangidConfig.backend field.
+      backend: openai
+  - name: pack
+    op: pack_jsonl

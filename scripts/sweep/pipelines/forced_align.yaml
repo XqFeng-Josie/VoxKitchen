@@ -1,0 +1,21 @@
+# scripts/sweep/pipelines/forced_align.yaml
+# Operator under test: forced_align (Qwen3-ForcedAligner, word-level CTC alignment).
+# Chained: needs supervisions.text from upstream ASR.
+version: "0.1"
+name: sweep-forced-align
+work_dir: /app/work/vkit-sweep/forced_align
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: asr
+    op: faster_whisper_asr
+    args:
+      model: tiny
+      compute_type: int8
+  - name: target
+    op: forced_align
+  - name: pack
+    op: pack_jsonl

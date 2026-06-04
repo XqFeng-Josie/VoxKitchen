@@ -232,6 +232,18 @@ ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
     "snr_estimate": assert_metric_written("snr"),
     "speaker_similarity": assert_speaker_similarity,
     "utmos_score": assert_metric_written("utmos"),
+    # Annotation — ASR family (asr image)
+    "emotion_recognize": default_smoke_assertion,
+    "faster_whisper_asr": assert_asr_nonempty,
+    "forced_align": default_smoke_assertion,
+    "normalize_text": assert_normalize_text_strips,
+    "paraformer_asr": assert_asr_nonempty,
+    "qwen3_asr": assert_asr_nonempty,
+    "sensevoice_asr": assert_asr_nonempty,
+    "wenet_asr": assert_asr_nonempty,
+    "whisper_langid": default_smoke_assertion,
+    "whisper_openai_asr": assert_asr_nonempty,
+    "whisperx_asr": assert_asr_nonempty,
     # Pack
     "pack_huggingface": default_smoke_assertion,
     "pack_jsonl": assert_pack_file_exists("00_target"),

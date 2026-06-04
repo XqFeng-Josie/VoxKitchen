@@ -1,0 +1,16 @@
+# scripts/sweep/pipelines/paraformer_asr.yaml
+# Operator under test: paraformer_asr (FunASR Paraformer — Chinese).
+version: "0.1"
+name: sweep-paraformer-asr
+work_dir: /app/work/vkit-sweep/paraformer_asr
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # Chinese ASR — use audio-zh subdir (zh-tiny.wav).
+    root: /app/scripts/sweep/fixtures/audio-zh
+stages:
+  - name: target
+    op: paraformer_asr
+  - name: pack
+    op: pack_jsonl

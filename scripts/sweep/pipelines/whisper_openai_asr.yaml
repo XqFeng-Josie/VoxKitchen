@@ -1,0 +1,17 @@
+# scripts/sweep/pipelines/whisper_openai_asr.yaml
+# Operator under test: whisper_openai_asr (OpenAI's official whisper, pure PyTorch).
+version: "0.1"
+name: sweep-whisper-openai-asr
+work_dir: /app/work/vkit-sweep/whisper_openai_asr
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: whisper_openai_asr
+    args:
+      model: tiny
+  - name: pack
+    op: pack_jsonl

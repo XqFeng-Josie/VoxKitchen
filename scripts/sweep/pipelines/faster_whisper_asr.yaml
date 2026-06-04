@@ -1,0 +1,18 @@
+# scripts/sweep/pipelines/faster_whisper_asr.yaml
+# Operator under test: faster_whisper_asr (Whisper variant via CTranslate2).
+version: "0.1"
+name: sweep-faster-whisper-asr
+work_dir: /app/work/vkit-sweep/faster_whisper_asr
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: faster_whisper_asr
+    args:
+      model: tiny
+      compute_type: int8
+  - name: pack
+    op: pack_jsonl

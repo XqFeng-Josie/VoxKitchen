@@ -1,0 +1,18 @@
+# scripts/sweep/pipelines/wenet_asr.yaml
+# Operator under test: wenet_asr (WeNet production ASR).
+# NOTE: wenet_asr routes to the 'latest' image (image_for_op returns "latest"
+# because wenet_asr is intentionally absent from EXPECTED_OPERATORS["asr"]).
+# The sweep will SKIP with image-not-local if 'latest' is not pulled locally.
+version: "0.1"
+name: sweep-wenet-asr
+work_dir: /app/work/vkit-sweep/wenet_asr
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: wenet_asr
+  - name: pack
+    op: pack_jsonl

@@ -1,0 +1,16 @@
+# scripts/sweep/pipelines/qwen3_asr.yaml
+# Operator under test: qwen3_asr (Qwen3-ASR-0.6B — multilingual, Chinese fixture).
+version: "0.1"
+name: sweep-qwen3-asr
+work_dir: /app/work/vkit-sweep/qwen3_asr
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    # Chinese ASR — use audio-zh subdir (zh-tiny.wav).
+    root: /app/scripts/sweep/fixtures/audio-zh
+stages:
+  - name: target
+    op: qwen3_asr
+  - name: pack
+    op: pack_jsonl

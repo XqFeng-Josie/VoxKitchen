@@ -53,6 +53,25 @@ def test_setup_is_idempotent(tmp_path: Path) -> None:
     assert content_first == content_second, "fixture bytes drifted between two --setup runs"
 
 
+def test_setup_creates_audio_zh_subdir(tmp_path: Path) -> None:
+    """audio-zh/ subdir contains the Chinese fixture, for Chinese ASR ops."""
+    import shutil
+
+    from scripts.sweep.setup_fixtures import generate_fixtures
+
+    repo_root = Path(__file__).resolve().parents[3]
+    fixtures_dir = tmp_path / "fixtures"
+    fixtures_dir.mkdir()
+    (fixtures_dir / "audio").mkdir()
+    # zh-tiny must already exist (committed) — copy it in so the helper finds it
+    shutil.copy(
+        repo_root / "scripts/sweep/fixtures/audio/zh-tiny.wav",
+        fixtures_dir / "audio" / "zh-tiny.wav",
+    )
+    generate_fixtures(repo_root=repo_root, fixtures_dir=fixtures_dir)
+    assert (fixtures_dir / "audio-zh" / "zh-tiny.wav").exists()
+
+
 def test_tiny_english_is_5s_16khz_mono(tmp_path: Path) -> None:
     """tiny-english.wav must be 5s @ 16 kHz mono — deterministic from demo1.opus."""
     import soundfile as sf

@@ -1,0 +1,18 @@
+# scripts/sweep/pipelines/whisperx_asr.yaml
+# Operator under test: whisperx_asr (word-aligned ASR via whisperx).
+version: "0.1"
+name: sweep-whisperx-asr
+work_dir: /app/work/vkit-sweep/whisperx_asr
+num_cpu_workers: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: target
+    op: whisperx_asr
+    args:
+      model: tiny
+      compute_type: int8
+  - name: pack
+    op: pack_jsonl

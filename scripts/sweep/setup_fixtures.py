@@ -54,6 +54,7 @@ def generate_fixtures(*, repo_root: Path, fixtures_dir: Path) -> None:
     _make_text_manifests(manifests_dir)
     _make_cer_wer_manifest(manifests_dir)
     _make_ref_speaker_embedding(embeddings_dir)
+    _make_zh_subdir(repo_root, audio_dir)
 
 
 def _make_demo_symlink(repo_root: Path, audio_dir: Path) -> None:
@@ -282,6 +283,47 @@ def _make_cer_wer_manifest(manifests_dir: Path) -> None:
     ):
         f.write(json.dumps(header, sort_keys=True) + "\n")
         f.write(json.dumps(cut, sort_keys=True) + "\n")
+
+
+def _make_zh_subdir(repo_root: Path, audio_dir: Path) -> None:
+    """Create fixtures/audio-zh/ with the committed zh-tiny.wav for Chinese ASR ops.
+
+    Mirrors the symlink-with-copy-fallback pattern of _make_demo_symlink.
+
+    ``zh-tiny.wav`` is a committed file in ``scripts/sweep/fixtures/audio/``.
+    It is not a derived artifact so it may not be present in a fresh ``audio_dir``
+    (e.g. a tmp path used by unit tests). We look first in ``audio_dir`` (for the
+    in-place real-fixtures run) and fall back to the committed repo path.
+    """
+    src = audio_dir / "zh-tiny.wav"
+    if not src.exists():
+        # Fall back to committed repo fixture so unit tests don't need to
+        # pre-copy the file into a tmp audio_dir.
+        committed = repo_root / "scripts" / "sweep" / "fixtures" / "audio" / "zh-tiny.wav"
+        if not committed.exists():
+            raise FileNotFoundError(
+                f"missing committed Chinese fixture: {committed} — Task 1 must commit this"
+            )
+        src = committed
+    zh_dir = audio_dir.parent / "audio-zh"
+    zh_dir.mkdir(parents=True, exist_ok=True)
+    dst = zh_dir / "zh-tiny.wav"
+    if dst.exists() or dst.is_symlink():
+        dst.unlink()
+    # Use a relative symlink (../audio/zh-tiny.wav) so the link resolves
+    # correctly both on the host AND inside the Docker container where the
+    # fixtures dir is bind-mounted at a different absolute path.
+    try:
+        rel_target = Path("..") / "audio" / "zh-tiny.wav"
+        dst.symlink_to(rel_target)
+    except OSError as exc:
+        import shutil as _shutil
+
+        warnings.warn(
+            f"symlink_to({dst}) failed ({type(exc).__name__}: {exc}); falling back to shutil.copy",
+            stacklevel=2,
+        )
+        _shutil.copy(src, dst)
 
 
 def _make_ref_speaker_embedding(embeddings_dir: Path) -> None:
