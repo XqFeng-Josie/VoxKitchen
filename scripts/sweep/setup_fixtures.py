@@ -7,7 +7,7 @@ Inputs that must already exist:
 
 Outputs (gitignored, regenerated each --setup):
 - ``audio/tiny-english.wav`` — 5s slice of demo1.opus @ 16 kHz mono
-- ``audio/demo1.opus`` — symlink to the canonical source
+- ``audio/demo1.opus`` — copy of the canonical source (was a symlink before; absolute host paths don't resolve inside containers)
 - ``noise/white-5s.wav`` — 5s of band-limited white noise
 - ``rir/synthetic-rir.wav`` — 0.3s synthetic impulse response
 - ``manifests/text-en-1cut.jsonl.gz`` — 1-cut text manifest for English TTS sweep
@@ -282,7 +282,10 @@ def _make_cer_wer_manifest(manifests_dir: Path) -> None:
 def _make_zh_subdir(repo_root: Path, audio_dir: Path) -> None:
     """Create fixtures/audio-zh/ with the committed zh-tiny.wav for Chinese ASR ops.
 
-    Mirrors the symlink-with-copy-fallback pattern of _make_demo_symlink.
+    Uses a relative symlink because audio-zh/ and audio/ are sibling directories
+    inside the fixtures dir — the bind-mounted fixtures tree is internally
+    consistent. Unlike _make_demo_symlink (which copies because its source lives
+    outside the bind-mounted fixtures dir), a relative symlink works here.
 
     ``zh-tiny.wav`` is a committed file in ``scripts/sweep/fixtures/audio/``.
     It is not a derived artifact so it may not be present in a fresh ``audio_dir``

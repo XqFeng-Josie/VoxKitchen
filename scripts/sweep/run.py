@@ -202,6 +202,7 @@ def _run_one(
         )
         _tmp_env.write(f"HF_TOKEN={hf_token}\n")
         _tmp_env.flush()
+        _tmp_env.close()  # must close before subprocess reads the file (delete=False)
         cmd += ["--env-file", _tmp_env.name]
 
     try:

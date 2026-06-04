@@ -1,5 +1,11 @@
-# KNOWN FAIL on published fish-speech image: dtype mismatch
-# (Input float, weight bfloat16). See fix plan Task 8.
+# KNOWN FAIL on published fish-speech image. Two observed failure modes:
+#   1. dtype mismatch in conv1d (Input float, weight bfloat16) — original
+#      2026-06-01 E2E session finding.
+#   2. CUDA OOM during model load when GPU memory is contended — 2026-06-04
+#      sweep run finding.
+# Both surface the same root issue: the operator isn't robust in the
+# published image. Fix tracked in the fix plan at
+# docs/superpowers/plans/2026-06-01-vkit-test-findings-fixes.md Task 8.
 version: "0.1"
 name: sweep-tts-fish-speech
 work_dir: /app/work/vkit-sweep/tts_fish_speech

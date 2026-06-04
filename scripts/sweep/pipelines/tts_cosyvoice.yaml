@@ -1,6 +1,9 @@
-# KNOWN FAIL on published tts image: cosyvoice package not installed.
-# (tts-cosyvoice extra only pulls modelscope, not the cosyvoice git-pin.)
-# See fix plan Task 10.
+# KNOWN FAIL: cosyvoice package never installed in published tts image.
+# The `tts-cosyvoice` extra in pyproject only pulls `modelscope`, not
+# the `cosyvoice` package itself (needs git-pin install like fish-speech).
+# Tracked in memory `project-cosyvoice-packaging-gap` and the fix plan
+# at docs/superpowers/plans/2026-06-01-vkit-test-findings-fixes.md
+# Task 10 (deferred).
 version: "0.1"
 name: sweep-tts-cosyvoice
 work_dir: /app/work/vkit-sweep/tts_cosyvoice
