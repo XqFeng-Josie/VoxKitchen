@@ -128,3 +128,15 @@ app(args=["doctor", "--json"], standalone_mode=True)
     parsed = json.loads(result.stdout)
     assert "envs" in parsed
     assert {e["image_kind"] for e in parsed["envs"]} == {"core", "asr", "tts"}
+
+
+def test_normalize_text_is_in_core_image_group() -> None:
+    """normalize_text is pure-Python (no extras, no model) and should be
+    available in the smallest image (slim). Pinning this here so a future
+    refactor that drops it from core doesn't silently regress sweep routing."""
+    from voxkitchen.cli.doctor import EXPECTED_OPERATORS
+
+    assert "normalize_text" in EXPECTED_OPERATORS["core"], (
+        "normalize_text must be in EXPECTED_OPERATORS['core'] so image_for_op "
+        "routes it to slim, not latest. See sweep design doc."
+    )

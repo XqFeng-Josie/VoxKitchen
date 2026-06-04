@@ -93,6 +93,7 @@ EXPECTED_OPERATORS: dict[str, set[str]] = {
         "speech_enhance",
         "codec_tokenize",
         "speechbrain_langid",
+        "normalize_text",  # regex-only post-processing; no extras, no model
         # Pack
         "pack_manifest",
         "pack_jsonl",
