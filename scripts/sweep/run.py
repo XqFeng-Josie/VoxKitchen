@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -175,23 +176,48 @@ def _run_one(
             return RunRecord(op, image, "FAIL", f"pull-failed: {pull_msg}", 0.0)
 
     started = time.monotonic()
-    proc = subprocess.run(
-        [
-            "vkit",
-            "docker",
-            "run",
-            "--tag",
-            image,
-            str(yaml_path),
-            "--work-dir",
-            container_work_dir,
-            "--mount",
-            f"{FIXTURES_DIR}:/app/scripts/sweep/fixtures",
-        ],
-        capture_output=True,
-        text=True,
-        cwd=str(REPO_ROOT),
-    )
+
+    # Build base command
+    cmd = [
+        "vkit",
+        "docker",
+        "run",
+        "--tag",
+        image,
+        str(yaml_path),
+        "--work-dir",
+        container_work_dir,
+        "--mount",
+        f"{FIXTURES_DIR}:/app/scripts/sweep/fixtures",
+    ]
+
+    # Forward HF_TOKEN via a temp env-file so pyannote (and other gated
+    # models) can authenticate inside the container. vkit docker run only
+    # supports --env-file, not individual -e VAR=VAL flags.
+    hf_token = os.environ.get("HF_TOKEN", "")
+    _tmp_env: tempfile.NamedTemporaryFile | None = None
+    if hf_token:
+        _tmp_env = tempfile.NamedTemporaryFile(
+            mode="w", suffix=".env", delete=False, prefix="vkit_sweep_"
+        )
+        _tmp_env.write(f"HF_TOKEN={hf_token}\n")
+        _tmp_env.flush()
+        cmd += ["--env-file", _tmp_env.name]
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        )
+    finally:
+        if _tmp_env is not None:
+            try:
+                os.unlink(_tmp_env.name)
+            except OSError:
+                pass
+            _tmp_env = None
     wall = time.monotonic() - started
 
     run_log = proc.stdout + proc.stderr

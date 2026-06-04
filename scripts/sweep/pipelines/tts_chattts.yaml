@@ -1,0 +1,14 @@
+version: "0.1"
+name: sweep-tts-chattts
+work_dir: /app/work/vkit-sweep/tts_chattts
+num_cpu_workers: 1
+num_gpus: 1
+ingest:
+  source: manifest
+  args:
+    path: /app/scripts/sweep/fixtures/manifests/text-en-1cut.jsonl.gz
+stages:
+  - name: target
+    op: tts_chattts
+  - name: pack
+    op: pack_jsonl

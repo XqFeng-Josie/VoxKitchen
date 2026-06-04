@@ -1,0 +1,20 @@
+version: "0.1"
+name: sweep-pyannote-diarize
+work_dir: /app/work/vkit-sweep/pyannote_diarize
+num_cpu_workers: 1
+num_gpus: 1
+ingest:
+  source: dir
+  args:
+    root: /app/scripts/sweep/fixtures/audio
+stages:
+  - name: to_wav
+    op: ffmpeg_convert
+    args:
+      target_format: wav
+  - name: target
+    op: pyannote_diarize
+    args:
+      model: pyannote/speaker-diarization-3.1
+  - name: pack
+    op: pack_jsonl

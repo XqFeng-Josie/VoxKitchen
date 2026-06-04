@@ -1,0 +1,20 @@
+# KNOWN FAIL on published tts image: cosyvoice package not installed.
+# (tts-cosyvoice extra only pulls modelscope, not the cosyvoice git-pin.)
+# See fix plan Task 10.
+version: "0.1"
+name: sweep-tts-cosyvoice
+work_dir: /app/work/vkit-sweep/tts_cosyvoice
+num_cpu_workers: 1
+num_gpus: 1
+ingest:
+  source: manifest
+  args:
+    path: /app/scripts/sweep/fixtures/manifests/text-zh-1cut.jsonl.gz
+stages:
+  - name: target
+    op: tts_cosyvoice
+    args:
+      mode: cross_lingual
+      reference_audio: /app/scripts/sweep/fixtures/audio/zh-tiny.wav
+  - name: pack
+    op: pack_jsonl

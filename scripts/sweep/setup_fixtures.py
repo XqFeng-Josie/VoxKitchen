@@ -58,26 +58,20 @@ def generate_fixtures(*, repo_root: Path, fixtures_dir: Path) -> None:
 
 
 def _make_demo_symlink(repo_root: Path, audio_dir: Path) -> None:
-    """Symlink (or copy on fs that can't symlink) demo1.opus into fixtures/audio."""
+    """Copy demo1.opus into fixtures/audio.
+
+    A plain copy (not a symlink) is used so the file is accessible inside
+    Docker containers, where the absolute host path the symlink would point to
+    does not exist.  The fixture file is small (~460 KB) so the copy is cheap.
+    """
     src = repo_root / "examples" / "demo_data" / "demo1.opus"
     if not src.exists():
         raise FileNotFoundError(f"missing canonical source audio: {src} — fixtures cannot be built")
     dst = audio_dir / "demo1.opus"
-    if dst.exists() or dst.is_symlink():
+    if dst.is_symlink():
+        # Replace any legacy symlink left by earlier setup runs with a real file.
         dst.unlink()
-    try:
-        dst.symlink_to(src)
-    except OSError as exc:
-        # Filesystem doesn't support symlinks (FAT32) or the user lacks the
-        # privilege (Windows non-admin) — fall back to copy. Warn so a real
-        # misconfiguration doesn't hide silently behind a working-but-wrong
-        # fixture state.
-        warnings.warn(
-            f"symlink_to({dst}) failed ({type(exc).__name__}: {exc}); "
-            "falling back to shutil.copy. Subsequent operator-sweep runs will "
-            "not reflect source-audio updates until --setup is re-run.",
-            stacklevel=2,
-        )
+    if not dst.exists():
         shutil.copy(src, dst)
 
 

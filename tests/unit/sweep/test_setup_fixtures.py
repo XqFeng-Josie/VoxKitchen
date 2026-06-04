@@ -17,12 +17,9 @@ def test_setup_creates_all_generated_fixtures(tmp_path: Path) -> None:
     )
 
     assert (fixtures_dir / "audio" / "tiny-english.wav").is_file()
-    link = fixtures_dir / "audio" / "demo1.opus"
-    # On Linux/macOS this should always be a symlink. is_symlink() does not
-    # follow the link; is_file() does, so the conjunction proves both that
-    # the link exists AND that the target is reachable.
-    assert link.is_symlink(), "expected a symlink to demo1.opus (copy fallback fired silently)"
-    assert link.is_file(), "symlink target unreachable"
+    # demo1.opus is copied (not symlinked) so it is accessible inside Docker
+    # containers, where the absolute host symlink target path does not exist.
+    assert (fixtures_dir / "audio" / "demo1.opus").is_file(), "demo1.opus not produced"
     assert (fixtures_dir / "noise" / "white-5s.wav").is_file()
     assert (fixtures_dir / "rir" / "synthetic-rir.wav").is_file()
     assert (fixtures_dir / "manifests" / "text-en-1cut.jsonl.gz").is_file()

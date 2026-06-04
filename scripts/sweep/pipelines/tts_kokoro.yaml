@@ -1,0 +1,17 @@
+version: "0.1"
+name: sweep-tts-kokoro
+work_dir: /app/work/vkit-sweep/tts_kokoro
+num_cpu_workers: 1
+ingest:
+  source: manifest
+  args:
+    path: /app/scripts/sweep/fixtures/manifests/text-en-1cut.jsonl.gz
+stages:
+  - name: target
+    op: tts_kokoro
+    args:
+      voice: af_heart
+      lang_code: a
+      speed: 1.0
+  - name: pack
+    op: pack_jsonl

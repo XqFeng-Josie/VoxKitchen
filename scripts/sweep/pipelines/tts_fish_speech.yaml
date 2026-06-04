@@ -1,0 +1,18 @@
+# KNOWN FAIL on published fish-speech image: dtype mismatch
+# (Input float, weight bfloat16). See fix plan Task 8.
+version: "0.1"
+name: sweep-tts-fish-speech
+work_dir: /app/work/vkit-sweep/tts_fish_speech
+num_cpu_workers: 1
+num_gpus: 1
+ingest:
+  source: manifest
+  args:
+    path: /app/scripts/sweep/fixtures/manifests/text-en-1cut.jsonl.gz
+stages:
+  - name: target
+    op: tts_fish_speech
+    args:
+      reference_audio: /app/scripts/sweep/fixtures/audio/tiny-english.wav
+  - name: pack
+    op: pack_jsonl

@@ -251,4 +251,11 @@ ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
     "pack_manifest": assert_pack_file_exists("00_target"),
     "pack_parquet": default_smoke_assertion,
     "pack_webdataset": default_smoke_assertion,
+    # Diarization (diarize image)
+    "pyannote_diarize": assert_diarize_speakers(min_speakers=2),
+    # Synthesize — TTS (tts + fish-speech images)
+    "tts_kokoro": assert_tts_produces_audio,
+    "tts_chattts": assert_tts_produces_audio,
+    "tts_cosyvoice": assert_tts_produces_audio,
+    "tts_fish_speech": assert_tts_produces_audio,
 }
