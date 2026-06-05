@@ -36,6 +36,7 @@ import os
 import shutil
 import subprocess
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal, NoReturn
 
@@ -169,7 +170,7 @@ def _pipeline_mount(pipeline_arg: str) -> tuple[list[str], str]:
     return (["-v", f"{abs_p}:{abs_p}:ro"], str(abs_p))
 
 
-def _extra_mounts(paths: list[Path | str]) -> list[str]:
+def _extra_mounts(paths: Sequence[Path | str]) -> list[str]:
     """Expand ``--mount`` flags into ``-v HOST:CONTAINER:ro`` pairs.
 
     Two accepted forms:
