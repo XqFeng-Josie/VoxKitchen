@@ -166,3 +166,163 @@ def test_check_b_passes_when_all_ops_in_map(monkeypatch) -> None:
     spec = _FakeSpec(stages=[_FakeStage("vad", "silero_vad"), _FakeStage("pack", "pack_jsonl")])
     result = image_preflight.check_image_preflight(spec, "slim")
     assert result.ok
+
+
+def test_check_b_skipped_when_op_env_map_missing(monkeypatch) -> None:
+    """Image present but op_env_map.json absent (dev image) → note, not error."""
+    import subprocess
+
+    from voxkitchen.pipeline import image_preflight
+
+    def fake_run(args, *a, **k):
+        class R:
+            stderr = "cat: no such file"
+            # inspect succeeds (image present), cat fails (file missing)
+            returncode = 0 if "inspect" in args else 1
+            stdout = ""
+
+        return R()
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    spec = _FakeSpec(stages=[_FakeStage("vad", "silero_vad")])
+    result = image_preflight.check_image_preflight(spec, "slim")
+    assert result.ok  # not an error — just unavailable
+    assert any("could not read" in n.lower() or "op_env_map" in n for n in result.notes)
+
+
+def test_check_b_invokes_docker_with_correct_args(monkeypatch) -> None:
+    """Guard against refactors silently changing how op_env_map is read."""
+    import subprocess
+
+    from voxkitchen.pipeline import image_preflight
+
+    captured = []
+
+    def fake_run(args, *a, **k):
+        captured.append(args)
+
+        class R:
+            returncode = 0
+            stderr = ""
+            stdout = "" if "inspect" in args else json.dumps({"silero_vad": "core"})
+
+        return R()
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    spec = _FakeSpec(stages=[_FakeStage("vad", "silero_vad")])
+    image_preflight.check_image_preflight(spec, "slim")
+
+    # One call must be the inspect, one must be the cat of the op_env_map.
+    assert any(c[:3] == ["docker", "image", "inspect"] for c in captured)
+    cat_call = next(c for c in captured if "--entrypoint" in c)
+    assert "cat" in cat_call
+    assert "/opt/voxkitchen/op_env_map.json" in cat_call
+
+
+def test_check_b_skips_ops_already_flagged_by_check_a(monkeypatch) -> None:
+    """Check B must not double-report ops that Check A already flagged.
+
+    When --tag slim is used with an asr op AND the image is pulled,
+    Check A says 'use --tag asr'.  Check B must not also say 'rebuild slim'
+    for the same op — that advice would be contradictory and confusing.
+    """
+    import subprocess
+
+    from voxkitchen.pipeline import image_preflight
+
+    def fake_run(args, *a, **k):
+        class R:
+            returncode = 0
+            stderr = ""
+            # slim's op_env_map doesn't include faster_whisper_asr
+            stdout = (
+                ""
+                if "inspect" in args
+                else json.dumps(
+                    {
+                        "silero_vad": "core",
+                        "pack_jsonl": "core",
+                        # faster_whisper_asr intentionally absent from slim map
+                    }
+                )
+            )
+
+        return R()
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    spec = _FakeSpec(
+        stages=[
+            _FakeStage("vad", "silero_vad"),
+            _FakeStage("asr", "faster_whisper_asr"),
+        ]
+    )
+    result = image_preflight.check_image_preflight(spec, "slim")
+    assert not result.ok
+    # exactly one error for faster_whisper_asr: Check A's "use --tag asr"
+    asr_errors = [e for e in result.errors if "faster_whisper_asr" in e]
+    assert len(asr_errors) == 1, f"Expected 1 error for faster_whisper_asr, got: {asr_errors}"
+    # that error should mention 'asr' (Check A), not 'predates' (Check B)
+    assert "predates" not in asr_errors[0]
+    assert "asr" in asr_errors[0]
+
+
+def test_check_a_fish_speech_allows_core_ops(monkeypatch) -> None:
+    """The fish-speech image dispatches core ops to a bundled env.
+
+    Check A must not false-positive on a core+fish_speech mixed pipeline
+    when --tag fish-speech is used.  Confirmed empirically: the fish-speech
+    image's op_env_map.json contains resample, silero_vad, and other core ops.
+    """
+    from voxkitchen.pipeline import image_preflight
+
+    # Stub Check B — this test is purely about Check A logic.
+    monkeypatch.setattr(image_preflight, "_check_b", lambda *a, **k: None)
+
+    spec = _FakeSpec(
+        stages=[
+            _FakeStage("rs", "resample"),
+            _FakeStage("fs", "tts_fish_speech"),
+        ]
+    )
+    result = image_preflight.check_image_preflight(spec, "fish-speech")
+    assert result.ok, f"Expected no errors, got: {result.errors}"
+
+
+def test_check_b_timeout_on_inspect(monkeypatch) -> None:
+    """TimeoutExpired on docker image inspect → note, not error, not hang."""
+    import subprocess
+
+    from voxkitchen.pipeline import image_preflight
+
+    def fake_run(args, *a, **k):
+        raise subprocess.TimeoutExpired(args, 10)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    spec = _FakeSpec(stages=[_FakeStage("vad", "silero_vad")])
+    result = image_preflight.check_image_preflight(spec, "slim")
+    assert result.ok
+    assert any("timed out" in n for n in result.notes)
+
+
+def test_check_b_timeout_on_cat(monkeypatch) -> None:
+    """TimeoutExpired on docker run cat → note, not error."""
+    import subprocess
+
+    from voxkitchen.pipeline import image_preflight
+
+    def fake_run(args, *a, **k):
+        if "inspect" in args:
+
+            class R:
+                returncode = 0
+                stdout = ""
+                stderr = ""
+
+            return R()
+        raise subprocess.TimeoutExpired(args, 30)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    spec = _FakeSpec(stages=[_FakeStage("vad", "silero_vad")])
+    result = image_preflight.check_image_preflight(spec, "slim")
+    assert result.ok
+    assert any("timed out" in n for n in result.notes)
