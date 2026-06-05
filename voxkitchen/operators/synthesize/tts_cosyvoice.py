@@ -30,7 +30,10 @@ COSYVOICE_SR = 24000
 
 
 class TtsCosyVoiceConfig(OperatorConfig):
-    model_id: str = "FunAudioLLM/CosyVoice2-0.5B"
+    # ModelScope moved the CosyVoice2 weights under the `iic` org; the old
+    # `FunAudioLLM/CosyVoice2-0.5B` repo now 404s on both .cn and .ai
+    # endpoints. `iic/CosyVoice2-0.5B` is the current canonical repo.
+    model_id: str = "iic/CosyVoice2-0.5B"
     mode: str = "sft"  # sft / zero_shot / cross_lingual
     spk_id: str = "default"  # speaker ID for sft mode
     reference_audio: str | None = None  # path for zero_shot / cross_lingual
