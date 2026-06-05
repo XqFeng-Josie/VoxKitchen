@@ -1738,7 +1738,14 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <p>Check YAML syntax, operator references, per-operator arg schemas, and the
 recommended Docker image without executing.</p>
 <div class="highlight"><pre><span></span><code>vkit<span class="w"> </span>validate<span class="w"> </span>pipeline.yaml
+vkit<span class="w"> </span>validate<span class="w"> </span>pipeline.yaml<span class="w"> </span>--tag<span class="w"> </span>asr<span class="w">          </span><span class="c1"># also check op-vs-image fit</span>
+vkit<span class="w"> </span>validate<span class="w"> </span>pipeline.yaml<span class="w"> </span>--no-preflight<span class="w">     </span><span class="c1"># skip field-contract checks</span>
 </code></pre></div>
+<p>Pass <code>--tag &lt;image&gt;</code> to also check that every operator in the pipeline fits
+that Docker image — both that the op belongs in the image's operator group
+(catches wrong-image mistakes) and, if the image is pulled locally, that the
+image actually contains the op (catches stale published images that predate
+a newly-added operator). Errors abort with exit 1 before any container runs.</p>
 <p>Pydantic config errors are rendered as a short bullet list rather than the
 raw multi-line dump; <code>extra_forbidden</code> errors get a <code>did you mean</code> hint
 from stdlib <code>difflib</code> when one of the operator's known fields is close enough:</p>
