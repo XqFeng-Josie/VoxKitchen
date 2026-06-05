@@ -284,16 +284,23 @@ def run_cmd(
         rprint(f"[red]error:[/red] --gpus must be auto|all|none, got {gpus!r}")
         raise typer.Exit(code=2)
 
-    if not no_preflight:
+    if not no_preflight and Path(pipeline).exists():
         from voxkitchen.pipeline.image_preflight import check_image_preflight
         from voxkitchen.pipeline.loader import PipelineLoadError, load_pipeline_spec
 
         # Load the spec on the host to check op-vs-image fit before launch.
         try:
             _spec = load_pipeline_spec(Path(pipeline))
+        except PipelineLoadError as _load_err:
+            # Host-side parse failed but the file exists — note it and let the
+            # container's own validation be the authority.
+            rprint(f"[dim]host-side image check skipped: {_load_err}[/dim]")
+        else:
             _img_result = check_image_preflight(_spec, tag, image_name=image)
             for note in _img_result.notes:
                 rprint(f"[dim]{note}[/dim]")
+            for warning in _img_result.warnings:
+                rprint(f"[yellow]warning:[/yellow] {warning}")
             for err in _img_result.errors:
                 rprint(f"[red]error:[/red] {err}")
             if _img_result.errors:
@@ -302,8 +309,6 @@ def run_cmd(
                     "the image, or pass --no-preflight to bypass.[/dim]"
                 )
                 raise typer.Exit(code=1)
-        except PipelineLoadError as _load_err:
-            rprint(f"[dim]host-side image check skipped: {_load_err}[/dim]")
 
     mount_flags, container_path = _pipeline_mount(pipeline)
     run_args = _run_command_args(

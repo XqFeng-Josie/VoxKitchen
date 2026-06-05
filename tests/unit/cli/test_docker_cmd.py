@@ -245,6 +245,72 @@ def test_run_omits_no_preflight_by_default(fake_docker) -> None:
 
 
 # ---------------------------------------------------------------------------
+# image-preflight gate
+# ---------------------------------------------------------------------------
+
+
+def test_docker_run_no_preflight_bypasses_image_check(fake_docker, tmp_path, monkeypatch) -> None:
+    """--no-preflight skips the host-side image-preflight gate entirely."""
+    called = {"hit": False}
+
+    def boom(*a: object, **k: object) -> None:
+        called["hit"] = True
+        raise AssertionError("image check should not run under --no-preflight")
+
+    monkeypatch.setattr("voxkitchen.pipeline.image_preflight.check_image_preflight", boom)
+    # Create a real yaml on host so the Path(pipeline).exists() guard is True,
+    # confirming that --no-preflight is the thing that suppresses the check,
+    # not the missing-file guard.
+    yaml_path = tmp_path / "test.yaml"
+    yaml_path.write_text("version: '0.1'\n", encoding="utf-8")
+    exit_code, cmd = _invoke(
+        ["docker", "run", "--tag", "slim", str(yaml_path), "--no-preflight", "--dry-run"]
+    )
+    assert not called["hit"], "check_image_preflight was called despite --no-preflight"
+    # Command should still be assembled and passed to docker (exit 0 from our mock).
+    assert exit_code == 0
+    assert cmd is not None
+
+
+def test_docker_run_gate_blocks_mismatched_op(fake_docker, tmp_path) -> None:
+    """A host-present yaml with an op that doesn't fit --tag aborts before launch."""
+    # Write a real yaml using faster_whisper_asr which is NOT in the slim image.
+    yaml_path = tmp_path / "asr-pipeline.yaml"
+    yaml_path.write_text(
+        "\n".join(
+            [
+                "version: '0.1'",
+                "name: test-asr",
+                "work_dir: ./work/test-asr",
+                "ingest:",
+                "  source: dir",
+                "  args:",
+                "    root: ./data",
+                "stages:",
+                "  - name: asr",
+                "    op: faster_whisper_asr",
+                "    args:",
+                "      model_size: tiny",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    # Track whether the docker subprocess was actually invoked.
+    docker_launched = {"hit": False}
+
+    def _sentinel_run_and_exit(cmd: list[str], **kwargs: object) -> None:
+        docker_launched["hit"] = True
+        raise SystemExit(0)
+
+    runner = CliRunner()
+    with patch.object(docker_cmd, "_run_and_exit", side_effect=_sentinel_run_and_exit):
+        result = runner.invoke(app, ["docker", "run", "--tag", "slim", str(yaml_path)])
+
+    assert not docker_launched["hit"], "docker should not have been launched after preflight abort"
+    assert result.exit_code == 1
+
+
+# ---------------------------------------------------------------------------
 # download
 # ---------------------------------------------------------------------------
 
