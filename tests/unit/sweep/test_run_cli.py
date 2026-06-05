@@ -70,6 +70,13 @@ def test_run_one_passes_container_work_dir_and_cleans_host_work_dir(
     monkeypatch.setattr(subprocess, "run", fake_subprocess_run)
     monkeypatch.setattr(sweep_run.shutil, "rmtree", fake_rmtree)
     monkeypatch.setattr(sweep_run, "_image_present", fake_image_present)
+    # Isolate WORK_BASE to a tmp dir AND pre-create the op's work_dir, so the
+    # `if work_dir.exists(): rmtree(...)` branch in _run_one fires
+    # deterministically. Without this the test passed only when a stale
+    # ./work/vkit-sweep/identity happened to exist on disk (it does after a
+    # local sweep run) and failed on a fresh checkout / in CI.
+    monkeypatch.setattr(sweep_run, "WORK_BASE", tmp_path / "wb")
+    (tmp_path / "wb" / "identity").mkdir(parents=True)
 
     yaml_path = tmp_path / "identity.yaml"
     yaml_path.write_text("dummy: yes")  # _run_one doesn't parse the yaml itself
@@ -89,8 +96,8 @@ def test_run_one_passes_container_work_dir_and_cleans_host_work_dir(
     assert work_dir_arg == "/app/work/vkit-sweep/identity", (
         f"expected container path /app/work/vkit-sweep/identity, got {work_dir_arg!r}"
     )
-    # The pre-run cleanup must hit the host path.
-    expected_host = sweep_run.REPO_ROOT / "work" / "vkit-sweep" / "identity"
+    # The pre-run cleanup must hit the host path (the monkeypatched WORK_BASE).
+    expected_host = tmp_path / "wb" / "identity"
     assert expected_host in captured["rmtree_paths"], (
         f"expected rmtree({expected_host}), got {captured['rmtree_paths']}"
     )
