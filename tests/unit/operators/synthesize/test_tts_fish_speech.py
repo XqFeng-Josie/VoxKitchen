@@ -170,6 +170,55 @@ def test_tts_fish_speech_infer_uses_engine_request(tmp_path: Path, monkeypatch, 
     assert len(seen["request"]["references"]) == 1
 
 
+def test_tts_fish_speech_infer_wraps_inference_with_autocast(
+    tmp_path: Path, monkeypatch, make_run_context
+):
+    """Regression test: _infer must call torch.autocast so that float32
+    reference audio does not trigger a bfloat16 conv1d dtype mismatch.
+    """
+    import torch
+
+    autocast_calls: list[dict] = []
+    _real_autocast = torch.autocast
+
+    class _TrackingAutocast:
+        def __init__(self, **kwargs):
+            self._kwargs = kwargs
+            self._ctx = _real_autocast(**kwargs)
+
+        def __enter__(self):
+            autocast_calls.append(self._kwargs)
+            return self._ctx.__enter__()
+
+        def __exit__(self, *args):
+            return self._ctx.__exit__(*args)
+
+    monkeypatch.setattr(torch, "autocast", lambda **kw: _TrackingAutocast(**kw))
+
+    class FakeEngine:
+        def inference(self, req):
+            yield types.SimpleNamespace(
+                code="final",
+                audio=(32000, np.array([0.1, -0.2], dtype=np.float32)),
+                error=None,
+            )
+
+    schema_mod = types.ModuleType("fish_speech.utils.schema")
+    schema_mod.ServeReferenceAudio = lambda **kw: kw
+    schema_mod.ServeTTSRequest = lambda **kw: kw
+    monkeypatch.setitem(sys.modules, "fish_speech.utils.schema", schema_mod)
+
+    config = TtsFishSpeechConfig()
+    op = TtsFishSpeechOperator(config, make_run_context("fish"))
+    op._inference = FakeEngine()
+    audio = op._infer("hello")
+
+    assert audio is not None
+    assert len(autocast_calls) == 1, "torch.autocast should be called exactly once per _infer"
+    assert autocast_calls[0]["device_type"] == "cuda"
+    assert autocast_calls[0]["dtype"] == torch.bfloat16
+
+
 @pytest.mark.slow
 def test_tts_fish_speech_synthesizes_audio(tmp_path: Path, make_run_context) -> None:
     pytest.importorskip("fish_speech")

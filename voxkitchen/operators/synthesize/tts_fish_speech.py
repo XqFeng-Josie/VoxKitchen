@@ -173,6 +173,8 @@ class TtsFishSpeechOperator(Operator):
         """
         assert isinstance(self.config, TtsFishSpeechConfig)
         try:
+            import torch
+
             ref_audio = self.config.reference_audio
             ref_text = self.config.reference_text
             references = []
@@ -199,15 +201,17 @@ class TtsFishSpeechOperator(Operator):
                 chunk_length=self.config.chunk_length,
             )
 
+            precision = torch.float16 if self.config.half else torch.bfloat16
             final_audio: np.ndarray[Any, Any] | None = None
-            for result in self._inference.inference(req):
-                if result.code == "error":
-                    raise RuntimeError(result.error or "Fish-Speech inference failed")
-                if result.code == "final" and result.audio is not None:
-                    sr, audio = result.audio
-                    self._sample_rate = sr
-                    final_audio = np.asarray(audio, dtype=np.float32).flatten()
-                    break
+            with torch.autocast(device_type="cuda", dtype=precision):
+                for result in self._inference.inference(req):
+                    if result.code == "error":
+                        raise RuntimeError(result.error or "Fish-Speech inference failed")
+                    if result.code == "final" and result.audio is not None:
+                        sr, audio = result.audio
+                        self._sample_rate = sr
+                        final_audio = np.asarray(audio, dtype=np.float32).flatten()
+                        break
 
             return final_audio
         except Exception:
