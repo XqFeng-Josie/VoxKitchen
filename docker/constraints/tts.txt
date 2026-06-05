@@ -5,3 +5,12 @@ numpy>=1.24,<2.0
 # pyworld imports pkg_resources; setuptools 81+ removed it.
 setuptools<81
 huggingface_hub>=0.23,<1.0
+# CosyVoice transitive deps (git-cloned into /opt/cosyvoice at build time).
+# openai-whisper 20231117 is the version CosyVoice's requirements.txt pins.
+# omegaconf 2.3 is compatible with the torch 2.4 stack.
+# matcha-tts satisfies CosyVoice's Matcha-TTS submodule dependency via PyPI.
+openai-whisper>=20231117
+omegaconf>=2.3,<2.4
+matcha-tts>=0.0.7,<0.1
+HyperPyYAML>=1.2,<2.0
+inflect>=7.0,<8.0

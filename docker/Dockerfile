@@ -271,6 +271,39 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
     uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
+# CosyVoice is not on PyPI and its repo has no setup.py/pyproject.toml, so
+# `pip install git+https://...` is not possible. Instead we clone the repo at
+# a pinned SHA directly into /opt/cosyvoice and register it on the tts venv's
+# sys.path via a .pth file. The Matcha-TTS submodule is satisfied by the PyPI
+# `matcha-tts` package (same BASECFM API). Pinned to:
+#   FunAudioLLM/CosyVoice@074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc
+# (latest as of 2026-06-04; re-confirmed AutoModel export present).
+RUN git clone --depth=1 \
+        https://github.com/FunAudioLLM/CosyVoice.git \
+        /opt/cosyvoice && \
+    cd /opt/cosyvoice && \
+    git fetch --depth=1 origin 074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc && \
+    git checkout 074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc
+
+# Install the pip-installable deps that CosyVoice needs but are not yet
+# present in the tts env (torch, torchaudio, numpy, modelscope, onnxruntime
+# are already installed above via the tts-cosyvoice / dnsmos extras).
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
+        -c /app/docker/constraints/tts.txt \
+        "HyperPyYAML>=1.2" \
+        "matcha-tts>=0.0.7" \
+        "inflect>=7.0" \
+        "omegaconf>=2.3" \
+        "openai-whisper>=20231117"
+
+# Register /opt/cosyvoice on the tts venv's sys.path via a .pth file.
+# This is the standard Python path-extension mechanism and survives across
+# subprocess launches (PYTHONPATH would only apply to the current process).
+RUN TTS_SITE=$(/opt/voxkitchen/envs/tts/bin/python \
+        -c "import site; print(site.getsitepackages()[0])") && \
+    echo "/opt/cosyvoice" > "${TTS_SITE}/cosyvoice.pth"
+
 # Fish-Speech is isolated in fish-speech-env below because upstream pins a
 # torch 2.8 + numpy 2.x stack. Keep this tts env focused on Kokoro, ChatTTS,
 # and CosyVoice so those engines stay on the validated torch 2.4 stack.
