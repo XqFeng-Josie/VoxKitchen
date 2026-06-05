@@ -9,8 +9,13 @@ huggingface_hub>=0.23,<1.0
 # openai-whisper 20231117 is the version CosyVoice's requirements.txt pins.
 # omegaconf 2.3 is compatible with the torch 2.4 stack.
 # matcha-tts satisfies CosyVoice's Matcha-TTS submodule dependency via PyPI.
+# matcha-tts pinned to 0.0.7.0 — the only 0.0.7.x with a cp311 manylinux
+# wheel. Later patches (0.0.7.1/0.0.7.2) are cp310-only + sdist, which would
+# force a Cython compile at Docker build time. Same API at CosyVoice's 3
+# import sites (matcha.models.components.{flow_matching,decoder,transformer},
+# matcha.hifigan.models).
 openai-whisper>=20231117
 omegaconf>=2.3,<2.4
-matcha-tts>=0.0.7,<0.1
+matcha-tts==0.0.7.0
 HyperPyYAML>=1.2,<2.0
 inflect>=7.0,<8.0

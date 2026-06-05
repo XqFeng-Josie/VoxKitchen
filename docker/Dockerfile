@@ -292,7 +292,7 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
     uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
         -c /app/docker/constraints/tts.txt \
         "HyperPyYAML>=1.2" \
-        "matcha-tts>=0.0.7" \
+        "matcha-tts==0.0.7.0" \
         "inflect>=7.0" \
         "omegaconf>=2.3" \
         "openai-whisper>=20231117"
