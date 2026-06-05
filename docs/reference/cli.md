@@ -57,7 +57,15 @@ recommended Docker image without executing.
 
 ```bash
 vkit validate pipeline.yaml
+vkit validate pipeline.yaml --tag asr          # also check op-vs-image fit
+vkit validate pipeline.yaml --no-preflight     # skip field-contract checks
 ```
+
+Pass `--tag <image>` to also check that every operator in the pipeline fits
+that Docker image — both that the op belongs in the image's operator group
+(catches wrong-image mistakes) and, if the image is pulled locally, that the
+image actually contains the op (catches stale published images that predate
+a newly-added operator). Errors abort with exit 1 before any container runs.
 
 Pydantic config errors are rendered as a short bullet list rather than the
 raw multi-line dump; `extra_forbidden` errors get a `did you mean` hint

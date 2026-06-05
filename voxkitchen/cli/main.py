@@ -113,10 +113,19 @@ def validate(
     no_preflight: bool = typer.Option(
         False, "--no-preflight", help="Skip static field-contract pre-flight checks."
     ),
+    tag: str | None = typer.Option(
+        None,
+        "--tag",
+        help=(
+            "Check the pipeline's operators fit this image tag "
+            "(slim|asr|diarize|tts|fish-speech|latest). "
+            "Catches wrong-image and stale-image mismatches before a run."
+        ),
+    ),
 ) -> None:
     from voxkitchen.cli.validate import validate_command
 
-    validate_command(pipeline, preflight=not no_preflight)
+    validate_command(pipeline, preflight=not no_preflight, tag=tag)
 
 
 @app.command(help="Pretty-print a pipeline YAML with each stage's field contracts.")

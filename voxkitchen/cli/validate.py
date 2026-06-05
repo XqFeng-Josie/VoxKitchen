@@ -195,7 +195,7 @@ def validate_stage_args(
     )
 
 
-def validate_command(pipeline: Path, *, preflight: bool = True) -> None:
+def validate_command(pipeline: Path, *, preflight: bool = True, tag: str | None = None) -> None:
     """Validate a pipeline YAML without executing it."""
     try:
         spec = load_pipeline_spec(pipeline)
@@ -241,10 +241,27 @@ def validate_command(pipeline: Path, *, preflight: bool = True) -> None:
             )
             raise typer.Exit(code=1)
 
+    if tag:
+        from voxkitchen.pipeline.image_preflight import check_image_preflight
+
+        img_result = check_image_preflight(spec, tag)
+        for note in img_result.notes:
+            rprint(f"[dim]{note}[/dim]")
+        for warning in img_result.warnings:
+            rprint(f"[yellow]warning:[/yellow] {warning}")
+        for err in img_result.errors:
+            rprint(f"[red]error:[/red] {err}")
+        if img_result.errors:
+            rprint(
+                "[dim]Operators don't fit the chosen image. Fix the --tag, "
+                "rebuild the image, or remove the offending stage.[/dim]"
+            )
+            raise typer.Exit(code=1)
+
     mode = "schema" if schemas is not None else "registry"
     rprint(
         f"[green]valid[/green]: {spec.name} "
         f"({len(spec.stages)} stage(s), ingest={spec.ingest.source}, validator={mode})"
     )
-    tag = recommend_docker_tag([r.required_extras for r in results])
-    rprint(f"[dim]{format_recommended_image_hint(tag, str(pipeline))}[/dim]")
+    rec_tag = recommend_docker_tag([r.required_extras for r in results])
+    rprint(f"[dim]{format_recommended_image_hint(rec_tag, str(pipeline))}[/dim]")

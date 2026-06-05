@@ -281,3 +281,69 @@ stages:
     assert result.exit_code == 1, result.output
     assert "unknown arg: zzzzzzzz" in result.output
     assert "did you mean" not in result.output
+
+
+# ---------------------------------------------------------------------------
+# Image-preflight (--tag) integration
+# ---------------------------------------------------------------------------
+
+
+def test_validate_tag_flags_wrong_image_op(tmp_path: Path) -> None:
+    """vkit validate --tag slim with an asr op errors before any run."""
+    yaml_path = tmp_path / "p.yaml"
+    yaml_path.write_text(
+        """\
+version: "0.1"
+name: wrong-image
+work_dir: /tmp/work/wrong-image
+ingest: { source: manifest, args: { path: /tmp/in.jsonl.gz } }
+stages:
+  - { name: asr, op: faster_whisper_asr, args: { model: tiny } }
+  - { name: pack, op: pack_jsonl }
+""",
+        encoding="utf-8",
+    )
+    result = CliRunner().invoke(app, ["validate", str(yaml_path), "--tag", "slim"])
+    assert result.exit_code == 1, result.output
+    assert "faster_whisper_asr" in result.output
+    assert "asr" in result.output  # names the right image
+
+
+def test_validate_without_tag_skips_image_check(tmp_path: Path) -> None:
+    """No --tag → no image check (existing behavior unchanged)."""
+    yaml_path = tmp_path / "p.yaml"
+    yaml_path.write_text(
+        """\
+version: "0.1"
+name: ok
+work_dir: /tmp/work/ok
+ingest: { source: manifest, args: { path: /tmp/in.jsonl.gz } }
+stages:
+  - { name: asr, op: faster_whisper_asr, args: { model: tiny } }
+  - { name: pack, op: pack_jsonl }
+""",
+        encoding="utf-8",
+    )
+    result = CliRunner().invoke(app, ["validate", str(yaml_path)])
+    # No --tag, so the asr-op-in-no-image isn't checked. Should still validate OK.
+    assert result.exit_code == 0, result.output
+
+
+def test_validate_tag_passes_when_ops_fit(tmp_path: Path) -> None:
+    """vkit validate --tag asr with asr ops → no image error (Check A passes;
+    Check B may note image-not-pulled but that's not an error)."""
+    yaml_path = tmp_path / "p.yaml"
+    yaml_path.write_text(
+        """\
+version: "0.1"
+name: fits
+work_dir: /tmp/work/fits
+ingest: { source: manifest, args: { path: /tmp/in.jsonl.gz } }
+stages:
+  - { name: asr, op: faster_whisper_asr, args: { model: tiny } }
+  - { name: pack, op: pack_jsonl }
+""",
+        encoding="utf-8",
+    )
+    result = CliRunner().invoke(app, ["validate", str(yaml_path), "--tag", "asr"])
+    assert result.exit_code == 0, result.output
