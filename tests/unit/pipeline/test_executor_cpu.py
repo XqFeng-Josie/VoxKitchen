@@ -121,3 +121,56 @@ def test_cpu_pool_executor_does_not_cut_fallback_non_parallelizable_operator(
 
     with pytest.raises(RuntimeError, match="batch failure"):
         executor.run(BatchFailingOperator, OperatorConfig(), cs, ctx)
+
+
+class FailOnCutOperator(Operator):
+    """Raises RuntimeError for any cut whose id contains 'fail'.
+
+    Used to verify the per-cut fallback: the failing cut must be recorded to
+    _errors.jsonl while good cuts are returned normally.
+    """
+
+    name = "fail_on_cut_for_test"
+    config_cls = OperatorConfig
+    parallelizable = True
+
+    def process(self, cuts: CutSet) -> CutSet:
+        out: list[Cut] = []
+        for cut in cuts:
+            if "fail" in cut.id:
+                raise RuntimeError(f"deliberate failure for cut {cut.id}")
+            out.append(cut)
+        return CutSet(out)
+
+
+def test_failing_cut_recorded_to_errors_jsonl(tmp_path: Path) -> None:
+    """Executor contract: a cut whose processing raises must be written to
+    _errors.jsonl; good cuts must pass through unchanged.
+
+    This is the regression guard that proves removing the operator-level
+    'except Exception: return None' actually surfaces errors rather than
+    silently dropping cuts.
+    """
+    import json
+
+    good_cut = _cut("good-1")
+    fail_cut = _cut("fail-1")
+    cs = CutSet([good_cut, fail_cut])
+    ctx = _ctx(tmp_path)
+    ctx.stage_dir.mkdir(parents=True, exist_ok=True)
+
+    result = CpuPoolExecutor(num_workers=1).run(FailOnCutOperator, OperatorConfig(), cs, ctx)
+
+    # Good cut must survive
+    result_ids = [c.id for c in result]
+    assert "good-1" in result_ids, f"good cut must survive; got {result_ids}"
+    assert "fail-1" not in result_ids, f"failing cut must be dropped; got {result_ids}"
+
+    # Error must be recorded
+    errors_path = ctx.stage_dir / "_errors.jsonl"
+    assert errors_path.exists(), "_errors.jsonl must be written when a cut fails"
+    records = [json.loads(line) for line in errors_path.read_text().splitlines()]
+    assert len(records) == 1, f"expected 1 error record, got {len(records)}"
+    assert records[0]["cut_id"] == "fail-1"
+    assert records[0]["stage"] == ctx.stage_name
+    assert "deliberate failure" in records[0]["error"]

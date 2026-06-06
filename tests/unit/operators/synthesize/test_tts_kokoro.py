@@ -65,6 +65,23 @@ def test_tts_kokoro_config_defaults() -> None:
     assert config.speed == 1.0
 
 
+def test_tts_kokoro_pipeline_failure_propagates(tmp_path: Path, monkeypatch, make_run_context):
+    """self._pipeline() raising must propagate out of process() — not be swallowed.
+
+    Regression guard: the empty audio_chunks guard previously silently continued;
+    an exception from the pipeline must now propagate to the executor's recorder.
+    """
+
+    def _exploding_pipeline(text, voice=None, speed=None):
+        raise RuntimeError("simulated kokoro crash")
+
+    op = TtsKokoroOperator(TtsKokoroConfig(), make_run_context("tts"))
+    op._pipeline = _exploding_pipeline
+
+    with pytest.raises(RuntimeError, match="simulated kokoro crash"):
+        op.process(CutSet([_text_cut("c0", "hello")]))
+
+
 @pytest.mark.slow
 def test_tts_kokoro_synthesizes_audio(tmp_path: Path, make_run_context) -> None:
     ctx = make_run_context("tts")

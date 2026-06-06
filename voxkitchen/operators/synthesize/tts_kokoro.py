@@ -72,8 +72,7 @@ class TtsKokoroOperator(Operator):
                 audio_chunks.append(np.asarray(audio, dtype=np.float32))
 
             if not audio_chunks:
-                logger.warning("cut %s produced no audio, skipping", cut.id)
-                continue
+                raise RuntimeError(f"tts_kokoro produced no audio for cut {cut.id}")
 
             audio_full = np.concatenate(audio_chunks)
             out_path = derived_dir / f"{cut.id}__kokoro.wav"

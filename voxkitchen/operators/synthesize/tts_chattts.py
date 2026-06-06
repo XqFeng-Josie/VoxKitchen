@@ -90,8 +90,7 @@ class TtsChatTTSOperator(Operator):
             )
 
             if wavs is None or len(wavs) == 0:
-                logger.warning("cut %s produced no audio, skipping", cut.id)
-                continue
+                raise RuntimeError(f"tts_chattts produced no audio for cut {cut.id}")
 
             audio = np.clip(np.asarray(wavs[0], dtype=np.float32).flatten(), -1.0, 1.0)
 

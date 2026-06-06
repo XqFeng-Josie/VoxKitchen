@@ -91,3 +91,25 @@ def test_forced_align_skips_cuts_without_text(
     op.teardown()
     out_cut = next(iter(result))
     assert "word_alignments" not in out_cut.custom
+
+
+def test_forced_align_failure_propagates(mono_wav_16k: Path, monkeypatch, make_run_context):
+    """_align() raising must propagate out of process() — not be silently swallowed.
+
+    Regression guard: previously process() caught all exceptions and passed the
+    original cut through unchanged, hiding failures from the executor's recorder.
+    Now failures must propagate so _errors.jsonl is written.
+    """
+
+    def _exploding_align(self, cut, text):
+        raise RuntimeError("simulated alignment crash")
+
+    monkeypatch.setattr(ForcedAlignOperator, "_align", _exploding_align)
+
+    ctx = make_run_context("align")
+    cut = _cut_with_text(mono_wav_16k, "some text")
+    op = ForcedAlignOperator(ForcedAlignConfig(), ctx)
+    op.setup()
+    with pytest.raises(RuntimeError, match="simulated alignment crash"):
+        op.process(CutSet([cut]))
+    op.teardown()

@@ -136,8 +136,7 @@ class TtsFishSpeechOperator(Operator):
 
             audio = self._infer(text)
             if audio is None or len(audio) == 0:
-                logger.warning("cut %s produced no audio, skipping", cut.id)
-                continue
+                raise RuntimeError(f"tts_fish_speech produced no audio for cut {cut.id}")
 
             audio = np.clip(audio, -1.0, 1.0).astype(np.float32)
 
@@ -169,54 +168,52 @@ class TtsFishSpeechOperator(Operator):
     def _infer(self, text: str) -> np.ndarray[Any, Any] | None:
         """Run TTS inference for a single text string.
 
-        Returns 1-D float32 numpy array of audio samples, or None on failure.
+        Returns 1-D float32 numpy array of audio samples, or None if the model
+        produced no output (caller must treat None as an error and raise).
+        Raises on any inference failure.
         """
         assert isinstance(self.config, TtsFishSpeechConfig)
-        try:
-            import torch
+        import torch
 
-            ref_audio = self.config.reference_audio
-            ref_text = self.config.reference_text
-            references = []
-            if ref_audio:
-                from fish_speech.utils.schema import ServeReferenceAudio
+        ref_audio = self.config.reference_audio
+        ref_text = self.config.reference_text
+        references = []
+        if ref_audio:
+            from fish_speech.utils.schema import ServeReferenceAudio
 
-                references.append(
-                    ServeReferenceAudio(
-                        audio=Path(ref_audio).expanduser().read_bytes(),
-                        text=ref_text or "",
-                    )
+            references.append(
+                ServeReferenceAudio(
+                    audio=Path(ref_audio).expanduser().read_bytes(),
+                    text=ref_text or "",
                 )
-
-            from fish_speech.utils.schema import ServeTTSRequest
-
-            req = ServeTTSRequest(
-                text=text,
-                references=references,
-                seed=self.config.seed,
-                max_new_tokens=self.config.max_new_tokens,
-                top_p=self.config.top_p,
-                temperature=self.config.temperature,
-                repetition_penalty=self.config.repetition_penalty,
-                chunk_length=self.config.chunk_length,
             )
 
-            precision = torch.float16 if self.config.half else torch.bfloat16
-            final_audio: np.ndarray[Any, Any] | None = None
-            with torch.autocast(device_type="cuda", dtype=precision):
-                for result in self._inference.inference(req):
-                    if result.code == "error":
-                        raise RuntimeError(result.error or "Fish-Speech inference failed")
-                    if result.code == "final" and result.audio is not None:
-                        sr, audio = result.audio
-                        self._sample_rate = sr
-                        final_audio = np.asarray(audio, dtype=np.float32).flatten()
-                        break
+        from fish_speech.utils.schema import ServeTTSRequest
 
-            return final_audio
-        except Exception:
-            logger.exception("Fish-Speech inference failed")
-            return None
+        req = ServeTTSRequest(
+            text=text,
+            references=references,
+            seed=self.config.seed,
+            max_new_tokens=self.config.max_new_tokens,
+            top_p=self.config.top_p,
+            temperature=self.config.temperature,
+            repetition_penalty=self.config.repetition_penalty,
+            chunk_length=self.config.chunk_length,
+        )
+
+        precision = torch.float16 if self.config.half else torch.bfloat16
+        final_audio: np.ndarray[Any, Any] | None = None
+        with torch.autocast(device_type="cuda", dtype=precision):
+            for result in self._inference.inference(req):
+                if result.code == "error":
+                    raise RuntimeError(result.error or "Fish-Speech inference failed")
+                if result.code == "final" and result.audio is not None:
+                    sr, audio = result.audio
+                    self._sample_rate = sr
+                    final_audio = np.asarray(audio, dtype=np.float32).flatten()
+                    break
+
+        return final_audio
 
     @staticmethod
     def _extract_text(cut: Cut) -> str | None:

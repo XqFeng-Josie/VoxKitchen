@@ -66,6 +66,30 @@ def test_tts_chattts_config_defaults() -> None:
     assert config.top_p == 0.7
 
 
+def test_tts_chattts_infer_failure_propagates(tmp_path: Path, monkeypatch, make_run_context):
+    """self._chat.infer() raising must propagate out of process() — not be swallowed.
+
+    Regression guard: the empty-wavs guard previously silently continued;
+    an exception from infer() must now propagate to the executor's recorder.
+    """
+
+    class FakeChatBroken:
+        class InferCodeParams:
+            def __init__(self, **kw):
+                pass
+
+        def infer(self, texts, params_infer_code=None):
+            raise RuntimeError("simulated chattts crash")
+
+    op = TtsChatTTSOperator(TtsChatTTSConfig(), make_run_context("tts"))
+    op._chat = FakeChatBroken()
+    op._spk = None
+
+    cut = _text_cut("c0", "hello")
+    with pytest.raises(RuntimeError, match="simulated chattts crash"):
+        op.process(CutSet([cut]))
+
+
 @pytest.mark.slow
 def test_tts_chattts_synthesizes_audio(tmp_path: Path, make_run_context) -> None:
     ctx = make_run_context("tts")

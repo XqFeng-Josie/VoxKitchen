@@ -67,6 +67,23 @@ def test_tts_cosyvoice_config_defaults() -> None:
     assert config.reference_audio is None
 
 
+def test_tts_cosyvoice_infer_failure_propagates(tmp_path: Path, monkeypatch, make_run_context):
+    """_infer() raising must propagate out of process() — not be swallowed.
+
+    Regression guard: the empty-chunks guard previously silently continued;
+    an exception from _infer() must now propagate to the executor's recorder.
+    """
+
+    def _exploding_infer(self, text: str):
+        raise RuntimeError("simulated cosyvoice crash")
+
+    monkeypatch.setattr(TtsCosyVoiceOperator, "_infer", _exploding_infer)
+
+    op = TtsCosyVoiceOperator(TtsCosyVoiceConfig(), make_run_context("tts"))
+    with pytest.raises(RuntimeError, match="simulated cosyvoice crash"):
+        op.process(CutSet([_text_cut("c0", "hello")]))
+
+
 @pytest.mark.slow
 def test_tts_cosyvoice_sft_mode(tmp_path: Path, make_run_context) -> None:
     ctx = make_run_context("tts")

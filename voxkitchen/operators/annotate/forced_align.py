@@ -12,7 +12,6 @@ Italian, Japanese, Korean, Portuguese, Russian, Spanish.
 
 from __future__ import annotations
 
-import logging
 from typing import Any, ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
@@ -20,8 +19,6 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.utils.audio import load_audio_for_cut
-
-logger = logging.getLogger(__name__)
 
 
 class ForcedAlignConfig(OperatorConfig):
@@ -64,17 +61,14 @@ class ForcedAlignOperator(Operator):
         for cut in cuts:
             text = self._get_text(cut)
             if text is None:
+                # Legitimate no-input skip: cut has no text to align against.
                 out_cuts.append(cut)
                 continue
-            try:
-                alignments = self._align(cut, text)
-                custom = dict(cut.custom) if cut.custom else {}
-                custom["word_alignments"] = alignments
-                custom["forced_align_model"] = self.config.model
-                out_cuts.append(cut.model_copy(update={"custom": custom}))
-            except Exception:
-                logger.warning("forced alignment failed for cut %s", cut.id, exc_info=True)
-                out_cuts.append(cut)
+            alignments = self._align(cut, text)
+            custom = dict(cut.custom) if cut.custom else {}
+            custom["word_alignments"] = alignments
+            custom["forced_align_model"] = self.config.model
+            out_cuts.append(cut.model_copy(update={"custom": custom}))
         return CutSet(out_cuts)
 
     def _get_text(self, cut: Cut) -> str | None:

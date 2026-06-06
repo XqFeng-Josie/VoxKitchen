@@ -89,8 +89,7 @@ class TtsCosyVoiceOperator(Operator):
                 chunks.append(np.asarray(speech, dtype=np.float32).flatten())
 
             if not chunks:
-                logger.warning("cut %s produced no audio, skipping", cut.id)
-                continue
+                raise RuntimeError(f"tts_cosyvoice produced no audio for cut {cut.id}")
 
             audio = np.concatenate(chunks)
             audio = np.clip(audio, -1.0, 1.0)

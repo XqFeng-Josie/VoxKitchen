@@ -219,6 +219,31 @@ def test_tts_fish_speech_infer_wraps_inference_with_autocast(
     assert autocast_calls[0]["dtype"] == torch.bfloat16
 
 
+def test_tts_fish_speech_infer_failure_propagates(tmp_path: Path, monkeypatch, make_run_context):
+    """_infer() raising must propagate out of process() — not be silently swallowed.
+
+    Regression guard: previously _infer() caught all exceptions and returned None,
+    causing process() to silently drop the cut. Now failures must propagate so the
+    executor's per-cut fallback can record them to _errors.jsonl.
+    """
+    import types
+
+    schema_mod = types.ModuleType("fish_speech.utils.schema")
+    schema_mod.ServeReferenceAudio = lambda **kw: kw
+    schema_mod.ServeTTSRequest = lambda **kw: kw
+    monkeypatch.setitem(sys.modules, "fish_speech.utils.schema", schema_mod)
+
+    def _exploding_infer(self, text: str):
+        raise RuntimeError("simulated inference crash")
+
+    monkeypatch.setattr(TtsFishSpeechOperator, "_infer", _exploding_infer)
+
+    op = TtsFishSpeechOperator(TtsFishSpeechConfig(), make_run_context("fish"))
+    cut = _text_cut("c0", "hello")
+    with pytest.raises(RuntimeError, match="simulated inference crash"):
+        op.process(CutSet([cut]))
+
+
 @pytest.mark.slow
 def test_tts_fish_speech_synthesizes_audio(tmp_path: Path, make_run_context) -> None:
     pytest.importorskip("fish_speech")
