@@ -135,7 +135,7 @@ class TtsFishSpeechOperator(Operator):
                 continue
 
             audio = self._infer(text)
-            if audio is None or len(audio) == 0:
+            if len(audio) == 0:
                 raise RuntimeError(f"tts_fish_speech produced no audio for cut {cut.id}")
 
             audio = np.clip(audio, -1.0, 1.0).astype(np.float32)
@@ -165,12 +165,12 @@ class TtsFishSpeechOperator(Operator):
             )
         return CutSet(out_cuts)
 
-    def _infer(self, text: str) -> np.ndarray[Any, Any] | None:
+    def _infer(self, text: str) -> np.ndarray[Any, Any]:
         """Run TTS inference for a single text string.
 
-        Returns 1-D float32 numpy array of audio samples, or None if the model
-        produced no output (caller must treat None as an error and raise).
-        Raises on any inference failure.
+        Returns a 1-D float32 numpy array of audio samples.
+        Raises RuntimeError on any inference failure, including when the model
+        stream completes without producing a final audio frame.
         """
         assert isinstance(self.config, TtsFishSpeechConfig)
         import torch
@@ -213,6 +213,8 @@ class TtsFishSpeechOperator(Operator):
                     final_audio = np.asarray(audio, dtype=np.float32).flatten()
                     break
 
+        if final_audio is None:
+            raise RuntimeError("Fish-Speech inference produced no final audio frame")
         return final_audio
 
     @staticmethod

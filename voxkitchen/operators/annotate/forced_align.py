@@ -12,6 +12,7 @@ Italian, Japanese, Korean, Portuguese, Russian, Spanish.
 
 from __future__ import annotations
 
+import logging
 from typing import Any, ClassVar
 
 from voxkitchen.operators.base import Operator, OperatorConfig
@@ -19,6 +20,8 @@ from voxkitchen.operators.registry import register_operator
 from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 from voxkitchen.utils.audio import load_audio_for_cut
+
+logger = logging.getLogger(__name__)
 
 
 class ForcedAlignConfig(OperatorConfig):
@@ -62,6 +65,7 @@ class ForcedAlignOperator(Operator):
             text = self._get_text(cut)
             if text is None:
                 # Legitimate no-input skip: cut has no text to align against.
+                logger.debug("cut %s has no text, passing through without alignment", cut.id)
                 out_cuts.append(cut)
                 continue
             alignments = self._align(cut, text)
