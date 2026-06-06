@@ -39,7 +39,7 @@ class UtmosScoreOperator(Operator):
     Higher is better.  Scores > 4.0 indicate natural-sounding speech.
 
     The model is loaded via ``torch.hub`` from ``tarepan/SpeechMOS:v1.2.0``
-    (pinned tag for reproducibility).  First run downloads ~30 MB of model
+    (pinned tag for reproducibility).  First run downloads ~390 MB of model
     weights into the torch hub cache; subsequent runs are local.
 
     Useful for filtering synthetic/degraded audio from training data.

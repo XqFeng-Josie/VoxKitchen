@@ -106,13 +106,12 @@ def warmup_dnsmos(r: WarmupReport) -> None:
 
 def warmup_utmos(r: WarmupReport) -> None:
     try:
-        import numpy as np
-        from speechmos import utmos
+        import torch
 
-        utmos.run(np.zeros(16000, dtype=np.float32), sr=16000)
+        torch.hub.load("tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True)
         r.record_ok("utmos_score")
     except ImportError:
-        r.record_skip("utmos_score", "speechmos not installed")
+        r.record_skip("utmos_score", "torch not installed")
     except Exception as e:
         r.record_fail("utmos_score", e)
 
