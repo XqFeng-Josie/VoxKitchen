@@ -2,13 +2,6 @@
 
 from __future__ import annotations
 
-try:
-    from speechmos import utmos  # noqa: F401
-except ImportError:
-    import pytest
-
-    pytest.skip("speechmos not available", allow_module_level=True)
-
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -44,23 +37,30 @@ def _cut_from_path(audio_path: Path) -> Cut:
 
 
 # ---------------------------------------------------------------------------
-# Fast (no model download)
+# Config-only tests — run in CI without model download or network
 # ---------------------------------------------------------------------------
 
 
 def test_utmos_score_is_registered() -> None:
+    """The operator must be importable and registered under its name."""
     assert get_operator("utmos_score") is UtmosScoreOperator
 
 
 def test_utmos_score_class_attrs() -> None:
-    assert UtmosScoreOperator.device == "cpu"
+    """Contract: writes metrics.utmos; no longer requires the dnsmos extra."""
+    assert UtmosScoreOperator.device == "gpu"
     assert UtmosScoreOperator.produces_audio is False
     assert UtmosScoreOperator.reads_audio_bytes is True
-    assert "dnsmos" in UtmosScoreOperator.required_extras
+    # UTMOS now loads via torch.hub — speechmos/dnsmos extra is not needed.
+    assert "dnsmos" not in UtmosScoreOperator.required_extras, (
+        "utmos_score must not declare required_extras=['dnsmos']: the old "
+        "speechmos.utmos import never worked.  Model now loads via torch.hub."
+    )
+    assert UtmosScoreOperator.writes == ["metrics.utmos"]
 
 
 # ---------------------------------------------------------------------------
-# Slow (loads UTMOS model)
+# Slow tests — load the real UTMOS22 model via torch.hub (needs network + torch)
 # ---------------------------------------------------------------------------
 
 

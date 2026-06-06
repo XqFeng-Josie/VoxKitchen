@@ -1,7 +1,13 @@
 """UTMOS operator: speech naturalness MOS prediction.
 
-Uses the ``speechmos`` package (same as DNSMOS) which provides UTMOS
-via a PyTorch model. Good for evaluating TTS/voice conversion output.
+UTMOS22 MOS predictor loaded via ``torch.hub`` from the SpeechMOS repo
+(``tarepan/SpeechMOS:v1.2.0``).  No-reference MOS estimate on a 1-5 scale;
+higher is better.  Needs only ``torch``, which is present in every VoxKitchen
+image including ``slim``.
+
+Note: the previous implementation did ``from speechmos import utmos``, but
+``speechmos`` never shipped a ``utmos`` module (it provides aecmos/dnsmos/plcmos
+only, across all PyPI versions).  That import failed unconditionally.
 
 Runtime: ``vkit docker run --tag slim <yaml>``
 """
@@ -27,32 +33,45 @@ class UtmosScoreConfig(OperatorConfig):
 
 @register_operator
 class UtmosScoreOperator(Operator):
-    """Predict speech naturalness MOS using UTMOS (no reference needed).
+    """Predict speech naturalness MOS using UTMOS22 (no reference needed).
 
-    Writes ``metrics["utmos"]`` — predicted MOS score (1-5).
-    Higher is better. Scores > 4.0 indicate natural-sounding speech.
+    Writes ``metrics["utmos"]`` -- predicted MOS score (1-5).
+    Higher is better.  Scores > 4.0 indicate natural-sounding speech.
+
+    The model is loaded via ``torch.hub`` from ``tarepan/SpeechMOS:v1.2.0``
+    (pinned tag for reproducibility).  First run downloads ~30 MB of model
+    weights into the torch hub cache; subsequent runs are local.
 
     Useful for filtering synthetic/degraded audio from training data.
     """
 
     name = "utmos_score"
     config_cls = UtmosScoreConfig
-    device = "cpu"
+    device = "gpu"
     produces_audio = False
     reads_audio_bytes = True
-    required_extras: ClassVar[list[str]] = ["dnsmos"]
+    required_extras: ClassVar[list[str]] = []
     reads: ClassVar[list[str]] = ["audio"]
     writes: ClassVar[list[str]] = ["metrics.utmos"]
 
     def setup(self) -> None:
-        from speechmos import utmos  # type: ignore[import-not-found]
+        import torch
 
-        self._utmos = utmos
+        self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # UTMOS22 MOS predictor via torch.hub (SpeechMOS repo). Pinned tag for
+        # reproducibility. Needs only torch — the old `from speechmos import utmos`
+        # never worked (speechmos ships aecmos/dnsmos/plcmos, never utmos).
+        self._predictor = torch.hub.load(  # type: ignore[no-untyped-call]
+            "tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True
+        ).to(self._device)
+        self._predictor.eval()
 
     def process(self, cuts: CutSet) -> CutSet:
         return CutSet(self._process_cut(cut) for cut in cuts)
 
     def _process_cut(self, cut: Cut) -> Cut:
+        import torch
+
         audio, sr = load_audio_for_cut(cut)
         if audio.ndim == 2:
             audio = audio[:, 0]
@@ -63,7 +82,8 @@ class UtmosScoreOperator(Operator):
             new_len = int(len(audio) * _UTMOS_SR / sr)
             audio = scipy_resample(audio, new_len).astype(np.float32)
 
-        result = self._utmos.run(audio, sr=_UTMOS_SR)
-        score = result["mos"] if isinstance(result, dict) else float(result)
+        wav = torch.from_numpy(audio.astype("float32")).unsqueeze(0).to(self._device)
+        with torch.no_grad():
+            score = float(self._predictor(wav, _UTMOS_SR))
 
-        return cut.model_copy(update={"metrics": {**cut.metrics, "utmos": float(round(score, 3))}})
+        return cut.model_copy(update={"metrics": {**cut.metrics, "utmos": round(score, 3)}})
