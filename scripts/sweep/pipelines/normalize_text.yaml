@@ -1,22 +1,17 @@
 # scripts/sweep/pipelines/normalize_text.yaml
 # Operator under test: normalize_text (strip ASR markup + collapse whitespace).
-# Chained: needs supervisions.text from upstream ASR.
-# KNOWN FAIL: normalize_text was added in 0.3.1.dev but the published asr image
-# was built from 0.3.0 — see plan Task 9 deferred note.
+# Uses a pre-built text manifest (markup baked in) so it runs in pure slim —
+# normalize_text is in the core group; chaining a real ASR op (asr-image-only)
+# would mis-route. Mirrors cer_wer.yaml's manifest approach.
 version: "0.1"
 name: sweep-normalize-text
 work_dir: /app/work/vkit-sweep/normalize_text
 num_cpu_workers: 1
 ingest:
-  source: dir
+  source: manifest
   args:
-    root: /app/scripts/sweep/fixtures/audio
+    path: /app/scripts/sweep/fixtures/manifests/text-markup-1cut.jsonl.gz
 stages:
-  - name: asr
-    op: faster_whisper_asr
-    args:
-      model: tiny
-      compute_type: int8
   - name: target
     op: normalize_text
   - name: pack

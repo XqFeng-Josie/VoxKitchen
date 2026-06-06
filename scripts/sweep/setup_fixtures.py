@@ -13,6 +13,7 @@ Outputs (gitignored, regenerated each --setup):
 - ``manifests/text-en-1cut.jsonl.gz`` — 1-cut text manifest for English TTS sweep
 - ``manifests/text-zh-1cut.jsonl.gz`` — 1-cut text manifest for Chinese TTS sweep
 - ``manifests/cer-wer-1cut.jsonl.gz`` — 1 audio cut with supervisions.text + custom.reference_text
+- ``manifests/text-markup-1cut.jsonl.gz`` — 1-cut text manifest with SenseVoice markup tags + double space for normalize_text sweep
 - ``embeddings/ref-speaker.npy`` — 192-dim unit vector as reference speaker embedding
 """
 
@@ -143,6 +144,15 @@ def _make_text_manifests(manifests_dir: Path) -> None:
         manifests_dir / "text-zh-1cut.jsonl.gz",
         cut_id="sweep-zh-1",
         text="今天天气不错，适合出门散步。",  # noqa: RUF001
+    )
+    _write_text_manifest(
+        manifests_dir / "text-markup-1cut.jsonl.gz",
+        cut_id="sweep-markup-1",
+        # SenseVoice-style markup tags + a double space between "hello" and
+        # "world" — so normalize_text has something meaningful to strip and the
+        # assert_normalize_text_strips assertion (no <| and no double space) is
+        # a real check rather than a vacuous pass.
+        text="<|en|><|HAPPY|><|Speech|> hello  world <|withitn|>",
     )
 
 

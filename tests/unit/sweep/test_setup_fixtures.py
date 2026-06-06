@@ -27,6 +27,8 @@ def test_setup_creates_all_generated_fixtures(tmp_path: Path) -> None:
     # Added in Task 7 (cer_wer fixture-based approach + speaker_similarity .npy)
     assert (fixtures_dir / "manifests" / "cer-wer-1cut.jsonl.gz").is_file()
     assert (fixtures_dir / "embeddings" / "ref-speaker.npy").is_file()
+    # Added for normalize_text sweep (markup tags + double space to strip)
+    assert (fixtures_dir / "manifests" / "text-markup-1cut.jsonl.gz").is_file()
 
 
 def test_setup_is_idempotent(tmp_path: Path) -> None:

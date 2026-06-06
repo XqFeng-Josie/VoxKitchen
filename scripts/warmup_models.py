@@ -108,7 +108,11 @@ def warmup_utmos(r: WarmupReport) -> None:
     try:
         import torch
 
-        torch.hub.load("tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True)
+        predictor = torch.hub.load("tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True)
+        # A forward pass forces the ~390MB checkpoint to download into the
+        # build-time (root-writable) model_cache. torch.hub.load only fetches
+        # the repo code; the weights are lazy-loaded on first inference.
+        predictor(torch.zeros(1, 16000), 16000)
         r.record_ok("utmos_score")
     except ImportError:
         r.record_skip("utmos_score", "torch not installed")
