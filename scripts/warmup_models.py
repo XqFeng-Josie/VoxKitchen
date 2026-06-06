@@ -105,19 +105,47 @@ def warmup_dnsmos(r: WarmupReport) -> None:
 
 
 def warmup_utmos(r: WarmupReport) -> None:
-    try:
-        import torch
+    # UTMOS22 is loaded via torch.hub from the tarepan/SpeechMOS repo, whose
+    # internal package is ALSO named `speechmos` — colliding with the installed
+    # `speechmos` (DNSMOS) package that warmup_dnsmos imports earlier in this
+    # process.  The cached installed module shadows the hub repo's package, so
+    # `import speechmos.utmos22` raises ModuleNotFoundError.
+    #
+    # Fix: run the hub-load + forward pass in a clean subprocess (fresh
+    # sys.modules, no stale `speechmos` entry).  The subprocess inherits
+    # os.environ (TORCH_HOME etc.) so the ~390MB checkpoint downloads into the
+    # same build-time model_cache as every other warmup.  A forward pass is
+    # required because torch.hub.load only fetches repo code; the checkpoint
+    # itself is lazy-loaded on first inference.
+    import subprocess
 
-        predictor = torch.hub.load("tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True)
-        # A forward pass forces the ~390MB checkpoint to download into the
-        # build-time (root-writable) model_cache. torch.hub.load only fetches
-        # the repo code; the weights are lazy-loaded on first inference.
-        predictor(torch.zeros(1, 16000), 16000)
+    code = (
+        "import torch; "
+        "m = torch.hub.load('tarepan/SpeechMOS:v1.2.0', 'utmos22_strong', trust_repo=True); "
+        "m(torch.zeros(1, 16000), 16000)"
+    )
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=600,
+        )
+    except subprocess.TimeoutExpired:
+        r.record_fail("utmos_score", RuntimeError("UTMOS warmup timed out (600s)"))
+        return
+    if proc.returncode == 0:
         r.record_ok("utmos_score")
-    except ImportError:
-        r.record_skip("utmos_score", "torch not installed")
-    except Exception as e:
-        r.record_fail("utmos_score", e)
+    else:
+        # Distinguish a missing-torch situation from a genuine failure so that
+        # callers can still surface it as a skip rather than a hard error.
+        stderr_text = (proc.stderr or proc.stdout).strip()
+        if "No module named 'torch'" in stderr_text:
+            r.record_skip("utmos_score", "torch not installed")
+            return
+        tail = stderr_text.splitlines()
+        msg = tail[-1] if tail else f"exit {proc.returncode}"
+        r.record_fail("utmos_score", RuntimeError(f"UTMOS warmup failed: {msg}"))
 
 
 def warmup_speechbrain_langid(r: WarmupReport) -> None:
