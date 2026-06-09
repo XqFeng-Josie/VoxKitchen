@@ -4,7 +4,7 @@ All notable changes to VoxKitchen are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [0.3.1] — 2026-06-09
 
 ### Added
 
