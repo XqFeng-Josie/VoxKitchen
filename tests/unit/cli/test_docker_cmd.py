@@ -42,17 +42,6 @@ def fake_docker(monkeypatch, tmp_path):
     yield originals  # tests can flip nvidia-smi by mutating this dict
 
 
-def _captured_cmd(fake_docker) -> list[str]:
-    """Helper: the docker argv that would have been executed."""
-    with patch.object(docker_cmd, "_run_and_exit") as spy:
-        # _run_and_exit normally raises typer.Exit; silence it for capture
-        def _capture(cmd: list[str], **kwargs) -> None:
-            pass
-
-        spy.side_effect = _capture
-        yield spy
-
-
 def _invoke(args: list[str]) -> tuple[int, list[str] | None]:
     """Invoke `vkit docker ...` and return (exit_code, captured_docker_argv)."""
     exit_code, cmd, _ = _invoke_details(args)

@@ -41,13 +41,11 @@ def image_for_op(op_name: str) -> str:
     if op_name not in registered:
         raise UnknownOperatorError(f"operator {op_name!r} is not registered in voxkitchen")
 
-    # Find the smallest image group containing this op.
-    seen_in_smaller: set[str] = set()
+    # _GROUP_TO_TAG is smallest-first, so the first group that claims the op is
+    # its canonical (cheapest) image.
     for group, tag in _GROUP_TO_TAG:
-        members = EXPECTED_OPERATORS.get(group, set())
-        if op_name in members and op_name not in seen_in_smaller:
+        if op_name in EXPECTED_OPERATORS.get(group, set()):
             return tag
-        seen_in_smaller |= members
 
     # Registered but no image group claims it — must be in latest (union).
     return "latest"

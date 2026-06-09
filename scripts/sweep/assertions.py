@@ -14,6 +14,7 @@ import logging
 from collections.abc import Callable
 from pathlib import Path
 
+from voxkitchen.schema.cut import Cut
 from voxkitchen.schema.cutset import CutSet
 
 _logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ _logger = logging.getLogger(__name__)
 # ---- Helpers ----
 
 
-def _read_final_cuts(work_dir: Path) -> list:
+def _read_final_cuts(work_dir: Path) -> list[Cut]:
     """Locate and load the final pack stage's manifest. Returns [] on missing.
 
     Deserialization errors (schema mismatch, malformed cut record, etc.) are
@@ -189,9 +190,9 @@ def assert_pack_file_exists(
 
 # ---- Dispatch table ----
 #
-# Populated incrementally as Tasks 5-10 add per-op pipelines. Anything not
-# in this dict falls through to default_smoke_assertion (cuts > 0), which
-# is sufficient for pure-transform ops.
+# Maps op-name → assertion. Operators without an entry fall through to
+# default_smoke_assertion (cuts > 0), which is sufficient for pure-transform
+# ops.
 
 ASSERTIONS: dict[str, Callable[[Path, str], tuple[bool, str]]] = {
     # Audio

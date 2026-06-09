@@ -1177,7 +1177,7 @@ Useful for filtering synthetic/degraded audio from training data.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model_id` | str | `FunAudioLLM/CosyVoice2-0.5B` |  |
+| `model_id` | str | `iic/CosyVoice2-0.5B` |  |
 | `mode` | str | `sft` |  |
 | `spk_id` | str | `default` |  |
 | `reference_audio` | str \| None | `None` |  |
@@ -1187,7 +1187,7 @@ Useful for filtering synthetic/degraded audio from training data.
 - name: my_tts_cosyvoice
   op: tts_cosyvoice
   args:
-    model_id: FunAudioLLM/CosyVoice2-0.5B
+    model_id: iic/CosyVoice2-0.5B
     mode: sft
     spk_id: default
     reference_audio: null

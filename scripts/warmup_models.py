@@ -363,13 +363,17 @@ def warmup_chattts(r: WarmupReport) -> None:
 
 
 def warmup_cosyvoice(r: WarmupReport) -> None:
+    # Mirror the operator's download exactly (tts_cosyvoice.py): modelscope
+    # `iic/CosyVoice2-0.5B`. The old `FunAudioLLM/CosyVoice2-0.5B` repo 404s;
+    # using a different hub/repo here would bake the wrong weights and the
+    # operator would re-download at runtime.
     try:
-        from huggingface_hub import snapshot_download
+        from modelscope import snapshot_download
 
-        snapshot_download("FunAudioLLM/CosyVoice2-0.5B")
+        snapshot_download("iic/CosyVoice2-0.5B")
         r.record_ok("tts_cosyvoice")
     except ImportError:
-        r.record_skip("tts_cosyvoice", "huggingface_hub not installed")
+        r.record_skip("tts_cosyvoice", "modelscope not installed")
     except Exception as e:
         r.record_fail("tts_cosyvoice", e)
 

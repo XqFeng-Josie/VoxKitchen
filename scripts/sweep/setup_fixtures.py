@@ -48,7 +48,7 @@ def generate_fixtures(*, repo_root: Path, fixtures_dir: Path) -> None:
     embeddings_dir = fixtures_dir / "embeddings"
     embeddings_dir.mkdir(parents=True, exist_ok=True)
 
-    _make_demo_symlink(repo_root, audio_dir)
+    _make_demo_copy(repo_root, audio_dir)
     _make_tiny_english(repo_root, audio_dir)
     _make_white_noise(noise_dir)
     _make_synthetic_rir(rir_dir)
@@ -58,7 +58,7 @@ def generate_fixtures(*, repo_root: Path, fixtures_dir: Path) -> None:
     _make_zh_subdir(repo_root, audio_dir)
 
 
-def _make_demo_symlink(repo_root: Path, audio_dir: Path) -> None:
+def _make_demo_copy(repo_root: Path, audio_dir: Path) -> None:
     """Copy demo1.opus into fixtures/audio.
 
     A plain copy (not a symlink) is used so the file is accessible inside
@@ -294,7 +294,7 @@ def _make_zh_subdir(repo_root: Path, audio_dir: Path) -> None:
 
     Uses a relative symlink because audio-zh/ and audio/ are sibling directories
     inside the fixtures dir — the bind-mounted fixtures tree is internally
-    consistent. Unlike _make_demo_symlink (which copies because its source lives
+    consistent. Unlike _make_demo_copy (which copies because its source lives
     outside the bind-mounted fixtures dir), a relative symlink works here.
 
     ``zh-tiny.wav`` is a committed file in ``scripts/sweep/fixtures/audio/``.

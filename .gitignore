@@ -38,6 +38,7 @@ experiments/
 !tests/fixtures/**/*.jsonl.gz
 .claude/settings.local.json
 .claude/settings.json
+.claude/scheduled_tasks.lock
 
 # Secrets
 .env

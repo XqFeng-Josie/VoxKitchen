@@ -22,6 +22,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   output that walks users through `show → validate → docker run`,
   and a README listing the full iteration loop including
   `vkit card` and `vkit datasets`.
+- `vkit validate --tag <image>` (and `vkit docker run`) now run an
+  op-vs-image pre-flight check: before launching a container they verify
+  every operator in the pipeline is actually present in the target image,
+  cross-checking the image's baked `op_env_map.json`. A pipeline that
+  references an operator the image doesn't ship fails fast on the host with
+  an actionable message instead of deep inside the container. Pass
+  `--no-preflight` to skip.
 
 ### Changed
 
@@ -34,6 +41,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   dump; `extra_forbidden` rows get a `did you mean` hint via stdlib
   `difflib` when one of the operator's known fields is close enough
   (e.g. `target_channel` → `target_channels`).
+- `vkit doctor --expect` now accepts image tags as well as env-group
+  names: `--expect slim` is an alias for the `core` group, matching the
+  published image tags users actually pull.
 
 - `vkit datasets`: terminal browser for the dataset catalog — `vkit datasets`
   (filterable table; `--task` / `--language` / `--recipe-only` / `--query` compose),
@@ -128,6 +138,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   so a fresh `pip install -e .[dev]` on a host with a newer NumPy failed
   to import `librosa` and broke local test collection. The core
   `numpy>=1.24` runtime bound is unchanged.
+- `utmos_score` now produces real scores. The operator imported
+  `speechmos.utmos`, a module `speechmos` has never shipped (it provides
+  aecmos/dnsmos/plcmos only), so the import failed unconditionally. UTMOS22
+  is now loaded via `torch.hub` from `tarepan/SpeechMOS:v1.2.0`, which needs
+  only `torch` (present in every image, including `slim`).
+- `tts_cosyvoice` default `model_id` is now `iic/CosyVoice2-0.5B`. The old
+  default `FunAudioLLM/CosyVoice2-0.5B` was removed from ModelScope (404 on
+  both endpoints), so the operator failed at setup for anyone relying on the
+  default.
+- `tts_fish_speech` no longer crashes with a dtype mismatch
+  (`Input type (float) and bias type (c10::BFloat16) should be the same`).
+  The float32 reference audio was fed to the bfloat16 DAC encoder; inference
+  is now wrapped in `torch.autocast` so the cast happens automatically.
+- TTS and forced-alignment operators no longer silently swallow per-cut
+  failures. They previously caught their own exceptions and dropped the cut,
+  hiding errors from the executor's per-cut fallback. Failures now propagate,
+  are recorded to `<stage>/_errors.jsonl`, and trigger a warning when a stage
+  drops 100% of its input cuts — so "pipeline complete, 0 cuts out" is no
+  longer silent.
+- `read_cuts` now warns when a manifest line is malformed or missing its
+  `__type__` marker instead of silently skipping it, so user-built manifests
+  that produced "0 cuts in" now explain why.
+- `speechbrain_langid` now writes a real language instead of `None` for every
+  input. The VoxLingua107 model emits `"<iso>: <name>"` labels (e.g.
+  `"en: English"`); the operator passed the raw label to `normalize_language`,
+  which couldn't parse it, so the `language` field was always `None`. It now
+  extracts the ISO code before normalizing.
 
 ## [0.3.0] — 2026-05-21
 

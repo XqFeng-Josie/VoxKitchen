@@ -82,13 +82,49 @@ def test_speechbrain_langid_class_attrs() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Label parsing (stubbed classifier — no model download)
+# ---------------------------------------------------------------------------
+
+
+def test_speechbrain_langid_parses_voxlingua_label(mono_wav_16k: Path, make_run_context) -> None:
+    """VoxLingua107 emits '<iso>: <Name>' labels (e.g. 'en: English').
+
+    Regression guard: the operator must extract the ISO code before the colon
+    so normalize_language yields a real language. Passing the raw label made it
+    return None for every prediction.
+    """
+    from voxkitchen.operators.annotate.speechbrain_langid import (
+        SpeechBrainLangIdConfig,
+        SpeechBrainLangIdOperator,
+    )
+
+    op = SpeechBrainLangIdOperator(SpeechBrainLangIdConfig(), ctx=make_run_context("langid"))
+
+    class _StubClassifier:
+        def classify_batch(self, _tensor):
+            return (None, None, None, ["en: English"])
+
+    op._classifier = _StubClassifier()
+
+    out_cuts = list(op.process(CutSet([_make_cut(mono_wav_16k)])))
+    langid_sups = [s for s in out_cuts[0].supervisions if s.id.endswith("__langid")]
+    assert len(langid_sups) == 1
+    assert langid_sups[0].language == "english"
+
+
+# ---------------------------------------------------------------------------
 # Slow (downloads VoxLingua107 ECAPA model ~80 MB)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.slow
-def test_speechbrain_langid_classifies(mono_wav_16k: Path) -> None:
-    """Real model on CPU. Language of a sine wave is arbitrary but must be a string."""
+def test_speechbrain_langid_classifies(mono_wav_16k: Path, make_run_context) -> None:
+    """Real model on CPU: the operator loads, runs, and adds one langid sup.
+
+    A sine wave's predicted language is arbitrary and may fall outside the
+    alias table (-> None), so this is a wiring/smoke check; deterministic
+    label parsing is covered by test_speechbrain_langid_parses_voxlingua_label.
+    """
     from voxkitchen.operators.annotate.speechbrain_langid import (
         SpeechBrainLangIdConfig,
         SpeechBrainLangIdOperator,
@@ -96,16 +132,15 @@ def test_speechbrain_langid_classifies(mono_wav_16k: Path) -> None:
 
     cut = _make_cut(mono_wav_16k)
     config = SpeechBrainLangIdConfig()
-    op = SpeechBrainLangIdOperator(config, ctx=object())  # type: ignore[arg-type]
+    op = SpeechBrainLangIdOperator(config, ctx=make_run_context("langid"))
     op.setup()
     result = op.process(CutSet([cut]))
     out_cuts = list(result)
 
     assert len(out_cuts) == 1
     out_cut = out_cuts[0]
-    # Exactly one langid supervision added
+    # Exactly one langid supervision added.
     langid_sups = [s for s in out_cut.supervisions if s.id.endswith("__langid")]
     assert len(langid_sups) == 1
     lang = langid_sups[0].language
-    assert isinstance(lang, str)
-    assert len(lang) > 0
+    assert lang is None or isinstance(lang, str)

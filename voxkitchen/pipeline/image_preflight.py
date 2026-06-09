@@ -139,7 +139,6 @@ def _check_b(
     import json
     import subprocess
 
-    # keep in sync with docker_cmd.DEFAULT_IMAGE
     from voxkitchen.cli.docker_cmd import DEFAULT_IMAGE
 
     _skip = skip_ops or set()

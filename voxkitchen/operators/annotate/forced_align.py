@@ -50,7 +50,8 @@ class ForcedAlignOperator(Operator):
 
         assert isinstance(self.config, ForcedAlignConfig)
         device = self.ctx.device if hasattr(self.ctx, "device") else "cpu"
-        # Use float32 on CPU, bfloat16 on GPU
+        # bfloat16 on CUDA (native hardware support); float32 on CPU, where
+        # bfloat16 is software-emulated and slow.
         dtype = torch.bfloat16 if "cuda" in device else torch.float32
         self._aligner = Qwen3ForcedAligner.from_pretrained(
             self.config.model,

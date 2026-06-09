@@ -272,7 +272,9 @@ def run_cmd(
     stop_at: str | None = typer.Option(None, "--stop-at", help="Stop after this stage."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Validate only, do not execute."),
     no_preflight: bool = typer.Option(
-        False, "--no-preflight", help="Skip static field-contract pre-flight checks."
+        False,
+        "--no-preflight",
+        help="Skip host-side image-fit and field-contract pre-flight checks.",
     ),
     keep_intermediates: bool = typer.Option(
         False, "--keep-intermediates", help="Keep derived audio from every stage."

@@ -58,12 +58,17 @@ class SpeechBrainLangIdOperator(Operator):
             _out_prob, _score, _index, text_lab = self._classifier.classify_batch(
                 tensor.unsqueeze(0)
             )
+            # VoxLingua107 labels are formatted "<iso>: <English name>"
+            # (e.g. "en: English"). Take the ISO code before the colon —
+            # normalize_language can't parse the combined form and would
+            # return None for every prediction otherwise.
+            iso_code = text_lab[0].split(":", 1)[0].strip()
             sup = Supervision(
                 id=f"{cut.id}__{self.ctx.stage_name}",
                 recording_id=cut.recording_id,
                 start=cut.start,
                 duration=cut.duration,
-                language=normalize_language(text_lab[0]),
+                language=normalize_language(iso_code),
             )
             updated = cut.model_copy(update={"supervisions": [*cut.supervisions, sup]})
             out.append(updated)

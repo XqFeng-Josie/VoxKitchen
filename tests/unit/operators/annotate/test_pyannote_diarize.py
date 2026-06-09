@@ -88,7 +88,7 @@ def test_pyannote_diarize_class_attrs() -> None:
 
 
 @pytest.mark.gpu
-def test_pyannote_diarize_adds_speakers(mono_wav_16k: Path) -> None:
+def test_pyannote_diarize_adds_speakers(mono_wav_16k: Path, make_run_context) -> None:
     """Requires HF_TOKEN + pyannote model access. Run on configured server only."""
     from voxkitchen.operators.annotate.pyannote_diarize import (
         PyannoteDiarizeConfig,
@@ -97,7 +97,7 @@ def test_pyannote_diarize_adds_speakers(mono_wav_16k: Path) -> None:
 
     cut = _make_cut(mono_wav_16k)
     config = PyannoteDiarizeConfig()
-    op = PyannoteDiarizeOperator(config, ctx=object())  # type: ignore[arg-type]
+    op = PyannoteDiarizeOperator(config, ctx=make_run_context("diarize"))
     op.setup()
     result = op.process(CutSet([cut]))
     out_cuts = list(result)

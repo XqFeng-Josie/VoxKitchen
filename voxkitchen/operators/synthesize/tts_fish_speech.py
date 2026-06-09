@@ -64,7 +64,6 @@ class TtsFishSpeechOperator(Operator):
         self._load_model()
 
     def _load_model(self) -> None:
-        """Load Fish-Speech S2 inference engine."""
         assert isinstance(self.config, TtsFishSpeechConfig)
         import torch
         from fish_speech.inference_engine import TTSInferenceEngine

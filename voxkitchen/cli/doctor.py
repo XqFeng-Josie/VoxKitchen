@@ -137,7 +137,13 @@ EXPECTED_OPERATORS["tts"] = EXPECTED_OPERATORS["core"] | {
     "tts_cosyvoice",
 }
 
-# fish-speech env: isolated torch 2.8 + numpy 2.1 stack.
+# fish-speech env: isolated torch 2.8 + numpy 2.1 stack. Deliberately NOT
+# core-unioned (unlike asr/diarize/tts): this set scopes the per-venv build
+# smoke test (`<env>/bin/vkit doctor --expect fish-speech`), and the
+# fish-speech venv installs only fish-speech — core extras are absent because
+# of the torch-2.8 isolation, so they are not importable here. (The published
+# *image* does bundle the core venv too; image_preflight unions core back in
+# when checking op-vs-image fit.)
 EXPECTED_OPERATORS["fish-speech"] = {
     "tts_fish_speech",
 }
@@ -320,7 +326,7 @@ def _emit_table(
     else:
         console.print(
             f"Available operators: {len(available)} "
-            "[dim](set VKIT_IMAGE_KIND or pass --expect for pass/fail verdict)[/dim]"
+            "[dim](set VKIT_ENV or pass --expect for pass/fail verdict)[/dim]"
         )
 
     from voxkitchen.operators import OPERATOR_API_VERSION

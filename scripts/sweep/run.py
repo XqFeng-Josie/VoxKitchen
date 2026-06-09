@@ -195,7 +195,7 @@ def _run_one(
     # models) can authenticate inside the container. vkit docker run only
     # supports --env-file, not individual -e VAR=VAL flags.
     hf_token = os.environ.get("HF_TOKEN", "")
-    _tmp_env: tempfile.NamedTemporaryFile | None = None
+    _tmp_env = None
     if hf_token:
         _tmp_env = tempfile.NamedTemporaryFile(
             mode="w", suffix=".env", delete=False, prefix="vkit_sweep_"

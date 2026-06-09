@@ -37,6 +37,18 @@ pytest tests/unit/operators/augment/test_speed_perturb.py -v
 pytest --cov=voxkitchen --cov-report=term-missing
 ```
 
+**Test coverage layers.** Know what each layer does and does *not* cover:
+
+- **Per-PR CI** installs only the core (`slim`) dependency cluster, so unit
+  tests for heavy operators (ASR, diarization, TTS, fish-speech) `SKIP`.
+- **`extras-ci`** (weekly + `workflow_dispatch`) installs the `asr` / `diarize`
+  / `codec` / `tts-kokoro` extras on CPU and runs their previously-skipped
+  tests. It does **not** cover fish-speech, cosyvoice, or chattts, and it runs
+  against `pip`-installed extras, not the published Docker images.
+- **The operator sweep** (`scripts/sweep/run.py`) is the only thing that
+  exercises every operator inside its canonical published image. It is
+  **manual** — run it before tagging/republishing images; nothing in CI does.
+
 ## Code Style
 
 We use **ruff** for linting and formatting, **mypy** for type checking.

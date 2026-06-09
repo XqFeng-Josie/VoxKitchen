@@ -205,12 +205,12 @@ vkit validate pipeline.yaml
 
 | 标签 | 适用场景 | GPU | 大致体积 |
 |---|---|---|---|
-| `slim` | CPU 友好的清洗、VAD、质量、打包、增强 | 否 | ~13 GB |
+| `slim` | CPU 友好的清洗、VAD、质量、打包、增强 | 否 | ~22 GB |
 | `asr` | Faster-Whisper、FunASR、Qwen3-ASR、强制对齐 | 是 | ~36 GB |
 | `diarize` | Pyannote 说话人分离 | 是 | ~20 GB |
-| `tts` | Kokoro、ChatTTS、CosyVoice | 是 | ~32 GB |
-| `fish-speech` | Fish-Speech 独立运行时 | 是 | ~44 GB |
-| `latest` | 跨 ASR、说话人分离、TTS 或 Fish-Speech 的混合流水线 | 是 | ~85 GB |
+| `tts` | Kokoro、ChatTTS、CosyVoice | 是 | ~46 GB |
+| `fish-speech` | Fish-Speech 独立运行时 | 是 | ~58 GB |
+| `latest` | 跨 ASR、说话人分离、TTS 或 Fish-Speech 的混合流水线 | 是 | ~88 GB |
 
 当一条流水线混用多个运行时家族（例如 ASR 加说话人分离、或 ASR 加 TTS）时使用
 `latest`。否则，优先选择包含你所需算子的最小镜像。

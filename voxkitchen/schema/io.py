@@ -26,8 +26,8 @@ by an older version.
 3. Update ``read_cuts`` / ``read_header`` to route version-mismatched reads
    through the migration function instead of raising.
 
-The ``schema/migrations/`` package is a stub in Plan 1; Plan 2 or later will
-populate it when the first migration is needed.
+The ``schema/migrations/`` package is currently an empty stub; it will be
+populated when the first schema change requires a migration.
 """
 
 from __future__ import annotations
