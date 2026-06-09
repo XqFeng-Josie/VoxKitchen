@@ -19,3 +19,12 @@ omegaconf>=2.3,<2.4
 matcha-tts==0.0.7.0
 HyperPyYAML>=1.2,<2.0
 inflect>=7.0,<8.0
+# kokoro/misaki stack. misaki 0.9.x's espeak.py calls
+# EspeakWrapper.set_data_path, which lives in phonemizer-fork (NOT upstream
+# phonemizer). matcha-tts above pulls upstream `phonemizer` into the same
+# `phonemizer/` namespace, shadowing the fork — see the dedicated uninstall+
+# reinstall step in the Dockerfile tts-env stage. Pinned so rebuilds are
+# reproducible (these were previously unpinned and drifted, breaking kokoro).
+kokoro==0.9.4
+misaki==0.9.4
+phonemizer-fork==3.3.2

@@ -297,6 +297,19 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
         "omegaconf>=2.3" \
         "openai-whisper>=20231117"
 
+# matcha-tts (above) pulls in upstream `phonemizer`, which shares the
+# `phonemizer/` import namespace with `phonemizer-fork` (a misaki/kokoro
+# dependency) and shadows it. Upstream's EspeakWrapper lacks `set_data_path`,
+# which misaki 0.9.x calls at import — so kokoro dies with AttributeError.
+# Remove the upstream package and reinstall the fork so its files own the
+# `phonemizer/` namespace. Must run AFTER the matcha-tts install above and
+# BEFORE the tts warmup below (which exercises kokoro). Verified: fork alone
+# → EspeakWrapper.set_data_path present → kokoro synthesizes.
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    uv pip uninstall --python /opt/voxkitchen/envs/tts/bin/python phonemizer && \
+    uv pip install --python /opt/voxkitchen/envs/tts/bin/python \
+        -c /app/docker/constraints/tts.txt --reinstall phonemizer-fork==3.3.2
+
 # Register /opt/cosyvoice on the tts venv's sys.path via a .pth file.
 # This is the standard Python path-extension mechanism and survives across
 # subprocess launches (PYTHONPATH would only apply to the current process).
