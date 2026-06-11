@@ -197,15 +197,18 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
         -c /app/docker/constraints/asr.txt \
         -e ".[audio,segment,quality,pack,pitch,dnsmos,classify,enhance,codec,viz,viz-panel,asr,whisper,funasr,align]"
 
-# wenet_asr is intentionally NOT in EXPECTED_OPERATORS.asr — its upstream
-# tooling breaks often and we don't want one flaky dep to block the image.
-# If the install fails, the operator just doesn't register; users who
-# need it can install wenet themselves.
+# wenet has no PyPI release, and its repo's .gitmodules references a submodule
+# (runtime/gpu/.../FasterTransformer) with no URL, so uv's automatic
+# `git submodule update --init` for a `git+https` dep fails. We only need the
+# Python package (not the GPU C++ runtime), so clone WITHOUT submodules and
+# install from the local checkout, pinned for reproducibility. The asr.txt
+# constraint keeps torch/torchaudio at 2.4.1 — wenet imports cleanly there;
+# newer torch dropped the private `Union` re-export wenet relies on.
 RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
+    git clone --filter=blob:none https://github.com/wenet-e2e/wenet.git /opt/wenet-src && \
+    git -C /opt/wenet-src checkout 51b577282dd62a84596fce381aab930f9f62b547 && \
     uv pip install --python /opt/voxkitchen/envs/asr/bin/python \
-        -c /app/docker/constraints/asr.txt \
-        "wenet @ git+https://github.com/wenet-e2e/wenet.git" \
-        || echo "WARN: wenet install failed — wenet_asr operator will be unavailable"
+        -c /app/docker/constraints/asr.txt /opt/wenet-src
 
 RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv,sharing=locked \
     uv pip install --python /opt/voxkitchen/envs/asr/bin/python -e . --no-deps

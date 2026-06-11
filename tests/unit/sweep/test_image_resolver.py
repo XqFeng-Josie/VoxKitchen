@@ -19,6 +19,7 @@ def test_resolve_asr_only_op() -> None:
     assert image_for_op("faster_whisper_asr") == "asr"
     assert image_for_op("forced_align") == "asr"
     assert image_for_op("paraformer_asr") == "asr"
+    assert image_for_op("wenet_asr") == "asr"
 
 
 def test_resolve_diarize_only_op() -> None:
@@ -48,10 +49,12 @@ def test_resolve_unknown_op_raises() -> None:
         image_for_op("no_such_operator_xyz")
 
 
-def test_resolve_op_not_in_any_image_group_falls_back_to_latest() -> None:
-    """Ops registered locally but not in any EXPECTED_OPERATORS group fall
-    back to 'latest' (the union image). Today this covers e.g. wenet_asr,
-    which is intentionally excluded from the asr image's spec."""
+def test_resolve_op_not_in_any_image_group_falls_back_to_latest(monkeypatch) -> None:
+    """A registered op not in any EXPECTED_OPERATORS group falls back to
+    'latest' (the union image)."""
+    import voxkitchen.operators.registry as registry
+
+    monkeypatch.setattr(registry, "list_operators", lambda: ["_ungrouped_op_xyz"])
     from scripts.sweep.image_resolver import image_for_op
 
-    assert image_for_op("wenet_asr") == "latest"
+    assert image_for_op("_ungrouped_op_xyz") == "latest"

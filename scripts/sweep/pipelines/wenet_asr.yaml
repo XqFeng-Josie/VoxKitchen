@@ -1,8 +1,7 @@
 # scripts/sweep/pipelines/wenet_asr.yaml
 # Operator under test: wenet_asr (WeNet production ASR).
-# NOTE: wenet_asr routes to the 'latest' image (image_for_op returns "latest"
-# because wenet_asr is intentionally absent from EXPECTED_OPERATORS["asr"]).
-# The sweep will SKIP with image-not-local if 'latest' is not pulled locally.
+# Routes to the 'asr' image — wenet is git-installed into the asr env
+# (pinned, submodule-free clone; see the Dockerfile asr-env stage).
 version: "0.1"
 name: sweep-wenet-asr
 work_dir: /app/work/vkit-sweep/wenet_asr

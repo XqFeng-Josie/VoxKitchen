@@ -115,9 +115,9 @@ EXPECTED_OPERATORS["asr"] = EXPECTED_OPERATORS["core"] | {
     "qwen3_asr",
     "forced_align",
     "emotion_recognize",
-    # wenet_asr is intentionally excluded: the git install is fragile and
-    # we don't want to block the build on it. If it's present, great — if
-    # not, the image is still considered healthy.
+    # wenet has no PyPI release; installed from a pinned git checkout cloned
+    # without submodules (its .gitmodules is broken upstream — see Dockerfile).
+    "wenet_asr",
 }
 
 # diarize = core + pyannote only. Separate image target so users who only

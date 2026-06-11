@@ -165,6 +165,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `"en: English"`); the operator passed the raw label to `normalize_language`,
   which couldn't parse it, so the `language` field was always `None`. It now
   extracts the ISO code before normalizing.
+- `wenet_asr` is now installed reliably and is part of the guaranteed `asr`
+  image. wenet has no PyPI release and its repo's `.gitmodules` references a
+  URL-less submodule, so the previous `git+https` install failed
+  (`git submodule update --init` aborted) and the operator was silently
+  absent. It's now cloned without submodules at a pinned commit and installed
+  from the local checkout, with the asr constraint keeping torch at 2.4.1
+  (newer torch dropped a private re-export wenet imports).
 
 ## [0.3.0] — 2026-05-21
 

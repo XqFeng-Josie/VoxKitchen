@@ -26,13 +26,14 @@ def test_canonical_image_for_op_asr() -> None:
     from voxkitchen.pipeline.image_preflight import canonical_image_for_op
 
     assert canonical_image_for_op("faster_whisper_asr") == "asr"
+    assert canonical_image_for_op("wenet_asr") == "asr"
 
 
 def test_canonical_image_for_op_unknown_falls_back_to_latest() -> None:
     from voxkitchen.pipeline.image_preflight import canonical_image_for_op
 
-    # wenet_asr is excluded from all groups → latest
-    assert canonical_image_for_op("wenet_asr") == "latest"
+    # an op in no image group → latest (the union image)
+    assert canonical_image_for_op("_ungrouped_op_xyz") == "latest"
 
 
 def test_check_a_flags_asr_op_on_slim(monkeypatch) -> None:
