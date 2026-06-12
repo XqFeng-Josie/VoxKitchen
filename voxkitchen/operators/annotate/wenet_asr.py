@@ -59,11 +59,13 @@ class WenetAsrOperator(Operator):
             if audio.ndim == 2:
                 audio = audio[:, 0]
 
-            # WeNet expects the audio file path or wav bytes.
-            # Use the file path from the recording for best compatibility.
+            # WeNet's CLI model transcribes from a wav file path. load_model()
+            # returns the raw ASRModel with `transcribe(wav)` -> a result object
+            # whose `.text` is the decoded string (older versions returned a
+            # str/dict; handle both).
             if cut.recording and cut.recording.sources:
                 audio_path = cut.recording.sources[0].source
-                result = self._decoder.decode(audio_path)
+                result = self._decoder.transcribe(audio_path)
             else:
                 # Fallback: save to temp file
                 import tempfile
@@ -72,13 +74,19 @@ class WenetAsrOperator(Operator):
 
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
                     sf.write(f.name, audio, sr)
-                    result = self._decoder.decode(f.name)
+                    result = self._decoder.transcribe(f.name)
 
             new_sups: list[Supervision] = []
-            if result:
-                # WeNet returns a string or dict depending on version
-                text = result if isinstance(result, str) else result.get("text", str(result))
-                text = text.strip()
+            if result is not None:
+                if hasattr(result, "text"):
+                    text = result.text
+                elif isinstance(result, str):
+                    text = result
+                elif isinstance(result, dict):
+                    text = result.get("text", "")
+                else:
+                    text = str(result)
+                text = (text or "").strip()
                 if text:
                     new_sups.append(
                         Supervision(
