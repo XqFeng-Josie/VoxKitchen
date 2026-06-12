@@ -272,7 +272,7 @@ def warmup_wenet(r: WarmupReport) -> None:
     try:
         import wenet
 
-        wenet.load_model("chinese")
+        wenet.load_model("wenetspeech")
         r.record_ok("wenet_asr")
     except ImportError:
         r.record_skip("wenet_asr", "wenet not installed")

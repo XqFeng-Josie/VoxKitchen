@@ -44,7 +44,7 @@ segments = transcribe("speech.wav", model="tiny")
 # Different engines
 segments = transcribe("speech.wav", engine="sensevoice")     # Chinese/multilingual
 segments = transcribe("speech.wav", engine="paraformer")      # Chinese, fast
-segments = transcribe("speech.wav", engine="wenet", model="chinese")
+segments = transcribe("speech.wav", engine="wenet", model="wenetspeech")
 ```
 
 ## Speech Detection (VAD)

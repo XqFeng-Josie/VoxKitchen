@@ -171,7 +171,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   (`git submodule update --init` aborted) and the operator was silently
   absent. It's now cloned without submodules at a pinned commit and installed
   from the local checkout, with the asr constraint keeping torch at 2.4.1
-  (newer torch dropped a private re-export wenet imports).
+  (newer torch dropped a private re-export wenet imports). The default model
+  also moved from `chinese` to `wenetspeech` — wenet removed the
+  `chinese`/`english` hub aliases, so the old default failed with
+  `train.yaml not found`. (`transcribe(engine="wenet")` updated to match.)
 
 ## [0.3.0] — 2026-05-21
 

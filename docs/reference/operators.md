@@ -735,14 +735,14 @@ uses non-streaming (offline) mode for best accuracy.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model` | str | `chinese` |  |
+| `model` | str | `wenetspeech` |  |
 | `language` | str | `zh` |  |
 
 ```yaml
 - name: my_wenet_asr
   op: wenet_asr
   args:
-    model: chinese
+    model: wenetspeech
     language: zh
 ```
 

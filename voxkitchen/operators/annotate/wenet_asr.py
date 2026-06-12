@@ -20,7 +20,11 @@ from voxkitchen.utils.language import normalize_language
 
 
 class WenetAsrConfig(OperatorConfig):
-    model: str = "chinese"  # "chinese", "english", or a model dir path
+    # A wenet hub model name or a local model dir. Valid hub names (per
+    # wenet.cli.hub.Hub.assets) include "wenetspeech", "paraformer",
+    # "sensevoice_small", "firered", and the "whisper-*" set. The old
+    # "chinese"/"english" aliases were removed upstream.
+    model: str = "wenetspeech"
     language: str = "zh"
 
 

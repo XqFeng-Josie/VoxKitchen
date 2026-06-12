@@ -195,7 +195,7 @@ def transcribe(
             - faster-whisper: "tiny", "base", "small", "medium", "large-v3"
             - sensevoice: "iic/SenseVoiceSmall"
             - paraformer: "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
-            - wenet: "chinese", "english"
+            - wenet: "wenetspeech", "paraformer", "sensevoice_small", "firered", "whisper-*"
 
         language: Language hint (None = auto-detect where supported).
         beam_size: Beam size (faster-whisper only).
@@ -216,7 +216,7 @@ def transcribe(
         segments = transcribe("lecture.wav", engine="paraformer")
 
         # WeNet (Chinese, production-grade)
-        segments = transcribe("call.wav", engine="wenet", model="chinese")
+        segments = transcribe("call.wav", engine="wenet", model="wenetspeech")
     """
     path = Path(audio_path)
     cut = _make_cut(path)
@@ -266,7 +266,7 @@ def transcribe(
             WenetAsrOperator,
         )
 
-        wn_model = model if model != "tiny" else "chinese"
+        wn_model = model if model != "tiny" else "wenetspeech"
         config = WenetAsrConfig(model=wn_model, language=language or "zh")  # type: ignore[assignment]
         op = WenetAsrOperator(config, ctx)  # type: ignore[assignment]
 

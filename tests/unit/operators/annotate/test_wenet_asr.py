@@ -68,7 +68,7 @@ def test_wenet_asr_class_attrs() -> None:
 def test_wenet_asr_transcribes(mono_wav_16k: Path, tmp_path: Path, make_run_context) -> None:
     """Real model on CPU: a sine wave should complete and return 1 cut."""
     cut = _cut_from_path(mono_wav_16k)
-    config = WenetAsrConfig(model="chinese")
+    config = WenetAsrConfig(model="wenetspeech")
     op = WenetAsrOperator(config, ctx=make_run_context("asr"))
     op.setup()
     result = list(op.process(CutSet([cut])))
