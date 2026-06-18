@@ -1127,7 +1127,7 @@ Higher is better. Scores > 4.0 indicate natural-sounding speech.
 
 Useful for filtering synthetic/degraded audio from training data.
 
-- **Device:** cpu
+- **Device:** gpu
 - **Runtime:** `vkit docker run --tag slim <yaml>`
 - **Produces audio:** No
 

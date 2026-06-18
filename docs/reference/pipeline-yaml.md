@@ -100,7 +100,9 @@ ingest:
     subsets: [train-clean-100]    # Optional. Default: all subsets.
 ```
 
-Available recipes: `librispeech`, `aishell`, `commonvoice`, `fleurs`
+Available recipes (run `vkit recipes` for the full list of 13): `librispeech`,
+`aishell`, `commonvoice`, `fleurs`, `libritts`, `libritts_r`, `ljspeech`,
+`hifitts`, `aishell3`, `cnceleb`, `musan`, `thchs30`, `thorsten_voice`
 
 ## Pipeline Execution
 

@@ -101,7 +101,12 @@ vkit docker download aishell3 --root ./data/aishell3
 vkit docker download cnceleb --root ./data/cnceleb
 vkit docker download fleurs --root ./data/fleurs --subsets en_us,zh_cn
 vkit docker download musan --root ./data/musan
+vkit docker download libritts_r --root ./data/libritts_r
+vkit docker download hifitts --root ./data/hifitts
+vkit docker download thchs30 --root ./data/thchs30
+vkit docker download thorsten_voice --root ./data/thorsten_voice
 # commonvoice: manual download (see docs/reference/recipes.md)
+# run `vkit recipes` for the full list (13 recipes)
 ```
 
 ### Running And Debugging

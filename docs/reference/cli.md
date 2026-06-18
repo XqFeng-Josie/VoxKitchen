@@ -43,6 +43,7 @@ vkit docker run pipeline.yaml --work-dir ./work/run1    # Override work_dir
 | Flag | Meaning |
 |------|---------|
 | `--dry-run` | Parse + validate the pipeline, resolve the stage plan, exit without executing. |
+| `--no-preflight` | Skip the static field-contract pre-flight checks. |
 | `--resume-from STAGE` | Force-resume from `STAGE` regardless of existing checkpoints. |
 | `--stop-at STAGE` | Stop after `STAGE` completes. |
 | `--keep-intermediates` | Disable GC; keep every stage's derived audio on disk. |
@@ -282,7 +283,7 @@ vkit docker run pipeline.yaml --mount /data/raw        # Extra read-only bind mo
 | `--gpus MODE` | `auto` | `auto` (attach all GPUs if `nvidia-smi` is on PATH), `all`, or `none`. |
 | `--env-file PATH` | `./.env` if present | `docker --env-file` path (used for `HF_TOKEN`). |
 | `--mount PATH`, `-m` | — | Extra host path to bind read-only. Repeatable. |
-| `--dry-run`, `--resume-from`, `--stop-at`, `--num-gpus`, `--num-workers`, `--work-dir`, `--keep-intermediates` | — | Pipeline options forwarded to the image entrypoint. |
+| `--dry-run`, `--no-preflight`, `--resume-from`, `--stop-at`, `--num-gpus`, `--num-workers`, `--work-dir`, `--keep-intermediates` | — | Pipeline options forwarded to the image entrypoint. |
 
 The wrapper automatically:
 

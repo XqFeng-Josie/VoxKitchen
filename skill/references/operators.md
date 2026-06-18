@@ -104,10 +104,10 @@ Use `tts` only for pure synthesis/tts-family stages.
 | Audio prep | `resample`, `ffmpeg_convert`, `channel_merge`, `loudness_normalize` | `slim` |
 | Segmentation | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` | `slim` |
 | Augmentation | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` | `slim` |
-| ASR/alignment | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `qwen3_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `forced_align` | `asr` |
+| ASR / language / emotion | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `qwen3_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `forced_align`, `whisper_langid`, `emotion_recognize` | `asr` |
 | Diarization | `pyannote_diarize` | `diarize` |
-| Speaker/language | `speaker_embed`, `speechbrain_langid`, `whisper_langid`, `gender_classify` | `slim` or `asr` |
-| Enhancement/features | `speech_enhance`, `codec_tokenize`, `mel_extract` | `slim` |
+| Speaker / language (CPU) | `speaker_embed`, `speechbrain_langid`, `gender_classify` | `slim` |
+| Enhancement / features / text | `speech_enhance`, `codec_tokenize`, `mel_extract`, `normalize_text` | `slim` |
 | Quality | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `quality_score_filter`, `audio_fingerprint_dedup`, `speaker_similarity`, `cer_wer` | `slim` |
 | TTS | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice` | `tts` |
 | Fish-Speech TTS | `tts_fish_speech` | `fish-speech` or `latest` |

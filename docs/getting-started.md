@@ -114,7 +114,7 @@ vkit docker run --tag asr pipeline.yaml
 ```
 
 Run `vkit recipes` to list every available dataset along with its
-compressed download size — 9 recipes ship today, covering English /
+compressed download size — 13 recipes ship today, covering English /
 Chinese ASR (`librispeech`, `aishell`), multi-speaker TTS
 (`libritts`, `ljspeech`, `aishell3`), Chinese speaker recognition
 (`cnceleb`), multilingual eval (`fleurs`), augmentation (`musan`),

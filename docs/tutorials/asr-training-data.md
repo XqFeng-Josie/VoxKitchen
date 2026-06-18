@@ -43,9 +43,9 @@ Noise augmentation (`noise_augment`) is also effective but requires a noise data
       snr_range: [5, 20]
 ```
 
-Put MUSAN or another noise dataset under `./data/noise/` before enabling
-this stage. The MUSAN recipe is tracked in the roadmap, but is not a built-in
-recipe yet.
+Download MUSAN with `vkit docker download --tag slim musan --root ./data/noise/musan`,
+then point `noise_dir` at it — or place any other noise dataset under
+`./data/noise/` before enabling this stage.
 
 ### Why HuggingFace output?
 

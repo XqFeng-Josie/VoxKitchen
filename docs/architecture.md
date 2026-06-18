@@ -133,7 +133,7 @@ Optional deps wrapped in `try/except ImportError` -- missing packages don't cras
 | **Segmentation** | 4 | `silero_vad`, `webrtc_vad`, `fixed_segment`, `silence_split` |
 | **Augmentation** | 4 | `speed_perturb`, `volume_perturb`, `noise_augment`, `reverb_augment` |
 | **Synthesize** | 4 | `tts_kokoro`, `tts_chattts`, `tts_cosyvoice`, `tts_fish_speech` |
-| **Annotation** | 17 | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `codec_tokenize`, `mel_extract` |
+| **Annotation** | 18 | `faster_whisper_asr`, `whisper_openai_asr`, `whisperx_asr`, `paraformer_asr`, `sensevoice_asr`, `wenet_asr`, `qwen3_asr`, `pyannote_diarize`, `speechbrain_langid`, `whisper_langid`, `gender_classify`, `speaker_embed`, `speech_enhance`, `forced_align`, `emotion_recognize`, `normalize_text`, `codec_tokenize`, `mel_extract` |
 | **Quality** | 11 | `snr_estimate`, `dnsmos_score`, `utmos_score`, `pitch_stats`, `clipping_detect`, `bandwidth_estimate`, `duration_filter`, `audio_fingerprint_dedup`, `quality_score_filter`, `speaker_similarity`, `cer_wer` |
 | **Pack** | 6 | `pack_manifest`, `pack_jsonl`, `pack_huggingface`, `pack_webdataset`, `pack_parquet`, `pack_kaldi` |
 
@@ -469,7 +469,7 @@ tests/integration/      # End-to-end pipeline tests
 
 - Core framework (schema, pipeline engine, CLI)
 - 52 operators across 8 categories
-- 9 ingest recipes (LibriSpeech, LibriTTS, LJSpeech, AISHELL-1, AISHELL-3, CN-Celeb 1, CommonVoice, FLEURS, MUSAN)
+- 13 ingest recipes (LibriSpeech, LibriTTS, LibriTTS-R, LJSpeech, HiFi-TTS, AISHELL-1, AISHELL-3, THCHS-30, CN-Celeb 1, CommonVoice, FLEURS, MUSAN, Thorsten-Voice)
 - Visualization (Rich CLI, HTML report, Gradio panel)
 - Plugin system (entry_points)
 - TTS synthesis (Kokoro, ChatTTS, CosyVoice2, Fish-Speech)
