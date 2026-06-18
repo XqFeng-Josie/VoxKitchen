@@ -1456,9 +1456,9 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <span class="w">      </span><span class="nt">noise_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data/noise</span>
 <span class="w">      </span><span class="nt">snr_range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">20</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<p>Put MUSAN or another noise dataset under <code>./data/noise/</code> before enabling
-this stage. The MUSAN recipe is tracked in the roadmap, but is not a built-in
-recipe yet.</p>
+<p>Download MUSAN with <code>vkit docker download --tag slim musan --root ./data/noise/musan</code>,
+then point <code>noise_dir</code> at it — or place any other noise dataset under
+<code>./data/noise/</code> before enabling this stage.</p>
 <h3 id="why-huggingface-output">Why HuggingFace output?</h3>
 <p><code>pack_huggingface</code> produces a dataset loadable with <code>datasets.load_from_disk()</code>, which integrates directly with HuggingFace training pipelines (Transformers, SpeechBrain, ESPnet).</p>
 <p>By default, the template writes the final dataset to <code>./output/hf_dataset</code>.

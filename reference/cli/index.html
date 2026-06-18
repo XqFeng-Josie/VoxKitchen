@@ -1709,6 +1709,10 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <td>Parse + validate the pipeline, resolve the stage plan, exit without executing.</td>
 </tr>
 <tr>
+<td><code>--no-preflight</code></td>
+<td>Skip the static field-contract pre-flight checks.</td>
+</tr>
+<tr>
 <td><code>--resume-from STAGE</code></td>
 <td>Force-resume from <code>STAGE</code> regardless of existing checkpoints.</td>
 </tr>
@@ -2047,7 +2051,7 @@ vkit<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </
 <td>Extra host path to bind read-only. Repeatable.</td>
 </tr>
 <tr>
-<td><code>--dry-run</code>, <code>--resume-from</code>, <code>--stop-at</code>, <code>--num-gpus</code>, <code>--num-workers</code>, <code>--work-dir</code>, <code>--keep-intermediates</code></td>
+<td><code>--dry-run</code>, <code>--no-preflight</code>, <code>--resume-from</code>, <code>--stop-at</code>, <code>--num-gpus</code>, <code>--num-workers</code>, <code>--work-dir</code>, <code>--keep-intermediates</code></td>
 <td>—</td>
 <td>Pipeline options forwarded to the image entrypoint.</td>
 </tr>

@@ -1536,7 +1536,9 @@ the first <code>}</code> character.</p>
 <span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/librispeech</span><span class="w">    </span><span class="c1"># Required.</span>
 <span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">train-clean-100</span><span class="p p-Indicator">]</span><span class="w">    </span><span class="c1"># Optional. Default: all subsets.</span>
 </code></pre></div>
-<p>Available recipes: <code>librispeech</code>, <code>aishell</code>, <code>commonvoice</code>, <code>fleurs</code></p>
+<p>Available recipes (run <code>vkit recipes</code> for the full list of 13): <code>librispeech</code>,
+<code>aishell</code>, <code>commonvoice</code>, <code>fleurs</code>, <code>libritts</code>, <code>libritts_r</code>, <code>ljspeech</code>,
+<code>hifitts</code>, <code>aishell3</code>, <code>cnceleb</code>, <code>musan</code>, <code>thchs30</code>, <code>thorsten_voice</code></p>
 <h2 id="pipeline-execution">Pipeline Execution</h2>
 <h3 id="resume">Resume</h3>
 <p>Pipelines checkpoint after each stage. If a run crashes, re-running resumes from the last completed stage:</p>
