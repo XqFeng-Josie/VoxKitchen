@@ -4346,9 +4346,12 @@ No audio is written; only the metrics dict is updated.</p>
 </code></pre></div>
 <hr />
 <h3 id="utmos_score"><code>utmos_score</code></h3>
-<p><strong>Predict speech naturalness MOS using UTMOS (no reference needed).</strong></p>
-<p>Writes <code>metrics["utmos"]</code> — predicted MOS score (1-5).
-Higher is better. Scores &gt; 4.0 indicate natural-sounding speech.</p>
+<p><strong>Predict speech naturalness MOS using UTMOS22 (no reference needed).</strong></p>
+<p>Writes <code>metrics["utmos"]</code> -- predicted MOS score (1-5).
+Higher is better.  Scores &gt; 4.0 indicate natural-sounding speech.</p>
+<p>The model is loaded via <code>torch.hub</code> from <code>tarepan/SpeechMOS:v1.2.0</code>
+(pinned tag for reproducibility).  First run downloads ~390 MB of model
+weights into the torch hub cache; subsequent runs are local.</p>
 <p>Useful for filtering synthetic/degraded audio from training data.</p>
 <ul>
 <li><strong>Device:</strong> gpu</li>
