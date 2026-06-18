@@ -177,7 +177,7 @@ assert OPERATOR_API_VERSION == 1, f"Unsupported API version: {OPERATOR_API_VERSI
 ## 6. Worked example
 
 A complete, installable example is at
-[`examples/plugin-operator/`](../../examples/plugin-operator/).  It
+[`examples/plugin-operator/`](https://github.com/XqFeng-Josie/VoxKitchen/tree/main/examples/plugin-operator).  It
 implements the `word_count` operator shown above and is structured exactly
 as a real third-party package would be.
 

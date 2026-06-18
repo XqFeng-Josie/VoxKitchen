@@ -1120,10 +1120,14 @@ No audio is written; only the metrics dict is updated.
 
 ### `utmos_score`
 
-**Predict speech naturalness MOS using UTMOS (no reference needed).**
+**Predict speech naturalness MOS using UTMOS22 (no reference needed).**
 
-Writes ``metrics["utmos"]`` — predicted MOS score (1-5).
-Higher is better. Scores > 4.0 indicate natural-sounding speech.
+Writes ``metrics["utmos"]`` -- predicted MOS score (1-5).
+Higher is better.  Scores > 4.0 indicate natural-sounding speech.
+
+The model is loaded via ``torch.hub`` from ``tarepan/SpeechMOS:v1.2.0``
+(pinned tag for reproducibility).  First run downloads ~390 MB of model
+weights into the torch hub cache; subsequent runs are local.
 
 Useful for filtering synthetic/degraded audio from training data.
 
