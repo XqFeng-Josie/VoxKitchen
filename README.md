@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/voxkitchen_logo.svg" width="360" alt="VoxKitchen logo">
+  <img src="https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/voxkitchen_banner.png" width="960" alt="VoxKitchen banner">
 </p>
 
 <h1 align="center">VoxKitchen</h1>
