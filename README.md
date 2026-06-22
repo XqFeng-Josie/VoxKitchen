@@ -2,8 +2,6 @@
   <img src="https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/voxkitchen_banner.png" width="960" alt="VoxKitchen banner">
 </p>
 
-<h1 align="center">VoxKitchen</h1>
-
 <p align="center">
   <strong>Turn raw speech recordings into clean, inspectable training datasets.</strong>
 </p>

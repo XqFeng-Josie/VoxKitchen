@@ -2,8 +2,6 @@
   <img src="https://raw.githubusercontent.com/XqFeng-Josie/VoxKitchen/main/voxkitchen_banner.png" width="960" alt="VoxKitchen banner">
 </p>
 
-<h1 align="center">VoxKitchen</h1>
-
 <p align="center">
   <strong>把原始语音录音变成干净、可检视的训练数据集。</strong>
 </p>
