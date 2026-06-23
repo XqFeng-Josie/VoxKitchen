@@ -68,6 +68,7 @@
             "loudness_normalize",
             "mel_extract",
             "noise_augment",
+            "normalize_text",
             "pack_huggingface",
             "pack_jsonl",
             "pack_kaldi",
