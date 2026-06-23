@@ -120,6 +120,13 @@ Pipeline run: demo-no-asr
 under `./output` with your host user ID. It also mounts `./data` automatically
 when that directory exists.
 
+After the demo completes, the useful artifacts are:
+
+- `work/demo-no-asr/report.html` — a browser-friendly run report.
+- `work/demo-no-asr/08_pack/cuts.jsonl.gz` — the final VoxKitchen `CutSet`.
+- `work/demo-no-asr/08_pack/manifest.jsonl` — the flat JSONL export from `pack_jsonl`.
+- `vkit inspect cuts work/demo-no-asr/08_pack/cuts.jsonl.gz` — duration and metric statistics.
+
 ## What You Can Build
 
 | Goal | Start with | Runtime image |
@@ -266,6 +273,7 @@ vkit docker doctor --tag latest            # Check image health
 - [CLI reference](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/cli.md)
 - [Operators reference](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/operators.md)
 - [Docker build guide](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md)
+- [Operator sweep](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/scripts/sweep/README.md) — release-time Docker image checks
 - [Contributing](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CONTRIBUTING.md)
 
 ## Agent Skill

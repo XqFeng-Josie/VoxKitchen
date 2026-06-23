@@ -43,12 +43,10 @@ class PackHuggingFaceOperator(Operator):
     produces_audio = True
     reads_audio_bytes = True
     required_extras: ClassVar[list[str]] = ["pack"]
-    optional_reads: ClassVar[list[str]] = [
-        "supervisions.text",
-        "supervisions.speaker",
-        "supervisions.language",
-        "custom.word_alignments",
-    ]
+    # Text is the only optional field whose absence usually changes the
+    # usefulness of a HuggingFace speech dataset. Other metadata is exported
+    # opportunistically when present and should not make examples warn.
+    optional_reads: ClassVar[list[str]] = ["supervisions.text"]
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackHuggingFaceConfig)

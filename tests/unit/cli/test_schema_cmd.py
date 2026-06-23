@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -48,6 +50,38 @@ def test_schema_export_default_path(tmp_path: Path, monkeypatch) -> None:
     result = CliRunner().invoke(app, ["schema", "export"])
     assert result.exit_code == 0
     assert (tmp_path / "pipeline.schema.json").exists()
+
+
+def test_committed_pipeline_schema_matches_cli_export(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[3]
+    schema_path = repo_root / "docs" / "schemas" / "pipeline.schema.json"
+    generated_path = tmp_path / "pipeline.schema.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "voxkitchen.cli.main",
+            "schema",
+            "export",
+            "--out",
+            str(generated_path),
+        ],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+    committed = json.loads(schema_path.read_text(encoding="utf-8"))
+    generated = json.loads(generated_path.read_text(encoding="utf-8"))
+
+    assert committed == generated, (
+        "docs/schemas/pipeline.schema.json is stale; run "
+        "`python -m voxkitchen.cli.main schema export --out "
+        "docs/schemas/pipeline.schema.json` and commit the result."
+    )
 
 
 def test_schema_validates_a_minimal_pipeline() -> None:

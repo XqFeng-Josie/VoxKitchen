@@ -170,7 +170,7 @@ def test_inspect_cuts_directory_path_exits_1(tmp_path: Path) -> None:
     must explain the mistake rather than crash inside the gzip loader."""
     result = CliRunner().invoke(app, ["inspect", "cuts", str(tmp_path)])
     assert result.exit_code == 1
-    assert "is a directory" in result.output
+    assert "is a directory" in " ".join(result.output.split())
     assert "Traceback" not in result.output
 
 

@@ -16,6 +16,19 @@ from voxkitchen.schema.provenance import Provenance  # noqa: E402
 from voxkitchen.viz.panel.app import create_app  # noqa: E402
 
 
+def _isolate_gradio_tmp(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep Gradio's global temp/cache writes inside pytest's tmp dir."""
+    gradio_tmp = tmp_path / "gradio"
+    gradio_tmp.mkdir()
+    monkeypatch.setenv("GRADIO_TEMP_DIR", str(gradio_tmp))
+
+    # Gradio 6.x caches this value at import time in routes.py. Patch it here
+    # so Blocks() does not depend on the host-level /tmp/gradio permissions.
+    import gradio.routes as gradio_routes
+
+    monkeypatch.setattr(gradio_routes, "DEFAULT_TEMP_DIR", str(gradio_tmp), raising=False)
+
+
 def _write_manifest(path: Path, n: int = 3) -> None:
     cuts = [
         Cut(
@@ -43,14 +56,16 @@ def _write_manifest(path: Path, n: int = 3) -> None:
     CutSet(cuts).to_jsonl_gz(path, header)
 
 
-def test_create_app_returns_blocks(tmp_path: Path) -> None:
+def test_create_app_returns_blocks(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _isolate_gradio_tmp(tmp_path, monkeypatch)
     manifest = tmp_path / "cuts.jsonl.gz"
     _write_manifest(manifest)
     app = create_app(str(manifest))
     assert isinstance(app, gr.Blocks)
 
 
-def test_create_app_with_empty_cutset(tmp_path: Path) -> None:
+def test_create_app_with_empty_cutset(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _isolate_gradio_tmp(tmp_path, monkeypatch)
     manifest = tmp_path / "cuts.jsonl.gz"
     _write_manifest(manifest, n=0)
     app = create_app(str(manifest))

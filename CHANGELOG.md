@@ -6,6 +6,43 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-06-23
+
+### Added
+
+- Operator sweep documentation at `scripts/sweep/README.md`, covering fixture
+  setup, image-family runs, report-only mode, and release-time validation.
+- `scripts/sweep/run.py --report <path>` so filtered or per-image sweep runs
+  can keep separate Markdown reports instead of overwriting
+  `scripts/sweep/last-run.md`.
+- CI guard that compares the committed pipeline JSON Schema against
+  `vkit schema export`, preventing schema drift after operator or spec changes.
+- Quickstart demo contract coverage so the README demo continues to point at
+  the bundled `demo-no-asr` pipeline and `examples/demo_data`.
+
+### Changed
+
+- `vkit validate examples/pipelines/demo-no-asr.yaml` now validates cleanly
+  without optional metadata warnings. `pack_jsonl` no longer declares
+  opportunistically exported fields as `optional_reads`; audio-only JSONL is a
+  normal output shape.
+- `pack_huggingface` now warns only when text is absent, while speaker,
+  language, and word-alignment metadata are exported opportunistically when
+  present.
+- README and citation wording now avoid stale hard-coded operator-count phrasing
+  and point maintainers at the operator sweep.
+- Sweep progress output now flushes each record immediately, which makes long
+  Docker sweep runs easier to monitor.
+
+### Fixed
+
+- Added `normalize_text` to the committed pipeline schema operator enum.
+- Fixed Rich line-wrapping-sensitive CLI tests and isolated Gradio temp state
+  in panel tests so local CI is stable.
+- Corrected `examples/README.md` to describe the actual bundled demo data
+  (`demo1.opus`) instead of an old two-file, ~100-minute fixture set.
+- Ignored generated per-image sweep reports under `scripts/sweep/reports/`.
+
 ## [0.3.1] — 2026-06-09
 
 ### Added

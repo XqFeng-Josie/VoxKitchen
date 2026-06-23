@@ -156,7 +156,7 @@ def test_ingest_missing_manifest_file_emits_friendly_error(tmp_path: Path) -> No
     assert result.exit_code == 1, f"got exit {result.exit_code}: {result.output}"
     assert "Traceback" not in result.output
     assert "error:" in result.output.lower()
-    assert "ghost.jsonl.gz" in result.output
+    assert "ghost.jsonl.gz" in "".join(result.output.split())
     assert result.exception is None or isinstance(result.exception, SystemExit), (
         f"expected SystemExit, got: {result.exception!r}"
     )

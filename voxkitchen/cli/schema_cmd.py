@@ -11,7 +11,7 @@ The schema is derived from two sources:
    `name`, `work_dir`, `ingest`, `stages`, plus all the ingest spec details.
 2. The operator registry — every registered operator's name is added to a
    ``$defs.StageSpec.properties.op.enum`` so editors offer autocomplete on
-   the 51 valid operator names.
+   the registered operator names.
 
 Per-operator ``args`` validation (i.e. validating the per-stage args against
 each operator's specific config schema) is intentionally **not** wired up
@@ -58,7 +58,7 @@ def build_pipeline_schema() -> dict[str, Any]:
 
     Generating the schema in the current Python process means the result
     reflects whatever operators are importable here. In source-tree dev that's
-    most of the 51 operators (the core cluster); inside the published Docker
+    most of the operators (the core cluster); inside the published Docker
     images it's the full set for the image's env. To produce a complete
     schema for the public site, run this command inside the ``:latest``
     image where every env's operators are registered.

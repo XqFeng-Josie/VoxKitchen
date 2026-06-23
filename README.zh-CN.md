@@ -116,6 +116,13 @@ Pipeline run: demo-no-asr
 `vkit docker run` 会把运行产物写到 `./work` 下、导出的数据集写到 `./output` 下，
 并使用你的宿主机用户 ID。当 `./data` 目录存在时也会自动挂载它。
 
+demo 完成后，最有用的产物是：
+
+- `work/demo-no-asr/report.html`：适合在浏览器里查看的运行报告。
+- `work/demo-no-asr/08_pack/cuts.jsonl.gz`：最终的 VoxKitchen `CutSet`。
+- `work/demo-no-asr/08_pack/manifest.jsonl`：`pack_jsonl` 导出的扁平 JSONL。
+- `vkit inspect cuts work/demo-no-asr/08_pack/cuts.jsonl.gz`：查看时长和指标统计。
+
 ## 你能用它做什么
 
 | 目标 | 起步命令 | 运行时镜像 |
@@ -260,6 +267,7 @@ vkit docker doctor --tag latest            # 检查镜像健康状况
 - [CLI 参考](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/cli.md)
 - [算子参考](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/reference/operators.md)
 - [Docker 构建指南](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/docs/docker-build.md)
+- [算子 sweep](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/scripts/sweep/README.md) —— 发布前 Docker 镜像检查
 - [贡献指南](https://github.com/XqFeng-Josie/VoxKitchen/blob/main/CONTRIBUTING.md)
 
 ## Agent Skill

@@ -185,23 +185,30 @@ Scopes: `operators`, `pipeline`, `schema`, `cli`, `viz`, `ingest`, `tools`.
 
 7. **Write tests** in `tests/unit/operators/<category>/test_<name>.py`.
 
-8. **Create an example** in `examples/pipelines/` (optional but appreciated).
+8. **Add an operator sweep pipeline** in
+   `scripts/sweep/pipelines/<name>.yaml`. Use only fixtures under
+   `scripts/sweep/fixtures/` so the sweep stays reproducible. If the
+   default "produced final cuts" assertion is not enough, add a semantic
+   assertion in `scripts/sweep/assertions.py`.
 
-9. **Regenerate operator docs**:
+9. **Create an example** in `examples/pipelines/` (optional but appreciated).
+
+10. **Regenerate operator docs**:
 
    ```bash
    python scripts/gen_operator_docs.py -o docs/reference/operators.md
    ```
 
-10. **Regenerate the pipeline JSON Schema** so editors flag the new operator
+11. **Regenerate the pipeline JSON Schema** so editors flag the new operator
    correctly:
 
    ```bash
    vkit schema export --out docs/schemas/pipeline.schema.json
    ```
 
-   Commit the result alongside the operator change. CI does not do this
-   automatically.
+   Commit the result alongside the operator change. CI checks that this
+   committed snapshot matches the CLI export, but it does not regenerate the
+   file for you.
 
 ## Third-party operator plugins
 

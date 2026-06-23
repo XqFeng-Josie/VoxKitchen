@@ -67,9 +67,9 @@ vkit schema export --out docs/schemas/pipeline.schema.json
 git add docs/schemas/pipeline.schema.json
 ```
 
-CI does not auto-regenerate this file — it's a maintainer responsibility.
-A stale snapshot causes editors to flag new operators as "unknown op", which
-is loud enough to catch.
+CI checks that the committed snapshot matches `vkit schema export`, but it does
+not auto-regenerate the file. A stale snapshot causes CI failures and makes
+editors flag new operators as "unknown op".
 
 ## Versioning
 

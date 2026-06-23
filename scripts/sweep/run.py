@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import json
 import os
 import shutil
 import subprocess
@@ -65,9 +66,15 @@ def main() -> int:
     parser.add_argument(
         "--report-only",
         action="store_true",
-        help="Re-render report.md from existing work_dirs without re-running",
+        help="Re-render the Markdown report from existing work_dirs without re-running",
+    )
+    parser.add_argument(
+        "--report",
+        default=str(REPORT_FILE.relative_to(REPO_ROOT)),
+        help="Markdown report path, relative to repo root unless absolute",
     )
     args = parser.parse_args()
+    report_path = _resolve_report_path(args.report)
 
     if args.setup:
         from scripts.sweep.setup_fixtures import generate_fixtures
@@ -88,6 +95,12 @@ def main() -> int:
             print(f"error: no pipeline yamls found in {PIPELINES_DIR}", file=sys.stderr)
         return 2
 
+    if args.report_only:
+        records = _records_from_existing_workdirs(yamls)
+        _print_records(records)
+        _write_report(records, report_path)
+        return _exit_code_for_records(records)
+
     records: list[RunRecord] = []
     for idx, (op, image, yaml_path) in enumerate(yamls, 1):
         record = _run_one(
@@ -98,19 +111,92 @@ def main() -> int:
             cleanup_each=args.cleanup_each,
         )
         records.append(record)
-        verdict_glyph = {"PASS": "✅", "FAIL": "❌", "SKIP": "⏭"}[record.verdict]
-        print(
-            f"[{idx}/{len(yamls)}] {record.op:<30} on {record.image:<12} "
-            f"… {verdict_glyph} {record.verdict}  {record.wall_seconds:5.1f}s  "
-            f"{record.message}"
-        )
+        _print_record(idx, len(yamls), record)
 
+    _write_report(records, report_path)
+    return _exit_code_for_records(records)
+
+
+def _print_records(records: list[RunRecord]) -> None:
+    for idx, record in enumerate(records, 1):
+        _print_record(idx, len(records), record)
+
+
+def _print_record(idx: int, total: int, record: RunRecord) -> None:
+    verdict_glyph = {"PASS": "✅", "FAIL": "❌", "SKIP": "⏭"}[record.verdict]
+    print(
+        f"[{idx}/{total}] {record.op:<30} on {record.image:<12} "
+        f"… {verdict_glyph} {record.verdict}  {record.wall_seconds:5.1f}s  "
+        f"{record.message}",
+        flush=True,
+    )
+
+
+def _resolve_report_path(value: str | Path) -> Path:
+    path = Path(value)
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    return path
+
+
+def _write_report(records: list[RunRecord], path: Path) -> None:
     from scripts.sweep.report import write_report
 
-    write_report(records=records, path=REPORT_FILE)
+    write_report(records=records, path=path)
 
+
+def _exit_code_for_records(records: list[RunRecord]) -> int:
     failures = [r for r in records if r.verdict == "FAIL"]
     return 1 if failures else 0
+
+
+def _records_from_existing_workdirs(yamls: list[tuple[str, str, Path]]) -> list[RunRecord]:
+    """Rebuild sweep records from existing work dirs without launching Docker."""
+    from scripts.sweep.assertions import ASSERTIONS, default_smoke_assertion
+
+    records: list[RunRecord] = []
+    for op, image, _yaml_path in yamls:
+        work_dir = WORK_BASE / op
+        if image == "unknown":
+            records.append(RunRecord(op, image, "SKIP", "op-not-registered", 0.0))
+            continue
+        if not work_dir.exists():
+            records.append(RunRecord(op, image, "SKIP", "no-existing-work-dir", 0.0))
+            continue
+
+        assertion = ASSERTIONS.get(op, default_smoke_assertion)
+        wall = _read_existing_wall_seconds(work_dir)
+        try:
+            passed, message = assertion(work_dir, "")
+        except Exception as exc:
+            records.append(
+                RunRecord(
+                    op,
+                    image,
+                    "FAIL",
+                    f"assertion raised {type(exc).__name__}: {exc}",
+                    wall,
+                    0,
+                )
+            )
+            continue
+
+        records.append(RunRecord(op, image, "PASS" if passed else "FAIL", message, wall, 0))
+    return records
+
+
+def _read_existing_wall_seconds(work_dir: Path) -> float:
+    """Sum wall_time_seconds from existing per-stage _stats.json files."""
+    total = 0.0
+    for stats_path in sorted(work_dir.glob("*_*/_stats.json")):
+        try:
+            data = json.loads(stats_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        wall = data.get("wall_time_seconds")
+        if isinstance(wall, int | float):
+            total += float(wall)
+    return total
 
 
 def _discover_yamls(*, op: str | None, image_filter: str | None) -> list[tuple[str, str, Path]]:

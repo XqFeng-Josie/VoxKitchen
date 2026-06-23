@@ -84,13 +84,13 @@ pip install -e ".[dev]"
 | basic | 4 | 4 | core |
 | segment | 4 | 4 | `segment` |
 | augment | 4 | 4 | `audio` |
-| annotate | 17 | 17 | `asr`, `whisper`, `funasr`, `wenet`, `diarize`, `classify`, `speaker`, `enhance`, `align`, `codec` |
+| annotate | 18 | 18 | `asr`, `whisper`, `funasr`, `wenet`, `diarize`, `classify`, `speaker`, `enhance`, `align`, `codec` |
 | quality | 11 | 11 | `pitch`, `dnsmos`, `quality` |
 | pack | 6 | 6 | `pack` |
 | synthesize | 4 | 4 | `tts-kokoro`, `tts-chattts`, `tts-cosyvoice`, `tts-fish-speech` |
 | utility (`noop`) | 1 | 1 root-level operator test | core |
 
-**Total: 51 operators.** Each built-in operator has at least one unit test;
+**Total: 52 operators.** Each built-in operator has at least one unit test;
 shared base and registry tests are additional.
 
 ## Test Patterns

@@ -5,7 +5,7 @@ abstract: >-
   VoxKitchen turns raw speech recordings into clean, inspectable training
   datasets. It handles the repetitive audio prep around ASR, TTS, speaker
   analysis, and data cleaning through a single Docker-backed YAML pipeline:
-  convert, segment, label, filter, and export with 51 built-in operators,
+  convert, segment, label, filter, and export with 50+ built-in operators,
   resumable checkpoints, and full provenance tracking.
 type: software
 authors:

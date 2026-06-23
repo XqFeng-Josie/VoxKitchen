@@ -7,7 +7,7 @@ import pytest
 
 def test_run_cli_help_lists_main_flags() -> None:
     """`python scripts/sweep/run.py --help` shows --op, --image, --no-pull,
-    --cleanup-each, --setup, --report-only flags."""
+    --cleanup-each, --setup, --report-only, --report flags."""
     import subprocess
 
     result = subprocess.run(
@@ -17,7 +17,15 @@ def test_run_cli_help_lists_main_flags() -> None:
         cwd=str(Path(__file__).resolve().parents[3]),
     )
     assert result.returncode == 0, result.stderr
-    for flag in ["--op", "--image", "--no-pull", "--cleanup-each", "--setup", "--report-only"]:
+    for flag in [
+        "--op",
+        "--image",
+        "--no-pull",
+        "--cleanup-each",
+        "--setup",
+        "--report-only",
+        "--report",
+    ]:
         assert flag in result.stdout, f"missing flag {flag} in --help output"
 
 
@@ -105,3 +113,82 @@ def test_run_one_passes_container_work_dir_and_cleans_host_work_dir(
     # (We're only validating the path mechanics here.)
     assert record.op == "identity"
     assert record.image == "slim"
+
+
+def test_report_only_rebuilds_records_from_existing_workdirs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.sweep.assertions as assertions
+    import scripts.sweep.run as sweep_run
+
+    work_base = tmp_path / "work"
+    op_dir = work_base / "identity"
+    stage_dir = op_dir / "00_identity"
+    stage_dir.mkdir(parents=True)
+    (stage_dir / "_stats.json").write_text('{"wall_time_seconds": 1.25}', encoding="utf-8")
+
+    monkeypatch.setattr(sweep_run, "WORK_BASE", work_base)
+    monkeypatch.setitem(
+        assertions.ASSERTIONS,
+        "identity",
+        lambda _work_dir, _log: (True, "replayed ok"),
+    )
+
+    records = sweep_run._records_from_existing_workdirs(
+        [("identity", "slim", tmp_path / "identity.yaml")]
+    )
+
+    assert len(records) == 1
+    assert records[0].op == "identity"
+    assert records[0].verdict == "PASS"
+    assert records[0].message == "replayed ok"
+    assert records[0].wall_seconds == 1.25
+
+
+def test_report_only_marks_missing_workdir_as_skip(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.sweep.run as sweep_run
+
+    monkeypatch.setattr(sweep_run, "WORK_BASE", tmp_path / "missing-work")
+
+    records = sweep_run._records_from_existing_workdirs(
+        [("identity", "slim", tmp_path / "identity.yaml")]
+    )
+
+    assert len(records) == 1
+    assert records[0].verdict == "SKIP"
+    assert records[0].message == "no-existing-work-dir"
+
+
+def test_report_path_resolves_relative_to_repo_root(tmp_path: Path) -> None:
+    import scripts.sweep.run as sweep_run
+
+    assert (
+        sweep_run._resolve_report_path("scripts/sweep/reports/slim.md")
+        == sweep_run.REPO_ROOT / "scripts/sweep/reports/slim.md"
+    )
+    assert sweep_run._resolve_report_path(tmp_path / "custom.md") == tmp_path / "custom.md"
+
+
+def test_write_report_uses_custom_path(tmp_path: Path) -> None:
+    import scripts.sweep.run as sweep_run
+
+    report_path = tmp_path / "reports" / "slim.md"
+    sweep_run._write_report(
+        [
+            sweep_run.RunRecord(
+                op="identity",
+                image="slim",
+                verdict="PASS",
+                message="ok",
+                wall_seconds=0.1,
+                exit_code=0,
+            )
+        ],
+        report_path,
+    )
+
+    content = report_path.read_text(encoding="utf-8")
+    assert "`identity`" in content
+    assert "1/1 PASS" in content

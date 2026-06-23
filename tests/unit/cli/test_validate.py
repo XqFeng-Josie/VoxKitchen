@@ -37,6 +37,15 @@ stages:
     assert "vkit docker pull --tag slim" in result.output
 
 
+def test_validate_quickstart_demo_has_no_warnings() -> None:
+    runner = CliRunner()
+    result = runner.invoke(app, ["validate", "examples/pipelines/demo-no-asr.yaml"])
+
+    assert result.exit_code == 0, result.output
+    assert "valid: demo-no-asr" in result.output
+    assert "warning:" not in result.output.lower()
+
+
 def test_validate_recommends_fish_speech_image(tmp_path: Path) -> None:
     yaml_path = _write(
         tmp_path,

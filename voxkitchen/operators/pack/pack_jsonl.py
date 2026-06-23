@@ -124,14 +124,11 @@ class PackJsonlOperator(Operator):
     parallelizable = False
     produces_audio = False
     reads_audio_bytes = False
-    optional_reads: ClassVar[list[str]] = [
-        "supervisions.text",
-        "supervisions.speaker",
-        "supervisions.language",
-        "supervisions.gender",
-        "metrics.*",
-        "custom.word_alignments",
-    ]
+    contract_exempt: ClassVar[bool] = True
+    # pack_jsonl opportunistically exports text/speaker/language/metrics when
+    # present, but audio-only JSONL is a normal output shape. Do not declare
+    # these as optional_reads, otherwise clean audio-only pipelines warn.
+    optional_reads: ClassVar[list[str]] = []
 
     def process(self, cuts: CutSet) -> CutSet:
         assert isinstance(self.config, PackJsonlConfig)

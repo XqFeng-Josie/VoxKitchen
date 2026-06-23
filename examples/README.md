@@ -6,7 +6,8 @@ YAML files and small demo audio used by that guide.
 
 ## Demo data
 
-`demo_data/` contains two opus files (~100 min total) for testing.
+`demo_data/` contains one small Opus file (`demo1.opus`) for quick local
+checks and the bundled demo pipelines.
 
 ## Common pipelines
 
